@@ -22,6 +22,14 @@ export default function App() {
                         <Cpu className="w-4 h-4" />
                         Dirac Solver
                     </button>
+                    <button
+                        onClick={() => setActiveTab('devflow')}
+                        className="flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+                        style={activeTab === 'devflow' ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.3)' } : { color: '#8892a4' }}
+                    >
+                        <Activity className="w-4 h-4" />
+                        Dev Flow
+                    </button>
                 </div>
             </div>
 
