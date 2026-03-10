@@ -118,6 +118,11 @@ function DiracSolverView() {
     const [latticeA, setLatticeA] = useState<string>('10.263');
     const [latticeB, setLatticeB] = useState<string>('10.263');
     const [latticeC, setLatticeC] = useState<string>('10.263');
+    // Non-uniform / advanced grid
+    const [derivativesOrder, setDerivativesOrder] = useState<'4'|'6'|'8'>('4');
+    const [curvMethod, setCurvMethod] = useState<'uniform'|'gygi'>('uniform');
+    const [curvGygiAlpha, setCurvGygiAlpha] = useState<string>('2.0');
+    const [doubleGrid, setDoubleGrid] = useState<boolean>(false);
 
     // ── Potential Field (Local 1D) ──
     const [potentialType, setPotentialType] = useState('InfiniteWell');
@@ -148,6 +153,7 @@ function DiracSolverView() {
     const [status, setStatus] = useState('IDLE');
     const [logs, setLogs] = useState<string[]>(['[System] Solver initialized. Configure parameters and run.']);
     const [result, setResult] = useState<any>(null);
+    const [resultHistory, setResultHistory] = useState<Record<string, any>>({});
     const [dockerStatus, setDockerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
     useEffect(() => {
@@ -236,6 +242,11 @@ function DiracSolverView() {
                 latticeA: parseFloat(latticeA),
                 latticeB: parseFloat(latticeB),
                 latticeC: parseFloat(latticeC),
+                // Advanced grid
+                derivativesOrder: parseInt(derivativesOrder),
+                curvMethod,
+                curvGygiAlpha: parseFloat(curvGygiAlpha),
+                doubleGrid,
             };
 
             const query = encodeURIComponent(JSON.stringify(config));
@@ -263,6 +274,9 @@ function DiracSolverView() {
                     const resData = JSON.parse(e.data);
                     setStatus('SUCCESS');
                     setResult(resData);
+                    // Store in history by calc mode so post-processing can access previous runs
+                    const historyKey = resData.molecular?.calcMode || resData.problemType || 'gs';
+                    setResultHistory(prev => ({ ...prev, [historyKey]: resData }));
                     setLogs(prev => [
                         ...prev,
                         `✓ Computation complete via ${resData.engine || (config.engineMode === 'octopus3D' ? 'Octopus-v16' : 'local-python')}.`,
@@ -667,20 +681,45 @@ function DiracSolverView() {
 
                         <Section title="Mesh & Box Settings" icon={<Grid3x3 className="w-4 h-4 text-green-400" />}>
                             <div className="grid grid-cols-2 gap-2">
-                                <Field label="Grid Spacing">
-                                    <input type="number" value={octopusSpacing} onChange={e => setOctopusSpacing(e.target.value)} step="0.1" className={inputClass} />
+                                <Field label="Grid Spacing (Bohr)" hint="Smaller = more accurate, more RAM">
+                                    <input type="number" value={octopusSpacing} onChange={e => setOctopusSpacing(e.target.value)} step="0.05" min="0.1" className={inputClass} />
                                 </Field>
-                                <Field label="Box Radius">
+                                <Field label="Box Radius (Bohr)">
                                     <input type="number" value={octopusRadius} onChange={e => setOctopusRadius(e.target.value)} step="0.5" className={inputClass} />
                                 </Field>
                             </div>
                             <Field label="Box Shape">
                                 <select value={octopusBoxShape} onChange={e => setOctopusBoxShape(e.target.value)} className={selectClass}>
-                                    <option value="sphere">Sphere</option>
+                                    <option value="sphere">Sphere (default)</option>
                                     <option value="cylinder">Cylinder</option>
                                     <option value="parallelepiped">Parallelepiped</option>
+                                    <option value="minimum">Minimum box (per-atom spheres)</option>
                                 </select>
                             </Field>
+                            <Field label="FD Derivatives Order" hint="4 = default; 6/8 for high-accuracy but slower">
+                                <select value={derivativesOrder} onChange={e => setDerivativesOrder(e.target.value as any)} className={selectClass}>
+                                    <option value="4">4th order (default)</option>
+                                    <option value="6">6th order (high accuracy)</option>
+                                    <option value="8">8th order (very high accuracy)</option>
+                                </select>
+                            </Field>
+                            <Field label="Non-Uniform Mesh (Curvilinear)" hint="Concentrates grid points near nuclei">
+                                <select value={curvMethod} onChange={e => setCurvMethod(e.target.value as any)} className={selectClass}>
+                                    <option value="uniform">Uniform (default)</option>
+                                    <option value="gygi">Gygi — non-uniform near atoms</option>
+                                </select>
+                            </Field>
+                            {curvMethod === 'gygi' && (
+                                <Field label="Gygi α" hint="Point concentration (0.1–1.0, typical 0.5)">
+                                    <input type="number" value={curvGygiAlpha} onChange={e => setCurvGygiAlpha(e.target.value)}
+                                        step="0.1" min="0.1" max="1.0" className={inputClass} />
+                                </Field>
+                            )}
+                            <label className="flex items-center gap-2 cursor-pointer" style={{ color: '#8892a4', fontSize: '12px' }}>
+                                <input type="checkbox" checked={doubleGrid} onChange={e => setDoubleGrid(e.target.checked)}
+                                    style={{ accentColor: '#00d4ff' }} />
+                                Double Grid (better pseudopotential accuracy)
+                            </label>
                         </Section>
 
                         {octopusCalcMode === 'td' && (
@@ -886,7 +925,7 @@ function DiracSolverView() {
                                         </div>
                                     </div>
                                 </div>
-                                <ResultsPanel result={result} />
+                                <ResultsPanel result={result} resultHistory={resultHistory} />
                             </div>
                         </div>
                     )

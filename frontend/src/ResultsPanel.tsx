@@ -760,7 +760,10 @@ function ResultsSummary({ result }: { result: PhysicsResult }) {
 
 // ─── Main Export ─────────────────────────────────────────────────
 
-export default function ResultsPanel({ result }: { result: PhysicsResult }) {
+export default function ResultsPanel({ result, resultHistory = {} }: {
+    result: PhysicsResult;
+    resultHistory?: Record<string, PhysicsResult>;
+}) {
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [genError, setGenError] = React.useState<string | null>(null);
 
@@ -812,7 +815,7 @@ export default function ResultsPanel({ result }: { result: PhysicsResult }) {
             {/* Adaptive view based on problem type */}
             {/* Priority: molecular > timeevolution > scattering > default boundstate */}
             {result.molecular ? (
-                <MolecularView result={result} />
+                <MolecularView result={result} resultHistory={resultHistory} />
             ) : result.timeEvolution ? (
                 <TimeEvolutionView result={result} />
             ) : result.scattering ? (
@@ -826,9 +829,17 @@ export default function ResultsPanel({ result }: { result: PhysicsResult }) {
 
 // ─── Molecular View ────────────────────────────────────────────────
 
-function MolecularView({ result }: { result: PhysicsResult }) {
+function MolecularView({ result, resultHistory = {} }: {
+    result: PhysicsResult;
+    resultHistory?: Record<string, PhysicsResult>;
+}) {
     const mol = result.molecular;
     const [selectedState, setSelectedState] = React.useState(0);
+    // Cross-mode persistent history
+    const gsResult: PhysicsResult | undefined =
+        (resultHistory['gs'] ?? resultHistory['molecular'] ?? (mol?.calcMode === 'gs' ? result : undefined)) as PhysicsResult | undefined;
+    const tdResult: PhysicsResult | undefined =
+        (resultHistory['td'] ?? (mol?.calcMode === 'td' ? result : undefined)) as PhysicsResult | undefined;
 
     if (!mol) return null;
 
@@ -847,10 +858,43 @@ function MolecularView({ result }: { result: PhysicsResult }) {
                     <LinePath xData={energy_ev} yData={cross_section} color="#00d4ff" strokeWidth={2}
                         xMin={0} xMax={eMax} yMin={0} yMax={csMax} />
                 </ChartContainer>
-                {/* TD Dipole Chart — if backend supplied time-domain data */}
+                {/* TD Dipole Chart */}
                 {mol.td_dipole && mol.td_dipole.time.length > 0 && (
                     <TdDipolePanel dipole={mol.td_dipole} />
                 )}
+                {/* ── GS Panels from history ── */}
+                {gsResult?.molecular && gsResult.molecular.energy_levels && gsResult.molecular.energy_levels.length > 0 && (() => {
+                    const gsMol = gsResult.molecular!;
+                    const gsLevels = gsMol.energy_levels || [];
+                    const gsHomo = gsMol.homo_energy;
+                    const gsLumo = gsMol.lumo_energy;
+                    const gsLMin = gsLevels.length ? Math.min(...gsLevels, gsHomo ?? 0) - 2 : -20;
+                    const gsLMax = gsLevels.length ? Math.max(...gsLevels, gsLumo ?? 0) + 2 : 2;
+                    return (
+                        <>
+                            <div style={{ padding: '5px 10px', background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: 6, fontSize: 10, color: '#00d4ff' }}>
+                                Ground State — from previous GS run
+                            </div>
+                            <ChartContainer title={`KS Energy Levels — ${gsMol.moleculeName} (eV)`}>
+                                <Axes xMin={0} xMax={1} yMin={gsLMin} yMax={gsLMax} yLabel="E (eV)" />
+                                {gsLevels.map((e, i) => {
+                                    const isH = gsHomo != null && Math.abs(e - gsHomo) < 0.001;
+                                    const isL = gsLumo != null && Math.abs(e - gsLumo) < 0.001;
+                                    const c = isH ? '#22c55e' : isL ? '#ef4444' : '#00d4ff';
+                                    const y = PAD.top + INNER_H - ((e - gsLMin) / ((gsLMax - gsLMin) || 1)) * INNER_H;
+                                    return (
+                                        <g key={i}>
+                                            <line x1={PAD.left + INNER_W * 0.15} x2={PAD.left + INNER_W * 0.85} y1={y} y2={y} stroke={c} strokeWidth={isH || isL ? 2 : 1} opacity={isH || isL ? 1 : 0.5} />
+                                            <text x={PAD.left + INNER_W * 0.87} y={y + 3} fill={c} fontSize={8}>{isH ? 'HOMO' : isL ? 'LUMO' : `n=${i}`}</text>
+                                            <text x={PAD.left + INNER_W * 0.13} y={y + 3} fill={c} fontSize={7} textAnchor="end">{e.toFixed(2)}</text>
+                                        </g>
+                                    );
+                                })}
+                            </ChartContainer>
+                        </>
+                    );
+                })()}
+                <VisItRenderPanel moleculeName={mol.moleculeName} />
             </div>
         );
     }
@@ -1102,6 +1146,35 @@ function MolecularView({ result }: { result: PhysicsResult }) {
             {mol.density_difference_1d && mol.density_difference_1d.x.length > 0 && (
                 <DensityDifferencePanel data={mol.density_difference_1d} />
             )}
+
+            {/* TD panels from history — shown in GS view if a prior TD run exists */}
+            {mol.calcMode === 'gs' && tdResult?.molecular && (() => {
+                const tdMol = tdResult.molecular!;
+                return (
+                    <>
+                        {tdMol.optical_spectrum && tdMol.optical_spectrum.energy_ev.length > 0 && (() => {
+                            const { energy_ev, cross_section } = tdMol.optical_spectrum!;
+                            const eMaxTd = Math.max(...energy_ev);
+                            const csMaxTd = Math.max(...cross_section);
+                            return (
+                                <>
+                                    <div style={{ padding: '5px 10px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 6, fontSize: 10, color: '#a78bfa' }}>
+                                        TD Results — from previous TD run
+                                    </div>
+                                    <ChartContainer title={`Optical Absorption Spectrum — ${tdMol.moleculeName}`}>
+                                        <Axes xMin={0} xMax={eMaxTd} yMin={0} yMax={csMaxTd} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
+                                        <LinePath xData={energy_ev} yData={cross_section} color="#a78bfa" strokeWidth={2}
+                                            xMin={0} xMax={eMaxTd} yMin={0} yMax={csMaxTd} />
+                                    </ChartContainer>
+                                </>
+                            );
+                        })()}
+                        {tdMol.td_dipole && tdMol.td_dipole.time.length > 0 && (
+                            <TdDipolePanel dipole={tdMol.td_dipole} />
+                        )}
+                    </>
+                );
+            })()}
 
             {/* VisIt 3D Rendering Panel */}
             <VisItRenderPanel moleculeName={mol.moleculeName} />

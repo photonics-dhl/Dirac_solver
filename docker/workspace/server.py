@@ -312,10 +312,33 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         spin = config.get("spinComponents", "unpolarized")
         extra_states_3d = int(config.get("octopusExtraStates", config.get("extraStates", 4)))
 
-        inp += f"XCFunctional = {xc_functional}\n"
+        # OEP/HF functionals use special Octopus variables (not libxc strings)
+        _OEP_MAP = {
+            "hartree_fock": ("hf_x", ""),
+            "oep_kli":      ("lda_x", "OEPLevel = kli"),
+            "oep_slater":   ("lda_x", "OEPLevel = slater"),
+        }
+        if xc_functional in _OEP_MAP:
+            _xc_mapped, _oep_line = _OEP_MAP[xc_functional]
+            inp += f"XCFunctional = {_xc_mapped}\n"
+            if _oep_line:
+                inp += f"{_oep_line}\n"
+        else:
+            inp += f"XCFunctional = {xc_functional}\n"
         inp += f"MixingScheme = {mixing_scheme}\n"
         if spin != "unpolarized":
             inp += f"SpinComponents = {spin}\n"
+
+        # Non-uniform / curvilinear mesh options
+        deriv_order = int(config.get("derivativesOrder", 4))
+        if deriv_order != 4:
+            inp += f"DerivativesOrder = {deriv_order}\n"
+        curv_method = config.get("curvMethod", "uniform")
+        if curv_method == "gygi":
+            inp += "CurvMethod = gygi\n"
+            inp += f"CurvGygiA = {float(config.get('curvGygiAlpha', 2.0))}\n"
+        if config.get("doubleGrid", False):
+            inp += "DoubleGrid = yes\n"
 
         if is_td:
             # TDDFT Delta-kick + output
