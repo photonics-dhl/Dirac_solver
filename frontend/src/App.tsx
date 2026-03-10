@@ -143,10 +143,21 @@ function DiracSolverView() {
     const [dockerStatus, setDockerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
     useEffect(() => {
-        fetch(`/api/mcp/health`)
-            .then(res => res.json())
-            .then(data => setDockerStatus(data.status === 'ok' ? 'online' : 'offline'))
-            .catch(() => setDockerStatus('offline'));
+        let attempts = 0;
+        const check = () => {
+            fetch(`/api/mcp/health`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'ok') { setDockerStatus('online'); }
+                    else if (attempts < 5) { attempts++; setTimeout(check, 3000); }
+                    else { setDockerStatus('offline'); }
+                })
+                .catch(() => {
+                    if (attempts < 5) { attempts++; setTimeout(check, 3000); }
+                    else { setDockerStatus('offline'); }
+                });
+        };
+        check();
     }, []);
 
     // Auto-determine picture
