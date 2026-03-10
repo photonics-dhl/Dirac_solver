@@ -1,339 +1,749 @@
-# Dirac Solver — UI User Guide
+# Dirac Solver — 用户操作指南
 
-> This guide explains every panel in the web interface, what each approximation method means, and how to perform post-processing visualizations step by step.
-
----
-
-## Table of Contents
-1. [Workflow Overview](#1-workflow-overview)
-2. [System Configuration](#2-system-configuration)
-3. [Periodic System Settings](#3-periodic-system-settings)
-4. [Mesh & Box Settings (including non-uniform grid)](#4-mesh--box-settings)
-5. [DFT Settings — XC Functional Reference](#5-dft-settings--xc-functional-reference)
-6. [TD Propagation Settings](#6-td-propagation-settings)
-7. [Post-Processing & Visualization](#7-post-processing--visualization)
-8. [Common Workflows](#8-common-workflows)
-9. [Troubleshooting](#9-troubleshooting)
+> **面向读者：** 对密度泛函理论（DFT）了解有限、希望快速上手本系统的物理/化学方向研究生。
+> 本指南用中文编写，逐项解释界面中每个参数的物理含义，以及如何一步一步完成计算与后处理。
 
 ---
 
-## 1. Workflow Overview
+## 📑 目录
+
+1. [系统总览与数据流](#1-系统总览与数据流)
+2. [DFT 基础：为什么这样做？](#2-dft-基础为什么这样做)
+3. [系统配置面板](#3-系统配置面板)
+4. [周期系统设置](#4-周期系统设置)
+5. [网格与计算盒子](#5-网格与计算盒子)
+6. [DFT 设置 — 交换关联泛函详解](#6-dft-设置--交换关联泛函详解)
+7. [含时演化（TD-DFT）设置](#7-含时演化td-dft设置)
+8. [自由电子探针模式](#8-自由电子探针模式)
+9. [结果面板与后处理](#9-结果面板与后处理)
+10. [VisIt 三维可视化](#10-visit-三维可视化)
+11. [典型工作流程示例](#11-典型工作流程示例)
+12. [常见错误与排查](#12-常见错误与排查)
+
+---
+
+## 1. 系统总览与数据流
+
+本系统通过以下流水线完成量子化学/固体物理计算：
 
 ```
-Configure panels → Initiate Computation → Wait for logs → View Results
+浏览器界面 (React, 5173)
+  → Zod 参数验证
+  → Node.js 编排器 (LangGraph, 3001)
+    → Python MCP 服务 (FastMCP, 8000, Docker)
+      → Octopus 14.0 二进制 (Docker 容器)
+        → static/info, wf-st*.y=0,z=0, density, td.general/
+    → VisIt 三维渲染 (仅本地 Windows 原生)
+  → 结果面板展示
 ```
 
-**Standard GS → TD workflow:**
-1. Set molecule, XC functional, grid spacing
-2. Run **Ground State** (`gs`) — verifies convergence, shows KS levels, wavefunction slices
-3. Switch calc mode to **Time-Dependent** (`td`) — reads the GS restart files automatically  
-4. Run TD — shows optical absorption spectrum and dipole moment time series  
-5. All previous GS/TD results persist in the Results panel until page reload
+**整体操作步骤：**
 
-> **Tip:** The Results panel remembers all past computation modes. After running GS then TD, you can still view GS wavefunctions alongside the TD optical spectrum.
+1. **配置参数** — 在左侧面板选择分子、计算模式、网格精度、交换关联泛函
+2. **点击"Initiate Computation"** — 参数经过 Zod 校验后发送到后端
+3. **观察日志流** — 实时 SSE 日志显示 SCF 迭代进度
+4. **查看结果面板** — 计算完成后自动显示本轮结果，历史结果保留
+5. **后处理** — 在结果面板中调整曲线样式、坐标轴范围、导出数据
+
+> **重要提示：** GS（基态）计算产生的重启文件是 TD（含时）计算的前提条件。请务必先运行 GS，确认"SCF converged"后再切换到 TD 模式。
 
 ---
 
-## 2. System Configuration
+## 2. DFT 基础：为什么这样做？
 
-### Dimensionality
-| Value | Meaning |
-|-------|---------|
-| `1D` | Model system with analytic potential (Harmonic, Square Well…) |
-| `2D` | Molecular geometry projected onto xy-plane |
-| `3D` | Full 3D real-space molecular DFT (primary production mode) |
+### 2.1 Kohn-Sham DFT 的思想
 
-### Calculation Mode
-| Mode | What it does |
+多电子系统的精确求解（≥3 个电子）计算量随电子数指数增长。DFT 的核心思想是：
+
+> 将 $N$ 个相互作用电子的多体问题，转化为 $N$ 个**独立**粒子在**有效势** $v_\mathrm{eff}(r)$ 中运动的单体问题。
+
+这 $N$ 个独立粒子满足 Kohn-Sham 方程：
+
+$$\left[-\frac{1}{2}\nabla^2 + v_\mathrm{eff}(\mathbf{r})\right]\psi_i(\mathbf{r}) = \varepsilon_i \psi_i(\mathbf{r})$$
+
+其中有效势由三部分构成：
+
+$$v_\mathrm{eff}(\mathbf{r}) = \underbrace{v_\mathrm{ext}(\mathbf{r})}_{\text{外部势（核-电子）}} + \underbrace{v_H(\mathbf{r})}_{\text{Hartree 势（电子-电子库仑）}} + \underbrace{v_{xc}(\mathbf{r})}_{\text{交换关联势（近似！）}}$$
+
+$v_{xc}$ 是整个 DFT 的近似核心，对应界面中"XC 泛函"的选择。
+
+### 2.2 自洽迭代（SCF）
+
+DFT 是自洽的：$v_\mathrm{eff}$ 依赖电子密度 $n(r)$，而 $n(r)$ 由 KS 轨道决定。
+求解过程是循环迭代的：
+
+```
+初始猜测密度 n₀
+  ↓ 计算 v_eff
+  ↓ 求解 KS 方程 → 新轨道 ψᵢ
+  ↓ 计算新密度 n_new
+  ↓ 混合 n_mix = (1-α)n_old + α·n_new
+  ↓ 检查收敛 |n_new - n_old| < threshold
+    → 收敛 → 输出 eigenvalues, 总能量
+    → 未收敛 → 继续迭代
+```
+
+界面日志中每一行含"SCF iteration"字样，即对应此循环的一次迭代。
+
+### 2.3 原子单位系统
+
+Octopus 默认使用原子单位（a.u. / Hartree 单位制）：
+
+| 量 | 原子单位 | SI 换算 |
+|----|---------|---------|
+| 长度 | 1 Bohr = $a_0$ | 0.529 Å |
+| 能量 | 1 Hartree = $E_h$ | 27.21 eV |
+| 时间 | 1 a.u. | 24.19 attoseconds |
+| 速度 | $c \approx 137.036$ a.u. | 光速 $c$ |
+
+界面中输入的"间距 Spacing"、"盒子半径 Radius"均为 Bohr，能量相关量为 Hartree。
+
+---
+
+## 3. 系统配置面板
+
+### 3.1 计算维度 (Dimensionality)
+
+| 选项 | 适用场景 |
+|------|---------|
+| **1D** | 模型系统（谐振子、无限深势阱等），用解析势代替真实原子 |
+| **2D** | 将分子坐标投影到 xy 平面，二维平面电子气模型 |
+| **3D** | 完整三维实空间分子 DFT，生产计算主模式 |
+
+> **新手建议：** 始终使用 **3D** 模式，配合真实分子（如 H₂、H₂O）进行计算。
+
+### 3.2 计算模式 (Calculation Mode)
+
+| 模式 | 英文名 | 作用 |
+|------|-------|-----|
+| **gs** | Ground State | 基态 DFT，自洽求解 KS 轨道、本征值、总能量、电子密度 |
+| **td** | Time-Dependent | 含时 TDDFT：在基态基础上施加外场，传播 KS 方程，计算光学吸收谱 |
+| **unocc** | Unoccupied | 计算未占据（虚）轨道，用于更精确的激发态分析 |
+| **opt** | Optimization | 弛豫原子位置，找到能量最小化的平衡构型 |
+| **em** | EM / Linear Response | 线性响应（Casida TDDFT），计算激发态极化率频率 |
+| **vib** | Vibrational | 有限差分法计算振动模式（红外光谱） |
+
+**典型流程：** `gs` → 确认收敛 → 切换 `td` → 运行 → 查看光学谱
+
+### 3.3 分子库
+
+系统内置以下体系（坐标单位：Bohr）：
+
+| 类别 | 系统 | 说明 |
+|------|------|------|
+| **原子** | H, He, Li, Na | 单原子伪势近似 |
+| **双原子** | H₂, LiH, CO, N₂ | 平衡键长 |
+| **多原子** | H₂O, NH₃, CH₄, C₂H₄, Benzene | 平衡构型，Bohr 坐标 |
+| **周期晶体** | Si (FCC), Al₂O₃ (刚玉) | 自动设置 PeriodicDimensions=3 和晶格矢量 |
+
+> 对于 Si 和 Al₂O₃，选择分子后系统会自动填入正确的晶格常数和布里渊区采样设置。
+
+---
+
+## 4. 周期系统设置
+
+### 4.1 周期维度 (Periodic Dimensions)
+
+| 值 | 边界条件 | 典型应用 |
+|----|---------|---------|
+| **0** | Dirichlet（ψ=0 at box edge） | 孤立分子、原子 |
+| **1** | x 方向周期 | 纳米线、一维链 |
+| **2** | xy 方向周期 | 二维材料、表面 |
+| **3** | 三维完全周期 | 体块晶体 |
+
+当设为 1/2/3 时，界面展开晶格常数和 k 点设置：
+
+### 4.2 晶格常数 a, b, c (Bohr)
+
+原始晶格矢量的长度。
+
+| 材料 | 参考值 (Bohr) |
 |------|-------------|
-| `gs` | Ground state DFT — SCF, eigenvalues, density, wavefunctions |
-| `td` | TDDFT propagation — delta-kick, dipole spectrum → optical absorption |
-| `unocc` | Diagonalizes unoccupied (virtual) KS states for deeper level analysis |
-| `opt` | Geometry optimization — relaxes atomic positions to minimum energy |
-| `em` | Electromagnetic / linear response (Casida TDDFT) |
-| `vib` | Vibrational modes via finite differences (IR spectra) |
+| Si (FCC 金刚石结构) | a = b = c = 10.263 |
+| Al₂O₃ (刚玉) | a = 9.071, b = 9.071, c = 24.956 |
+| 铜 (FCC) | a = b = c = 6.831 |
 
-### Molecule Library
+### 4.3 K 点网格 (K-Points Grid)
 
-| Symbol | System | Notes |
-|--------|--------|-------|
-| H, He, Li, Na | Isolated atoms | Single-site pseudo-atom |
-| H₂, LiH, CO, N₂ | Diatomics | Bond lengths in Bohr |
-| H₂O, NH₃, CH₄, C₂H₄ | Polyatomics | Equilibrium geometry, Bohr coords |
-| C₆H₆ (Benzene) | Aromatic | Planar D₆h, soft-core potentials |
-| Si | FCC diamond crystal | Requires PeriodicDimensions = 3, auto-set |
-| Al₂O₃ | Corundum (sapphire) | Requires PeriodicDimensions = 3, auto-set |
+Monkhorst-Pack 格式，如 `4 4 4`。
 
----
+| 情形 | 建议 |
+|------|------|
+| 孤立分子 | `1 1 1`（仅 Γ 点） |
+| 金属 | `8 8 8` 或更密 |
+| 半导体 | `4 4 4` – `6 6 6` |
+| 快速测试 | `2 2 2` |
 
-## 3. Periodic System Settings
-
-**Periodic Dimensions** controls Bloch boundary conditions:
-
-| Value | BCs | Use case |
-|-------|-----|---------|
-| 0 | Dirichlet (isolated) | Molecules, atoms |
-| 1 | Periodic in x only | 1D chains / nanowires |
-| 2 | Periodic in xy | 2D slabs / surfaces |
-| 3 | Fully periodic | Bulk crystals |
-
-**Lattice constants a, b, c** — primitive lattice vectors in Bohr. For Si (FCC diamond), defaults are pre-filled.
-
-**K-Points Grid** — Monkhorst-Pack sampling, e.g. `4 4 4`. Use `1 1 1` for molecules (Γ-point only). More k-points = higher accuracy but slower.
-
-> For periodic crystals (Si, Al₂O₃), selecting the molecule auto-sets `PeriodicDimensions = 3`.
+> **注意：** k 点数量增加会线性增加计算量，收敛测试是必要的。
 
 ---
 
-## 4. Mesh & Box Settings
+## 5. 网格与计算盒子
 
-### Grid Spacing
-The fundamental resolution parameter. **Smaller = more accurate, more RAM.**
+在 Octopus 中，KS 方程在实空间网格上用有限差分（FD）法求解。
+网格参数直接决定计算**精度**和**内存消耗**。
 
-| System | Recommended spacing |
-|--------|-------------------|
-| Isolated atom (H, He) | 0.40 Bohr |
-| Small molecule (H₂O, NH₃) | 0.25–0.30 Bohr |
-| Larger molecule (Benzene) | 0.20–0.25 Bohr |
-| Si bulk crystal | 0.15–0.20 Bohr |
-| High-accuracy benchmark | 0.10–0.15 Bohr |
+### 5.1 网格间距 (Grid Spacing, Bohr)
 
-RAM estimate: N ≈ (2×Radius/Spacing)³. For Radius=5, Spacing=0.3 → N ≈ 4913 grid points. Budget ≈ N × 8 bytes × num_states.
+最核心的精度参数。间距越小精度越高，所需内存越大。
 
-### Box Radius (Bohr)
-Half-width of the simulation box. Must be large enough that the wavefunction decays to zero at the boundary.
+$$N_\mathrm{total} \approx \left(\frac{2 \times R_\mathrm{box}}{\Delta x}\right)^3 \quad \text{(三维球形盒子)}$$
 
-| Molecule | Minimum radius |
-|---------|---------------|
-| H atom | 5 Bohr |
+| 体系 | 推荐间距 | 说明 |
+|------|---------|------|
+| H, He 原子 | 0.40 Bohr | 软赝势，可用较粗网格 |
+| H₂O, NH₃ | 0.25–0.30 Bohr | 平衡性能选择 |
+| Benzene | 0.20–0.25 Bohr | 较大分子，适当加密 |
+| Si 晶体 | 0.15–0.20 Bohr | 更精确晶格常数 |
+| 发表级基准 | 0.10–0.15 Bohr | 高精度，内存开销大 |
+
+**内存估算：** 假设 Radius=5 Bohr, Spacing=0.3 Bohr, 4 个 KS 态：
+- $N \approx (10/0.3)^3 \approx 37000$ 网格点
+- 内存 ≈ $37000 \times 8 \text{ bytes} \times 4 \text{ states} \approx 1.2 \text{ MB}$（可接受）
+
+> ⚠️ **OOM 风险：** Radius=10, Spacing=0.1 时 $N \approx 8 \times 10^6$，会耗尽 12 GB 内存限额。
+
+### 5.2 盒子半径 (Box Radius, Bohr)
+
+模拟盒子的半径（球形盒子）。需足够大使波函数在边界处衰减到零。
+
+| 分子 | 最小半径 |
+|------|---------|
+| H 原子 | 5 Bohr |
 | H₂ | 5–7 Bohr |
 | Benzene | 8–10 Bohr |
-| Periodic (Si) | Determined by LatticeVectors |
+| 周期系统 | 由晶格矢量决定，不使用此参数 |
 
-### Box Shape
-| Shape | Notes |
-|-------|-------|
-| Sphere | Default, uniform accuracy |
-| Cylinder | Good for linear molecules |
-| Parallelepiped | Required for periodic systems |
-| Minimum | Overlapping spheres around each atom — smallest volume, efficient |
+### 5.3 盒子形状 (Box Shape)
 
-### FD Derivatives Order
-Controls the finite-difference stencil accuracy.
+| 形状 | 说明 |
+|------|------|
+| **Sphere** | 默认，均匀精度，适合大多数分子 |
+| **Cylinder** | 适合线性分子（如 N₂、CO） |
+| **Parallelepiped** | 周期系统必须使用 |
+| **Minimum** | 各原子周围的球形叠加，体积最小，效率最高 |
 
-| Order | When to use |
-|-------|------------|
-| 4 (default) | Standard calculations |
-| 6 | Publications, bond lengths < 1 Bohr |
-| 8 | Benchmark accuracy, forces |
+### 5.4 有限差分阶数 (FD Derivatives Order)
 
-### Non-Uniform Mesh (Curvilinear) — Gygi Method
-The Gygi curvilinear transformation concentrates grid points near atomic nuclei where the wavefunction varies rapidly, while keeping fewer points in the interstitial region.
+控制微分格点模板的精度阶次：
 
-**When to use:**
-- Systems where hard cores (C, N, O) demand fine grids but outer regions are smooth
-- Reducing total grid count while maintaining accuracy near nuclei
+| 阶次 | 适用 |
+|------|------|
+| **4**（默认） | 标准计算，速度最快 |
+| **6** | 发表精度，键长 < 1 Bohr 的强键 |
+| **8** | 基准精度，力的计算 |
 
-**Gygi α parameter:** `0.1–1.0` (typical: `0.3–0.5`)
-- Higher α = stronger concentration near nuclei
-- `0.5` is a good starting point; increase if SCF converges poorly with uniform grid
+### 5.5 非均匀网格 — Gygi 曲线坐标法
 
-**Note:** Does not replace `DerivativesOrder` — both settings work together.
+Gygi 变换将网格点**集中在原子核附近**（波函数变化剧烈处），在外部区域稀疏采样，在保证精度的同时减少总网格点数。
 
-### Double Grid
-Enables a secondary fine grid for better evaluation of the ionic pseudopotential projectors. Recommended when using hard pseudopotentials (e.g. 1st-row atoms: C, N, O, F). Adds ~30% overhead.
+**Gygi α 参数：** `0.1–1.0`（典型值 `0.3–0.5`）
+
+- α 越大 → 近核聚集越强
+- 建议从 `0.5` 开始；若 SCF 收敛困难则降低
+
+**适用情形：**
+- 含有 C、N、O 等硬核的分子
+- 希望在保持精度的同时节省内存
+
+### 5.6 双重网格 (Double Grid)
+
+在赝势投影处使用第二套更细的辅助网格，减小赝势积分误差。
+
+- 适用于含第一行原子（C, N, O, F）的系统
+- 额外开销 ~30%，对总能量精度改善显著
 
 ---
 
-## 5. DFT Settings — XC Functional Reference
+## 6. DFT 设置 — 交换关联泛函详解
 
-The exchange-correlation (XC) functional is the key approximation in DFT. Selector is tiered: **Category → Preset → Optional override**.
+交换关联泛函 $E_{xc}[n]$ 是 DFT 中**唯一近似**的部分。选择合适的泛函对结果至关重要。
 
-### LDA — Local Density Approximation
+界面采用三层选择器：**类别 → 预设 → 手动覆盖**
 
-| Preset | Full name | When to use |
-|--------|----------|-------------|
-| `PZ81` (default) | Perdew-Zunger 1981 | Quick tests, atoms |
-| `PW92` | Perdew-Wang 1992 | Marginally more accurate LDA |
-| `VWN5` | Vosko-Wilk-Nusair | Standard in solid-state codes |
-| `X-only LDA` | Exchange only, no correlation | Diagnostic / special studies |
+### 6.1 泛函类别与"Jacob 阶梯"
 
-**Accuracy:** LDA systematically underestimates band gaps and lattice constants by ~5–10%.
+```
+精度 ↑   计算量 ↑
+─────────────────────────────────────────────────────────
+第5阶 | 双杂化泛函     RPA+MP2 (未实现)
+第4阶 | 杂化泛函       B3LYP, PBE0, HSE06
+第3阶 | Meta-GGA      SCAN, TPSS, M06-L
+第2阶 | GGA            PBE, BLYP, PBEsol
+第1阶 | LDA            PZ81, PW92, VWN5
+─────────────────────────────────────────────────────────
+精度 ↓   计算量 ↓
+```
 
-### GGA — Generalized Gradient Approximation
+越高阶精度越好，计算量越大。对于入门学习，**LDA 或 GGA-PBE** 是最佳起点。
 
-| Preset | Use case |
-|--------|---------|
-| **PBE** (recommended) | General-purpose, very widely validated |
-| **BLYP** | Molecular chemistry, thermochemistry |
-| **PBEsol** | Solids and surfaces (better lattice constants) |
-| **RPBE** | Chemisorption and surface reactions |
+### 6.2 LDA（局域密度近似）
 
-**Accuracy:** GGA corrects many LDA failures. PBE is the community default for solids; BLYP for molecules.
+假设每点的 $v_{xc}(\mathbf{r})$ 仅由**该点的局域密度** $n(\mathbf{r})$ 决定，使用均匀电子气的精确 XC 能量。
 
-### Meta-GGA — 3rd Rung
+| 预设 | 全名 | 适用 |
+|------|------|------|
+| **PZ81**（默认） | Perdew-Zunger 1981 | 快速测试、原子计算 |
+| **PW92** | Perdew-Wang 1992 | 稍高精度的 LDA |
+| **VWN5** | Vosko-Wilk-Nusair | 固态物理社区常用 |
+| **X-only** | 仅交换，无关联 | 诊断用途 |
 
-| Preset | Strength |
-|--------|---------|
-| **SCAN** | State-of-the-art; respects all exact constraints |
-| **TPSS** | Transition metals, magnetic systems |
-| **M06-L** | Main-group thermochemistry, barriers |
+**已知缺陷：**
+- 键长系统性偏短约 1–2%
+- 带隙低估 10–50%（硅 LDA 带隙 ≈ 0.5 eV，实验 1.1 eV）
+- 但总能量误差通常 < 5%，对结构研究仍有参考价值
 
-**Accuracy:** Meta-GGA improves atomization energies and band gaps over GGA. SCAN is often a first choice if you want beyond-GGA without the cost of hybrids.
+### 6.3 GGA（广义梯度近似）
 
-### Hybrid — Exact HF Exchange Mix
+在 LDA 基础上引入密度**梯度** $\nabla n(\mathbf{r})$ 的修正，克服了部分 LDA 缺陷。
 
-| Preset | HF fraction | Typical use |
-|--------|------------|-------------|
-| **B3LYP** | 20% | Organic chemistry, thermochemistry — most cited functional |
-| **PBE0 (PBEH)** | 25% | General solid state + molecules |
-| **HSE06** | 25% (screened) | Large-gap semiconductors; O(N) cost at large cell |
+| 预设 | 适用 |
+|------|------|
+| **PBE**（推荐） | 综合性最好，固态物理社区标准 |
+| **BLYP** | 有机分子热化学 |
+| **PBEsol** | 固体晶格常数更准确 |
+| **RPBE** | 化学吸附、表面反应 |
 
-**Note:** Hybrids require exact-exchange evaluation — roughly 5–30× slower than GGA. Use for final accurate results, not exploratory runs.
+**PBE vs LDA：** PBE 键长误差约 0.5–1%，带隙仍低估但优于 LDA。
 
-### Exact Exchange / OEP
-| Preset | Description |
-|--------|------------|
-| **Hartree-Fock** | Pure exchange, no correlation; reference for error analysis |
-| **KLI approximation** | Krieger-Li-Iafrate OEP; local version of exact exchange |
-| **Slater approximation** | Slater local approximation of exchange |
+### 6.4 Meta-GGA（第三阶梯）
 
-**Note:** OEP and HF are mapped internally to valid Octopus variables (`OEPLevel`). If you receive a parser error, use the manual override field with the exact libxc string.
+除密度和梯度外，还引入动能密度 $\tau(\mathbf{r}) = \frac{1}{2}\sum_i |\nabla\psi_i|^2$：
 
-### Manual Override
-Enter any valid libxc functional string directly, e.g.:
+| 预设 | 特点 |
+|------|------|
+| **SCAN** | 满足所有已知精确约束，近年最佳 meta-GGA |
+| **TPSS** | 过渡金属、磁性系统较好 |
+| **M06-L** | 主族热化学、活化能 |
+
+**适用场景：** 当 GGA-PBE 精度不足、计算资源不支持杂化泛函时，SCAN 是很好的折中选择。
+
+### 6.5 杂化泛函（第四阶梯）
+
+将一定比例的**精确 Hartree-Fock 交换能**混合入 GGA：
+
+$$E_{xc}^\mathrm{hybrid} = \alpha E_x^\mathrm{HF} + (1-\alpha) E_x^\mathrm{GGA} + E_c^\mathrm{GGA}$$
+
+| 预设 | HF 占比 α | 典型用途 |
+|------|-----------|---------|
+| **B3LYP** | 20% | 有机化学，文献引用最多 |
+| **PBE0/PBEH** | 25% | 固态物理+分子综合 |
+| **HSE06** | 25%（短程） | 半导体、大带隙材料 |
+
+> ⚠️ **计算开销：** 杂化泛函比 GGA 慢 5–30 倍，在本地 DEV 模式（12 GB RAM 限制）可能超时。建议先用 GGA 验证流程，再切换杂化泛函进行精确计算。
+
+### 6.6 精确交换 / OEP
+
+| 预设 | 说明 |
+|------|------|
+| **Hartree-Fock** | 纯 HF 交换（无关联），理论基准 |
+| **KLI** | Krieger-Li-Iafrate OEP，局域精确交换近似 |
+| **Slater** | Slater 交换平均近似 |
+
+这些在底层映射为 Octopus 的 `OEPLevel` 参数，无需手动填入。
+
+### 6.7 手动覆盖字段
+
+输入任意 libxc 字符串直接指定，例如：
 ```
 gga_x_pbe+gga_c_pbe
 mgga_x_scan+mgga_c_scan
 hyb_gga_xc_b3lyp
 ```
-Leave blank to use the preset above. Active functional is displayed below the override box.
+
+空白时使用上方预设。当前活跃泛函以青色 monospace 字体显示在字段下方。
+
+### 6.8 额外轨道数 (Extra States)
+
+即 Octopus 的 `ExtraStates` 参数：在占据 KS 轨道之上额外计算若干未占据轨道。
+
+| 用途 | 建议值 |
+|------|-------|
+| 普通基态 | 2–4 |
+| DOS 精度 | 4–8 |
+| 光吸收谱 | 8–15 |
+| 能带结构(unocc) | 15–30 |
 
 ---
 
-## 6. TD Propagation Settings (calcMode = `td`)
+## 7. 含时演化（TD-DFT）设置
 
-| Parameter | Meaning | Typical value |
-|-----------|---------|--------------|
-| Max Steps | Number of TD time steps | 200 (DEV) → 3000+ (production) |
-| Time Step | Δt in atomic units | 0.05 a.u. (stable) |
-| Propagator | Numerical integration scheme | AETRS (recommended) |
+TD-DFT 在基态 KS 轨道之上，在真实时间 $t$ 内传播：
 
-### Propagator options
-| Name | Description |
-|------|-------------|
-| AETRS | Approximated Enforced Time-Reversal Symmetry — best general choice |
-| ETRS | Exact time-reversal enforced — more expensive but very accurate |
-| exp0 | Simple exponential, 1st order — fast but less stable |
+$$i\frac{\partial}{\partial t}\psi_i(\mathbf{r}, t) = H_\mathrm{KS}[n(t)]\,\psi_i(\mathbf{r}, t)$$
 
-### What TD mode computes
-1. Runs GS first (if not already converged) to get ground-state KS orbitals
-2. Applies a delta-kick perturbation (direction: x by default)
-3. Propagates KS equations in time
-4. Parses `td.general/multipoles` → dipole moment `d(t)`
-5. FFT of `d(t)` → optical absorption `σ(ω)` via `oct-propagation_spectrum`
+系统对外场的响应（偶极矩随时间的变化）傅里叶变换后给出**光学吸收截面** $\sigma(\omega)$。
 
----
+### 7.1 基本参数
 
-## 7. Post-Processing & Visualization
+| 参数 | 含义 | DEV 建议值 | 生产建议值 |
+|------|------|-----------|----------|
+| **Max Steps** | TD 最大时间步数 | 200 | 3000–10000 |
+| **Time Step** (a.u.) | 每步时间间隔 Δt | 0.05 | 0.02–0.05 |
+| **Propagator** | 时间传播方案 | AETRS | AETRS |
 
-### Persistent History
-All computations (GS, TD, unocc…) are stored in session history. The Results panel uses all available data:
-- After GS: shows KS level diagram, wavefunction slices, SCF convergence, density, DOS
-- After TD: additionally shows optical absorption spectrum and TD dipole panels
-- Both GS and TD panels remain visible even after switching modes
+> **物理直觉：** 总传播时间 $T = N_\mathrm{steps} \times \Delta t$。光谱分辨率约为 $\Delta\omega \approx 2\pi/T$（类似傅里叶不确定性）。步数越多谱线越窄，特征越清晰。
 
-### KS Energy Level Diagram
-Shows Kohn-Sham orbital energies. HOMO is green, LUMO is red. The gap box is cyan-shaded.
+### 7.2 传播算法
 
-### SCF Convergence Chart
-log₁₀(ΔE) per iteration. A well-converged calculation shows a steep monotonic descent to below -5 or -6.
+| 算法 | 说明 |
+|------|------|
+| **AETRS** | 近似强制时间反演对称，最佳综合选择 |
+| **ETRS** | 精确时间反演对称，更贵但极高稳定性 |
+| **exp0** | 简单指数传播，一阶，代价低但精度有限 |
 
-### Wavefunction Slice ψₙ(x)
-1D cut along the x-axis at y=0, z=0. Generated by `OutputFormat = axis_x` in Octopus.
-- To view a different state: use the state selector buttons
+### 7.3 激发类型 (Excitation Type)
 
-### Electron Density n(x)
-Summed density from all occupied KS states, plotted as n(x) along x-axis.
+这是 TD 模式最重要的新增功能，对应不同的物理实验场景：
 
-### Density of States (DOS)
-Broadened eigenvalue spectrum. HOMO position marked as dashed green line.
+#### Delta 冲击 (delta)
+$$\mathcal{E}(t) = \kappa \cdot \delta(t)$$
 
-### Optical Absorption Spectrum (TD mode)
-σ(ω) in Å²/eV plotted vs. photon energy (eV). Peaks correspond to optical transition frequencies.
+- **物理图像：** 瞬时极宽带脉冲，同时激发**所有频率**的响应
+- **最适合：** 计算光学吸收谱 $\sigma(\omega)$（单次 TD 运行覆盖全频率）
+- **参数：** 冲击强度 $\kappa$（a.u.），偶极方向
+- **注意：** 振幅应足够小（< 0.01 a.u.），以保证线性响应有效
 
-### TD Dipole Moment d(t)
-Time-domain dipole response after delta-kick. Use axis selector (dₓ/d_y/d_z) to view different polarization components.
+#### 高斯脉冲 (gaussian)
+$$\mathcal{E}(t) = A \cdot e^{-\frac{(t-t_0)^2}{2\sigma^2}}$$
 
-### Band Structure (periodic systems)
-E(k) bands plotted along k-path. Fermi energy shown as dashed line. Available after GS or unocc calculation on periodic systems.
+- **物理图像：** 有限宽度的光脉冲，类似飞秒激光
+- **最适合：** 模拟超快光学实验；研究特定激发频段的非线性响应
+- **参数：**
+  - $A$：峰值振幅 (a.u.)
+  - $t_0$：脉冲中心时刻 (a.u.)（建议取 10–20 a.u. 使脉冲完整出现在时间窗口内）
+  - $\sigma$：脉冲宽度/标准差 (a.u.)（$\sigma = 5$ → 约 120 as 半高宽）
 
-### Charge Density Difference Δρ(x)
-Δρ = ρ_molecule − Σρ_atoms. Positive (green) = charge accumulation; negative (red) = depletion. Shows bonding character.
+#### 正弦波 (sin)
+$$\mathcal{E}(t) = A \cdot \sin(\omega t)$$
 
-### 3D Visualization via VisIt
+- **物理图像：** 单色激光，突然打开
+- **最适合：** 特定频率的共振研究；激光-物质相互作用模拟
+- **参数：** $\omega$（a.u.），`0.057 a.u. ≈ 1.55 eV`（近红外）
 
-**Prerequisites:**
-- VisIt 3.4.2 installed at `D:\Softwares_new\VisIt\LLNL\VisIt3.4.2\visit.exe` (as configured in `.env`)
-- A successful GS calculation must have been run first (produces `wf-st00001.y=0,z=0`, `density.y=0,z=0` in `@Octopus_docs/output/`)
+#### 连续波 (CW)
+$$\mathcal{E}(t) = A \cdot \cos(\omega t)$$
 
-**Plot types:**
-| Type | Input file | Notes |
-|------|-----------|-------|
-| Wavefunction 1D | `wf-st00001.y=0,z=0` | Fast matplotlib render |
-| Density 2D slice | `density.y=0,z=0` | Fast matplotlib render |
-| Density 3D isosurface | `density.y=0,z=0` | VisIt required |
+- **物理图像：** 连续激光，初始相位为余弦
+- **最适合：** 连续激发态驱动、稳态非平衡响应
 
-**Steps:**
-1. Run a GS calculation first 
-2. Verify `static/info` shows "SCF converged"
-3. In the Results panel, scroll to the VisIt section
-4. Select a plot type and click **▶ Render**
-5. Wait for the PNG image to appear (~3–10 seconds)
+### 7.4 偏振方向 (Polarization)
 
-**Troubleshooting VisIt:**
-- `Data file not found` → Run a GS calculation first
-- `VisIt not found` → Check `VISIT_EXE` in `.env`
-- `not_available` → VisIt executable path is wrong or VisIt is not installed
+| 选项 | Octopus 参数 | 适用 |
+|------|------------|------|
+| x-axis | `TDPolarizationDirection = 1` | 默认；沿键轴（对直线分子） |
+| y-axis | `TDPolarizationDirection = 2` | 面内垂直方向 |
+| z-axis | `TDPolarizationDirection = 3` | 面外方向 |
+
+> **实验对应：** 线偏振激光的偏振方向。对各向同性体系（球形），三个方向结果应相同。
 
 ---
 
-## 8. Common Workflows
+## 8. 自由电子探针模式
 
-### H₂ Ground State
-1. Molecule: H₂, Mode: gs, XC: LDA-PZ81
-2. Grid Spacing: 0.3, Radius: 6.0, Shape: Sphere
-3. Derivatives: 4th order, Mesh: Uniform
-4. Extra States: 2
-5. Click **Initiate Computation** → should converge in ~6–10 SCF iterations
+> 本功能为本系统独特功能，用于模拟高速自由电子束与材料的量子力学相互作用。
 
-### H₂ Optical Spectrum (TD)
-1. First run H₂ GS and confirm convergence
-2. Switch Mode to **td**, set Max Steps: 1000, Time Step: 0.05, Propagator: AETRS
-3. Click **Initiate Computation** — Octopus restarts from GS, propagates, then computes spectrum
-4. View optical absorption σ(ω) in the TD panel
+### 8.1 物理背景与可行性分析
 
-### H₂O Geometry Optimization
-1. Molecule: H₂O, Mode: opt, XC: GGA-PBE  
-2. Grid Spacing: 0.25, Radius: 7.0
-3. Run → relaxed geometry is printed in stdout log
+**场景：** 电子显微镜（EELS、STEM）或类 Smith-Purcell 辐射等实验中，高速自由电子掠过或穿过材料样品，与材料电子系统发生能量交换。
 
-### Si Band Structure (Bulk)
-1. Molecule: Si (auto-sets PeriodicDimensions=3 and FCC lattice vectors)
-2. Mode: gs, XC: GGA-PBE
-3. K-points: 4 4 4, Spacing: 0.2
-4. Run → band structure data available in Results if `unocc` or `band` output is configured
+**方案：** 将经典轨迹的电子探针作为随时间变化的外部势叠加到 TD-DFT 计算中。
+
+电子轨迹：
+
+$$\mathbf{r}_e(t) = (v \cdot t,\; y_0,\; z_0)$$
+
+探针势（非相对论 Coulomb，带正则化）：
+
+$$V_\mathrm{probe}(\mathbf{r}, t) = \frac{q_e}{|\mathbf{r} - \mathbf{r}_e(t)|_\epsilon} = \frac{q_e}{\sqrt{(x - v t)^2 + y_0^2 + z_0^2 + \epsilon}}$$
+
+其中 $\epsilon = 0.01$ 为奇点正则化项，$v = (v/c) \times 137.036$ a.u.。
+
+### 8.2 适用范围与限制
+
+| 方面 | 说明 |
+|------|------|
+| ✅ **适用范围** | $v/c < 0.9$，电子能量 < ~50 MeV 的非相对论区域 |
+| ✅ **可模拟** | 电子能量损失谱（EELS）主峰、等离激元激发 |
+| ⚠️ **近似** | 电子轨迹为经典直线（忽略近场散射偏转） |
+| ❌ **不适用** | 相对论效应（Zitterbewegung）、轫致辐射、契伦科夫辐射 |
+| ❌ **不适用** | Smith-Purcell 辐射（需 FDTD-PIC 代码，如 VSim） |
+
+### 8.3 界面参数说明
+
+在 TD 设置区勾选**"启用自由电子探针"**后展开：
+
+| 参数 | 物理意义 | 建议范围 |
+|------|---------|---------|
+| **速度 v/c** | 电子速度与光速之比 | 0.1–0.9 |
+| **探针电荷 (e)** | -1 = 电子探针，+1 = 正电子 | -1 |
+| **冲击参数 y₀ (Bohr)** | 电子束与 x 轴的垂直距离 | 1–5 Bohr（比材料半径大即为掠过型） |
+| **z₀ 偏移 (Bohr)** | z 方向偏移，通常 0 | 0 |
+
+### 8.4 工作流程
+
+1. **先运行基态 (gs)**，确认体系收敛
+2. 切换到 **TD 模式**
+3. 选择激发类型：
+   - 研究纯探针效应 → 选 `delta`（broadband baseline） + 开启探针
+   - 研究光场+电子束耦合 → 选 `gaussian` 或 `sin` + 开启探针
+4. 设置探针参数：v/c 建议 0.3–0.7，y₀ 建议 2–4 Bohr
+5. 运行 → 查看偶极矩时域响应 $d(t)$ 和光谱 $\sigma(\omega)$
+
+探针通过的时间尺度约 $t_\mathrm{pass} \approx 2 \times \mathrm{Radius} / v_\mathrm{a.u.}$，建议 TD 步数使总时间 > $3 \times t_\mathrm{pass}$。
 
 ---
 
-## 9. Troubleshooting
+## 9. 结果面板与后处理
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `Parser error: symbol 'oep_slater' used before being defined` | OEP XC names need Octopus OEPLevel syntax | Upgrade to latest server.py (auto-handled) — or use the Override field to enter `lda_x` |
-| `SCF did not converge in 0 iterations` | XC functional error or bad parameters | Fix XC functional; check Spacing ≤ 0.4 |
-| `Data file not found: wf-st00001.y=0,z=0` | GS not yet run or failed | Run a GS calculation first; verify "SCF converged" in logs |
-| `Memory error` / Octopus OOM | Grid too fine or box too large | Increase Spacing (e.g. 0.3→0.4) or decrease Radius |
-| `VisIt not found` | VISIT_EXE env var wrong | Set `VISIT_EXE=<path>` in `.env` |
-| `Computation complete` but 0 eigenvalues | GS failed before parsing | Check full log for Octopus error message |
-| Results panel empty after TD | TD ran but had no previous GS | Always run GS mode before TD |
+### 9.1 历史记录持久化
+
+所有计算结果（GS、TD、unocc 等）均保存在会话历史中，切换模式不会丢失。
+刷新浏览器页面会清空历史记录。
+
+**建议：** 在运行 TD 之前确认 GS 结果正常，不要刷新页面。
+
+### 9.2 Kohn-Sham 能级图 (KS Level Diagram)
+
+纵坐标为 KS 本征值（Hartree），横坐标为态序号。
+
+| 标记 | 颜色 | 含义 |
+|------|------|------|
+| HOMO | 绿色 | 最高占据轨道 |
+| LUMO | 红色 | 最低未占据轨道 |
+| 带隙区域 | 青色阴影 | HOMO-LUMO 能隙 $E_g$ |
+
+**DFT 带隙是低估的。** KS 带隙约为实验光学带隙的 50–80%（LDA/GGA），杂化泛函可改善。
+
+### 9.3 SCF 收敛曲线
+
+横坐标为迭代次数，纵坐标为 $\log_{10}|\Delta E|$（每步能量变化的绝对值对数）。
+
+- **良好收敛：** 单调下降，最终达到 -5 或更低
+- **震荡收敛：** 正常，表示 Broyden 混合正在稳定
+- **不收敛：** 停止下降或发散 → 尝试增大间距或更换 XC 泛函
+
+### 9.4 波函数切片 ψₙ(x)（WF Section）
+
+沿 x 轴（y=0, z=0）的一维截面。来自文件 `wf-st0000n.y=0,z=0`。
+
+**后处理控制：**
+
+- **态选择器（1–8）：** 选择要查看的 KS 态编号
+- **曲线颜色/宽度/线型：** 点击颜色方格更改颜色；点击宽度按钮（1/1.5/2.5px）；切换实线/虚线/点线
+- **坐标轴范围：** 输入 X min/max 和 Y min/max 限定显示区域；留空则自动缩放
+- **单位切换（Bohr/Å）：** 切换 x 轴坐标单位（1 Å = 1/0.529177 Bohr）
+- **↓ CSV 导出：** 下载当前态的 (x, ψ) 数据为 CSV 文件
+
+### 9.5 电子密度 n(x)（Density Section）
+
+所有占据态的叠加密度沿 x 轴的截面。
+
+- 支持坐标轴范围调整和 Bohr/Å 单位切换
+- CSV 导出
+
+### 9.6 态密度（DOS Section）
+
+能量展宽后的本征值频谱：$\mathrm{DOS}(E) = \sum_i \delta(E - \varepsilon_i)$（Lorentz 展宽）。
+
+- HOMO 位置以绿色垂直虚线标记
+- 支持曲线样式（颜色/宽度/线型）调整和坐标轴范围控制
+
+### 9.7 光学吸收谱（TD mode only）
+
+自 TD 运行后可用，显示：
+
+$$\sigma(\omega) = \frac{4\pi\omega}{c\kappa} \mathrm{Im}\left[\alpha(\omega)\right]$$
+
+- 峰位对应系统的光学跃迁频率（激发态能量）
+- 峰高对应跃迁偶极矩强度
+- **与实验对比：** 谱峰通常比实验蓝移 0.2–0.5 eV（LDA/GGA 缺陷）
+
+### 9.8 TD 偶极矩时域响应
+
+显示 $d_x(t), d_y(t), d_z(t)$。
+
+- Delta 激发后看到的是**自由感应衰减（FID）**信号
+- 高斯/CW 激发后看到的是模式的共振驱动响应
+
+### 9.9 能带结构（周期系统）
+
+对 Si、Al₂O₃ 等晶体运行 GS 后可显示 $E(\mathbf{k})$ 色散关系：
+
+- Fermi 能以虚线标记
+- 带隙位于 Fermi 能处（若系统为绝缘体/半导体）
+
+---
+
+## 10. VisIt 三维可视化
+
+### 10.1 前提条件
+
+| 要求 | 说明 |
+|------|------|
+| **先运行 GS** | 产生 `wf-st00001.y=0,z=0`、`density.y=0,z=0` |
+| **VisIt 安装（仅本地 Windows）** | 配置 `.env` 中 `VISIT_EXE` 路径 |
+
+> **云端说明：** 云服务器上 VisIt 未安装；`1D 波函数` 和 `2D 密度截面` 通过 matplotlib 渲染，无需 VisIt；`3D 等值面` 模式需要本地 VisIt。
+
+### 10.2 绘图类型
+
+| 类型 | 输入文件 | 渲染方式 |
+|------|---------|---------|
+| **1D 波函数** | `wf-st0000n.y=0,z=0` | matplotlib（无需 VisIt） |
+| **2D 密度截面** | `density.y=0,z=0` | matplotlib（无需 VisIt） |
+| **3D 密度等值面** | `density.y=0,z=0` | VisIt 必需 |
+
+### 10.3 高级控制面板
+
+点击"⚙ 高级控制"展开（按绘图类型显示不同控件）：
+
+| 控件 | 含义 |
+|------|------|
+| **KS 态编号（1–8）** | 选择要渲染的波函数态（1D 模式） |
+| **切片轴 / 切片位置** | 2D 模式下选择切片平面和法向坐标（Bohr） |
+| **等值面值** | 3D 密度等值面阈值（建议 0.001–0.05） |
+| **Colormap** | 颜色映射方案（hot/Blues/RdBu/viridis/jet 等） |
+
+### 10.4 操作步骤
+
+1. **运行 GS 计算**，确认日志显示"SCF converged"
+2. 滚动到结果面板的 **VisIt 渲染** 区域
+3. 选择绘图类型（1D / 2D / 3D）
+4. 根据需要展开高级控制，调整参数
+5. 点击 **▶ 渲染**，等待 3–10 秒（1D/2D）或 10–30 秒（3D VisIt）
+6. PNG 图像显示后，点击 **↓ PNG** 下载
+7. 标题行显示渲染耗时（ms）
+
+---
+
+## 11. 典型工作流程示例
+
+### 11.1 H₂ 基态（5 分钟入门）
+
+**目标：** 计算氢分子的 KS 本征值和基态波函数
+
+1. **系统配置：** 分子 = H₂，模式 = gs，维度 = 3D
+2. **网格：** 间距 = 0.3 Bohr，半径 = 6.0 Bohr，形状 = Sphere
+3. **DFT：** XC = LDA-PZ81，Extra States = 2
+4. **点击 Initiate Computation**
+5. 日志中观察 SCF 迭代，约 6–10 步后显示"SCF converged"
+6. 结果面板显示：2 个 KS 本征值，波函数（σ 成键轨道），电子密度
+
+**预期结果：** HOMO 约 -0.60 Hartree（实验 -0.585 H），总能量约 -1.10 Hartree
+
+---
+
+### 11.2 H₂O 光学吸收谱（GS → TD 完整流程）
+
+**目标：** 首先计算水分子基态，然后用 delta 激发获得全频光吸收谱。
+
+**第一步：运行基态**
+
+1. 分子 = H₂O，模式 = gs，XC = GGA-PBE
+2. 间距 = 0.25 Bohr，半径 = 7.0 Bohr
+3. Extra States = 8（TD 需要更多未占据态）
+4. 运行并确认 SCF 收敛
+
+**第二步：运行 TD-DFT**
+
+1. **不要刷新页面！** 切换模式 = td
+2. Max Steps = 1000，Time Step = 0.05 a.u.，Propagator = AETRS
+3. Excitation Type = **delta**（broadband，适合计算全谱）
+4. Polarization = x-axis，Amplitude = 0.01 a.u.
+5. 点击运行 → 观察实时日志（每 50 步输出一次）
+6. 完成后结果面板出现**光学吸收谱**
+
+**预期结果：** 第一个吸收峰约在 7–8 eV（H₂O 的 first singlet excitation ~7.5 eV，LDA 低估约 0.5 eV）
+
+---
+
+### 11.3 Si 带结构（周期晶体）
+
+1. 分子 = Si（自动设置周期维度=3）
+2. 模式 = gs，XC = GGA-PBE
+3. K 点 = `4 4 4`，间距 = 0.2 Bohr
+4. Extra States = 10
+5. 运行 → 完成后结果面板显示能带结构
+6. LDA 带隙约 0.5 eV（实验 1.1 eV，GGA 约 0.7 eV），可用后续 HSE06 修正
+
+---
+
+### 11.4 高斯脉冲激发（超快物理）
+
+**目标：** 模拟 100 as 飞秒脉冲激发 H₂ 的非平衡动力学。
+
+1. 先运行 H₂ GS（参见 11.1）
+2. 切换 TD 模式，激发类型 = **gaussian**
+3. $A$ = 0.05 a.u.（强场），$t_0$ = 20 a.u.（脉冲峰值在 20 a.u. ≈ 484 as），$\sigma$ = 5 a.u.（≈ 120 as 半高宽）
+4. Max Steps = 2000，时间覆盖 $0$–$100$ a.u.
+5. 观察 $d(t)$ 时域中高斯包络后的自由振荡（对应跃迁频率）
+
+---
+
+### 11.5 自由电子探针模拟（EELS 类实验）
+
+**场景：** 200 keV 电子束（约 $v/c \approx 0.69$）掠过 H₂ 分子（冲击参数 3 Bohr）。
+
+1. 先运行 H₂ GS
+2. 切换 TD，激发类型 = delta（提供频谱背景）
+3. 勾选**"启用自由电子探针"**
+4. v/c = 0.69，探针电荷 = -1，y₀ = 3.0 Bohr，z₀ = 0.0
+5. Max Steps = 500（探针经过时间约 $(2 \times 6) / (0.69 \times 137) \approx 0.13$ a.u.，远小于 25 a.u.）
+6. 查看偶极矩 $d(t)$：探针飞过时会看到偶极矩的瞬态扰动
+7. $|d(t)|$ 的谱峰对应体系的等离激元或带间跃迁频率
+
+---
+
+## 12. 常见错误与排查
+
+| 错误信息 | 原因 | 解决方法 |
+|---------|------|---------|
+| `SCF did not converge in 0 iterations` | XC 泛函字符串无效或网格太粗 | 检查 XC 泛函拼写；增大间距到 0.3–0.4 Bohr |
+| `Parser error: symbol 'oep_slater'` | 旧版 Octopus 不接受 libxc OEP 字符串 | 已自动处理，无需操作；或切换到 LDA 类别 |
+| `Data file not found: wf-st00001.y=0,z=0` | GS 未运行或 GS 失败 | 先运行 GS，确认"SCF converged" |
+| 内存溢出 / Octopus OOM | 网格太细或盒子太大 | 增大间距（如 0.2→0.3）或减小半径 |
+| `VisIt executable not found` | VISIT_EXE 路径不正确 | 检查本地 `.env` 中 `VISIT_EXE=` 配置 |
+| TD 光谱全为 0 或噪声 | TD 运行前 GS 未收敛，或 Extra States 太少 | 先确保 GS 成功；将 Extra States 增到 8+ |
+| 自由电子探针效果不明显 | 冲击参数太大（探针与分子距离太远） | 缩小 y₀（如 1–2 Bohr） |
+| `Computation complete` 但 0 eigenvalues | Octopus 输出格式变化，info 文件解析失败 | 查看完整日志寻找 Octopus 错误信息 |
+| SCF 震荡不收敛 | 混合方案不稳定，或步长过大 | 切换 Mixing = linear；或增大 Grid Spacing |
+
+---
+
+## 附录：参数速查表
+
+### 网格参数建议
+
+| 体系类型 | Spacing (Bohr) | Radius (Bohr) | Extra States |
+|---------|---------------|--------------|-------------|
+| H、He 原子 | 0.40 | 5.0 | 2 |
+| H₂、LiH | 0.30 | 6.0 | 4 |
+| H₂O、NH₃ | 0.25 | 7.0 | 6 |
+| Benzene | 0.20 | 10.0 | 8 |
+| Si (bulk) | 0.20 | — | 12 |
+| 快速测试 | 0.40 | 4.0 | 2 |
+
+### XC 泛函选择指南
+
+```
+目的                推荐泛函       原因
+────────────────────────────────────────────────
+快速入门测试         LDA-PZ81      最快，足够展示物理
+一般分子计算         GGA-PBE       收敛性好，社区标准
+有机分子化学         GGA-BLYP      热化学更准确
+固体材料             GGA-PBEsol    晶格常数更优
+精确分子结构         Hybrid-PBE0   接近实验键长
+半导体带隙           Hybrid-HSE06  克服带隙低估
+────────────────────────────────────────────────
+```
+
+### 原子单位换算快查
+
+| 量 | 1 a.u. = | 常用换算 |
+|----|---------|---------|
+| 长度 | 0.529177 Å | 1 Å = 1.889 Bohr |
+| 能量 | 27.2114 eV | 1 eV = 0.0367 H |
+| 时间 | 24.19 as | 1 fs = 41.34 a.u. |
+| 电场 | 5.142×10¹¹ V/m | 1 GV/m = 1.94×10⁻³ a.u. |
+| 速度 | $c$/137.036 | 光速 $c$ = 137.036 a.u. |

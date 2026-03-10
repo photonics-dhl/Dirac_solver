@@ -360,24 +360,59 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                 inp += f"TDDeltaStrength = {amplitude}\n"
                 inp += "TDDeltaKickTime = 0.0\n"
                 inp += f"TDPolarizationDirection = {polarization}\n\n"
+                
+                # Free electron probe alongside delta kick: needs its own %TDExternalFields block
+                if config.get("feProbeEnabled", False):
+                    fe_v   = float(config.get("feProbeVelocity", 0.5))
+                    fe_y0  = float(config.get("feProbeY0", 2.0))
+                    fe_z0  = float(config.get("feProbeZ0", 0.0))
+                    fe_q   = float(config.get("feProbeCharge", -1.0))
+                    c_au   = 137.036
+                    v_au   = fe_v * c_au
+                    expr = f"{fe_q}/sqrt((x - {v_au:.4f}*t)^2 + {fe_y0}^2 + {fe_z0}^2 + 0.01)"
+                    inp += "# ── Free Electron Probe potential ──\n"
+                    inp += "%TDExternalFields\n"
+                    inp += f"  scalar_potential | 1 | 0 | 0 | 1.0 | \"fe_probe\"\n"
+                    inp += "%\n"
+                    inp += "%TDFunctions\n"
+                    inp += f"  \"fe_probe\" | tdf_from_expr | \"{expr}\"\n"
+                    inp += "%\n\n"
             else:
                 # External field via %TDExternalFields + %TDFunctions
                 pol_vec = {1: "1 | 0 | 0", 2: "0 | 1 | 0", 3: "0 | 0 | 1"}[polarization]
-                inp += "%TDExternalFields\n"
-                inp += f"  electric_field | {pol_vec} | {amplitude} | \"td_pulse\"\n"
-                inp += "%\n"
-                inp += "%TDFunctions\n"
+                # Build the external fields block — may include both signal and probe
+                ext_fields = [f"  electric_field | {pol_vec} | {amplitude} | \"td_pulse\""]
+                td_funcs = []
                 if excitation_type == "gaussian":
                     sigma = float(config.get("tdGaussianSigma", 5.0))
                     t0    = float(config.get("tdGaussianT0",    10.0))
-                    inp += f"  \"td_pulse\" | tdf_gaussian | {sigma} | {t0} | {sigma}\n"
+                    td_funcs.append(f"  \"td_pulse\" | tdf_gaussian | {sigma} | {t0} | {sigma}")
                 elif excitation_type == "sin":
                     freq = float(config.get("tdSinFrequency", 0.057))
-                    inp += f"  \"td_pulse\" | tdf_from_expr | \"sin({freq}*t)\"\n"
+                    td_funcs.append(f"  \"td_pulse\" | tdf_from_expr | \"sin({freq}*t)\"")
                 elif excitation_type == "continuous_wave":
                     freq = float(config.get("tdSinFrequency", 0.057))
-                    inp += f"  \"td_pulse\" | tdf_from_expr | \"cos({freq}*t)\"\n"
+                    td_funcs.append(f"  \"td_pulse\" | tdf_from_expr | \"cos({freq}*t)\"")
+
+                # Append probe if enabled — combined into same %TDExternalFields block
+                if config.get("feProbeEnabled", False):
+                    fe_v   = float(config.get("feProbeVelocity", 0.5))
+                    fe_y0  = float(config.get("feProbeY0", 2.0))
+                    fe_z0  = float(config.get("feProbeZ0", 0.0))
+                    fe_q   = float(config.get("feProbeCharge", -1.0))
+                    c_au   = 137.036
+                    v_au   = fe_v * c_au
+                    expr = f"{fe_q}/sqrt((x - {v_au:.4f}*t)^2 + {fe_y0}^2 + {fe_z0}^2 + 0.01)"
+                    ext_fields.append(f"  scalar_potential | 1 | 0 | 0 | 1.0 | \"fe_probe\"")
+                    td_funcs.append(f"  \"fe_probe\" | tdf_from_expr | \"{expr}\"")
+
+                inp += "%TDExternalFields\n"
+                inp += "\n".join(ext_fields) + "\n"
+                inp += "%\n"
+                inp += "%TDFunctions\n"
+                inp += "\n".join(td_funcs) + "\n"
                 inp += "%\n\n"
+
             inp += "%TDOutput\n"
             inp += "  multipoles\n"
             inp += "  energy\n"

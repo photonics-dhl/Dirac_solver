@@ -112,6 +112,12 @@ function DiracSolverView() {
     const [tdGaussianSigma, setTdGaussianSigma] = useState('5.0');
     const [tdGaussianT0, setTdGaussianT0] = useState('10.0');
     const [tdSinFrequency, setTdSinFrequency] = useState('0.057');  // ~1.55 eV in a.u.
+    // Free electron probe (waveguide + electron beam)
+    const [feProbeEnabled, setFeProbeEnabled] = useState<boolean>(false);
+    const [feProbeVelocity, setFeProbeVelocity] = useState('0.5');   // v/c
+    const [feProbeY0, setFeProbeY0] = useState('2.0');               // impact parameter y₀ (Bohr)
+    const [feProbeZ0, setFeProbeZ0] = useState('0.0');               // z₀ offset (Bohr)
+    const [feProbeCharge, setFeProbeCharge] = useState('-1');        // charge in units of e
     const [octopusExtraStates, setOctopusExtraStates] = useState('4');
     const [mixingScheme, setMixingScheme] = useState('broyden');
     const [spinComponents, setSpinComponents] = useState('unpolarized');
@@ -246,6 +252,12 @@ function DiracSolverView() {
                 tdGaussianSigma: parseFloat(tdGaussianSigma),
                 tdGaussianT0: parseFloat(tdGaussianT0),
                 tdSinFrequency: parseFloat(tdSinFrequency),
+                // Free electron probe
+                feProbeEnabled,
+                feProbeVelocity: parseFloat(feProbeVelocity),
+                feProbeY0: parseFloat(feProbeY0),
+                feProbeZ0: parseFloat(feProbeZ0),
+                feProbeCharge: parseFloat(feProbeCharge),
                 octopusExtraStates: parseInt(octopusExtraStates),
                 xcFunctional: xcOverride.trim() || xcPreset,
                 mixingScheme,
@@ -787,6 +799,46 @@ function DiracSolverView() {
                                         <input type="number" value={tdSinFrequency} onChange={e => setTdSinFrequency(e.target.value)} step="0.001" className={inputClass} />
                                     </Field>
                                 )}
+                                {/* ── Free Electron Probe (Self-Consistent) ── */}
+                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid #1a2035' }}>
+                                    <label className="flex items-center gap-2 cursor-pointer mb-2" style={{ color: '#8892a4', fontSize: '12px' }}>
+                                        <input type="checkbox" checked={feProbeEnabled} onChange={e => setFeProbeEnabled(e.target.checked)}
+                                            style={{ accentColor: '#00d4ff' }} />
+                                        <span style={{ color: feProbeEnabled ? '#00d4ff' : '#8892a4', fontWeight: 500 }}>启用自由电子探针 (Free Electron Probe)</span>
+                                    </label>
+                                    {feProbeEnabled && (
+                                        <div className="rounded-lg p-3 space-y-2" style={{ background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)' }}>
+                                            <div className="text-[10px] mb-2" style={{ color: '#5a8fa8' }}>
+                                                经典电子束沿 x 轴传播，轨迹 <span style={{ fontFamily: 'monospace' }}>r_e(t) = (v·t, y₀, z₀)</span>。<br />
+                                                倾点势作为 TD 外场叠加：<span style={{ fontFamily: 'monospace' }}>V_probe = q/|r − r_e(t)|</span>。<br />
+                                                非相对论近似，适用于 v/c &lt; 0.9。
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Field label="速度 v/c" hint="0.1–0.99 (光速分数)">
+                                                    <input type="number" value={feProbeVelocity} onChange={e => setFeProbeVelocity(e.target.value)}
+                                                        step="0.05" min="0.01" max="0.99" className={inputClass} />
+                                                </Field>
+                                                <Field label="探针电荷 (e)" hint="-1 = 电子, +1 = 正电子">
+                                                    <input type="number" value={feProbeCharge} onChange={e => setFeProbeCharge(e.target.value)}
+                                                        step="1" className={inputClass} />
+                                                </Field>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Field label="冲击参数 y₀ (Bohr)" hint="电子束与 x 轴的垂直距离">
+                                                    <input type="number" value={feProbeY0} onChange={e => setFeProbeY0(e.target.value)}
+                                                        step="0.5" className={inputClass} />
+                                                </Field>
+                                                <Field label="z₀ 偏移 (Bohr)" hint="通常置 0">
+                                                    <input type="number" value={feProbeZ0} onChange={e => setFeProbeZ0(e.target.value)}
+                                                        step="0.5" className={inputClass} />
+                                                </Field>
+                                            </div>
+                                            <div className="text-[10px] px-2 py-1 rounded font-mono" style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                                                ⚠ 此模式需结合 Gaussian/CW 背景光场使用，独立 delta 模式下效果有限
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </Section>
                         )}
 
