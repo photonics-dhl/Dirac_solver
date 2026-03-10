@@ -215,7 +215,7 @@ export default function DevFlowDashboard() {
 
     const fetchState = useCallback(async () => {
         try {
-            const res = await axios.get('http://localhost:3001/api/dev-state');
+            const res = await axios.get('/api/dev-state');
             setDevState(res.data);
         } catch { /* backend offline */ }
     }, []);
@@ -228,7 +228,7 @@ export default function DevFlowDashboard() {
 
     const sendFeedback = async (instruction: string, targetNode?: string) => {
         try {
-            await axios.post('http://localhost:3001/api/dev-state/feedback', {
+            await axios.post('/api/dev-state/feedback', {
                 instruction, targetNode: targetNode || '',
             });
             setFeedbackStatus('✓ Sent');
