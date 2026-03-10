@@ -365,6 +365,7 @@ export default function DevFlowDashboard() {
         } else {
             // ── Dev Flow (generic) ──
             const gd = devState.graphDefinition;
+            if (!gd?.nodes) return { flowNodes: [] as Node[], flowEdges: [] as Edge[] };
             const completedNodes = new Set(devState.history?.map(h => h.node) || []);
             const positions = layoutNodes(gd.nodes.map(n => n.id), gd.edges, true);
 
