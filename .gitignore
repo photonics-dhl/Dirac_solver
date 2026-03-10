@@ -42,6 +42,11 @@ restart/
 # Test scripts (local dev only, not needed on cloud)
 test_*.js
 test_*.py
+# Cloud deployment helper scripts (local SSH scripts)
+deploy_cloud.py
+check_and_start_cloud.py
+cloud_status.py
+start_vite_cloud.py
 
 # Docker temp test run directories
 docker/workspace/test_oct*/
