@@ -27,6 +27,14 @@ done
 
 # ── 2. Node.js API server (src/server.ts) ─────────────────────────
 echo "[2/3] Starting Node.js API server on port 3001..."
+# Export .env vars into shell so process.env is populated regardless of dotenv version
+mkdir -p logs
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/.env"
+    set +a
+fi
 nohup npx ts-node src/server.ts > logs/node_api.log 2>&1 &
 echo $! > "$PID_DIR/node_api.pid"
 sleep 2
