@@ -347,12 +347,37 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 200)))
             td_dt = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05))
             propagator = config.get("octopusPropagator", "aetrs")
+            excitation_type = config.get("tdExcitationType", "delta")
+            polarization = int(config.get("tdPolarization", 1))  # 1=x, 2=y, 3=z
+            amplitude = float(config.get("tdFieldAmplitude", 0.01))
+
             inp += f"TDPropagator = {propagator}\n"
             inp += f"TDMaxSteps = {steps}\n"
             inp += f"TDTimeStep = {td_dt}\n"
-            inp += "TDDeltaStrength = 0.01\n"  # delta kick in atomic units (0.01 is standard)
-            inp += "TDDeltaKickTime = 0.0\n"   # kick at t=0
-            inp += "TDPolarizationDirection = 1\n\n"  # x-direction (isotropic avg: run 3 times; DEV: x only)
+
+            if excitation_type == "delta":
+                # Broadband delta-kick (best for optical spectra)
+                inp += f"TDDeltaStrength = {amplitude}\n"
+                inp += "TDDeltaKickTime = 0.0\n"
+                inp += f"TDPolarizationDirection = {polarization}\n\n"
+            else:
+                # External field via %TDExternalFields + %TDFunctions
+                pol_vec = {1: "1 | 0 | 0", 2: "0 | 1 | 0", 3: "0 | 0 | 1"}[polarization]
+                inp += "%TDExternalFields\n"
+                inp += f"  electric_field | {pol_vec} | {amplitude} | \"td_pulse\"\n"
+                inp += "%\n"
+                inp += "%TDFunctions\n"
+                if excitation_type == "gaussian":
+                    sigma = float(config.get("tdGaussianSigma", 5.0))
+                    t0    = float(config.get("tdGaussianT0",    10.0))
+                    inp += f"  \"td_pulse\" | tdf_gaussian | {sigma} | {t0} | {sigma}\n"
+                elif excitation_type == "sin":
+                    freq = float(config.get("tdSinFrequency", 0.057))
+                    inp += f"  \"td_pulse\" | tdf_from_expr | \"sin({freq}*t)\"\n"
+                elif excitation_type == "continuous_wave":
+                    freq = float(config.get("tdSinFrequency", 0.057))
+                    inp += f"  \"td_pulse\" | tdf_from_expr | \"cos({freq}*t)\"\n"
+                inp += "%\n\n"
             inp += "%TDOutput\n"
             inp += "  multipoles\n"
             inp += "  energy\n"

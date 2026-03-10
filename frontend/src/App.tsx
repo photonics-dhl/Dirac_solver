@@ -105,6 +105,13 @@ function DiracSolverView() {
     const [octopusTdSteps, setOctopusTdSteps] = useState('200');
     const [octopusTdTimeStep, setOctopusTdTimeStep] = useState('0.05');
     const [octopusPropagator, setOctopusPropagator] = useState('aetrs');
+    // TD external field
+    const [tdExcitationType, setTdExcitationType] = useState<'delta'|'gaussian'|'sin'|'continuous_wave'>('delta');
+    const [tdPolarization, setTdPolarization] = useState<'1'|'2'|'3'>('1');
+    const [tdFieldAmplitude, setTdFieldAmplitude] = useState('0.01');
+    const [tdGaussianSigma, setTdGaussianSigma] = useState('5.0');
+    const [tdGaussianT0, setTdGaussianT0] = useState('10.0');
+    const [tdSinFrequency, setTdSinFrequency] = useState('0.057');  // ~1.55 eV in a.u.
     const [octopusExtraStates, setOctopusExtraStates] = useState('4');
     const [mixingScheme, setMixingScheme] = useState('broyden');
     const [spinComponents, setSpinComponents] = useState('unpolarized');
@@ -233,6 +240,12 @@ function DiracSolverView() {
                 octopusTdSteps: parseInt(octopusTdSteps),
                 octopusTdTimeStep: parseFloat(octopusTdTimeStep),
                 octopusPropagator,
+                tdExcitationType,
+                tdPolarization: parseInt(tdPolarization),
+                tdFieldAmplitude: parseFloat(tdFieldAmplitude),
+                tdGaussianSigma: parseFloat(tdGaussianSigma),
+                tdGaussianT0: parseFloat(tdGaussianT0),
+                tdSinFrequency: parseFloat(tdSinFrequency),
                 octopusExtraStates: parseInt(octopusExtraStates),
                 xcFunctional: xcOverride.trim() || xcPreset,
                 mixingScheme,
@@ -728,7 +741,7 @@ function DiracSolverView() {
                                     <Field label="Max Steps">
                                         <input type="number" value={octopusTdSteps} onChange={e => setOctopusTdSteps(e.target.value)} className={inputClass} />
                                     </Field>
-                                    <Field label="Time Step">
+                                    <Field label="Time Step (a.u.)">
                                         <input type="number" value={octopusTdTimeStep} onChange={e => setOctopusTdTimeStep(e.target.value)} step="0.01" className={inputClass} />
                                     </Field>
                                 </div>
@@ -739,6 +752,41 @@ function DiracSolverView() {
                                         <option value="etrs">ETRS</option>
                                     </select>
                                 </Field>
+                                <Field label="Excitation Type" hint="类型: delta冲击/高斯脉冲/正弦/连续波">
+                                    <select value={tdExcitationType} onChange={e => setTdExcitationType(e.target.value as any)} className={selectClass}>
+                                        <option value="delta">Delta kick (broadband)</option>
+                                        <option value="gaussian">Gaussian pulse</option>
+                                        <option value="sin">Sine wave (monochromatic)</option>
+                                        <option value="continuous_wave">Continuous wave (CW)</option>
+                                    </select>
+                                </Field>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Field label="Polarization" hint="1=x  2=y  3=z">
+                                        <select value={tdPolarization} onChange={e => setTdPolarization(e.target.value as any)} className={selectClass}>
+                                            <option value="1">x-axis</option>
+                                            <option value="2">y-axis</option>
+                                            <option value="3">z-axis</option>
+                                        </select>
+                                    </Field>
+                                    <Field label="Amplitude (a.u.)">
+                                        <input type="number" value={tdFieldAmplitude} onChange={e => setTdFieldAmplitude(e.target.value)} step="0.001" className={inputClass} />
+                                    </Field>
+                                </div>
+                                {tdExcitationType === 'gaussian' && (
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Field label="Pulse center t₀ (a.u.)" hint="Peak time of Gaussian envelope">
+                                            <input type="number" value={tdGaussianT0} onChange={e => setTdGaussianT0(e.target.value)} step="1" className={inputClass} />
+                                        </Field>
+                                        <Field label="Pulse width σ (a.u.)" hint="Standard deviation of Gaussian">
+                                            <input type="number" value={tdGaussianSigma} onChange={e => setTdGaussianSigma(e.target.value)} step="0.5" className={inputClass} />
+                                        </Field>
+                                    </div>
+                                )}
+                                {(tdExcitationType === 'sin' || tdExcitationType === 'continuous_wave') && (
+                                    <Field label="Frequency ω (a.u.)" hint="0.057 a.u. ≈ 1.55 eV (visible)">
+                                        <input type="number" value={tdSinFrequency} onChange={e => setTdSinFrequency(e.target.value)} step="0.001" className={inputClass} />
+                                    </Field>
+                                )}
                             </Section>
                         )}
 

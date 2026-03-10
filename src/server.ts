@@ -362,15 +362,20 @@ function renderWithMatplotlib(inputPath: string, plotType: string, outputPng: st
 
 app.post('/api/physics/visualize', async (req, res) => {
     try {
-        const { plotType = 'wavefunction_1d', inputFile, isoValue, colormap } = req.body as {
+        const { plotType = 'wavefunction_1d', inputFile, isoValue, colormap, wfStateIndex } = req.body as {
             plotType?: 'wavefunction_1d' | 'density_2d' | 'density_3d';
             inputFile?: string;
             isoValue?: number;
             colormap?: string;
+            wfStateIndex?: number;
         };
 
+        // Build padded wavefunction filename from state index
+        const stateIdx = wfStateIndex ?? 1;
+        const wfFile = `wf-st${String(stateIdx).padStart(5, '0')}.y=0,z=0`;
+
         const defaultInputs: Record<string, string> = {
-            wavefunction_1d: path.join(OCTOPUS_OUTPUT_DIR, 'wf-st00001.y=0,z=0'),
+            wavefunction_1d: path.join(OCTOPUS_OUTPUT_DIR, wfFile),
             density_2d:      path.join(OCTOPUS_OUTPUT_DIR, 'density.y=0,z=0'),
             density_3d:      path.join(OCTOPUS_OUTPUT_DIR, 'density.y=0,z=0'),
         };

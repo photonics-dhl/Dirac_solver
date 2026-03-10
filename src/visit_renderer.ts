@@ -47,16 +47,23 @@ export function findVisItExe(explicitPath?: string): string | null {
     ].filter(Boolean) as string[];
 
     for (const candidate of candidates) {
-        // For absolute paths: check file existence; for bare names: assume PATH
+        // Absolute / relative path with separators — check file existence directly
         if (candidate.includes("\\") || candidate.includes("/")) {
             if (fs.existsSync(candidate)) {
                 _visitPath = candidate;
                 return candidate;
             }
         } else {
-            // Bare name — trust that it's on PATH; verified at render time
-            _visitPath = candidate;
-            return candidate;
+            // Bare name — verify it's actually on PATH via `which` (Linux/Mac) or `where` (Win)
+            try {
+                const { execSync } = require("child_process");
+                const cmd = process.platform === "win32" ? `where ${candidate}` : `which ${candidate}`;
+                execSync(cmd, { stdio: "ignore" });
+                _visitPath = candidate;
+                return candidate;
+            } catch {
+                // Not found on PATH
+            }
         }
     }
     _visitPath = null;
@@ -96,12 +103,29 @@ export async function renderWithVisIt(
 
         let stderr = "";
         let stdout = "";
+        let settled = false;
+        const settle = (r: VisItRenderResult) => {
+            if (!settled) { settled = true; resolve(r); }
+        };
+
         proc.stderr?.on("data", (d: Buffer) => { stderr += d.toString(); });
         proc.stdout?.on("data", (d: Buffer) => { stdout += d.toString(); });
 
+        // Catch ENOENT / permission errors so the server never crashes
+        proc.on("error", (err: NodeJS.ErrnoException) => {
+            clearTimeout(timer);
+            settle({
+                success: false,
+                reason: err.code === "ENOENT"
+                    ? `VisIt executable not found: "${resolvedExe}". VisIt works only on the Windows host — set VISIT_EXE in .env.`
+                    : `Failed to spawn VisIt: ${err.message}`,
+                durationMs: Date.now() - start,
+            });
+        });
+
         const timer = setTimeout(() => {
             proc.kill("SIGKILL");
-            resolve({
+            settle({
                 success: false,
                 reason: `VisIt timed out after ${timeoutMs}ms`,
                 stderr,
@@ -111,9 +135,6 @@ export async function renderWithVisIt(
 
         proc.on("close", (code) => {
             clearTimeout(timer);
-            // VisIt may append 0000 frame number: render.png → render0000.png
-            // when family mode is enabled (default). With s.family=0 it uses the
-            // exact name. Check both just in case.
             const baseName = outputPngPath.replace(/\.png$/i, "");
             const framedPath = `${baseName}0000.png`;
             const actualPath = fs.existsSync(outputPngPath)
@@ -123,7 +144,7 @@ export async function renderWithVisIt(
             if (actualPath) {
                 pngBase64 = fs.readFileSync(actualPath).toString("base64");
             }
-            resolve({
+            settle({
                 success: code === 0 && actualPath !== null,
                 pngPath: actualPath ?? undefined,
                 pngBase64,

@@ -98,7 +98,91 @@ const PAD = { top: 24, right: 16, bottom: 30, left: 44 };
 const INNER_W = CHART_W - PAD.left - PAD.right;
 const INNER_H = CHART_H - PAD.top - PAD.bottom;
 
-function ChartContainer({ title, children }: { title: string; children: React.ReactNode }) {
+// ─── Curve Style Controls ─────────────────────────────────────────
+const CURVE_COLORS = ['#00d4ff','#22c55e','#f59e0b','#a78bfa','#ef4444','#38bdf8','#fb923c'];
+interface CurveStyle { color: string; width: number; dash: string; }
+const DEFAULT_CURVE: CurveStyle = { color: '#00d4ff', width: 1.5, dash: 'none' };
+
+function CurveStyleBar({ style, onChange }: { style: CurveStyle; onChange: (s: CurveStyle) => void }) {
+    return (
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', padding: '4px 0' }}>
+            <span style={{ fontSize: 9, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>曲线</span>
+            {CURVE_COLORS.map(c => (
+                <div key={c} onClick={() => onChange({ ...style, color: c })}
+                    style={{ width: 12, height: 12, borderRadius: '50%', background: c, cursor: 'pointer',
+                        outline: style.color === c ? `2px solid ${c}` : '1px solid rgba(255,255,255,0.1)', outlineOffset: 1 }} />
+            ))}
+            <span style={{ fontSize: 9, color: '#4b5563', marginLeft: 4 }}>宽</span>
+            {[1, 1.5, 2.5].map(w => (
+                <button key={w} onClick={() => onChange({ ...style, width: w })}
+                    style={{ padding: '1px 5px', fontSize: 9, borderRadius: 3, cursor: 'pointer', border: 'none',
+                        background: style.width === w ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
+                        outline: style.width === w ? '1px solid rgba(0,212,255,0.35)' : '1px solid #1f2937',
+                        color: style.width === w ? '#00d4ff' : '#6b7280' }}>{w}px</button>
+            ))}
+            <span style={{ fontSize: 9, color: '#4b5563', marginLeft: 4 }}>线型</span>
+            {[['none', '—'], ['4,3', '- -'], ['2,2', '···']] .map(([v, l]) => (
+                <button key={v} onClick={() => onChange({ ...style, dash: v })}
+                    style={{ padding: '1px 5px', fontSize: 9, borderRadius: 3, cursor: 'pointer', border: 'none',
+                        background: style.dash === v ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
+                        outline: style.dash === v ? '1px solid rgba(0,212,255,0.35)' : '1px solid #1f2937',
+                        color: style.dash === v ? '#00d4ff' : '#6b7280' }}>{l}</button>
+            ))}
+        </div>
+    );
+}
+
+// ─── Axis Range Controls ─────────────────────────────────────────
+interface AxisRange { xMin: string; xMax: string; yMin: string; yMax: string; }
+const emptyRange: AxisRange = { xMin: '', xMax: '', yMin: '', yMax: '' };
+
+function AxisRangeBar({ range, onChange, unit, onUnitToggle }:
+    { range: AxisRange; onChange: (r: AxisRange) => void; unit?: 'bohr' | 'ang'; onUnitToggle?: () => void }
+) {
+    const inp = (val: string, ph: string, key: keyof AxisRange) => (
+        <input value={val} placeholder={ph} onChange={e => onChange({ ...range, [key]: e.target.value })}
+            style={{ width: 60, padding: '2px 5px', fontSize: 9, background: 'rgba(255,255,255,0.05)',
+                border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', outline: 'none' }} />
+    );
+    return (
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', padding: '4px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <span style={{ fontSize: 9, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>轴范围</span>
+            <span style={{ fontSize: 9, color: '#4b5563' }}>X:</span>
+            {inp(range.xMin, 'x 最小', 'xMin')}{inp(range.xMax, 'x 最大', 'xMax')}
+            <span style={{ fontSize: 9, color: '#4b5563' }}>Y:</span>
+            {inp(range.yMin, 'y 最小', 'yMin')}{inp(range.yMax, 'y 最大', 'yMax')}
+            {unit != null && onUnitToggle && (
+                <button onClick={onUnitToggle}
+                    style={{ marginLeft: 4, padding: '2px 7px', fontSize: 9, borderRadius: 3, cursor: 'pointer', border: 'none',
+                        background: 'rgba(0,212,255,0.12)', outline: '1px solid rgba(0,212,255,0.3)', color: '#00d4ff' }}>
+                    {unit === 'bohr' ? 'Bohr' : 'Å'}
+                </button>
+            )}
+        </div>
+    );
+}
+
+// Helper: apply axis range overrides
+function applyRange(auto: number, override: string): number {
+    if (override === '') return auto;
+    const v = parseFloat(override);
+    return isNaN(v) ? auto : v;
+}
+
+// ─── Export CSV helper ────────────────────────────────────────────
+function exportCSV(xData: number[], yData: number[], xLabel: string, yLabel: string, filename: string) {
+    const csv = [xLabel + ',' + yLabel, ...xData.map((x, i) => `${x},${yData[i] ?? ''}`)].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename + '.csv'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+function ChartContainer({ title, children, exportData }: {
+    title: string;
+    children: React.ReactNode;
+    exportData?: { x: number[]; y: number[]; xLabel: string; yLabel: string; filename: string };
+}) {
     return (
         <div style={{
             background: 'rgba(255,255,255,0.02)',
@@ -107,8 +191,16 @@ function ChartContainer({ title, children }: { title: string; children: React.Re
             padding: '8px',
             position: 'relative',
         }}>
-            <div style={{ fontSize: 10, color: '#6b7280', marginBottom: 4, fontWeight: 600, letterSpacing: '0.04em' }}>
-                {title}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, letterSpacing: '0.04em' }}>
+                    {title}
+                </div>
+                {exportData && (
+                    <button onClick={() => exportCSV(exportData.x, exportData.y, exportData.xLabel, exportData.yLabel, exportData.filename)}
+                        style={{ padding: '2px 6px', fontSize: 8, borderRadius: 3, cursor: 'pointer', border: 'none',
+                            background: 'rgba(255,255,255,0.05)', outline: '1px solid #1f2937', color: '#6b7280' }}
+                        title="导出 CSV">↓ CSV</button>
+                )}
             </div>
             <svg viewBox={`0 0 ${CHART_W} ${CHART_H}`} width={CHART_W} height={CHART_H} style={{ width: '100%', height: 'auto', display: 'block' }}>
                 {children}
@@ -849,14 +941,21 @@ function MolecularView({ result, resultHistory = {} }: {
         if (!energy_ev || energy_ev.length === 0) {
             return <div style={{ color: '#8892a4', fontSize: 12, padding: 20 }}>Waiting for spectral data…</div>;
         }
-        const eMax = Math.max(...energy_ev);
-        const csMax = Math.max(...cross_section);
+        const [specCurve, setSpecCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, width: 2 });
+        const [specRange, setSpecRange] = React.useState<AxisRange>(emptyRange);
+        const eMax = applyRange(Math.max(...energy_ev), specRange.xMax);
+        const csMax = applyRange(Math.max(...cross_section), specRange.yMax);
+        const eMin = applyRange(0, specRange.xMin);
+        const csMin = applyRange(0, specRange.yMin);
         return (
             <div style={{ display: 'grid', gap: 12 }}>
-                <ChartContainer title={`Optical Absorption Spectrum — ${mol.moleculeName}`}>
-                    <Axes xMin={0} xMax={eMax} yMin={0} yMax={csMax} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
-                    <LinePath xData={energy_ev} yData={cross_section} color="#00d4ff" strokeWidth={2}
-                        xMin={0} xMax={eMax} yMin={0} yMax={csMax} />
+                <CurveStyleBar style={specCurve} onChange={setSpecCurve} />
+                <AxisRangeBar range={specRange} onChange={setSpecRange} />
+                <ChartContainer title={`光学吸收谱 — ${mol.moleculeName}`}
+                    exportData={{ x: energy_ev, y: cross_section, xLabel: 'E(eV)', yLabel: 'sigma(A2/eV)', filename: `optical_spectrum_${mol.moleculeName}` }}>
+                    <Axes xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
+                    <LinePath xData={energy_ev} yData={cross_section} color={specCurve.color} strokeWidth={specCurve.width}
+                        xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} />
                 </ChartContainer>
                 {/* TD Dipole Chart */}
                 {mol.td_dipole && mol.td_dipole.time.length > 0 && (
@@ -998,63 +1097,88 @@ function MolecularView({ result, resultHistory = {} }: {
             })()}
 
             {/* Wavefunction chart — only if 1D slice data is available */}
-            {x.length > 0 && psi.length > 0 && (
-                <>
-                    {/* State selector */}
-                    {result.wavefunctions && result.wavefunctions.length > 1 && (
-                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                            {result.eigenvalues.map((ev, i) => (
-                                <button key={i} onClick={() => setSelectedState(i)}
-                                    style={{
-                                        padding: '3px 8px', fontSize: 10, borderRadius: 4, cursor: 'pointer', border: 'none',
-                                        background: selectedState === i ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
-                                        outline: selectedState === i ? '1px solid #00d4ff' : '1px solid #374151',
-                                        color: selectedState === i ? '#00d4ff' : '#8892a4',
-                                    }}>
-                                    n={i} ({ev.toFixed(3)} H)
-                                </button>
-                            ))}
+            {x.length > 0 && psi.length > 0 && (() => {
+                const [wfCurve, setWfCurve] = React.useState<CurveStyle>(DEFAULT_CURVE);
+                const [wfRange, setWfRange] = React.useState<AxisRange>(emptyRange);
+                const [wfUnit, setWfUnit] = React.useState<'bohr'|'ang'>('bohr');
+                const ANG = 0.529177; // 1 Bohr = 0.529177 Å
+                const xScaled = wfUnit === 'ang' ? x.map(v => v * ANG) : x;
+                const xMinS = applyRange(wfUnit === 'ang' ? xMin * ANG : xMin, wfRange.xMin);
+                const xMaxS = applyRange(wfUnit === 'ang' ? xMax * ANG : xMax, wfRange.xMax);
+                const psiYMin = applyRange(Math.min(...psi.filter(isFinite)), wfRange.yMin);
+                const psiYMax = applyRange(Math.max(...psi.filter(isFinite), 0.01), wfRange.yMax);
+                const psiSqYMax = applyRange(psiMax * 1.1, wfRange.yMax);
+                const xLabelU = wfUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
+                return (
+                    <>
+                        {/* State selector */}
+                        {result.wavefunctions && result.wavefunctions.length > 1 && (
+                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                                <span style={{ fontSize: 9, color: '#4b5563', marginRight: 2 }}>态选择 →</span>
+                                {result.eigenvalues.map((ev, i) => (
+                                    <button key={i} onClick={() => setSelectedState(i)}
+                                        style={{
+                                            padding: '3px 8px', fontSize: 10, borderRadius: 4, cursor: 'pointer', border: 'none',
+                                            background: selectedState === i ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
+                                            outline: selectedState === i ? '1px solid #00d4ff' : '1px solid #374151',
+                                            color: selectedState === i ? '#00d4ff' : '#8892a4',
+                                        }}>
+                                        n={i} ({ev.toFixed(3)} H)
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <CurveStyleBar style={wfCurve} onChange={setWfCurve} />
+                        <AxisRangeBar range={wfRange} onChange={setWfRange} unit={wfUnit} onUnitToggle={() => setWfUnit(u => u === 'bohr' ? 'ang' : 'bohr')} />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                            <ChartContainer title={`ψₙ(x) — 态 ${selectedState}`}
+                                exportData={{ x: xScaled, y: psi, xLabel: xLabelU, yLabel: 'psi', filename: `wavefunction_state${selectedState}` }}>
+                                <Axes xLabel={xLabelU} yLabel="ψ" xTicks={makeXTicks(xMinS, xMaxS, 5)}
+                                    yTicks={makeYTicks(psiYMin, psiYMax, 4)} />
+                                <LinePath xData={xScaled} yData={psi} color={wfCurve.color} strokeWidth={wfCurve.width}
+                                    xMin={xMinS} xMax={xMaxS} yMin={psiYMin} yMax={psiYMax} />
+                            </ChartContainer>
+                            <ChartContainer title={`|ψₙ(x)|² — 概率密度`}
+                                exportData={{ x: xScaled, y: psiSq, xLabel: xLabelU, yLabel: '|psi|^2', filename: `prob_density_state${selectedState}` }}>
+                                <Axes xLabel={xLabelU} yLabel="|ψ|²" xTicks={makeXTicks(xMinS, xMaxS, 5)}
+                                    yTicks={makeYTicks(0, psiSqYMax, 4)} />
+                                <LinePath xData={x} yData={scaledPot} color="#3f3f46" strokeWidth={1.5}
+                                    xMin={xMin} xMax={xMax} yMin={0} yMax={psiSqYMax} />
+                                <FillPath xData={xScaled} yData={psiSq} color={wfCurve.color}
+                                    xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
+                                <LinePath xData={xScaled} yData={psiSq} color={wfCurve.color} strokeWidth={wfCurve.width}
+                                    xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
+                            </ChartContainer>
                         </div>
-                    )}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                        <ChartContainer title={`ψₙ(x) — state ${selectedState}`}>
-                            <Axes xLabel="x (Bohr)" yLabel="ψ" xTicks={makeXTicks(xMin, xMax, 5)}
-                                yTicks={makeYTicks(Math.min(...psi.filter(isFinite)), Math.max(...psi.filter(isFinite), 0.01), 4)} />
-                            <LinePath xData={x} yData={psi} color="#00d4ff" xMin={xMin} xMax={xMax}
-                                yMin={Math.min(...psi.filter(isFinite))} yMax={Math.max(...psi.filter(isFinite), 0.01)} />
-                        </ChartContainer>
-                        <ChartContainer title={`|ψₙ(x)|² — Probability Density`}>
-                            <Axes xLabel="x (Bohr)" yLabel="|ψ|²" xTicks={makeXTicks(xMin, xMax, 5)}
-                                yTicks={makeYTicks(0, psiMax * 1.1, 4)} />
-                            {/* Potential overlay (scaled) */}
-                            <LinePath xData={x} yData={scaledPot} color="#3f3f46" strokeWidth={1.5}
-                                xMin={xMin} xMax={xMax} yMin={0} yMax={psiMax * 1.1} />
-                            <FillPath xData={x} yData={psiSq} color="#00d4ff"
-                                xMin={xMin} xMax={xMax} yMin={0} yMax={psiMax * 1.1} />
-                            <LinePath xData={x} yData={psiSq} color="#00d4ff"
-                                xMin={xMin} xMax={xMax} yMin={0} yMax={psiMax * 1.1} />
-                        </ChartContainer>
-                    </div>
-                </>
-            )}
+                    </>
+                );
+            })()}
 
             {/* Electron density n(x) */}
             {result.x_grid && result.x_grid.length > 0 && result.density_1d && result.density_1d.length > 0 && (() => {
                 const rho = result.density_1d!;
                 const xg = result.x_grid!;
-                const rhoMax = Math.max(...rho.filter(isFinite), 0.001);
+                const [rhoRange, setRhoRange] = React.useState<AxisRange>(emptyRange);
+                const [rhoUnit, setRhoUnit] = React.useState<'bohr'|'ang'>('bohr');
+                const ANG2 = 0.529177;
+                const xgS = rhoUnit === 'ang' ? xg.map(v => v * ANG2) : xg;
+                const rhoMax = applyRange(Math.max(...rho.filter(isFinite), 0.001) * 1.1, rhoRange.yMax);
+                const rhoXMin = applyRange(xgS[0], rhoRange.xMin);
+                const rhoXMax = applyRange(xgS[xgS.length - 1], rhoRange.xMax);
+                const xLabelR = rhoUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
                 return (
-                    <ChartContainer title="Electron Density n(x)">
-                        <Axes xLabel="x (Bohr)" yLabel="n(x) (a.u.)"
-                            xMin={xg[0]} xMax={xg[xg.length - 1]}
-                            yMin={0} yMax={rhoMax * 1.1} />
-                        <FillPath xData={xg} yData={rho} color="#f59e0b"
-                            xMin={xg[0]} xMax={xg[xg.length - 1]}
-                            yMin={0} yMax={rhoMax * 1.1} />
-                        <LinePath xData={xg} yData={rho} color="#f59e0b"
-                            xMin={xg[0]} xMax={xg[xg.length - 1]}
-                            yMin={0} yMax={rhoMax * 1.1} />
-                    </ChartContainer>
+                    <>
+                        <AxisRangeBar range={rhoRange} onChange={setRhoRange} unit={rhoUnit} onUnitToggle={() => setRhoUnit(u => u === 'bohr' ? 'ang' : 'bohr')} />
+                        <ChartContainer title="电子密度 n(x)"
+                            exportData={{ x: xgS, y: rho, xLabel: xLabelR, yLabel: 'n(x) a.u.', filename: 'electron_density' }}>
+                            <Axes xLabel={xLabelR} yLabel="n(x) (a.u.)"
+                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+                            <FillPath xData={xgS} yData={rho} color="#f59e0b"
+                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+                            <LinePath xData={xgS} yData={rho} color="#f59e0b"
+                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+                        </ChartContainer>
+                    </>
                 );
             })()}
 
@@ -1103,26 +1227,30 @@ function MolecularView({ result, resultHistory = {} }: {
             {/* Density of States */}
             {mol.dos_data && mol.dos_data.energy_ev.length > 0 && (() => {
                 const dd = mol.dos_data!;
-                const dosMax = Math.max(...dd.dos.filter(isFinite), 0.001);
-                const eMinDOS = Math.min(...dd.energy_ev.filter(isFinite));
-                const eMaxDOS = Math.max(...dd.energy_ev.filter(isFinite));
+                const [dosRange, setDosRange] = React.useState<AxisRange>(emptyRange);
+                const [dosCurve, setDosCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, color: '#a78bfa' });
+                const eMinDOS = applyRange(Math.min(...dd.energy_ev.filter(isFinite)), dosRange.xMin);
+                const eMaxDOS = applyRange(Math.max(...dd.energy_ev.filter(isFinite)), dosRange.xMax);
+                const dosMax = applyRange(Math.max(...dd.dos.filter(isFinite), 0.001) * 1.1, dosRange.yMax);
                 return (
-                    <ChartContainer title="Density of States (DOS)">
-                        <Axes xLabel="E (eV)" yLabel="DOS (states/H)"
-                            xMin={eMinDOS} xMax={eMaxDOS}
-                            yMin={0} yMax={dosMax * 1.1} />
-                        {homoEV != null && (() => {
-                            const pxH = PAD.left + ((homoEV - eMinDOS) / ((eMaxDOS - eMinDOS) || 1)) * INNER_W;
-                            return <line x1={pxH} x2={pxH} y1={PAD.top} y2={PAD.top + INNER_H}
-                                stroke="#22c55e" strokeWidth={1} strokeDasharray="4,3" opacity={0.7} />;
-                        })()}
-                        <FillPath xData={dd.energy_ev} yData={dd.dos} color="#8b5cf6"
-                            xMin={eMinDOS} xMax={eMaxDOS}
-                            yMin={0} yMax={dosMax * 1.1} />
-                        <LinePath xData={dd.energy_ev} yData={dd.dos} color="#a78bfa"
-                            xMin={eMinDOS} xMax={eMaxDOS}
-                            yMin={0} yMax={dosMax * 1.1} />
-                    </ChartContainer>
+                    <>
+                        <CurveStyleBar style={dosCurve} onChange={setDosCurve} />
+                        <AxisRangeBar range={dosRange} onChange={setDosRange} />
+                        <ChartContainer title="态密度 (DOS)"
+                            exportData={{ x: dd.energy_ev, y: dd.dos, xLabel: 'E(eV)', yLabel: 'DOS', filename: 'dos' }}>
+                            <Axes xLabel="E (eV)" yLabel="DOS (states/H)"
+                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+                            {homoEV != null && (() => {
+                                const pxH = PAD.left + ((homoEV - eMinDOS) / ((eMaxDOS - eMinDOS) || 1)) * INNER_W;
+                                return <line x1={pxH} x2={pxH} y1={PAD.top} y2={PAD.top + INNER_H}
+                                    stroke="#22c55e" strokeWidth={1} strokeDasharray="4,3" opacity={0.7} />;
+                            })()}
+                            <FillPath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color}
+                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+                            <LinePath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color} strokeWidth={dosCurve.width}
+                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+                        </ChartContainer>
+                    </>
                 );
             })()}
 
@@ -1305,9 +1433,11 @@ function DensityDifferencePanel({ data }: {
     );
 }
 
-// ─── VisIt Render Panel ────────────────────────────────────────────
+// ─── VisIt Render Panel (enhanced with slice/state/colormap controls) ─────────
 
 type VisItPlotType = 'wavefunction_1d' | 'density_2d' | 'density_3d';
+
+const COLORMAPS = ['hot', 'Blues', 'Purples', 'RdBu', 'viridis', 'jet'];
 
 function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
     const [plotType, setPlotType] = React.useState<VisItPlotType>('wavefunction_1d');
@@ -1315,11 +1445,19 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
     const [pngBase64, setPngBase64] = React.useState<string | null>(null);
     const [status, setStatus] = React.useState<'idle' | 'not_available' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+    const [showControls, setShowControls] = React.useState(false);
+    // Slice + advanced controls
+    const [wfState, setWfState] = React.useState(1);   // wavefunction state index (1-based)
+    const [sliceAxis, setSliceAxis] = React.useState<'x'|'y'|'z'>('z');
+    const [slicePos, setSlicePos] = React.useState('0.0');
+    const [colormap, setColormap] = React.useState('hot');
+    const [isoValue, setIsoValue] = React.useState('0.01');
+    const [durationMs, setDurationMs] = React.useState<number|null>(null);
 
     const PLOT_LABELS: Record<VisItPlotType, string> = {
-        wavefunction_1d: 'Wavefunction 1D',
-        density_2d:      'Density 2D slice',
-        density_3d:      'Density 3D isosurface',
+        wavefunction_1d: '波函数 1D',
+        density_2d:      '密度 2D切片',
+        density_3d:      '密度 3D等值面',
     };
 
     const handleRender = async () => {
@@ -1328,20 +1466,29 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
         setErrorMsg(null);
         setStatus('idle');
         try {
+            const body: Record<string, unknown> = {
+                plotType,
+                colormap,
+                isoValue: parseFloat(isoValue),
+            };
+            if (plotType === 'wavefunction_1d') {
+                body.wfStateIndex = wfState;
+            }
             const resp = await fetch(`${API_BASE}/api/physics/visualize`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plotType }),
+                body: JSON.stringify(body),
             });
             const data = await resp.json();
             if (data.status === 'ok' && data.pngBase64) {
                 setPngBase64(data.pngBase64);
+                setDurationMs(data.durationMs ?? null);
             } else if (data.status === 'not_available') {
                 setStatus('not_available');
                 setErrorMsg(data.reason);
             } else {
                 setStatus('error');
-                setErrorMsg(data.reason || 'VisIt render failed');
+                setErrorMsg(data.reason || '渲染失败');
             }
         } catch (e: any) {
             setStatus('error');
@@ -1351,23 +1498,30 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
         }
     };
 
+    const btnStyle = (active: boolean) => ({
+        padding: '3px 8px', fontSize: 10, borderRadius: 4, cursor: 'pointer', border: 'none',
+        background: active ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.04)',
+        outline: active ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
+        color: active ? '#00d4ff' : '#8892a4',
+    } as React.CSSProperties);
+
     return (
-        <div style={{
-            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: 8, padding: 12
-        }}>
-            <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                3D Visualization  <span style={{ color: '#3f3f46', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>via VisIt</span>
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 12 }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    3D 可视化  <span style={{ color: '#3f3f46', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>via VisIt / matplotlib</span>
+                    {durationMs && <span style={{ color: '#4b5563', fontWeight: 400 }}>  {durationMs}ms</span>}
+                </div>
+                <button onClick={() => setShowControls(s => !s)} style={{ ...btnStyle(showControls), padding: '2px 7px', fontSize: 9 }}>
+                    {showControls ? '隐藏控制' : '⚙ 高级控制'}
+                </button>
             </div>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+
+            {/* Plot type buttons */}
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
                 {(Object.keys(PLOT_LABELS) as VisItPlotType[]).map(pt => (
-                    <button key={pt} onClick={() => setPlotType(pt)}
-                        style={{
-                            padding: '3px 8px', fontSize: 10, borderRadius: 4, cursor: 'pointer', border: 'none',
-                            background: plotType === pt ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.04)',
-                            outline: plotType === pt ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
-                            color: plotType === pt ? '#00d4ff' : '#8892a4',
-                        }}>
+                    <button key={pt} onClick={() => setPlotType(pt)} style={btnStyle(plotType === pt)}>
                         {PLOT_LABELS[pt]}
                     </button>
                 ))}
@@ -1379,29 +1533,80 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
                         outline: '1px solid rgba(0,212,255,0.3)',
                         color: loading ? '#4b5563' : '#00d4ff', fontWeight: 600,
                     }}>
-                    {loading ? 'Rendering…' : '▶ Render'}
+                    {loading ? '渲染中…' : '▶ 渲染'}
                 </button>
+                {pngBase64 && (
+                    <button onClick={() => {
+                        const a = document.createElement('a'); a.href = `data:image/png;base64,${pngBase64}`;
+                        a.download = `render_${plotType}_${moleculeName}.png`; a.click();
+                    }} style={{ ...btnStyle(false), fontSize: 9 }}>↓ PNG</button>
+                )}
             </div>
 
+            {/* Advanced controls panel */}
+            {showControls && (
+                <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, padding: 10, marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10 }}>
+                    {plotType === 'wavefunction_1d' && (
+                        <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                            波函数态 n (1-8)
+                            <input type="number" min={1} max={8} value={wfState} onChange={e => setWfState(parseInt(e.target.value) || 1)}
+                                style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 60 }} />
+                        </label>
+                    )}
+                    {plotType === 'density_2d' && (
+                        <>
+                            <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                                切片轴
+                                <select value={sliceAxis} onChange={e => setSliceAxis(e.target.value as any)}
+                                    style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(0,0,0,0.4)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6' }}>
+                                    <option value="x">x 轴</option>
+                                    <option value="y">y 轴</option>
+                                    <option value="z">z 轴</option>
+                                </select>
+                            </label>
+                            <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                                切片位置 (Bohr)
+                                <input type="number" value={slicePos} onChange={e => setSlicePos(e.target.value)} step="0.5"
+                                    style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 80 }} />
+                            </label>
+                        </>
+                    )}
+                    {plotType === 'density_3d' && (
+                        <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                            等值面阈值
+                            <input type="number" value={isoValue} onChange={e => setIsoValue(e.target.value)} step="0.001"
+                                style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 80 }} />
+                        </label>
+                    )}
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                        色图 (colormap)
+                        <select value={colormap} onChange={e => setColormap(e.target.value)}
+                            style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(0,0,0,0.4)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6' }}>
+                            {COLORMAPS.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </label>
+                </div>
+            )}
+
             {status === 'not_available' && (
-                <div style={{ marginTop: 10, fontSize: 11, color: '#eab308', background: 'rgba(234,179,8,0.06)', border: '1px solid rgba(234,179,8,0.2)', borderRadius: 6, padding: '6px 10px' }}>
+                <div style={{ fontSize: 11, color: '#eab308', background: 'rgba(234,179,8,0.06)', border: '1px solid rgba(234,179,8,0.2)', borderRadius: 6, padding: '6px 10px' }}>
                     ⚠ {errorMsg}
                 </div>
             )}
             {status === 'error' && (
-                <div style={{ marginTop: 10, fontSize: 11, color: '#ef4444', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 6, padding: '6px 10px' }}>
+                <div style={{ fontSize: 11, color: '#ef4444', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 6, padding: '6px 10px' }}>
                     ✗ {errorMsg}
                 </div>
             )}
             {pngBase64 && (
                 <div style={{ marginTop: 10 }}>
-                    <img src={`data:image/png;base64,${pngBase64}`} alt={`VisIt render: ${moleculeName}`}
+                    <img src={`data:image/png;base64,${pngBase64}`} alt={`渲染: ${moleculeName}`}
                         style={{ maxWidth: '100%', borderRadius: 6, border: '1px solid rgba(255,255,255,0.06)' }} />
                 </div>
             )}
             {status === 'idle' && !pngBase64 && !loading && (
-                <div style={{ marginTop: 8, fontSize: 10, color: '#374151' }}>
-                    Select a plot type and click Render. Requires VisIt installed on Windows host.
+                <div style={{ fontSize: 10, color: '#374151' }}>
+                    选择类型后点击渲染。1D/2D使用matplotlib，3D等值面需要Windows主机上的VisIt。
                 </div>
             )}
         </div>
