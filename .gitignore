@@ -39,8 +39,14 @@ restart/
 !@Octopus_docs/output/td/.gitkeep
 !@Octopus_docs/output/renders/.gitkeep
 
+# Test scripts (local dev only, not needed on cloud)
+test_*.js
+test_*.py
+
 # Docker temp test run directories
 docker/workspace/test_oct*/
+docker/workspace/test_*.py
+docker/workspace/test_out.txt
 docker/workspace/__pycache__/
 
 # ─── Development state / logs (machine-local, not useful in git) ───
