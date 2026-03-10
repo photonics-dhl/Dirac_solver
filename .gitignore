@@ -59,6 +59,9 @@ computation_log.md
 dev_state.json
 latest_api_output.json
 debug_output_dirac.json
+logs/
+# ─── Windows path artifacts (created by git on Linux) ──────────────
+e:/
 
 # ─── AI / editor metadata ──────────────────────────────────────────
 .cobridge
