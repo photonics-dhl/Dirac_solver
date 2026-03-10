@@ -63,7 +63,49 @@ MOLECULES = {
         " 'H' | 0.000000 | -2.484000 | 0.000000 ",
         " 'H' |-2.151214 | -1.242000 | 0.000000 ",
         " 'H' |-2.151214 |  1.242000 | 0.000000 "
-    ]
+    ],
+    # ── New molecules added 2026-03 ──
+    "CO": [
+        " 'C' | 0.0 | 0.0 | -1.066 ",
+        " 'O' | 0.0 | 0.0 |  1.066 ",
+    ],
+    "H2O": [
+        " 'O' | 0.0    | 0.0 |  0.0   ",
+        " 'H' | 1.430  | 0.0 | -1.107 ",
+        " 'H' |-1.430  | 0.0 | -1.107 ",
+    ],
+    "NH3": [
+        " 'N' | 0.0    |  0.000 |  0.0   ",
+        " 'H' | 0.0    |  1.771 | -0.627 ",
+        " 'H' | 1.533  | -0.886 | -0.627 ",
+        " 'H' |-1.533  | -0.886 | -0.627 ",
+    ],
+    "C2H4": [
+        " 'C' | 0.0    |  0.0  |  1.261 ",
+        " 'C' | 0.0    |  0.0  | -1.261 ",
+        " 'H' | 1.745  |  0.0  |  2.332 ",
+        " 'H' |-1.745  |  0.0  |  2.332 ",
+        " 'H' | 1.745  |  0.0  | -2.332 ",
+        " 'H' |-1.745  |  0.0  | -2.332 ",
+    ],
+    "Li": [" 'Li' | 0.0 | 0.0 | 0.0 "],
+    "Na": [" 'Na' | 0.0 | 0.0 | 0.0 "],
+    "LiH": [
+        " 'Li' | 0.0 | 0.0 | -1.511 ",
+        " 'H'  | 0.0 | 0.0 |  1.511 ",
+    ],
+    # Periodic crystals — use ReducedCoordinates in generate_inp()
+    "Si": [
+        " 'Si' | 0.0   | 0.0   | 0.0   ",
+        " 'Si' | 2.566 | 2.566 | 2.566 ",
+    ],
+    "Al2O3": [
+        " 'Al' | 0.0   | 0.0   |  2.263 ",
+        " 'Al' | 0.0   | 0.0   | -2.263 ",
+        " 'O'  | 2.386 | 0.0   |  0.0   ",
+        " 'O'  |-1.193 | 2.067 |  0.0   ",
+        " 'O'  |-1.193 |-2.067 |  0.0   ",
+    ],
 }
 
 # 2D coordinates (Bohr) — bond axes rotated into the xy-plane
@@ -99,6 +141,27 @@ MOLECULES_2D = {
         " 'H' | -2.151214 | -1.242000 ",
         " 'H' | -2.151214 |  1.242000 ",
     ],
+    # ── New molecules added 2026-03 ──
+    "CO":  [" 'C' | -1.066 | 0.0 ", " 'O' |  1.066 | 0.0 "],
+    "H2O": [" 'O' |  0.0   | 0.0 ", " 'H' |  1.430 | -1.107 ", " 'H' | -1.430 | -1.107 "],
+    "NH3": [
+        " 'N' |  0.0   |  0.0   ",
+        " 'H' |  1.771 | -0.627 ",
+        " 'H' | -0.886 | -0.627 ",
+    ],
+    "C2H4": [
+        " 'C' |  1.261 |  0.0   ",
+        " 'C' | -1.261 |  0.0   ",
+        " 'H' |  2.332 |  1.745 ",
+        " 'H' |  2.332 | -1.745 ",
+        " 'H' | -2.332 |  1.745 ",
+        " 'H' | -2.332 | -1.745 ",
+    ],
+    "Li":  [" 'Li' | 0.0 | 0.0 "],
+    "Na":  [" 'Na' | 0.0 | 0.0 "],
+    "LiH": [" 'Li' | -1.511 | 0.0 ", " 'H' |  1.511 | 0.0 "],
+    "Si":  [" 'Si' | 0.0 | 0.0 "],  # periodic: use ReducedCoordinates
+    "Al2O3": [" 'Al' | 0.0 | 0.0 ", " 'O' |  2.386 | 0.0 "],  # simplified
 }
 
 octopus_inp_template = Template("""CalculationMode = gs
@@ -171,15 +234,35 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         inp += "%Species\n"
         # Manual formula-based potential for common atoms to skip PSF files
         if "H" in molecule:
-            inp += "  'H' | species_user_defined | potential_formula | \"-1/sqrt(r^2+0.01)\" | valence | 1\n"
-        if "He" in molecule:
-            inp += "  'He' | species_user_defined | potential_formula | \"-2/sqrt(r^2+0.01)\" | valence | 2\n"
-        if "C" in molecule:
-            inp += "  'C' | species_user_defined | potential_formula | \"-4/sqrt(r^2+0.01)\" | valence | 4\n"
-        if "N" in molecule:
-            inp += "  'N' | species_user_defined | potential_formula | \"-5/sqrt(r^2+0.01)\" | valence | 5\n"
-        if "O" in molecule:
-            inp += "  'O' | species_user_defined | potential_formula | \"-6/sqrt(r^2+0.01)\" | valence | 6\n"
+            # Build species block — formula-based potentials for all present elements
+        elements_in_mol = set()
+        all_coords = custom_atoms if custom_atoms else (
+            MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
+        )
+        for line in all_coords:
+            import re as _re
+            m_sym = _re.search(r"'([A-Za-z]{1,2})'", line)
+            if m_sym:
+                elements_in_mol.add(m_sym.group(1))
+        # Hardcoded formula map: symbol -> (formula, valence)
+        FORMULA_MAP = {
+            "H":  ("-1/sqrt(r^2+0.01)",  1),
+            "He": ("-2/sqrt(r^2+0.01)",  2),
+            "Li": ("-1/sqrt(r^2+0.01)",  1),
+            "C":  ("-4/sqrt(r^2+0.01)",  4),
+            "N":  ("-5/sqrt(r^2+0.01)",  5),
+            "O":  ("-6/sqrt(r^2+0.01)",  6),
+            "Na": ("-1/sqrt(r^2+0.04)",  1),
+            "Si": ("-4/sqrt(r^2+0.01)",  4),
+            "Al": ("-3/sqrt(r^2+0.01)",  3),
+        }
+        for sym in sorted(elements_in_mol):
+            if sym in FORMULA_MAP:
+                formula_str, valence = FORMULA_MAP[sym]
+                inp += f"  '{sym}' | species_user_defined | potential_formula | \"{formula_str}\" | valence | {valence}\n"
+            else:
+                # Unknown element — use generic 1-electron approximation
+                inp += f"  '{sym}' | species_user_defined | potential_formula | \"-1/sqrt(r^2+0.1)\" | valence | 1\n"
         inp += "%\n\n"
 
         inp += "%Coordinates\n"
@@ -188,6 +271,40 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         # Explicitly disable external PSF requirement
         inp += "LCAOReadWeights = no\n\n"
+
+        # Periodic system support: LatticeVectors + KPoints
+        PERIODIC_CRYSTALS = {"Si", "Al2O3"}
+        periodic_dims = 3 if molecule in PERIODIC_CRYSTALS else int(config.get("periodicDimensions", 0))
+        if periodic_dims > 0:
+            inp += f"PeriodicDimensions = {periodic_dims}\n"
+            # Use provided latticeVectors or built-in defaults
+            lv = config.get("latticeVectors")
+            if not lv:
+                if molecule == "Si":
+                    lv = [[0.0, 5.132, 5.132], [5.132, 0.0, 5.132], [5.132, 5.132, 0.0]]
+                elif molecule == "Al2O3":
+                    lv = [[5.128, -2.564, 0.0], [0.0, 4.440, 0.0], [0.0, 0.0, 13.900]]
+                elif periodic_dims == 1:
+                    lv = [[float(config.get("latticeA", 10.0)), 0.0, 0.0]]
+                elif periodic_dims == 2:
+                    a = float(config.get("latticeA", 10.0))
+                    b = float(config.get("latticeB", 10.0))
+                    lv = [[a, 0.0, 0.0], [0.0, b, 0.0]]
+                else:
+                    a = float(config.get("latticeA", 10.0))
+                    b = float(config.get("latticeB", a))
+                    c = float(config.get("latticeC", a))
+                    lv = [[a, 0.0, 0.0], [0.0, b, 0.0], [0.0, 0.0, c]]
+            inp += "%LatticeVectors\n"
+            for v in lv:
+                inp += f"  {v[0]} | {v[1]} | {v[2]}\n"
+            inp += "%\n"
+            kgrid = config.get("kpointsGrid", "2 2 2")
+            k_parts = kgrid.replace(',', ' ').split()
+            inp += "%KPointsGrid\n"
+            inp += f"  {'  |  '.join(k_parts[:3])}\n"
+            inp += "%\n"
+            inp += "\n"
 
         # Optional: XC functional, mixing, spin from config
         xc_functional = config.get("xcFunctional", "lda_x+lda_c_pz")

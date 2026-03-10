@@ -96,9 +96,8 @@ function DiracSolverView() {
     const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D'>('octopus3D');
 
     // ── Octopus Parameters ──
-    const [octopusCalcMode, setOctopusCalcMode] = useState<'gs' | 'td' | 'unocc'>('gs');
+    const [octopusCalcMode, setOctopusCalcMode] = useState<'gs' | 'td' | 'unocc' | 'opt' | 'em' | 'vib'>('gs');
     const [octopusDimensions, setOctopusDimensions] = useState('3D');
-    const [octopusPeriodic, setOctopusPeriodic] = useState<'off' | 'x' | 'xy' | 'xyz'>('off');
     const [octopusSpacing, setOctopusSpacing] = useState('0.3');
     const [octopusRadius, setOctopusRadius] = useState('5.0');
     const [octopusBoxShape, setOctopusBoxShape] = useState('sphere');
@@ -107,9 +106,18 @@ function DiracSolverView() {
     const [octopusTdTimeStep, setOctopusTdTimeStep] = useState('0.05');
     const [octopusPropagator, setOctopusPropagator] = useState('aetrs');
     const [octopusExtraStates, setOctopusExtraStates] = useState('4');
-    const [xcFunctional, setXcFunctional] = useState('lda_x+lda_c_pz');
     const [mixingScheme, setMixingScheme] = useState('broyden');
     const [spinComponents, setSpinComponents] = useState('unpolarized');
+    // XC — tiered: category → preset + optional override
+    const [xcCategory, setXcCategory] = useState<string>('lda');
+    const [xcPreset, setXcPreset] = useState<string>('lda_x+lda_c_pz');
+    const [xcOverride, setXcOverride] = useState<string>('');
+    // Periodic systems
+    const [periodicDimensions, setPeriodicDimensions] = useState<'0'|'1'|'2'|'3'>('0');
+    const [kpointsGrid, setKpointsGrid] = useState<string>('2 2 2');
+    const [latticeA, setLatticeA] = useState<string>('10.263');
+    const [latticeB, setLatticeB] = useState<string>('10.263');
+    const [latticeC, setLatticeC] = useState<string>('10.263');
 
     // ── Potential Field (Local 1D) ──
     const [potentialType, setPotentialType] = useState('InfiniteWell');
@@ -212,7 +220,6 @@ function DiracSolverView() {
                 engineMode,
                 octopusDimensions,
                 calcMode: octopusCalcMode,
-                octopusPeriodic,
                 octopusSpacing: parseFloat(octopusSpacing),
                 octopusRadius: parseFloat(octopusRadius),
                 octopusBoxShape,
@@ -221,9 +228,14 @@ function DiracSolverView() {
                 octopusTdTimeStep: parseFloat(octopusTdTimeStep),
                 octopusPropagator,
                 octopusExtraStates: parseInt(octopusExtraStates),
-                xcFunctional,
+                xcFunctional: xcOverride.trim() || xcPreset,
                 mixingScheme,
                 spinComponents,
+                periodicDimensions,
+                kpointsGrid,
+                latticeA: parseFloat(latticeA),
+                latticeB: parseFloat(latticeB),
+                latticeC: parseFloat(latticeC),
             };
 
             const query = encodeURIComponent(JSON.stringify(config));
@@ -541,47 +553,71 @@ function DiracSolverView() {
                             <Field label="Dimensionality">
                                 <select value={octopusDimensions} onChange={e => setOctopusDimensions(e.target.value)} className={selectClass}>
                                     <option value="1D">1D — Model System</option>
-                                    <option value="2D">2D — Model System</option>
-                                    <option value="3D">3D — Molecular System</option>
+                                    <option value="2D">2D — Planar</option>
+                                    <option value="3D">3D — Molecular / Crystal</option>
                                 </select>
                             </Field>
                             <Field label="Calculation Mode">
                                 <select value={octopusCalcMode} onChange={e => setOctopusCalcMode(e.target.value as any)} className={selectClass}>
-                                    <option value="gs">Ground State (GS)</option>
-                                    <option value="td">Time-Dependent (TD)</option>
-                                    <option value="unocc">Unoccupied (激发态)</option>
-                                </select>
-                            </Field>
-
-                            <Field label="Periodic Boundary Conditions">
-                                <select
-                                    value={octopusPeriodic}
-                                    onChange={e => setOctopusPeriodic(e.target.value as any)}
-                                    className={selectClass}
-                                >
-                                    <option value="off">None (Dirichlet)</option>
-                                    <option value="x">1D — X Axis</option>
-                                    <option value="xy">2D — XY Plane</option>
-                                    <option value="xyz">3D — XYZ Space</option>
+                                    <optgroup label="Standard">
+                                        <option value="gs">Ground State (GS)</option>
+                                        <option value="td">Time-Dependent (TD)</option>
+                                        <option value="unocc">Unoccupied States</option>
+                                    </optgroup>
+                                    <optgroup label="Advanced">
+                                        <option value="opt">Geometry Optimization</option>
+                                        <option value="em">EM / Linear Response</option>
+                                        <option value="vib">Vibrational Modes</option>
+                                    </optgroup>
                                 </select>
                             </Field>
 
                             {octopusDimensions !== '1D' ? (
-                                <Section title="Molecule / Atom" icon={<Atom className="w-4 h-4 text-blue-400" />}>
-                                    <select value={octopusMolecule} onChange={e => setOctopusMolecule(e.target.value)} className={selectClass}>
-                                        <option value="H">Hydrogen Atom (H)</option>
-                                        <option value="He">Helium Atom (He)</option>
-                                        <option value="H2">Hydrogen Molecule (H₂)</option>
-                                        <option value="N2">Nitrogen Molecule (N₂)</option>
-                                        <option value="CH4">Methane (CH₄)</option>
-                                        <option value="Benzene">Benzene (C₆H₆)</option>
+                                <Field label="Molecule / Crystal">
+                                    <select value={octopusMolecule} onChange={e => {
+                                        setOctopusMolecule(e.target.value);
+                                        // Auto-set periodic dims for crystals
+                                        if (['Si', 'Al2O3'].includes(e.target.value)) {
+                                            setPeriodicDimensions('3');
+                                        } else {
+                                            setPeriodicDimensions('0');
+                                        }
+                                    }} className={selectClass}>
+                                        <optgroup label="Atoms">
+                                            <option value="H">H — Hydrogen</option>
+                                            <option value="He">He — Helium</option>
+                                            <option value="Li">Li — Lithium</option>
+                                            <option value="Na">Na — Sodium</option>
+                                        </optgroup>
+                                        <optgroup label="Diatomics">
+                                            <option value="H2">H₂ — Hydrogen</option>
+                                            <option value="LiH">LiH — Lithium Hydride</option>
+                                            <option value="CO">CO — Carbon Monoxide</option>
+                                            <option value="N2">N₂ — Nitrogen</option>
+                                        </optgroup>
+                                        <optgroup label="Polyatomics">
+                                            <option value="H2O">H₂O — Water</option>
+                                            <option value="NH3">NH₃ — Ammonia</option>
+                                            <option value="CH4">CH₄ — Methane</option>
+                                            <option value="C2H4">C₂H₄ — Ethylene</option>
+                                            <option value="Benzene">C₆H₆ — Benzene</option>
+                                        </optgroup>
+                                        <optgroup label="Periodic Crystals">
+                                            <option value="Si">Si — Silicon (FCC diamond)</option>
+                                            <option value="Al2O3">Al₂O₃ — Sapphire (corundum)</option>
+                                        </optgroup>
                                     </select>
                                     {octopusDimensions === '2D' && (
                                         <div className="text-[10px] text-yellow-600 bg-yellow-950/30 border border-yellow-900/50 rounded-lg p-2 mt-1">
-                                            2D mode: bond axis projected onto xy-plane.
+                                            2D mode: bond axes projected onto xy-plane.
                                         </div>
                                     )}
-                                </Section>
+                                    {['Si', 'Al2O3'].includes(octopusMolecule) && (
+                                        <div className="text-[10px] mt-1 p-2 rounded-lg" style={{ color: '#00d4ff', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.2)' }}>
+                                            Periodic crystal — PeriodicDimensions=3 auto-set. LatticeVectors below.
+                                        </div>
+                                    )}
+                                </Field>
                             ) : (
                                 <Section title="Model Potential" icon={<Zap className="w-4 h-4 text-yellow-400" />}>
                                     <select value={potentialType} onChange={e => setPotentialType(e.target.value)} className={selectClass}>
@@ -590,6 +626,42 @@ function DiracSolverView() {
                                         <option value="Custom">Custom Formula</option>
                                     </select>
                                 </Section>
+                            )}
+                        </Section>
+
+                        {/* ── Periodic System Settings ── */}
+                        <Section title="Periodic System Settings" icon={<Grid3x3 className="w-4 h-4 text-purple-400" />} defaultOpen={periodicDimensions !== '0'}>
+                            <Field label="Periodic Dimensions" hint="0 = isolated; 1/2/3 = periodic along x/xy/xyz">
+                                <select value={periodicDimensions} onChange={e => setPeriodicDimensions(e.target.value as any)} className={selectClass}>
+                                    <option value="0">0 — Isolated (Dirichlet BC)</option>
+                                    <option value="1">1 — Chain/wire (x periodic)</option>
+                                    <option value="2">2 — Slab/surface (xy periodic)</option>
+                                    <option value="3">3 — Bulk crystal (xyz periodic)</option>
+                                </select>
+                            </Field>
+                            {periodicDimensions !== '0' && (
+                                <>
+                                    <div className="text-[10px] mb-1" style={{ color: '#8892a4' }}>Lattice constants (Bohr)</div>
+                                    <div className="grid gap-2" style={{ gridTemplateColumns: periodicDimensions === '1' ? '1fr' : periodicDimensions === '2' ? '1fr 1fr' : '1fr 1fr 1fr' }}>
+                                        <Field label="a">
+                                            <input type="number" value={latticeA} onChange={e => setLatticeA(e.target.value)} step="0.1" className={inputClass} />
+                                        </Field>
+                                        {periodicDimensions !== '1' && (
+                                            <Field label="b">
+                                                <input type="number" value={latticeB} onChange={e => setLatticeB(e.target.value)} step="0.1" className={inputClass} />
+                                            </Field>
+                                        )}
+                                        {periodicDimensions === '3' && (
+                                            <Field label="c">
+                                                <input type="number" value={latticeC} onChange={e => setLatticeC(e.target.value)} step="0.1" className={inputClass} />
+                                            </Field>
+                                        )}
+                                    </div>
+                                    <Field label="K-Points Grid" hint="Monkhorst-Pack, e.g. 4 4 4">
+                                        <input type="text" value={kpointsGrid} onChange={e => setKpointsGrid(e.target.value)}
+                                            placeholder="2 2 2" className={inputClass} />
+                                    </Field>
+                                </>
                             )}
                         </Section>
 
@@ -631,18 +703,73 @@ function DiracSolverView() {
                             </Section>
                         )}
 
-                        {octopusCalcMode === 'gs' && (
+                        {(octopusCalcMode === 'gs' || octopusCalcMode === 'opt' || octopusCalcMode === 'em') && (
                             <Section title="DFT Settings" icon={<Atom className="w-4 h-4" style={{ color: '#00d4ff' }} />}>
                                 <Field label="Extra States" hint="Unoccupied KS states to include">
                                     <input type="number" value={octopusExtraStates} onChange={e => setOctopusExtraStates(e.target.value)} className={inputClass} />
                                 </Field>
-                                <Field label="XC Functional">
-                                    <select value={xcFunctional} onChange={e => setXcFunctional(e.target.value)} className={selectClass}>
-                                        <option value="lda_x+lda_c_pz">LDA — PZ (Perdew-Zunger)</option>
-                                        <option value="lda_x+lda_c_vwn">LDA — VWN</option>
-                                        <option value="gga_x_pbe+gga_c_pbe">GGA — PBE</option>
+                                {/* Tiered XC Functional Selector */}
+                                <Field label="XC Category">
+                                    <select value={xcCategory} onChange={e => {
+                                        setXcCategory(e.target.value);
+                                        // Reset preset to first option in new category
+                                        const defaults: Record<string,string> = {
+                                            lda: 'lda_x+lda_c_pz',
+                                            gga: 'gga_x_pbe+gga_c_pbe',
+                                            mgga: 'mgga_x_scan+mgga_c_scan',
+                                            hybrid: 'hyb_gga_xc_b3lyp',
+                                            exact: 'hartree_fock',
+                                        };
+                                        setXcPreset(defaults[e.target.value] || 'lda_x+lda_c_pz');
+                                        setXcOverride('');
+                                    }} className={selectClass}>
+                                        <option value="lda">LDA — Local Density</option>
+                                        <option value="gga">GGA — Generalized Gradient</option>
+                                        <option value="mgga">Meta-GGA — 3rd rung</option>
+                                        <option value="hybrid">Hybrid — HF exchange mix</option>
+                                        <option value="exact">Exact Exchange / OEP</option>
                                     </select>
                                 </Field>
+                                <Field label="XC Preset">
+                                    <select value={xcPreset} onChange={e => { setXcPreset(e.target.value); setXcOverride(''); }} className={selectClass}>
+                                        {xcCategory === 'lda' && (<>
+                                            <option value="lda_x+lda_c_pz">PZ81 (Perdew-Zunger) — default</option>
+                                            <option value="lda_x+lda_c_pw">PW92 (Perdew-Wang)</option>
+                                            <option value="lda_x+lda_c_vwn">VWN5 (Vosko-Wilk-Nusair)</option>
+                                            <option value="lda_x">X-only LDA</option>
+                                        </>)}
+                                        {xcCategory === 'gga' && (<>
+                                            <option value="gga_x_pbe+gga_c_pbe">PBE (Perdew-Burke-Ernzerhof)</option>
+                                            <option value="gga_x_b88+gga_c_lyp">BLYP (Becke-Lee-Yang-Parr)</option>
+                                            <option value="gga_x_pbe_sol+gga_c_pbe_sol">PBEsol (solids/surfaces)</option>
+                                            <option value="gga_x_rpbe+gga_c_pbe">RPBE (chemisorption)</option>
+                                        </>)}
+                                        {xcCategory === 'mgga' && (<>
+                                            <option value="mgga_x_scan+mgga_c_scan">SCAN (state-of-art meta-GGA)</option>
+                                            <option value="mgga_x_tpss+mgga_c_tpss">TPSS (transition metals)</option>
+                                            <option value="mgga_x_m06l+mgga_c_m06l">M06-L (main-group)</option>
+                                        </>)}
+                                        {xcCategory === 'hybrid' && (<>
+                                            <option value="hyb_gga_xc_b3lyp">B3LYP (most used in chem)</option>
+                                            <option value="hyb_gga_xc_pbeh">PBE0/PBEH (25% HF)</option>
+                                            <option value="hyb_gga_xc_hse06">HSE06 (range-sep, solids)</option>
+                                        </>)}
+                                        {xcCategory === 'exact' && (<>
+                                            <option value="hartree_fock">Hartree-Fock (HF)</option>
+                                            <option value="oep_kli">KLI approximation</option>
+                                            <option value="oep_slater">Slater approximation</option>
+                                        </>)}
+                                    </select>
+                                </Field>
+                                <Field label="Override (libxc string)" hint="Leave blank to use preset above">
+                                    <input type="text" value={xcOverride} onChange={e => setXcOverride(e.target.value)}
+                                        placeholder="e.g. gga_x_pbe+gga_c_pbe" className={inputClass} />
+                                </Field>
+                                {(xcOverride.trim() || xcPreset) && (
+                                    <div className="text-[10px] px-2 py-1 rounded font-mono" style={{ color: '#00d4ff', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)' }}>
+                                        Active: {xcOverride.trim() || xcPreset}
+                                    </div>
+                                )}
                                 <Field label="SCF Mixing Scheme">
                                     <select value={mixingScheme} onChange={e => setMixingScheme(e.target.value)} className={selectClass}>
                                         <option value="broyden">Broyden (recommended)</option>
@@ -654,7 +781,7 @@ function DiracSolverView() {
                                     <select value={spinComponents} onChange={e => setSpinComponents(e.target.value)} className={selectClass}>
                                         <option value="unpolarized">Unpolarized</option>
                                         <option value="spin_polarized">Spin Polarized</option>
-                                        <option value="non_collinear">Non-Collinear</option>
+                                        <option value="non_collinear">Non-Collinear (SOC)</option>
                                     </select>
                                 </Field>
                             </Section>

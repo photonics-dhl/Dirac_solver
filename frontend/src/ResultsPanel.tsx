@@ -77,6 +77,15 @@ interface PhysicsResult {
             dipole_y: number[];
             dipole_z: number[];
         };
+        band_structure_data?: {
+            kpoints: number[];
+            bands: number[][];
+            fermi_energy_ev?: number;
+        };
+        density_difference_1d?: {
+            x: number[];
+            delta_rho: number[];
+        };
     };
     density_1d?: number[];
 }
@@ -838,6 +847,10 @@ function MolecularView({ result }: { result: PhysicsResult }) {
                     <LinePath xData={energy_ev} yData={cross_section} color="#00d4ff" strokeWidth={2}
                         xMin={0} xMax={eMax} yMin={0} yMax={csMax} />
                 </ChartContainer>
+                {/* TD Dipole Chart — if backend supplied time-domain data */}
+                {mol.td_dipole && mol.td_dipole.time.length > 0 && (
+                    <TdDipolePanel dipole={mol.td_dipole} />
+                )}
             </div>
         );
     }
@@ -1075,8 +1088,146 @@ function MolecularView({ result }: { result: PhysicsResult }) {
                 </div>
             )}
 
+            {/* TD Dipole — available in GS+unocc runs that follow a kick */}
+            {mol.td_dipole && mol.td_dipole.time.length > 0 && (
+                <TdDipolePanel dipole={mol.td_dipole} />
+            )}
+
+            {/* Band Structure — only for periodic crystals */}
+            {mol.band_structure_data && mol.band_structure_data.kpoints.length > 0 && (
+                <BandStructurePanel data={mol.band_structure_data} />
+            )}
+
+            {/* Charge Density Difference */}
+            {mol.density_difference_1d && mol.density_difference_1d.x.length > 0 && (
+                <DensityDifferencePanel data={mol.density_difference_1d} />
+            )}
+
             {/* VisIt 3D Rendering Panel */}
             <VisItRenderPanel moleculeName={mol.moleculeName} />
+        </div>
+    );
+}
+
+// ─── TD Dipole Panel ──────────────────────────────────────────────
+
+function TdDipolePanel({ dipole }: {
+    dipole: { time: number[]; dipole_x: number[]; dipole_y: number[]; dipole_z: number[] };
+}) {
+    const [axis, setAxis] = React.useState<'x' | 'y' | 'z'>('z');
+    const yData = axis === 'x' ? dipole.dipole_x : axis === 'y' ? dipole.dipole_y : dipole.dipole_z;
+    const tMin = Math.min(...dipole.time);
+    const tMax = Math.max(...dipole.time);
+    const yMin = Math.min(...yData.filter(isFinite));
+    const yMax = Math.max(...yData.filter(isFinite), yMin + 0.001);
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <span style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    TD Dipole Moment
+                </span>
+                {(['x', 'y', 'z'] as const).map(a => (
+                    <button key={a} onClick={() => setAxis(a)}
+                        style={{
+                            padding: '2px 8px', fontSize: 10, borderRadius: 3, cursor: 'pointer', border: 'none',
+                            background: axis === a ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
+                            outline: axis === a ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
+                            color: axis === a ? '#00d4ff' : '#8892a4',
+                        }}>d<sub>{a}</sub></button>
+                ))}
+            </div>
+            <ChartContainer title={`d${axis}(t)   [a.u.]`}>
+                <Axes xLabel="Time (a.u.)" yLabel={`d${axis}`}
+                    xMin={tMin} xMax={tMax} yMin={yMin} yMax={yMax} />
+                <LinePath xData={dipole.time} yData={yData} color="#a78bfa" strokeWidth={1.5}
+                    xMin={tMin} xMax={tMax} yMin={yMin} yMax={yMax} />
+            </ChartContainer>
+        </div>
+    );
+}
+
+// ─── Band Structure Panel ─────────────────────────────────────────
+
+function BandStructurePanel({ data }: {
+    data: { kpoints: number[]; bands: number[][]; fermi_energy_ev?: number };
+}) {
+    const { kpoints, bands, fermi_energy_ev } = data;
+    if (!kpoints.length || !bands.length) return null;
+
+    const allEnergies = bands.flat().filter(isFinite);
+    const eMin = Math.min(...allEnergies) - 0.5;
+    const eMax = Math.max(...allEnergies) + 0.5;
+    const kMin = Math.min(...kpoints);
+    const kMax = Math.max(...kpoints);
+
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 8 }}>
+            <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Band Structure
+                {fermi_energy_ev != null && (
+                    <span style={{ marginLeft: 8, color: '#22c55e', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+                        E_F = {fermi_energy_ev.toFixed(3)} eV
+                    </span>
+                )}
+            </div>
+            <ChartContainer title="E(k)  [eV]">
+                <Axes xLabel="k-path" yLabel="E (eV)" xMin={kMin} xMax={kMax} yMin={eMin} yMax={eMax} />
+                {/* Fermi level dashed line */}
+                {fermi_energy_ev != null && (() => {
+                    const yF = PAD.top + INNER_H - ((fermi_energy_ev - eMin) / ((eMax - eMin) || 1)) * INNER_H;
+                    return <line x1={PAD.left} x2={PAD.left + INNER_W} y1={yF} y2={yF}
+                        stroke="#22c55e" strokeWidth={1} strokeDasharray="4,3" opacity={0.6} />;
+                })()}
+                {/* Each band as LinePath */}
+                {bands.map((band, bi) => (
+                    <LinePath key={bi} xData={kpoints} yData={band} color="#00d4ff" strokeWidth={1}
+                        xMin={kMin} xMax={kMax} yMin={eMin} yMax={eMax} />
+                ))}
+            </ChartContainer>
+        </div>
+    );
+}
+
+// ─── Density Difference Panel ─────────────────────────────────────
+
+function DensityDifferencePanel({ data }: {
+    data: { x: number[]; delta_rho: number[] };
+}) {
+    const { x, delta_rho } = data;
+    if (!x.length) return null;
+
+    const xMin = Math.min(...x);
+    const xMax = Math.max(...x);
+    const drMin = Math.min(...delta_rho.filter(isFinite));
+    const drMax = Math.max(...delta_rho.filter(isFinite));
+    const yAbs = Math.max(Math.abs(drMin), Math.abs(drMax), 0.001);
+
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 8 }}>
+            <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Charge Density Difference  Δρ = ρ<sub>mol</sub> − Σρ<sub>atom</sub>
+            </div>
+            <ChartContainer title="Δρ(x)  [a.u.] — Positive = accumulation, Negative = depletion">
+                <Axes xLabel="x (Bohr)" yLabel="Δρ" xMin={xMin} xMax={xMax} yMin={-yAbs} yMax={yAbs} />
+                {/* Zero baseline */}
+                <line x1={PAD.left} x2={PAD.left + INNER_W}
+                    y1={PAD.top + INNER_H / 2} y2={PAD.top + INNER_H / 2}
+                    stroke="rgba(255,255,255,0.08)" strokeWidth={1} />
+                <LinePath xData={x} yData={delta_rho} color="#f59e0b" strokeWidth={1.5}
+                    xMin={xMin} xMax={xMax} yMin={-yAbs} yMax={yAbs} />
+                {/* Positive fill */}
+                {(() => {
+                    const posY = delta_rho.map(v => Math.max(0, v));
+                    return <FillPath xData={x} yData={posY} color="#22c55e"
+                        xMin={xMin} xMax={xMax} yMin={0} yMax={yAbs} />;
+                })()}
+                {/* Negative fill — mirror trick */}
+                {(() => {
+                    const negY = delta_rho.map(v => Math.max(0, -v));
+                    return <FillPath xData={x} yData={negY} color="#ef4444"
+                        xMin={xMin} xMax={xMax} yMin={0} yMax={yAbs} />;
+                })()}
+            </ChartContainer>
         </div>
     );
 }
