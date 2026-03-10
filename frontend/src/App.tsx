@@ -216,6 +216,9 @@ function DiracSolverView() {
             };
 
             const query = encodeURIComponent(JSON.stringify(config));
+            // Guard: tracks whether 'result' was received so onerror doesn't
+            // show a false error when the server closes the connection after delivery.
+            let resultReceived = false;
             const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001'}/api/physics/stream?config=${query}`);
 
             eventSource.addEventListener('log', (e: any) => {
@@ -232,6 +235,7 @@ function DiracSolverView() {
             });
 
             eventSource.addEventListener('result', (e: any) => {
+                resultReceived = true;
                 try {
                     const resData = JSON.parse(e.data);
                     setStatus('SUCCESS');
@@ -265,7 +269,12 @@ function DiracSolverView() {
 
             // Native EventSource connection error (network drop / server crash)
             eventSource.onerror = () => {
-                if (eventSource.readyState === EventSource.CLOSED) return;
+                // If the result already arrived, this is just the server closing the
+                // connection after delivery — not a real error. Close silently.
+                if (resultReceived || eventSource.readyState === EventSource.CLOSED) {
+                    eventSource.close();
+                    return;
+                }
                 setStatus('ERROR');
                 setLogs(prev => [...prev, `✗ Streaming Error: Connection lost or server crashed`]);
                 eventSource.close();

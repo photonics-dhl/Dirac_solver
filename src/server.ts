@@ -127,11 +127,17 @@ app.get('/api/physics/stream', async (req, res) => {
         console.log(`[Physics Stream] Pipeline complete. E=[${eLabels}${eTail}]`);
 
         onEvent('result', result);
-        res.end();
+        // Do NOT call res.end() here — let the client close the connection by calling
+        // eventSource.close() when it receives the 'result' event. This prevents the
+        // browser from auto-reconnecting (EventSource reconnects when server closes).
+        // Safety valve: force-close after 10 s if client never disconnects.
+        const safetyClose = setTimeout(() => { try { res.end(); } catch (_) {} }, 10_000);
+        req.on('close', () => clearTimeout(safetyClose));
     } catch (error: any) {
         console.error("[Physics Stream] Pipeline error:", error.message);
         res.write(`event: pipeline_error\n`);
         res.write(`data: ${JSON.stringify({ message: error.message })}\n\n`);
+        // Error path: close immediately
         res.end();
     }
 });
