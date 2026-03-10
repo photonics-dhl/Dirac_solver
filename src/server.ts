@@ -336,11 +336,8 @@ const MPL_SCRIPT = path.join(process.cwd(), 'src', 'render_mpl.py');
 function renderWithMatplotlib(inputPath: string, plotType: string, outputPng: string): Promise<{ success: boolean; pngBase64?: string; durationMs: number; reason?: string }> {
     return new Promise((resolve) => {
         const start = Date.now();
-        // Auto-detect Python: prefer .venv, fall back to python3 or python
-        const isWin = process.platform === 'win32';
-        const pyExe = isWin
-            ? (fs.existsSync('.venv\\Scripts\\python.exe') ? '.venv\\Scripts\\python.exe' : 'python')
-            : (fs.existsSync('.venv/bin/python') ? '.venv/bin/python' : 'python3');
+        // Matplotlib lives in the system python (not .venv), use python3 directly
+        const pyExe = process.platform === 'win32' ? 'python' : 'python3';
         const proc = spawn(pyExe, [MPL_SCRIPT, inputPath, plotType, outputPng], {
             cwd: process.cwd(),
             shell: false,
