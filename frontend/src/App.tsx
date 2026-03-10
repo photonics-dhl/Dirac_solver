@@ -93,7 +93,7 @@ function DiracSolverView() {
     const [boundaryCondition, setBoundaryCondition] = useState('dirichlet');
 
     // ── Engine Mode ──
-    const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D'>('local1D');
+    const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D'>('octopus3D');
 
     // ── Octopus Parameters ──
     const [octopusCalcMode, setOctopusCalcMode] = useState<'gs' | 'td' | 'unocc'>('gs');
@@ -300,22 +300,25 @@ function DiracSolverView() {
                     </div>
                 </div>
 
-                {/* Engine Mode Toggle */}
-                <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
-                    <button onClick={() => setEngineMode('local1D')}
-                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={engineMode === 'local1D'
-                            ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
-                            : { color: '#4b5563' }}>
-                        Local 1D
-                    </button>
-                    <button onClick={() => setEngineMode('octopus3D')}
-                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={engineMode === 'octopus3D'
-                            ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.35)' }
-                            : { color: '#8892a4' }}>
-                        Octopus3D ◈
-                    </button>
+                {/* Engine Mode Toggle — Local 1D hidden, reserved for future use */}
+                {/* To re-enable: remove the display:none wrapper and reset default engineMode to 'local1D' */}
+                <div style={{ display: 'none' }}>
+                    <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
+                        <button onClick={() => setEngineMode('local1D')}
+                            className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+                            style={engineMode === 'local1D'
+                                ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
+                                : { color: '#4b5563' }}>
+                            Local 1D
+                        </button>
+                        <button onClick={() => setEngineMode('octopus3D')}
+                            className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+                            style={engineMode === 'octopus3D'
+                                ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.35)' }
+                                : { color: '#8892a4' }}>
+                            Octopus3D ◈
+                        </button>
+                    </div>
                 </div>
 
                 {engineMode === 'local1D' ? (

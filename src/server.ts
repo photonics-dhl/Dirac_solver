@@ -147,7 +147,11 @@ app.post('/api/physics/explain', (req, res) => {
         const resultData = req.body;
 
         console.log(`[Physics] Generating explanation via ZChat...`);
-        const pythonProcess = spawn('.\\.venv\\Scripts\\python', ['generate_explanation.py']);
+        // Detect Python executable: Windows uses .venv\Scripts\python, Linux uses python3
+        const isWin = process.platform === 'win32';
+        const pyExec = isWin ? '.\.venv\Scripts\python' :
+            (fs.existsSync('.venv/bin/python') ? '.venv/bin/python' : 'python3');
+        const pythonProcess = spawn(pyExec, ['generate_explanation.py']);
 
         let output = '';
         let errOutput = '';

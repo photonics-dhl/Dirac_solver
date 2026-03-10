@@ -6,36 +6,75 @@ from llm_client import LLMClient
 def generate_explanation(result_data):
     """
     Generates a Markdown explanation of the physics computation results using ZChat.
+    Supports both Local 1D solver results and Octopus 3D DFT results.
     """
     try:
-        # Format the prompt
-        prompt =f"""
-You are an expert computational physicist. Please provide a detailed yet accessible explanation of the following quantum physics computation results.
+        # Detect engine type to build an appropriate prompt
+        engine = result_data.get('engine', '')
+        is_octopus = 'octopus' in str(engine).lower() or 'dft' in str(engine).lower() or result_data.get('scfConverged') is not None
 
-Please output the explanation in BOTH Chinese and English.
-You MUST separate the two languages using following block delimiters strictly on their own lines:
+        if is_octopus:
+            physics_context = f"""
+This is an **Octopus DFT (Density Functional Theory)** calculation result for a real 3D quantum system.
+Key result fields to analyse:
+- `eigenvalues`: Kohn-Sham orbital energies in Hartree (1 Ha = 27.211 eV)
+- `homoEv` / `lumoEv`: HOMO and LUMO energies in eV; gap = LUMO - HOMO
+- `totalEnergy`: Total DFT ground-state energy in Hartree
+- `scfConverged` / `scfIterations`: self-consistent field convergence quality
+- `molecule`: the system studied (e.g. H2, He, Ne)
+- `spacing` (Bohr), `radius` (Bohr): real-space grid parameters
+- `tdMaxSteps`: if present, a time-dependent (TD-DFT) run was performed
 
----START_ZH---
-(Your Chinese explanation here)
----END_ZH---
+Physics evaluation checklist:
+1. For H₂: bonding orbital eigenvalue should be around -0.5 Ha (experimental -0.594 Ha); check sign and magnitude.
+2. SCF convergence: confirm `scfConverged=true`; note number of iterations.
+3. HOMO–LUMO gap: for H₂ the fundamental gap is ~10–16 eV; evaluate whether the computed gap is physically reasonable.
+4. If TD-DFT was run, note that the optical absorption spectrum captures electron dynamics beyond ground-state DFT.
+5. Grid quality: spacing ≥ 0.2 Bohr is DEV mode (coarse); spacing < 0.1 Bohr is production quality.
+"""
+        else:
+            physics_context = f"""
+This is a **local 1D Schrödinger/Dirac equation** solver result.
+Key result fields to analyse:
+- `eigenvalues`: energy eigenvalues in the chosen unit system (natural units or SI)
+- `gridPoints`, `spatialRange`, `gridSpacing`: finite-difference grid parameters
+- `boundaryCondition`: Dirichlet, periodic, or absorbing
+- `potentialType` / `potentialStrength`: potential well configuration
 
----START_EN---
-(Your English explanation here)
----END_EN---
+Physics evaluation checklist:
+1. For an Infinite Square Well: $E_n = n^2 \\pi^2 \\hbar^2 / (2mL^2)$. Compare computed vs analytic.
+2. Finite difference introduces $O(\\Delta x^2)$ truncation error; a ~1–5% deviation from analytic is normal.
+3. If deviation is large (>10%), flag as possible grid resolution artifact.
+"""
 
-Your explanation MUST cover the following key points in both versions:
-1. What physical problem was solved (e.g., Infinite Square Well, Schrödinger equation, dimensionality, mass, spatial range, grid spacing, boundary conditions).
-2. The Approach/Methodology computationally.
-3. Note that the computation used `scipy.sparse.linalg.eigsh` (or dense `eigh`) to solve the discretized Hamiltonian matrix.
-4. What results were returned (energy eigenvalues, computation time, orthogonality verification). If the natural unit energies were also given in SI units (Joules), mention them.
-5. **Strict Physics Evaluation**: Check the physical significance of these specific energy levels and wavefunctions. YOU MUST ACT AS A STRICT EXAMINER. Does the result match analytical expectations (e.g., for an Infinite Square Well, $E_n = \\frac{{n^2 \\pi^2 \\hbar^2}}{{2 m L^2}} + V_0$ where $V_0$ is the potentialStrength)? Note that the computational solver incorporates the base potential depth $V_0$ into the total energy! If the calculation engine's eigenvalues match the theory within a few percent (e.g., $~8.60$ vs $8.66$), explain that this tiny discrepancy is entirely expected due to $O(dx^2)$ truncation errors inherent to the finite difference grid approximation. If the discrepancy is massive, explicitly state: "These numerical results mathematically deviate from the theoretical physics expectations (explain why) and are likely numerical artifacts caused by insufficient grid resolution."
+        prompt = f"""You are an expert computational physicist. Analyse the following quantum physics computation results and produce a rigorous, well-structured report.
 
-The results JSON from the solver is as follows:
+Engine context:
+{physics_context}
+
+Full result JSON:
 ```json
 {json.dumps(result_data, indent=2, ensure_ascii=False)}
 ```
 
-Please output strictly in well-formatted Markdown. Use appropriate headers, bullet points, and LaTeX math blocks (e.g. `$E = mc^2$`) where helpful.
+Output the explanation in BOTH Chinese and English, separated by these exact delimiters on their own lines:
+
+---START_ZH---
+(中文说明)
+---END_ZH---
+
+---START_EN---
+(English explanation)
+---END_EN---
+
+Each section MUST cover:
+1. **Problem description** – what system was simulated, dimensionality, key parameters.
+2. **Methodology** – computational approach (DFT/finite-difference), grid, convergence.
+3. **Results analysis** – eigenvalues, energies, HOMO/LUMO (if DFT), convergence status.
+4. **Physical validity** – compare to known analytic/experimental references; flag concerns if results are unphysical.
+5. **Limitations** – grid resolution effects, DEV vs production accuracy.
+
+Use well-formatted Markdown with headers, bullet points, and LaTeX math (e.g. $E = mc^2$) where appropriate.
 """
 
         messages = [
