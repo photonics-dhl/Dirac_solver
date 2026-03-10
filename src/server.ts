@@ -421,6 +421,18 @@ app.post('/api/physics/visualize', async (req, res) => {
     }
 });
 
+// ─── MCP Health Proxy (allows browser to check MCP health via same-origin) ──
+app.get('/api/mcp/health', async (_req, res) => {
+    const mcpUrl = process.env.OCTOPUS_MCP_URL ?? 'http://localhost:8000';
+    try {
+        const response = await fetch(`${mcpUrl}/health`);
+        const data = await response.json();
+        res.json(data);
+    } catch {
+        res.status(503).json({ status: 'error', engine: 'unavailable' });
+    }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`LangGraph Backend running on port ${PORT}`);

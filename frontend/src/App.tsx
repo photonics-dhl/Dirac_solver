@@ -143,7 +143,7 @@ function DiracSolverView() {
     const [dockerStatus, setDockerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_MCP_BASE_URL ?? 'http://localhost:8000'}/health`)
+        fetch(`/api/mcp/health`)
             .then(res => res.json())
             .then(data => setDockerStatus(data.status === 'ok' ? 'online' : 'offline'))
             .catch(() => setDockerStatus('offline'));
@@ -219,7 +219,7 @@ function DiracSolverView() {
             // Guard: tracks whether 'result' was received so onerror doesn't
             // show a false error when the server closes the connection after delivery.
             let resultReceived = false;
-            const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001'}/api/physics/stream?config=${query}`);
+            const eventSource = new EventSource(`/api/physics/stream?config=${query}`);
 
             eventSource.addEventListener('log', (e: any) => {
                 try {
