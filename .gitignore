@@ -56,10 +56,6 @@ yarn-error.log*
 .pnp/
 .pnp.js
 
-# Frontend build output
-/dist
-/build
-
 # Editor / OS
 .DS_Store
 .DS_Store?

@@ -1,0 +1,13 @@
+# Core scientific computing
+numpy~=1.24
+scipy~=1.10
+
+# Visualization
+matplotlib~=3.7
+plotly~=5.14
+
+# Web framework
+flask~=2.3
+
+# Testing
+pytest~=7.4
