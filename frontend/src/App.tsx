@@ -250,17 +250,27 @@ function DiracSolverView() {
                 }
             });
 
-            eventSource.addEventListener('error', (e: any) => {
+            // Server-sent pipeline error (named SSE event)
+            eventSource.addEventListener('pipeline_error', (e: any) => {
                 setStatus('ERROR');
                 try {
                     const errData = JSON.parse(e.data);
-                    setLogs(prev => [...prev, `✗ Streaming Error: ${errData.message || 'Connection lost'}`]);
-                } catch (err) {
-                    setLogs(prev => [...prev, `✗ Streaming Error: Connection lost or server crashed`]);
+                    setLogs(prev => [...prev, `✗ Pipeline Error: ${errData.message || 'Unknown error'}`]);
+                } catch {
+                    setLogs(prev => [...prev, `✗ Pipeline Error: (unparseable)`]);
                 }
                 eventSource.close();
                 setIsComputing(false);
             });
+
+            // Native EventSource connection error (network drop / server crash)
+            eventSource.onerror = () => {
+                if (eventSource.readyState === EventSource.CLOSED) return;
+                setStatus('ERROR');
+                setLogs(prev => [...prev, `✗ Streaming Error: Connection lost or server crashed`]);
+                eventSource.close();
+                setIsComputing(false);
+            };
 
         } catch (e: any) {
             setStatus('ERROR');

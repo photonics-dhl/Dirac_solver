@@ -153,8 +153,18 @@ function updateDevState(updates: {
     subTaskCurrentNode?: string;
     nodeResult?: { nodeId: string; data: Record<string, any> };
 }) {
-    const raw = fs.readFileSync(DEV_STATE_PATH, 'utf-8');
-    const state = JSON.parse(raw);
+    let state: any;
+    try {
+        const raw = fs.readFileSync(DEV_STATE_PATH, 'utf-8');
+        state = JSON.parse(raw);
+    } catch {
+        // dev_state.json missing (fresh cloud deploy) — initialise with defaults
+        state = {
+            currentNode: 'idle', mode: 'IDLE', taskName: '', taskStatus: '',
+            logs: [], history: [],
+            projectGraph: null, subTaskGraphs: {}, nodeResults: {}
+        };
+    }
 
     if (updates.currentNode) state.currentNode = updates.currentNode;
     if (updates.mode) state.mode = updates.mode;

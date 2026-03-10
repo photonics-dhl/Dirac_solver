@@ -130,7 +130,7 @@ app.get('/api/physics/stream', async (req, res) => {
         res.end();
     } catch (error: any) {
         console.error("[Physics Stream] Pipeline error:", error.message);
-        res.write(`event: error\n`);
+        res.write(`event: pipeline_error\n`);
         res.write(`data: ${JSON.stringify({ message: error.message })}\n\n`);
         res.end();
     }
