@@ -1,0 +1,15 @@
+services:
+  physics_engine:
+    build:
+      context: .
+    container_name: dirac_octopus_mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workspace:/workspace
+      - ../@Octopus_docs/output:/workspace/output
+    deploy:
+      resources:
+        limits:
+          memory: 7G

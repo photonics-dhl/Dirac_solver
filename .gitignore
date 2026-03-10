@@ -1,0 +1,56 @@
+# ─── Secrets & local config ────────────────────────────────────────
+.env
+.env.local
+frontend/.env.local
+frontend/.env.*.local
+
+# ─── Node.js ───────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+*.tsbuildinfo
+
+# ─── Python ────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# ─── Octopus large binary / output files ───────────────────────────
+# Restart / wavefunction binary objects
+*.obf
+# NetCDF volumetric data
+*.nc
+# VTK / Cube files
+*.vtk
+*.cube
+# Time-dependent run folders
+td.general/
+restart/
+# Rendered PNGs (regeneratable)
+@Octopus_docs/output/renders/
+
+# Keep the organized output subdirectory structure but ignore big data
+@Octopus_docs/output/gs/
+@Octopus_docs/output/td/
+# Allow .gitkeep files so directory structure is versioned
+!@Octopus_docs/output/gs/.gitkeep
+!@Octopus_docs/output/td/.gitkeep
+!@Octopus_docs/output/renders/.gitkeep
+
+# Docker temp test run directories
+docker/workspace/test_oct*/
+docker/workspace/__pycache__/
+
+# ─── Development state / logs (machine-local, not useful in git) ───
+computation_log.md
+dev_state.json
+latest_api_output.json
+debug_output_dirac.json
+
+# ─── AI / editor metadata ──────────────────────────────────────────
+.cobridge
+.traerules
+.cursorrules
+.github/copilot-instructions.md

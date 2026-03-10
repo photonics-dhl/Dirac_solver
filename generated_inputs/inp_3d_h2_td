@@ -1,0 +1,20 @@
+CalculationMode = td
+Dimensions = 3
+Spacing = 0.3
+Radius = 4.0
+BoxShape = sphere
+
+%Coordinates
+  "H" | 0 | 0 | -0.35
+  "H" | 0 | 0 | 0.35
+%
+
+%Output
+  wfs
+  potential
+%
+OutputFormat = axis_x
+
+TDPropagator = aetrs
+TDMaxSteps = 200
+TDTimeStep = 0.05

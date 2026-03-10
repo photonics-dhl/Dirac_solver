@@ -1,0 +1,40 @@
+Running Octopus H2 Ground State...
+--- STDOUT TAIL ---
+******************************************************************
+
+
+             Info: Writing states. 2026/03/07 at 12:21:12
+
+
+        Info: Finished writing states. 2026/03/07 at 12:21:12
+
+Info: SCF converged in   13 iterations
+
+Info: Number of matrix-vector products:        755
+Info: Writing output to static/
+Info: Finished writing information to 'restart/gs'.
+
+             Calculation ended on 2026/03/07 at 12:21:12
+
+                          Walltime:  01.213s
+
+Octopus emitted 3 warnings.
+
+--- STDERR TAIL ---
+
+** Warning:
+**   Unable to read wavefunctions.
+**   Starting from scratch!
+
+
+** Warning:
+**   Cannot do LCAO for all states because there are not enough atomic orbitals.
+**   Required: 5. Available: 2. 3 orbitals will be randomized.
+
+
+** Warning:
+**   Some of the states are not fully converged!
+
+
+--- STATUS ---
+success

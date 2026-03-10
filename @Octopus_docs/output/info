@@ -1,0 +1,76 @@
+
+******************************** Grid ********************************
+Simulation Box:
+  Type = minimum
+  Radius  [b] =   2.500
+Main mesh:
+  Spacing [b] = ( 0.300, 0.300, 0.300)    volume/point [b^3] =      0.02700
+  # inner mesh =       3441
+  # total mesh =       8713
+  Grid Cutoff [H] =    54.831136    Grid Cutoff [Ry] =   109.662271
+**********************************************************************
+
+
+***************************** Symmetries *****************************
+Symmetries are disabled since non-spherically symmetric species may be present.
+**********************************************************************
+
+
+**************************** Theory Level ****************************
+Input: [TheoryLevel = kohn_sham]
+
+Exchange-correlation:
+  Exchange
+    Slater exchange (LDA)
+    [1] P. A. M. Dirac.,  Math. Proc. Cambridge Philos. Soc. 26, 376 (1930)
+    [2] F. Bloch.,  Z. Phys. 57, 545 (1929)
+  Correlation
+    Perdew & Zunger (LDA)
+    [1] J. P. Perdew and A. Zunger.,  Phys. Rev. B 23, 5048 (1981)
+
+**********************************************************************
+
+SCF converged in   17 iterations
+
+Some of the states are not fully converged!
+Eigenvalues [H]
+ #st  Spin   Eigenvalue      Occupation
+   1   --    -0.148626       2.000000
+   2   --     0.494544       0.000000
+   3   --     0.938143       0.000000
+   4   --     0.938143       0.000000
+   5   --     1.340733       0.000000
+
+Energy [H]:
+      Total       =        -0.87834834
+      Free        =        -0.87834834
+      -----------
+      Ion-ion     =         0.71428571
+      Eigenvalues =        -0.29725276
+      Hartree     =         1.52908460
+      Int[n*v_xc] =        -0.99604106
+      Exchange    =        -0.65964163
+      Correlation =        -0.10269611
+      vanderWaals =         0.00000000
+      Delta XC    =         0.00000000
+      Entropy     =         0.00000000
+      -TS         =        -0.00000000
+      Photon ex.  =         0.00000000
+      Kinetic     =         1.56082855
+      External    =        -3.92020945
+      Non-local   =         0.00000000
+      Int[n*v_E]  =         0.00000000
+
+Dipole:                 [b]          [Debye]
+      <x> =    1.17348E-07      2.98270E-07
+      <y> =    1.82128E-08      4.62923E-08
+      <z> =   -3.16450E-07     -8.04334E-07
+
+Convergence:
+      abs_energy =  7.61569288E-08 ( 0.00000000E+00) [H]
+      rel_energy =  8.67047125E-08 ( 0.00000000E+00)
+      abs_dens =  4.08512857E-07 ( 0.00000000E+00)
+      rel_dens =  2.04256429E-07 ( 1.00000000E-06)
+      abs_evsum =  7.42289752E-09 ( 0.00000000E+00) [H]
+      rel_evsum =  2.49716734E-08 ( 0.00000000E+00)
+

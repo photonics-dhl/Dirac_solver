@@ -1,0 +1,6 @@
+{
+    "engineMode": "octopus1D",
+    "potentialType": "harmonic",
+    "calcMode": "gs",
+    "octopusPeriodic": "off"
+}

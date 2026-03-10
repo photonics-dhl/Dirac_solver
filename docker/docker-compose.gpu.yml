@@ -1,0 +1,13 @@
+# GPU override — merge with base docker-compose.yml on GPU-enabled servers:
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+services:
+  physics_engine:
+    deploy:
+      resources:
+        limits:
+          memory: 12G
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]

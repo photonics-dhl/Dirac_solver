@@ -1,0 +1,6 @@
+{
+    "engineMode": "octopus3D",
+    "moleculeName": "H2",
+    "calcMode": "gs",
+    "octopusPeriodic": "off"
+}

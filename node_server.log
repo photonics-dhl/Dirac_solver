@@ -1,0 +1,58 @@
+[dotenv@17.3.1] injecting env (2) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+LangGraph Backend running on port 3001
+[Physics] Starting pipeline for config: {"engineMode":"octopus3D","moleculeName":"H2","calcMode":"gs","octopusPeriodic":"off"}
+[DEBUG] Starting runPhysicsPipeline {
+  isOctopus: true,
+  displayLabel: 'Octopus DFT',
+  engineMode: 'octopus3D'
+}
+[DEBUG] Routing Check: { engineMode: 'octopus3D', potentialType: undefined }
+[DEBUG] Executing generator with config payload
+[DEBUG] Generator Success Output: Generated: e:/PostGraduate/Dirac_solver/@Octopus_docs/generated_inputs\inp
+
+[DEBUG] Checking Octopus health at http://127.0.0.1:8000/health
+[DEBUG] Octopus Health Data: { status: 'ok', engine: 'octopus-14.0' }
+[DEBUG] Octopus solveResult payload received
+[Physics] Pipeline complete. E=[-0.3539, 0.0854, 0.1825...]
+[Physics] Starting pipeline for config: {"engineMode":"octopus3D","moleculeName":"H2","calcMode":"gs","octopusPeriodic":"off"}
+[DEBUG] Starting runPhysicsPipeline {
+  isOctopus: true,
+  displayLabel: 'Octopus DFT',
+  engineMode: 'octopus3D'
+}
+[DEBUG] Routing Check: { engineMode: 'octopus3D', potentialType: undefined }
+[DEBUG] Executing generator with config payload
+[DEBUG] Generator Success Output: Generated: e:/PostGraduate/Dirac_solver/@Octopus_docs/generated_inputs\inp
+
+[DEBUG] Checking Octopus health at http://127.0.0.1:8000/health
+[DEBUG] Octopus Health Data: { status: 'ok', engine: 'octopus-14.0' }
+[DEBUG] Octopus solveResult payload received
+[Physics] Pipeline complete. E=[-0.3539, 0.0854, 0.1825...]
+[Physics Stream] Starting pipeline for config: InfiniteWell
+[DEBUG] Starting runPhysicsPipeline {
+  isOctopus: true,
+  displayLabel: 'Octopus DFT',
+  engineMode: 'octopus3D'
+}
+[DEBUG] Routing Check: { engineMode: 'octopus3D', potentialType: 'InfiniteWell' }
+[DEBUG] Executing generator with config payload
+[DEBUG] Generator Success Output: Generated: e:/PostGraduate/Dirac_solver/@Octopus_docs/generated_inputs\inp
+
+[DEBUG] Checking Octopus health at http://127.0.0.1:8000/health
+[DEBUG] Octopus Health Data: { status: 'ok', engine: 'octopus-14.0' }
+[DEBUG] Octopus solveResult payload received
+[Physics Stream] Pipeline complete. E=[-0.3539, 0.0854, 0.1825...]
+[Physics Stream] Starting pipeline for config: InfiniteWell
+[DEBUG] Starting runPhysicsPipeline {
+  isOctopus: true,
+  displayLabel: 'Octopus DFT',
+  engineMode: 'octopus3D'
+}
+[DEBUG] Routing Check: { engineMode: 'octopus3D', potentialType: 'InfiniteWell' }
+[DEBUG] Executing generator with config payload
+[DEBUG] Generator Success Output: Generated: e:/PostGraduate/Dirac_solver/@Octopus_docs/generated_inputs\inp
+
+[DEBUG] Checking Octopus health at http://127.0.0.1:8000/health
+[DEBUG] Octopus Health Data: { status: 'ok', engine: 'octopus-14.0' }
+[DEBUG] Octopus solveResult payload received
+[Physics Stream] Pipeline complete. E=[-0.3539, 0.0854, 0.1825...]

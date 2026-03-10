@@ -1,0 +1,19 @@
+CalculationMode = gs
+Dimensions = 1
+Spacing = 0.1
+Radius = 5.0
+BoxShape = sphere
+
+%Species
+  "Particle" | species_user_defined | potential_formula | "0.5*x^2" | valence | 1
+%
+
+%Coordinates
+  "Particle" | 0
+%
+
+%Output
+  wfs
+  potential
+%
+OutputFormat = axis_x
