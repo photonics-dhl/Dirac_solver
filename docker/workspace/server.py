@@ -228,6 +228,44 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         radius = config.get("octopusRadius", config.get("spatialRange", config.get("radius", 10.0)))
         if isinstance(radius, (int, float)) and "spatialRange" in config:
             radius = radius / 2.0  # spatialRange is diameter, Octopus wants radius
+
+        # Auto-expand radius so all atoms fit inside the global sphere (BoxShape=sphere is centered at origin).
+        # Any atom with dist_from_origin > radius is outside the simulation box and will cause nonsensical SCF or timeout.
+        import math as _math
+        if custom_atoms:
+            _atom_coords = custom_atoms
+        elif dimensions == 2:
+            _atom_coords = MOLECULES_2D.get(molecule, [])
+        else:
+            _atom_coords = MOLECULES.get(molecule, [])
+        _max_dist = 0.0
+        for _a in _atom_coords:
+            if isinstance(_a, dict):
+                _d = _math.sqrt(float(_a.get('x', 0))**2 + float(_a.get('y', 0))**2 + float(_a.get('z', 0))**2)
+            else:
+                # parse "  'H' | x | y | z " or "  'H' | x | y " strings
+                _parts = [p.strip() for p in str(_a).split('|')]
+                try:
+                    _coords = [float(_parts[i]) for i in range(1, min(4, len(_parts)))]
+                    _d = _math.sqrt(sum(c**2 for c in _coords))
+                except (ValueError, IndexError):
+                    _d = 0.0
+            if _d > _max_dist:
+                _max_dist = _d
+        _min_required_radius = _max_dist + 5.0  # 5 Bohr padding so atoms are not on the boundary
+        if float(radius) < _min_required_radius:
+            print(f"[WARN] Box radius {radius} Bohr too small for geometry (max atom dist={_max_dist:.2f} Bohr). Auto-expanding to {_min_required_radius:.1f} Bohr.", flush=True)
+            radius = round(_min_required_radius, 1)
+
+        # Guard against OOM: if effective box volume at the chosen spacing would produce >8M grid points, raise spacing.
+        _effective_diam = 2.0 * float(radius)
+        _npts_per_axis = _effective_diam / float(spacing)
+        _total_pts = _npts_per_axis ** 3
+        if _total_pts > 8_000_000:
+            _safe_spacing = round((_effective_diam / (8_000_000 ** (1/3))), 2)
+            print(f"[WARN] Spacing={spacing} with radius={radius} → {_total_pts/1e6:.1f}M grid points (exceeds 8M limit). Clamping spacing to {_safe_spacing} Bohr.", flush=True)
+            spacing = max(float(spacing), _safe_spacing)
+
         inp += f"Radius = {radius}\n"
         inp += f"Spacing = {spacing}\n\n"
         

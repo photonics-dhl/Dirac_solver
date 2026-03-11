@@ -770,12 +770,31 @@ function DiracSolverView() {
                                             </button>
                                             {confirmedAtoms && confirmedAtoms.length > 0
                                                 ? (
+                                                    <>
                                                     <div style={{ fontSize: 9, color: '#22c55e', padding: '3px 8px',
                                                         background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
                                                         borderRadius: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                                                         <span>✓</span>
                                                         <span>已确认：<b style={{ fontFamily: 'monospace' }}>{confirmedLabel}</b> · {confirmedAtoms.length} 原子 — 将用于 Octopus 输入文件</span>
                                                     </div>
+                                                    {(() => {
+                                                        const rSet = parseFloat(octopusRadius) || 5;
+                                                        const maxDist = Math.max(...confirmedAtoms.map(a =>
+                                                            Math.sqrt(a.x**2 + a.y**2 + a.z**2)));
+                                                        const minR = Math.round((maxDist + 5.0) * 10) / 10;
+                                                        if (maxDist > rSet) {
+                                                            return (
+                                                                <div style={{ fontSize: 9, color: '#f97316', padding: '3px 8px',
+                                                                    background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.3)',
+                                                                    borderRadius: 4 }}>
+                                                                    ⚠ 原子最远距原点 <b>{maxDist.toFixed(1)} Bohr</b>，超出当前 Radius={rSet} Bohr。
+                                                                    服务端将自动扩展至 <b>{minR} Bohr</b>（建议在"Box Radius"中设置该值以避免意外）。
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    })()}
+                                                    </>
                                                 ) : (
                                                     <div style={{ fontSize: 9, color: '#f59e0b', padding: '3px 8px',
                                                         background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
