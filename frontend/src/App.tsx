@@ -623,12 +623,20 @@ function DiracSolverView() {
                                 <Field label="Molecule / Crystal">
                                     <select value={octopusMolecule} onChange={e => {
                                         setOctopusMolecule(e.target.value);
-                                        // Auto-set periodic dims for crystals
+                                        // Auto-set periodic dims and lattice constants for crystals
                                         if (['Si', 'Al2O3'].includes(e.target.value)) {
                                             setPeriodicDimensions('3');
                                         } else {
                                             setPeriodicDimensions('0');
                                         }
+                                        // Update lattice constant display to match crystal defaults
+                                        const _latticeDefaults: Record<string, [string,string,string]> = {
+                                            Si:    ['10.263', '10.263', '10.263'],  // FCC conventional a
+                                            Al2O3: ['5.128',  '4.440',  '13.900'], // primitive cell a₁, a₂, c
+                                        };
+                                        const _ld = _latticeDefaults[e.target.value];
+                                        if (_ld) { setLatticeA(_ld[0]); setLatticeB(_ld[1]); setLatticeC(_ld[2]); }
+                                        else { setLatticeA('10.263'); setLatticeB('10.263'); setLatticeC('10.263'); }
                                     }} className={selectClass}>
                                         <optgroup label="Atoms">
                                             <option value="H">H — Hydrogen</option>
@@ -661,7 +669,8 @@ function DiracSolverView() {
                                     )}
                                     {['Si', 'Al2O3'].includes(octopusMolecule) && (
                                         <div className="text-[10px] mt-1 p-2 rounded-lg" style={{ color: '#00d4ff', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.2)' }}>
-                                            Periodic crystal — PeriodicDimensions=3 auto-set. LatticeVectors below.
+                                            Periodic crystal — PeriodicDimensions defaults to 3 (bulk). Override below for
+                                            slab (2) or waveguide (1) simulations. LatticeVectors auto-loaded.
                                         </div>
                                     )}
                                 </Field>

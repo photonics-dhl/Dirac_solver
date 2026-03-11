@@ -19,6 +19,9 @@
 10. [VisIt 三维可视化](#10-visit-三维可视化)
 11. [典型工作流程示例](#11-典型工作流程示例)
 12. [常见错误与排查](#12-常见错误与排查)
+13. [坐标系说明](#13-坐标系说明)
+14. [ExtraStates 与 unocc 模式的区别](#14-extrastates基态附加态与-unocc-模式的区别)
+15. [数据导出与输出文件完全手册](#15-数据导出与输出文件完全手册)
 
 ---
 
@@ -747,3 +750,406 @@ $$\sigma(\omega) = \frac{4\pi\omega}{c\kappa} \mathrm{Im}\left[\alpha(\omega)\ri
 | 时间 | 24.19 as | 1 fs = 41.34 a.u. |
 | 电场 | 5.142×10¹¹ V/m | 1 GV/m = 1.94×10⁻³ a.u. |
 | 速度 | $c$/137.036 | 光速 $c$ = 137.036 a.u. |
+
+---
+
+## 13. 坐标系说明
+
+### 13.1 Octopus 的坐标约定
+
+Octopus 使用**三维右手笛卡尔坐标系**，单位为 **Bohr（原子单位长度）**。
+
+```
+z ↑
+  |
+  |_____ y
+ /
+x
+```
+
+- 坐标原点位于计算盒子中心（分子质心附近）。
+- `axis_x` 输出文件（如 `vks.y=0,z=0`）：沿 **x 轴** 扫描，固定 y = 0, z = 0，即穿过盒子中心的一条线。
+- 完整三维 `cube` 文件：按 (x fast, y medium, z slow) 顺序存储体素数据。
+
+### 13.2 各 PeriodicDimensions 设置的面外方向
+
+| PeriodicDimensions | 物理体系 | 周期方向 | **面外/非周期方向** |
+|---:|---:|---:|---:|
+| 0 | 孤立分子/团簇 | — | 全部（自由边界） |
+| 1 | 纳米线 / 波导 | **x**（沿线轴） | y, z（横截面，Dirichlet BC） |
+| 2 | 薄膜 / 表面 | x, y（面内） | **z**（垂直于薄膜，面外真空） |
+| 3 | 体相晶体 | x, y, z | — |
+
+> **结论**：模拟薄膜或二维材料时，**z 方向为面外分量**，需在 z 方向留足真空层（建议 ≥ 15 Bohr）。
+
+### 13.3 晶体的晶格矢量与笛卡尔方向
+
+Si FCC 的非正交晶格矢量：
+```
+a₁ = [0,       5.132,  5.132]  Bohr
+a₂ = [5.132,   0,      5.132]  Bohr
+a₃ = [5.132,   5.132,  0    ]  Bohr
+```
+这意味着 `axis_x` 输出（沿笛卡尔 x 方向）**不是** Si 的 [100] 方向，而是穿过晶格的斜线。如需沿高对称方向分析，应直接使用 `cube` 文件并在 VisIt 中进行切片。
+
+### 13.4 线波导仿真（Si 或 Al₂O₃）
+
+若要模拟**一维线波导**（周期方向 = 传播方向 x，横截面隔离）：
+
+1. 在分子库中选择 `Si` 或 `Al₂O₃`；
+2. 在 **Periodic System Settings** 中将 `Periodic Dimensions` **改为 `1`**；  
+   （前端会自动设为 3，但您可以手动改回 1，后端现已修复以尊重您的设置）；
+3. 设置 `Lattice a` = 周期单元沿 x 轴的长度（单位 Bohr）；
+4. 设置足够大的 `Box Radius`（≥ 8 Bohr）以模拟横截面隔离区域；
+5. `KPoints Grid` 设为 `k 1 1`（仅 x 方向采样）。
+
+---
+
+## 14. ExtraStates（基态附加态）与 `unocc` 模式的区别
+
+### 14.1 ExtraStates（SCF 过程中求解虚态）
+
+在 `CalculationMode = gs` 时，设置 `ExtraStates = N` 会让 Octopus 在 SCF 迭代过程中**一并求解 N 个未占据 Kohn-Sham 态**（即 LUMO、LUMO+1、…、LUMO+N-1）。
+
+**作用**：
+- 防止金属或准金属体系的 SCF 震荡（部分占据态需要"喂饱"Fermi 分布）；
+- 提供 LUMO 附近的粗略估计，使用方便；
+- 是 TD 模式运行的必要前提（TD 依赖收敛 GS 中已存在的虚态）。
+
+**局限**：
+- SCF 优化目标是总能量（主要由占据态决定），虚态精度**有限**；
+- 只能得到 LUMO 附近少数几个态，无法系统覆盖高激发态；
+- `-ExtraStates` 在高纠缠虚态区间可能不完全收敛。
+
+### 14.2 `CalculationMode = unocc`（专用未占据态求解）
+
+`unocc` 模式在 **GS 已收敛** 之后运行。它**固定**收敛好的 Kohn-Sham 势 $v_\text{KS}(\mathbf{r})$，用专用本征求解器（如 Chebyshev 滤波、Lanczos）系统求解更多、更高能量的未占据本征态。
+
+**使用场景**：
+- **Casida TDDFT**（线性响应光谱）：需要高质量的虚轨道来构造响应矩阵；
+- **GW 准粒子修正**：需要完整的虚轨道集合构造自能算符；
+- **光学跃迁矩阵元计算**：需覆盖更宽的能量窗口；
+- **精确 HOMO-LUMO 间隙分析**。
+
+### 14.3 类比总结
+
+| 特性 | ExtraStates (GS) | unocc 模式 |
+|------|--------------|------------|
+| 运行时机 | SCF 迭代中 | GS 收敛后 |
+| KS 势 | 随 SCF 更新 | **固定**（不更新） |
+| 虚态精度 | 粗估（SCF 偏置占据态） | 高精度（专用求解器） |
+| 覆盖能量范围 | 仅 LUMO 附近 | 可高达 LUMO + 数十 eV |
+| 典型 N 设置 | 2–8（一般分子） | 20–50（用于 GW/Casida） |
+| 主要用途 | TD 运行准备、SCF 稳定 | 宽谱响应、精确激发 |
+
+> **简记**：`ExtraStates` = GS 计算的副产品虚态；`unocc` = 精密制造的虚态。  
+> 如需高质量激发态，务必先跑 `gs`（ExtraStates ≥ 4），收敛后再单独跑 `unocc`。
+
+---
+
+## 15. 数据导出与输出文件完全手册
+
+### 15.1 当前 GS 模式生成的全部文件
+
+所有文件位于 Docker 容器内 `/workspace/output/`，已挂载到宿主机 `docker/workspace/output/`。
+
+#### a) `static/info` ——综合结果文本摘要
+
+包含：
+- Kohn-Sham 本征值（Hartree + eV）+ 占据数
+- 总能量、XC 能量、Hartree 能量、动能
+- SCF 收敛信息（迭代次数、最终能量差）
+- 固体：应力张量、Fermi 能量（若设置了 stress 输出）
+
+解析方式：
+```python
+import re
+with open("output/info") as f:
+    content = f.read()
+# 本征值
+eigenvalue_re = re.compile(r"#st\s+Spin\s+Eigenvalue\s+Occupation\n((?:\s+\d+.*\n)*)")
+# 总能量
+energy_re = re.compile(r"Total\s+=\s+([-\d.]+)")
+```
+
+#### b) `static/convergence` ——SCF 收敛历史
+
+3 列文本：迭代次数 | 归一化误差 | 能量差（Hartree）。前端"SCF 收敛曲线"图来自此文件。
+
+```python
+import numpy as np
+data = np.loadtxt("output/convergence", comments="#")
+iteration, norm_err, energy_diff = data[:,0], data[:,1], data[:,2]
+```
+
+#### c) `static/total-dos.dat` ——电子态密度
+
+2 列文本：能量（eV）| DOS（states/Hartree）。前端"态密度(DOS)"图来自此文件。
+
+```python
+data = np.loadtxt("output/total-dos.dat", comments="#")
+energy_eV, dos = data[:,0], data[:,1]
+```
+
+#### d) `static/*.y=0,z=0` ——沿 x 轴的 1D 切片
+
+逐行：x(Bohr)  值  [虚部（仅波函数）]
+
+| 文件名 | 内容 | 列含义 |
+|--------|------|--------|
+| `vks.y=0,z=0` | 总 Kohn-Sham 势 | col 0=x, col 1=V_KS(Ha) |
+| `v0.y=0,z=0` | 外部离子势 | col 0=x, col 1=V₀(Ha) |
+| `vh.y=0,z=0` | Hartree（库仑）势 | col 0=x, col 1=V_H(Ha) |
+| `vxc.y=0,z=0` | XC 势 | col 0=x, col 1=V_XC(Ha) |
+| `density.y=0,z=0` | 电子密度 | col 0=x, col 1=n(x)(a.u.) |
+| `wf-st00001.y=0,z=0` | 第 1 态波函数 | col 0=x, col 1=Re(ψ), col 2=Im(ψ) |
+| `wf-stNNNNN.y=0,z=0` | 第 N 态波函数 | 同上 |
+| `elf.y=0,z=0` | 电子局域函数 | col 0=x, col 1=ELF∈[0,1] |
+
+```python
+import numpy as np
+data = np.loadtxt("output/wf-st00001.y=0,z=0", comments="#")
+x, psi_re, psi_im = data[:,0], data[:,1], data[:,2]
+psi_sq = psi_re**2 + psi_im**2
+```
+
+#### e) `static/*.cube` ——完整三维体数据（Gaussian Cube 格式）
+
+每次 GS 运行自动生成以下 cube 文件：
+
+| 文件名 | 内容 | 典型大小（DEV 模式） |
+|--------|------|-------------------|
+| `density.cube` | 电子密度 ρ(r) | ~100 KB |
+| `wf-st00001.cube` – `wf-st0000N.cube` | 各 KS 波函数 ψₙ(r) | ~100 KB/个 |
+| `v0.cube` | 外部势 V₀(r) | ~100 KB |
+| `vh.cube` | Hartree 势 V_H(r) | ~100 KB |
+| `vxc.cube` | XC 势 V_XC(r) | ~100 KB |
+| `vks.cube` | 总 KS 势 V_KS(r) | ~100 KB |
+| `elf.cube` | 电子局域函数 ELF(r) ∈ [0, 1] | ~100 KB |
+
+**Cube 文件格式解析**（Python）：
+```python
+def parse_cube(path):
+    with open(path) as f:
+        lines = f.readlines()
+    # 第 1-2 行：注释
+    natoms, ox, oy, oz = map(float, lines[2].split())
+    natoms = int(natoms)
+    nx, dx = int(lines[3].split()[0]), float(lines[3].split()[1])
+    ny, dy = int(lines[4].split()[0]), float(lines[4].split()[2])
+    nz, dz = int(lines[5].split()[0]), float(lines[5].split()[3])
+    data_start = 6 + abs(natoms)
+    data = []
+    for line in lines[data_start:]:
+        data.extend(map(float, line.split()))
+    import numpy as np
+    vol = np.array(data[:nx*ny*nz]).reshape(nx, ny, nz)
+    return vol, (ox, oy, oz), (dx, dy, dz)
+
+density, origin, spacing = parse_cube("output/density.cube")
+# 沿 x 方向中心切片（y=0, z=0 附近）
+x_slice = density[:, ny//2, nz//2]
+```
+
+**VisIt 三维等值面渲染**（已集成于前端）：
+```
+前端 → "密度 3D 等值面" 按钮 → 
+  Node.js server.ts → /api/physics/visualize (plotType=density_3d) →
+  Python render_mpl.py density_3d_iso → matplotlib 3D scatter PNG → 
+  base64 返回前端显示
+```
+
+### 15.2 TD 模式附加输出文件
+
+| 文件路径 | 内容 | 解析方法 |
+|----------|------|---------|
+| `td.general/multipoles` | 偶极矩随时间变化 d(t) | `np.loadtxt`，列 = [t, dx, dy, dz] |
+| `td.general/energy` | 总能量 E(t) | `np.loadtxt` |
+| `cross_section_vector` | 光学극化率/吸收截面 σ(ω) | 每 5 个数为一组：E(Ha), Im(α_xx), Re(α_xx), ... |
+
+```python
+# 偶极矩时间序列
+import numpy as np
+dipole = np.loadtxt("output/td.general/multipoles", comments="#")
+time, dx, dy, dz = dipole[:,0], dipole[:,1], dipole[:,2], dipole[:,3]
+
+# Fourier 变换得光谱（手动验证）
+from numpy.fft import rfft, rfftfreq
+dt = time[1] - time[0]
+freq = rfftfreq(len(time), d=dt) * 2 * np.pi   # rad/a.u.
+alpha_omega = rfft(dz) * dt
+sigma = 4 * np.pi * freq * alpha_omega.imag / 3  # 吸收截面
+```
+
+### 15.3 周期系统附加输出
+
+对 `PeriodicDimensions > 0` 的计算，`static/info` 中额外包含：
+- **应力张量**（已在 `%Output` 中加入 `stress`）
+- **Fermi 能量**（费米面位置）
+- **能带间隙**（若存在）
+
+从 `static/info` 中提取：
+```python
+import re
+with open("output/info") as f:
+    txt = f.read()
+fermi_m = re.search(r"Fermi energy\s*=\s*([-\d.]+)", txt)
+gap_m   = re.search(r"Band gap\s*=\s*([-\d.]+)", txt)
+```
+
+### 15.4 ELF（电子局域函数）文件
+
+ELF 的物理含义：
+- `ELF = 1`（红色）：完全局域化——共价键中心、孤对电子
+- `ELF = 0.5`（绿色）：自由电子气行为
+- `ELF = 0`（蓝色）：完全非局域化——金属键
+
+渲染方法（与 `density` 完全相同）：
+1. 前端选择 `密度 2D 切片` → 后端会自动使用 `elf.cube` 若 plotType 设为 `elf`
+2. 或手动解析 `elf.y=0,z=0` 1D 数据进行快速分析
+
+### 15.5 前端一键导出
+
+在结果面板中，每一个 SVG 图表的右上角都有 **⬇ CSV** 按钮，可将该曲线的 x/y 数组导出为逗号分隔的文本文件，直接用于 Origin / Python / MATLAB 绘图。
+
+导出的文件名遵循以下规则：
+
+| 图表 | 导出文件名 |
+|------|-----------|
+| 波函数 ψₙ(x) | `wavefunction_state{n}.csv` |
+| 概率密度 \|ψ\|² | 同一 CSV，y 列为 \|ψ\|² |
+| 电子密度 n(x) | `electron_density.csv` |
+| 态密度 DOS | `dos.csv` |
+| SCF 收敛曲线 | `convergence.csv` |
+| 有效势分量 | `potential_components.csv` |
+| TD 偶极矩 | `td_dipole_{x/y/z}.csv` |
+| 光学吸收谱 | `optical_spectrum.csv` |
+
+### 15.6 直接访问 Docker 卷输出（命令行）
+
+```bash
+# 在宿主机（Windows PowerShell / WSL2）操作：
+
+# 查看所有静态输出文件
+ls docker/workspace/output/
+
+# 复制 cube 文件到本地进行 VisIt 手动渲染
+cp docker/workspace/output/density.cube ./my_analysis/
+
+# 进入容器交互查看
+docker exec -it dirac_octopus_mcp bash
+ls /workspace/output/
+
+# 压缩打包所有输出供存档
+docker exec dirac_octopus_mcp tar -czf /tmp/results.tar.gz /workspace/output/
+docker cp dirac_octopus_mcp:/tmp/results.tar.gz ./results_export.tar.gz
+```
+
+### 15.7 数据导出最佳实践
+
+1. **优先使用前端 CSV 导出**——适合 1D 截面数据和光谱曲线；
+2. **3D 分析使用 cube 文件**——配合 VisIt 或 VESTA（轻量化）进行等值面可视化；
+3. **存档时保留 `static/info`**——这是最紧凑的计算验证报告；
+4. **清理 td.general/**——TD 运行的 `.obf` 重启文件可能达数百 MB，分析完后可安全删除；
+5. **`PROD_CLOUD_FINE` 模式下**务必在完成数据提取后运行 `PURGE_WORKSPACE`，防止存储溢出。
+
+---
+
+## 16. 线波导仿真的周期性物理含义
+
+### 16.1 晶格常数 `a` 是什么？
+
+在 `PeriodicDimensions = 1`（一维线波导）设置下，`Lattice a` **就是波导沿 x 方向的周期单元长度**，即一个完整的结构基元（unit cell）的重复周期。
+
+- 对于纯硅波导：`a` 通常设为 Si 沿传播方向的晶格常数（如 10.263 Bohr ≈ 5.43 Å）。
+- 对于光子晶体波导：`a` 是孔或凸起的空间周期（可为 50–500 nm 量级，需换算为 Bohr）。
+
+### 16.2 波导在 x 方向是"无限长"的吗？
+
+**形式上是，物理上也是**。Octopus 对周期方向使用 **Born-von Karman 周期边界条件（PBC）**：
+
+$$\psi(\mathbf{r} + N\mathbf{a}) = \psi(\mathbf{r})$$
+
+模拟的是一条"无限重复"的波导链——KS 轨道满足布洛赫定理 $\psi_{n\mathbf{k}}(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} u_{n\mathbf{k}}(\mathbf{r})$，`KPoints Grid = k 1 1` 中的 `k` 决定对第一布里渊区的 k 点采样密度。
+
+### 16.3 为什么要做横截面隔离？
+
+横截面方向（y, z）采用 **Dirichlet 零边界条件**，即在盒子边界处强制 $\psi = 0$。这等价于：
+
+1. **模拟真空包层**：当盒子足够大（radius ≥ 8 Bohr）时，波函数在到达边界前已经衰减到零，物理上等同于波导被无限真空包围（无辐射损耗）；
+2. **模式截止**：只有横向导模（guided modes）满足边界条件而存在，泄漏模被截断；
+3. **计算效率**：有限半径的球形/圆柱形盒子比真正的无穷大晶格计算量少得多。
+
+> **简记**：x 方向 = "无限长"周期链；y/z 方向 = 人为截断的真空层（防止虚假的横向重复）。  
+> `KPoints Grid = k 1 1` 仅在 x 方向（传播方向）做布里渊区积分，y/z 不需要 k 点。
+
+### 16.4 推荐参数（Si 线波导）
+
+| 参数 | 推荐值 | 说明 |
+|------|--------|------|
+| PeriodicDimensions | 1 | 仅 x 方向周期 |
+| Lattice a | 10.263 Bohr | Si 晶格常数（x 方向） |
+| Box Radius | ≥ 8 Bohr | 横截面真空层厚度 |
+| KPoints Grid | `8 1 1` | x 方向 8 个 k 点，y/z 各 1 个 |
+| Spacing | 0.25 Bohr | 保证足够精度 |
+
+---
+
+## 17. 实时 TD-DFT 与未占据态（unocc）的关系
+
+### 17.1 实时 TD-DFT 使用哪些态进行传播？
+
+本项目的 TD 模式使用 **实时（RT）TD-DFT**，传播的是**仅占据的 Kohn-Sham 轨道**：
+
+$$i\frac{\partial}{\partial t}\psi_j(\mathbf{r}, t) = \hat{H}_\mathrm{KS}[n(t)]\,\psi_j(\mathbf{r}, t), \quad j = 1, 2, \ldots, N_\text{occ}$$
+
+其中时变密度 $n(\mathbf{r},t) = \sum_{j=1}^{N_\text{occ}} |\psi_j(\mathbf{r},t)|^2$。所有未占据态**不参与**时间传播。
+
+**Runge-Gross 定理保证**：占据 KS 轨道张成的密度已经完整描述了体系的时变密度演化，不需要任何未占据态。
+
+### 17.2 ExtraStates 对 TD 的作用
+
+GS 阶段的 `ExtraStates` 的作用是**确保 SCF 收敛稳定**（尤其对金属体系），同时为 TD 提供一个已经收敛的 KS 势 $v_\text{KS}(\mathbf{r})$。
+
+- **ExtraStates > 0 可以改善 GS 收敛质量**，从而间接改善 TD 的初始条件；
+- 但 ExtraStates 产生的虚轨道本身**不参与** RT-TD 传播；
+- 增大 ExtraStates 并不是提升 TD 精度的手段。
+
+### 17.3 先跑 `unocc` 再跑 `td` 有没有用？
+
+**对于实时 TD-DFT，没有用。**
+
+`unocc` 模式使用固定 KS 势计算更多、更精确的未占据本征态，这些态的主要用途是：
+
+| 使用场景 | 是否需要 unocc |
+|----------|--------------|
+| 实时 RT-TDDFT（本项目 td 模式）| ❌ 不需要 |
+| Casida 线性响应 TDDFT | ✅ 需要高精度虚轨道 |
+| GW 准粒子修正 | ✅ 需要完整虚轨道集合 |
+| NEXAFS/X 射线吸收谱（内壳层激发） | ✅ 需要高能量虚态 |
+| HOMO-LUMO 间隙精确分析 | ✅ 推荐使用 |
+
+> **简记**：实时 TD = 只管占据态的密度怎么随时间演化，unoccupied/virtual 是旁观者；Casida TD = 需要在虚轨道空间里展开激发，unoccupied 越多越好。  
+> 本项目 `td` 模式 = 实时 TD，**跑完 GS 直接跑 td，不需要中间插入 `unocc`**。
+
+### 17.4 实践建议
+
+对于 RT-TD-DFT 最优工作流：
+
+```
+1. gs (ExtraStates = 4–8，确保 SCF 收敛)
+   ↓
+2. td (直接运行，无需 unocc 前置)
+   ↓
+3. 结果：光学吸收谱 σ(ω)，偶极矩时域响应 d(t)
+```
+
+若目标是精确激发态（比较 Casida 或 GW）：
+
+```
+1. gs (ExtraStates = 4)
+   ↓
+2. unocc (ExtraStates = 20–50，固定 KS 势)
+   ↓
+3. Casida / GW 后处理（Octopus 或外部程序）
+```

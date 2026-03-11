@@ -271,19 +271,37 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         inp += "LCAOReadWeights = no\n\n"
 
         # Periodic system support: LatticeVectors + KPoints
-        PERIODIC_CRYSTALS = {"Si", "Al2O3"}
-        periodic_dims = 3 if molecule in PERIODIC_CRYSTALS else int(config.get("periodicDimensions", 0))
+        # _CRYSTAL_DEFAULT_PD: fallback if the UI sends no periodicDimensions for a known crystal.
+        # User's explicit config["periodicDimensions"] always takes precedence so they can simulate
+        # e.g. a 1D Si waveguide (PeriodicDimensions=1) instead of bulk (3).
+        _CRYSTAL_DEFAULT_PD = {"Si": 3, "Al2O3": 3}
+        _user_pd = config.get("periodicDimensions")
+        if _user_pd is not None:
+            periodic_dims = int(_user_pd)
+        else:
+            periodic_dims = _CRYSTAL_DEFAULT_PD.get(molecule, 0)
         if periodic_dims > 0:
             inp += f"PeriodicDimensions = {periodic_dims}\n"
             # Use provided latticeVectors or built-in defaults
             lv = config.get("latticeVectors")
             if not lv:
-                if molecule == "Si":
+                # Crystal-specific 3D primitive vectors (only for pd==3)
+                if periodic_dims == 3 and molecule == "Si":
                     lv = [[0.0, 5.132, 5.132], [5.132, 0.0, 5.132], [5.132, 5.132, 0.0]]
-                elif molecule == "Al2O3":
+                elif periodic_dims == 3 and molecule == "Al2O3":
                     lv = [[5.128, -2.564, 0.0], [0.0, 4.440, 0.0], [0.0, 0.0, 13.900]]
+                elif periodic_dims == 2 and molecule == "Al2O3":
+                    # Al₂O₃ (0001) slab: in-plane vectors from the hexagonal cell
+                    lv = [[5.128, -2.564, 0.0], [0.0, 4.440, 0.0]]
+                elif periodic_dims == 2 and molecule == "Si":
+                    # Si(001) surface: a/√2 ≈ 7.255 Bohr in-plane, user can override via latticeA/B
+                    a = float(config.get("latticeA", 7.255))
+                    b = float(config.get("latticeB", a))
+                    lv = [[a, 0.0, 0.0], [0.0, b, 0.0]]
                 elif periodic_dims == 1:
-                    lv = [[float(config.get("latticeA", 10.0)), 0.0, 0.0]]
+                    _crystal_a1d = {"Si": 10.263, "Al2O3": 5.128}
+                    a_def = _crystal_a1d.get(molecule, 10.0)
+                    lv = [[float(config.get("latticeA", a_def)), 0.0, 0.0]]
                 elif periodic_dims == 2:
                     a = float(config.get("latticeA", 10.0))
                     b = float(config.get("latticeB", 10.0))
@@ -421,9 +439,12 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "%Output\n"
             inp += "  wfs\n"
             inp += "  density\n"
-            inp += "  potential\n"
+            inp += "  potential\n"   # v0 + vh + vxc + vks files (all components)
             inp += "  eigenvalues\n"
             inp += "  dos\n"
+            inp += "  elf\n"         # Electron Localization Function
+            if periodic_dims > 0:
+                inp += "  stress\n"  # Stress tensor (periodic systems only)
             inp += "%\n"
             # axis_x: 1D line-scan files (fast, for wavefunction 1D plots)
             # cube: full 3D volumetric data (for proper 2D heatmaps and 3D isosurfaces)
@@ -528,6 +549,28 @@ def parse_octopus_info(info_path: str) -> dict:
     result["engine"] = "octopus-14.0"
     return result
 
+def get_atom_positions(molecule: str, dimensions: int = 3, custom_atoms: list = None) -> list:
+    """Return list of {symbol, x, y, z} for frontend geometry visualization."""
+    import re as _re
+    if custom_atoms:
+        return [{"symbol": a["symbol"], "x": float(a.get("x", 0)),
+                 "y": float(a.get("y", 0)), "z": float(a.get("z", 0))} for a in custom_atoms]
+    lines = (MOLECULES_2D if dimensions == 2 else MOLECULES).get(molecule, [])
+    atoms = []
+    for line in lines:
+        parts = [p.strip().strip("'") for p in line.split("|")]
+        if len(parts) < 2:
+            continue
+        try:
+            sym = parts[0]
+            coords = [float(p) for p in parts[1:4]]
+            while len(coords) < 3:
+                coords.append(0.0)
+            atoms.append({"symbol": sym, "x": coords[0], "y": coords[1], "z": coords[2]})
+        except ValueError:
+            pass
+    return atoms
+
 def parse_octopus_wfs_1d(static_dir: str) -> dict:
     """Parse 1D text files (vks and wf-st) into arrays."""
     import glob
@@ -550,6 +593,24 @@ def parse_octopus_wfs_1d(static_dir: str) -> dict:
                         result["potential"].append(v)
                     except ValueError:
                         pass
+
+    # Read individual potential components (v0=external, vh=Hartree, vxc=XC)
+    for _key, _fname in [("v0", "v0.y=0,z=0"), ("vh", "vh.y=0,z=0"), ("vxc", "vxc.y=0,z=0")]:
+        _fpath = os.path.join(static_dir, _fname)
+        if os.path.exists(_fpath):
+            _data: list = []
+            with open(_fpath) as _fh:
+                for _line in _fh:
+                    if _line.startswith("#"):
+                        continue
+                    _parts = _line.split()
+                    if len(_parts) >= 2:
+                        try:
+                            _data.append(float(_parts[1]))
+                        except ValueError:
+                            pass
+            if _data:
+                result[_key] = _data
     
     # Read wavefunctions
     wf_files = sorted(glob.glob(os.path.join(static_dir, "wf-st*.y=0,z=0")))
@@ -791,6 +852,11 @@ async def run_octopus_calculation(config: dict) -> dict:
                 response_data["wavefunctions"] = wfs_data["wavefunctions"]
             if wfs_data.get("density"):
                 response_data["density_1d"] = wfs_data["density"]
+            # Potential breakdown: v0=external, vh=Hartree, vxc=XC, vks=total KS
+            _pc = {k: wfs_data[k] for k in ("v0", "vh", "vxc") if wfs_data.get(k)}
+            if _pc:
+                _pc["vks"] = wfs_data.get("potential", [])
+                response_data["potential_components"] = _pc
 
             # Convert eigenvalues Hartree → eV for frontend display
             HARTREE_TO_EV = 27.2114
@@ -818,6 +884,11 @@ async def run_octopus_calculation(config: dict) -> dict:
             _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
             _mol_name = _mol_raw.get("name", "H2") if isinstance(_mol_raw, dict) else _mol_raw
 
+            # Atom positions for frontend geometry visualization
+            _custom_atoms = config.get("customAtoms") or config.get("atoms")
+            _dims = int(config.get("octopusDimensions", config.get("dimensionality", 3)) if config.get("octopusDimensions", config.get("dimensionality", "3D")) not in ("1D", "2D", "3D") else (1 if config.get("octopusDimensions","3D")=="1D" else (2 if config.get("octopusDimensions","3D")=="2D" else 3)))
+            _box_radius = float(config.get("octopusRadius", config.get("radius", 10.0)))
+
             response_data["molecular"] = {
                 "moleculeName": _mol_name,
                 "calcMode": calc_mode,
@@ -827,6 +898,8 @@ async def run_octopus_calculation(config: dict) -> dict:
                 "total_energy_hartree": parsed_gs.get("total_energy"),
                 "scf_iterations": parsed_gs.get("scf_iterations", 0),
                 "converged": parsed_gs.get("converged", False),
+                "atom_positions": get_atom_positions(_mol_name, _dims, _custom_atoms),
+                "box_radius": _box_radius,
             }
             print(f"[DEBUG] response_data['molecular'] set: {response_data.get('molecular')}")
             response_data["molecular"]["convergence_data"] = parse_octopus_convergence(static_dir)
@@ -1040,6 +1113,7 @@ async def solve_handler(request: Request):
         "wavefunctions": formatted_wfs,
         "molecular": result.get("molecular"),
         "density_1d": result.get("density_1d", []),
+        "potential_components": result.get("potential_components"),
         "message": result.get("stderr_tail", str(result.get("message", ""))),
     }
     return JSONResponse(response)

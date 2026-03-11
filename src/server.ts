@@ -334,7 +334,7 @@ const MPL_SCRIPT = path.join(process.cwd(), 'src', 'render_mpl.py');
 /** Render a 1D/2D slice using matplotlib (fast, reliable). */
 function renderWithMatplotlib(
     inputPath: string, plotType: string, outputPng: string,
-    isoValue?: number, colormap?: string
+    isoValue?: number, colormap?: string, slicePos?: number
 ): Promise<{ success: boolean; pngBase64?: string; durationMs: number; reason?: string }> {
     return new Promise((resolve) => {
         const start = Date.now();
@@ -343,7 +343,9 @@ function renderWithMatplotlib(
         const extraArgs: string[] = [];
         // Always push both slots so colormap stays at argv[5] regardless of isoValue
         extraArgs.push(isoValue !== undefined ? String(isoValue) : '');
-        if (colormap) extraArgs.push(colormap);
+        if (colormap) extraArgs.push(colormap); else extraArgs.push('');
+        // argv[6]: slice_pos (Bohr)
+        if (slicePos !== undefined) extraArgs.push(String(slicePos));
         const proc = spawn(pyExe, [MPL_SCRIPT, inputPath, plotType, outputPng, ...extraArgs], {
             cwd: process.cwd(),
             shell: false,
@@ -368,12 +370,13 @@ function renderWithMatplotlib(
 
 app.post('/api/physics/visualize', async (req, res) => {
     try {
-        const { plotType = 'wavefunction_1d', inputFile, isoValue, colormap, wfStateIndex } = req.body as {
+        const { plotType = 'wavefunction_1d', inputFile, isoValue, colormap, wfStateIndex, slicePos } = req.body as {
             plotType?: 'wavefunction_1d' | 'density_2d' | 'density_3d';
             inputFile?: string;
             isoValue?: number;
             colormap?: string;
             wfStateIndex?: number;
+            slicePos?: number;
         };
 
         const stateIdx = wfStateIndex ?? 1;
@@ -420,10 +423,10 @@ app.post('/api/physics/visualize', async (req, res) => {
             const outputPng = path.join(OCTOPUS_OUTPUT_DIR, 'render_density_2d.png');
 
             if (fs.existsSync(cubeFile)) {
-                console.log(`[mpl] Rendering density_2d_cube from: ${path.basename(cubeFile)}`);
+                console.log(`[mpl] Rendering density_2d_cube from: ${path.basename(cubeFile)} slicePos=${slicePos}`);
                 const result = await renderWithMatplotlib(
                     cubeFile, 'density_2d_cube', outputPng,
-                    undefined, colormap ?? 'plasma'
+                    undefined, colormap ?? 'plasma', slicePos
                 );
                 if (result.success && result.pngBase64) {
                     return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_2d' });
@@ -457,8 +460,8 @@ app.post('/api/physics/visualize', async (req, res) => {
 
             const isoArg = isoValue ?? 0.15;
             const cmapArg = colormap ?? 'hot';
-            console.log(`[mpl] Rendering density_3d_iso from: ${path.basename(cubeFile)} iso=${isoArg}`);
-            const result = await renderWithMatplotlib(cubeFile, 'density_3d_iso', outputPng, isoArg, cmapArg);
+            console.log(`[mpl] Rendering density_3d_iso from: ${path.basename(cubeFile)} iso=${isoArg} slicePos=${slicePos}`);
+            const result = await renderWithMatplotlib(cubeFile, 'density_3d_iso', outputPng, isoArg, cmapArg, slicePos);
             if (result.success && result.pngBase64) {
                 return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_3d' });
             }
