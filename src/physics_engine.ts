@@ -132,6 +132,12 @@ export interface PhysicsResult {
             energy_ev: number[];
             cross_section: number[];
         };
+        td_dipole?: {
+            time: number[];
+            dipole_x: number[];
+            dipole_y: number[];
+            dipole_z: number[];
+        };
     };
     computationTime: number;
 }
@@ -647,6 +653,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 scf_iterations: molData.scf_iterations,
                 converged: molData.converged,
                 optical_spectrum: molData.optical_spectrum,
+                td_dipole: molData.td_dipole,
             } : undefined,
         };
     }

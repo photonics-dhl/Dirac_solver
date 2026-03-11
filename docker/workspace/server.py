@@ -737,13 +737,19 @@ def parse_octopus_cross_section(work_dir: str) -> dict:
     import re
     with open(cs_path, "r") as f:
         content = f.read()
-    # Extract all floating point numbers, ignoring comment lines
-    nums = re.findall(r'[-+]?\d+\.\d+E[+-]\d+', content)
-    # 5 numbers per data row
+    # Extract all floating point numbers (both uppercase E and lowercase e), ignoring comment lines
+    nums = re.findall(r'[-+]?\d+\.\d+[eE][+-]\d+', content)
+    # 5 numbers per data row: omega | Im(alpha_xx) | Im(alpha_yy) | Im(alpha_zz) | sigma_iso
+    # For a z-axis kick, Im(alpha_xx)=Im(alpha_yy)≈0; the physical signal is in Im(alpha_zz).
+    # Use the sum of all diagonal components so any kick direction is captured.
     for i in range(0, len(nums) - 4, 5):
         try:
             energy_ha = float(nums[i])
-            im_alpha = float(nums[i + 1])  # absorption cross section (Hartree units)
+            # Sum the three diagonal Im(alpha) components → total absorption for any kick direction
+            im_alpha_xx = float(nums[i + 1])
+            im_alpha_yy = float(nums[i + 2])
+            im_alpha_zz = float(nums[i + 3])
+            im_alpha = im_alpha_xx + im_alpha_yy + im_alpha_zz
             energy_ev = energy_ha * HARTREE_TO_EV
             if energy_ev > 0.01:  # skip E~0 artefact
                 result["energy_ev"].append(round(energy_ev, 6))
@@ -803,7 +809,11 @@ def parse_octopus_dos(static_dir: str) -> dict:
 
 
 def parse_td_dipole(td_dir: str) -> dict:
-    """Parse td.general/multipoles for dipole moment vs time."""
+    """Parse td.general/multipoles for dipole moment vs time.
+    
+    Octopus multipoles file format (lmax=1, 3D):
+      col 0: iter  col 1: time  col 2: electronic_charge  col 3: <x>  col 4: <y>  col 5: <z>
+    """
     path = os.path.join(td_dir, "multipoles")
     result: dict = {"time": [], "dipole_x": [], "dipole_y": [], "dipole_z": []}
     if not os.path.exists(path):
@@ -814,12 +824,13 @@ def parse_td_dipole(td_dir: str) -> dict:
                 if line.startswith("#"):
                     continue
                 parts = line.split()
-                if len(parts) >= 5:
+                # 6 columns: iter | time | charge | <x> | <y> | <z>
+                if len(parts) >= 6:
                     try:
                         result["time"].append(float(parts[1]))
-                        result["dipole_x"].append(float(parts[2]))
-                        result["dipole_y"].append(float(parts[3]))
-                        result["dipole_z"].append(float(parts[4]))
+                        result["dipole_x"].append(float(parts[3]))  # <x>
+                        result["dipole_y"].append(float(parts[4]))  # <y>
+                        result["dipole_z"].append(float(parts[5]))  # <z>
                     except ValueError:
                         pass
     except Exception as e:
