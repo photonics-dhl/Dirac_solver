@@ -232,9 +232,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         inp += f"Spacing = {spacing}\n\n"
         
         inp += "%Species\n"
-        # Manual formula-based potential for common atoms to skip PSF files
-        if "H" in molecule:
-            # Build species block — formula-based potentials for all present elements
+        # Build species block — formula-based potentials for all present elements
         elements_in_mol = set()
         all_coords = custom_atoms if custom_atoms else (
             MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
