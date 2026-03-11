@@ -260,11 +260,10 @@ def render_density_2d_cube(cube_path: str, output_png: str, colormap: str = "pla
 
 def render_density_3d_iso(cube_path: str, output_png: str,
                            isovalue: float = None, colormap: str = "hot",
-                           slice_pos: float = None):
+                           slice_pos: float = None, slice_axis: str = 'z'):
     """
     3D electron density: 4 panels (XY, XZ, YZ slices + max-intensity projection).
-    Isosurface level shown as a cyan contour on each slice.
-    No VisIt required — pure matplotlib.
+    slice_axis ('x','y','z') selects which panel is moved by slice_pos.
     """
     data, x, y, z = parse_cube_file(cube_path)
 
@@ -281,9 +280,9 @@ def render_density_3d_iso(cube_path: str, output_png: str,
             return len(arr) // 2
         return int(np.abs(arr - val).argmin())
 
-    ix = _nearest(x, slice_pos)
-    iy = _nearest(y, slice_pos)
-    iz = _nearest(z, slice_pos)
+    ix = _nearest(x, slice_pos if slice_axis == 'x' else None)
+    iy = _nearest(y, slice_pos if slice_axis == 'y' else None)
+    iz = _nearest(z, slice_pos if slice_axis == 'z' else None)
 
     sl_xy = data_norm[:, :, iz].T     # (NY, NX)
     sl_xz = data_norm[:, iy, :].T     # (NZ, NX)
@@ -431,7 +430,7 @@ if __name__ == "__main__":
     elif plot_type == "density_3d_iso":
         render_density_3d_iso(input_file, out_png,
                               isovalue=isovalue, colormap=colormap or "hot",
-                              slice_pos=slice_pos)
+                              slice_pos=slice_pos, slice_axis=slice_axis)
     elif plot_type == "wavefunction_2d_cube":
         render_wavefunction_2d_cube(input_file, out_png, colormap=colormap or "RdBu")
     else:

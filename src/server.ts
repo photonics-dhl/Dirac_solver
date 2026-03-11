@@ -463,8 +463,8 @@ app.post('/api/physics/visualize', async (req, res) => {
 
             const isoArg = isoValue ?? 0.15;
             const cmapArg = colormap ?? 'hot';
-            console.log(`[mpl] Rendering density_3d_iso from: ${path.basename(cubeFile)} iso=${isoArg} slicePos=${slicePos}`);
-            const result = await renderWithMatplotlib(cubeFile, 'density_3d_iso', outputPng, isoArg, cmapArg, slicePos);
+            console.log(`[mpl] Rendering density_3d_iso from: ${path.basename(cubeFile)} iso=${isoArg} slicePos=${slicePos} sliceAxis=${sliceAxis}`);
+            const result = await renderWithMatplotlib(cubeFile, 'density_3d_iso', outputPng, isoArg, cmapArg, slicePos, sliceAxis ?? 'z');
             if (result.success && result.pngBase64) {
                 return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_3d' });
             }
