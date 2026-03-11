@@ -341,8 +341,9 @@ function renderWithMatplotlib(
         // Matplotlib lives in the system python (not .venv), use python3 directly
         const pyExe = process.platform === 'win32' ? 'python' : 'python3';
         const extraArgs: string[] = [];
-        if (isoValue !== undefined) extraArgs.push(String(isoValue));
-        if (colormap)               extraArgs.push(colormap);
+        // Always push both slots so colormap stays at argv[5] regardless of isoValue
+        extraArgs.push(isoValue !== undefined ? String(isoValue) : '');
+        if (colormap) extraArgs.push(colormap);
         const proc = spawn(pyExe, [MPL_SCRIPT, inputPath, plotType, outputPng, ...extraArgs], {
             cwd: process.cwd(),
             shell: false,

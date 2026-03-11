@@ -395,7 +395,8 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
     plot_type  = sys.argv[2]
     out_png    = sys.argv[3]
-    isovalue   = float(sys.argv[4]) if len(sys.argv) > 4 else None
+    raw_iso    = sys.argv[4] if len(sys.argv) > 4 else ''
+    isovalue   = float(raw_iso) if raw_iso else None   # empty string → None
     colormap   = sys.argv[5] if len(sys.argv) > 5 else None
 
     if not os.path.isfile(input_file):
