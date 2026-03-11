@@ -225,9 +225,14 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         
         # Grid parameters from config
         spacing = config.get("octopusSpacing", config.get("gridSpacing", config.get("spacing", 0.3)))
-        radius = config.get("octopusRadius", config.get("spatialRange", config.get("radius", 10.0)))
-        if isinstance(radius, (int, float)) and "spatialRange" in config:
-            radius = radius / 2.0  # spatialRange is diameter, Octopus wants radius
+        # Priority: octopusRadius (a real radius) > spatialRange/2 (spatialRange is a diameter) > radius > default
+        # IMPORTANT: only halve when falling back to spatialRange — if octopusRadius is explicitly set it is already a radius.
+        if "octopusRadius" in config:
+            radius = float(config["octopusRadius"])
+        elif "spatialRange" in config:
+            radius = float(config["spatialRange"]) / 2.0  # spatialRange is diameter
+        else:
+            radius = float(config.get("radius", 10.0))
 
         # Auto-expand radius so all atoms fit inside the global sphere (BoxShape=sphere is centered at origin).
         # Any atom with dist_from_origin > radius is outside the simulation box and will cause nonsensical SCF or timeout.
@@ -313,6 +318,14 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         # Explicitly disable external PSF requirement
         inp += "LCAOReadWeights = no\n\n"
+
+        # SCF convergence tuning — especially important for custom-potential multi-atom geometries
+        # where LCAO initial guess is unavailable and Broyden can oscillate.
+        # Smaller Mixing (0.1 vs default 0.3) + more history steps = more stable convergence.
+        inp += "Mixing = 0.1\n"
+        inp += "MixNumberSteps = 8\n"
+        inp += "MaxSCFIterations = 200\n"
+        inp += "SCFTolerance = 5e-5\n"
 
         # Periodic system support: LatticeVectors + KPoints
         # _CRYSTAL_DEFAULT_PD: fallback if the UI sends no periodicDimensions for a known crystal.
@@ -941,7 +954,13 @@ async def run_octopus_calculation(config: dict) -> dict:
             # Atom positions for frontend geometry visualization
             _custom_atoms = config.get("customAtoms") or config.get("atoms")
             _dims = int(config.get("octopusDimensions", config.get("dimensionality", 3)) if config.get("octopusDimensions", config.get("dimensionality", "3D")) not in ("1D", "2D", "3D") else (1 if config.get("octopusDimensions","3D")=="1D" else (2 if config.get("octopusDimensions","3D")=="2D" else 3)))
-            _box_radius = float(config.get("octopusRadius", config.get("radius", 10.0)))
+            # Read box radius using the same priority logic as generate_inp (no halving when octopusRadius is explicit)
+            if "octopusRadius" in config:
+                _box_radius = float(config["octopusRadius"])
+            elif "spatialRange" in config:
+                _box_radius = float(config["spatialRange"]) / 2.0
+            else:
+                _box_radius = float(config.get("radius", 10.0))
 
             response_data["molecular"] = {
                 "moleculeName": _mol_name,
