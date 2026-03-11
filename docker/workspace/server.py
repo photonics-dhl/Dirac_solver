@@ -239,9 +239,15 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         )
         for line in all_coords:
             import re as _re
-            m_sym = _re.search(r"'([A-Za-z]{1,2})'", line)
-            if m_sym:
-                elements_in_mol.add(m_sym.group(1))
+            if isinstance(line, dict):
+                # custom_atoms are dicts: {symbol, x, y, z}
+                sym = str(line.get("symbol", "")).strip()
+                if sym:
+                    elements_in_mol.add(sym)
+            else:
+                m_sym = _re.search(r"'([A-Za-z]{1,2})'", str(line))
+                if m_sym:
+                    elements_in_mol.add(m_sym.group(1))
         # Hardcoded formula map: symbol -> (formula, valence)
         FORMULA_MAP = {
             "H":  ("-1/sqrt(r^2+0.01)",  1),
