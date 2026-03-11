@@ -896,7 +896,10 @@ def compute_radiation_spectrum(td_dipole: dict) -> dict:
             np.abs(np.fft.rfft(dy_w))**2 +
             np.abs(np.fft.rfft(dz_w))**2)
     power = omega_au**2 * d_sq                 # P(ω) ∝ ω²|d(ω)|²
-    mask  = (omega_ev > 0.05) & (omega_ev < 60.0)
+    # Dynamic range: show all positive frequencies up to Nyquist
+    nyquist_ev = float(omega_ev[-1])
+    upper_ev   = min(nyquist_ev, 500.0)        # cap at 500 eV to avoid pure noise
+    mask  = (omega_ev > 0.0) & (omega_ev <= upper_ev)
     p_sel = power[mask]
     p_max = float(p_sel.max()) if p_sel.size > 0 else 1.0
     return {
@@ -941,7 +944,9 @@ def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
     Ey_f = np.fft.rfft(E_py * win)
     cross = -(dx_f * np.conj(Ex_f) + dy_f * np.conj(Ey_f))
     eels  = (omega_au / np.pi) * np.imag(cross)
-    mask     = (omega_ev > 0.05) & (omega_ev < 60.0)
+    nyquist_ev = float(omega_ev[-1])
+    upper_ev   = min(nyquist_ev, 500.0)
+    mask     = (omega_ev > 0.0) & (omega_ev <= upper_ev)
     eels_sel = np.clip(eels[mask], 0.0, None)
     e_max    = float(eels_sel.max()) if eels_sel.size > 0 else 1.0
     return {
