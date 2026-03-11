@@ -218,6 +218,26 @@ export function Mol3DViewer({
         ctx.fillStyle = '#0a0e1a';
         ctx.fillRect(0, 0, W, H);
 
+        // Background grid (faint world-space grid in the XY plane at z=0)
+        {
+            const gridStep = Math.max(1, Math.ceil(boxRadius / 4));   // ~4 grid lines per half-box
+            const halfLines = Math.ceil(boxRadius / gridStep) + 1;
+            ctx.strokeStyle = 'rgba(255,255,255,0.035)';
+            ctx.lineWidth = 0.6;
+            ctx.setLineDash([]);
+            for (let gi = -halfLines; gi <= halfLines; gi++) {
+                const g = gi * gridStep;
+                // Horizontal line: y = g, z spans
+                const p0h = project({ x: 0, y: g, z: -boxRadius * 1.2 }, rx, ry, autoScale, cx, cy);
+                const p1h = project({ x: 0, y: g, z:  boxRadius * 1.2 }, rx, ry, autoScale, cx, cy);
+                ctx.beginPath(); ctx.moveTo(p0h.sx, p0h.sy); ctx.lineTo(p1h.sx, p1h.sy); ctx.stroke();
+                // Vertical line: z = g, y spans
+                const p0v = project({ x: 0, y: -boxRadius * 1.2, z: g }, rx, ry, autoScale, cx, cy);
+                const p1v = project({ x: 0, y:  boxRadius * 1.2, z: g }, rx, ry, autoScale, cx, cy);
+                ctx.beginPath(); ctx.moveTo(p0v.sx, p0v.sy); ctx.lineTo(p1v.sx, p1v.sy); ctx.stroke();
+            }
+        }
+
         // Simulation box outline (dashed circle = sphere projection)
         const boxR2d = boxRadius * autoScale;
         ctx.beginPath();
@@ -380,6 +400,20 @@ export function Mol3DViewer({
 
     }, [atoms, bonds, bbox, boxRadius]);
 
+    // Non-passive wheel zoom (React's onWheel is passive by default — can't preventDefault)
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const handler = (e: WheelEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            scaleRef.current = Math.max(0.25, Math.min(4.0,
+                scaleRef.current * (e.deltaY > 0 ? 0.88 : 1.13)));
+        };
+        canvas.addEventListener('wheel', handler, { passive: false });
+        return () => canvas.removeEventListener('wheel', handler);
+    }, []);
+
     // Animation loop
     useEffect(() => {
         let raf: number;
@@ -413,11 +447,7 @@ export function Mol3DViewer({
         dragRef.current = null;
         timerRef.current = setTimeout(() => { autoRef.current = true; }, 2500);
     };
-    const onWheel = (e: React.WheelEvent) => {
-        e.preventDefault();
-        scaleRef.current = Math.max(0.25, Math.min(4.0,
-            scaleRef.current * (e.deltaY > 0 ? 0.88 : 1.13)));
-    };
+
     const onReset = () => {
         rotRef.current = { rx: 0.35, ry: 0.25 };
         scaleRef.current = 1.0;
@@ -468,7 +498,6 @@ export function Mol3DViewer({
                 onMouseMove={onMouseMove}
                 onMouseUp={onMouseUp}
                 onMouseLeave={onMouseUp}
-                onWheel={onWheel}
             />
 
             {/* Legend bar */}

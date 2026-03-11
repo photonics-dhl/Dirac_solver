@@ -126,8 +126,11 @@ function DiracSolverView() {
     // Free electron probe (waveguide + electron beam)
     const [feProbeEnabled, setFeProbeEnabled] = useState<boolean>(false);
     const [feProbeVelocity, setFeProbeVelocity] = useState('0.5');   // v/c
-    const [feProbeY0, setFeProbeY0] = useState('2.0');               // impact parameter y₀ (Bohr)
-    const [feProbeZ0, setFeProbeZ0] = useState('0.0');               // z₀ offset (Bohr)
+    const [feProbeDirection, setFeProbeDirection] = useState<'x'|'y'|'z'>('x'); // beam propagation axis
+    const [feProbeCx, setFeProbeCx] = useState('0.0');   // beam center x (Bohr)
+    const [feProbeCy, setFeProbeCy] = useState('2.0');   // beam center y (Bohr)
+    const [feProbeCz, setFeProbeCz] = useState('0.0');   // beam center z (Bohr)
+    const [feProbeBeamCount, setFeProbeBeamCount] = useState('1');  // number of electron beams
     const [feProbeCharge, setFeProbeCharge] = useState('-1');        // charge in units of e
     const [octopusExtraStates, setOctopusExtraStates] = useState('4');
     const [mixingScheme, setMixingScheme] = useState('broyden');
@@ -272,8 +275,11 @@ function DiracSolverView() {
                 // Free electron probe
                 feProbeEnabled,
                 feProbeVelocity: parseFloat(feProbeVelocity),
-                feProbeY0: parseFloat(feProbeY0),
-                feProbeZ0: parseFloat(feProbeZ0),
+                feProbeDirection,
+                feProbeCenterX: parseFloat(feProbeCx),
+                feProbeCenterY: parseFloat(feProbeCy),
+                feProbeCenterZ: parseFloat(feProbeCz),
+                feProbeBeamCount: parseInt(feProbeBeamCount),
                 feProbeCharge: parseFloat(feProbeCharge),
                 octopusExtraStates: parseInt(octopusExtraStates),
                 xcFunctional: xcOverride.trim() || xcPreset,
@@ -889,28 +895,48 @@ function DiracSolverView() {
                                     {feProbeEnabled && (
                                         <div className="rounded-lg p-3 space-y-2" style={{ background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)' }}>
                                             <div className="text-[10px] mb-2" style={{ color: '#5a8fa8' }}>
-                                                经典电子束沿 x 轴传播，轨迹 <span style={{ fontFamily: 'monospace' }}>r_e(t) = (v·t, y₀, z₀)</span>。<br />
-                                                倾点势作为 TD 外场叠加：<span style={{ fontFamily: 'monospace' }}>V_probe = q/|r − r_e(t)|</span>。<br />
+                                                经典点电荷沿指定轴平直传播，库仑势作为 TD 外场叠加。<br />
                                                 非相对论近似，适用于 v/c &lt; 0.9。
                                             </div>
+                                            {/* Row 1: velocity + propagation direction */}
                                             <div className="grid grid-cols-2 gap-2">
-                                                <Field label="速度 v/c" hint="0.1–0.99 (光速分数)">
+                                                <Field label="速度 v/c" hint="0.01–0.99 (光速分数)">
                                                     <input type="number" value={feProbeVelocity} onChange={e => setFeProbeVelocity(e.target.value)}
                                                         step="0.05" min="0.01" max="0.99" className={inputClass} />
+                                                </Field>
+                                                <Field label="传播方向轴" hint="电子束平移方向">
+                                                    <select value={feProbeDirection} onChange={e => setFeProbeDirection(e.target.value as 'x'|'y'|'z')} className={selectClass}>
+                                                        <option value="x">X — 沿波导方向</option>
+                                                        <option value="y">Y — 横向</option>
+                                                        <option value="z">Z — 纵向</option>
+                                                    </select>
+                                                </Field>
+                                            </div>
+                                            {/* Row 2: geometric center XYZ */}
+                                            <div style={{ fontSize: 9, color: '#374151', marginBottom: 2 }}>几何中心 (Bohr) — 电子束起始截面位置</div>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <Field label="中心 X" hint="Bohr">
+                                                    <input type="number" value={feProbeCx} onChange={e => setFeProbeCx(e.target.value)}
+                                                        step="0.5" className={inputClass} />
+                                                </Field>
+                                                <Field label="中心 Y" hint="Bohr">
+                                                    <input type="number" value={feProbeCy} onChange={e => setFeProbeCy(e.target.value)}
+                                                        step="0.5" className={inputClass} />
+                                                </Field>
+                                                <Field label="中心 Z" hint="Bohr">
+                                                    <input type="number" value={feProbeCz} onChange={e => setFeProbeCz(e.target.value)}
+                                                        step="0.5" className={inputClass} />
+                                                </Field>
+                                            </div>
+                                            {/* Row 3: beam count + charge */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <Field label="电子束数目" hint="并行探针数量">
+                                                    <input type="number" value={feProbeBeamCount} onChange={e => setFeProbeBeamCount(e.target.value)}
+                                                        step="1" min="1" max="16" className={inputClass} />
                                                 </Field>
                                                 <Field label="探针电荷 (e)" hint="-1 = 电子, +1 = 正电子">
                                                     <input type="number" value={feProbeCharge} onChange={e => setFeProbeCharge(e.target.value)}
                                                         step="1" className={inputClass} />
-                                                </Field>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <Field label="冲击参数 y₀ (Bohr)" hint="电子束与 x 轴的垂直距离">
-                                                    <input type="number" value={feProbeY0} onChange={e => setFeProbeY0(e.target.value)}
-                                                        step="0.5" className={inputClass} />
-                                                </Field>
-                                                <Field label="z₀ 偏移 (Bohr)" hint="通常置 0">
-                                                    <input type="number" value={feProbeZ0} onChange={e => setFeProbeZ0(e.target.value)}
-                                                        step="0.5" className={inputClass} />
                                                 </Field>
                                             </div>
                                             <div className="text-[10px] px-2 py-1 rounded font-mono" style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)' }}>

@@ -944,12 +944,25 @@ function MolecularView({ result, resultHistory = {} }: {
 
     if (!mol) return null;
 
-    // ── Optical Absorption Spectrum (TD mode) ──
+    // ── TD mode without optical spectrum (Gaussian / sine / CW excitation) ──
+    if (mol.calcMode === 'td' && (!mol.optical_spectrum || mol.optical_spectrum.energy_ev.length === 0)) {
+        return (
+            <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ padding: '6px 12px', background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: 6, fontSize: 10, color: '#8892a4' }}>
+                    非 delta-kick 激励（Gaussian / 正弦 / CW）不产生线性光学吸收谱。以下展示时域偶极响应。
+                </div>
+                {mol.td_dipole && mol.td_dipole.time.length > 0
+                    ? <TdDipolePanel dipole={mol.td_dipole} />
+                    : <div style={{ color: '#8892a4', fontSize: 11, padding: '12px 16px' }}>TD 计算完成，时域偶极数据暂未解析或为空。</div>
+                }
+                <VisItRenderPanel moleculeName={mol.moleculeName} />
+            </div>
+        );
+    }
+
+    // ── Optical Absorption Spectrum (TD mode — delta-kick only) ──
     if (mol.calcMode === 'td' && mol.optical_spectrum) {
         const { energy_ev, cross_section } = mol.optical_spectrum;
-        if (!energy_ev || energy_ev.length === 0) {
-            return <div style={{ color: '#8892a4', fontSize: 12, padding: 20 }}>Waiting for spectral data…</div>;
-        }
         const [specCurve, setSpecCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, width: 2 });
         const [specRange, setSpecRange] = React.useState<AxisRange>(emptyRange);
         const eMax = applyRange(Math.max(...energy_ev), specRange.xMax);

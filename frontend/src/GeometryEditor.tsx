@@ -494,11 +494,32 @@ export function GeometryEditor({ onChange, boxRadius }: GeometryEditorProps) {
             )}
 
             {/* ── Summary ── */}
-            <div style={{ fontSize: 9, color: '#374151', marginBottom: 8, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: 9, color: '#374151', marginBottom: 4, fontFamily: 'monospace' }}>
                 {generatedAtoms.length} 个原子
                 {formula ? ` · ${formula}` : ''}
                 {generatedAtoms.length === 0 && <span style={{ color: '#ef4444' }}> — 无原子，请检查参数</span>}
             </div>
+
+            {/* ── Octopus coordinate file preview ── */}
+            {generatedAtoms.length > 0 && (
+                <details style={{ marginBottom: 8 }}>
+                    <summary style={{ fontSize: 9, color: '#4b5563', cursor: 'pointer', userSelect: 'none' }}>
+                        %Coordinates (Octopus inp 格式，前 {Math.min(50, generatedAtoms.length)} / {generatedAtoms.length} 个原子)
+                    </summary>
+                    <pre style={{
+                        fontSize: 8, color: '#8892a4', fontFamily: "'SF Mono', ui-monospace, monospace",
+                        background: '#050912', borderRadius: 4, padding: '6px 8px',
+                        marginTop: 4, overflow: 'auto', maxHeight: 180, lineHeight: 1.5,
+                    }}>
+                        {`%Coordinates\n` +
+                         generatedAtoms.slice(0, 50).map(a =>
+                             `  '${a.symbol}' | ${a.x.toFixed(6)} | ${a.y.toFixed(6)} | ${a.z.toFixed(6)}`
+                         ).join('\n') +
+                         `\n%` +
+                         (generatedAtoms.length > 50 ? `\n  # ... 还有 ${generatedAtoms.length - 50} 个原子未显示` : '')}
+                    </pre>
+                </details>
+            )}
 
             {/* ── Live 3D preview ── */}
             <Mol3DViewer
