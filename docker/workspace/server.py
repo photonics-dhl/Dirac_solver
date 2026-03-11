@@ -418,7 +418,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "  energy\n"
             inp += "%\n"
         else:
-            # Ground State: output axis slices (*.y=0,z=0) + density
+            # Ground State: output BOTH axis slices (*.y=0,z=0) AND full 3D cube files
             inp += f"ExtraStates = {extra_states_3d}\n"
             inp += "%Output\n"
             inp += "  wfs\n"
@@ -427,8 +427,9 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "  eigenvalues\n"
             inp += "  dos\n"
             inp += "%\n"
-            # axis_x produces *.y=0,z=0 slice files readable by parse_octopus_wfs_1d
-            inp += "OutputFormat = axis_x\n"
+            # axis_x: 1D line-scan files (fast, for wavefunction 1D plots)
+            # cube: full 3D volumetric data (for proper 2D heatmaps and 3D isosurfaces)
+            inp += "OutputFormat = cube + axis_x\n"
 
         return inp
 

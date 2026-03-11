@@ -332,12 +332,18 @@ const OCTOPUS_OUTPUT_DIR = process.env.OCTOPUS_OUTPUT_DIR
 const MPL_SCRIPT = path.join(process.cwd(), 'src', 'render_mpl.py');
 
 /** Render a 1D/2D slice using matplotlib (fast, reliable). */
-function renderWithMatplotlib(inputPath: string, plotType: string, outputPng: string): Promise<{ success: boolean; pngBase64?: string; durationMs: number; reason?: string }> {
+function renderWithMatplotlib(
+    inputPath: string, plotType: string, outputPng: string,
+    isoValue?: number, colormap?: string
+): Promise<{ success: boolean; pngBase64?: string; durationMs: number; reason?: string }> {
     return new Promise((resolve) => {
         const start = Date.now();
         // Matplotlib lives in the system python (not .venv), use python3 directly
         const pyExe = process.platform === 'win32' ? 'python' : 'python3';
-        const proc = spawn(pyExe, [MPL_SCRIPT, inputPath, plotType, outputPng], {
+        const extraArgs: string[] = [];
+        if (isoValue !== undefined) extraArgs.push(String(isoValue));
+        if (colormap)               extraArgs.push(colormap);
+        const proc = spawn(pyExe, [MPL_SCRIPT, inputPath, plotType, outputPng, ...extraArgs], {
             cwd: process.cwd(),
             shell: false,
             windowsHide: process.platform === 'win32',
@@ -369,59 +375,96 @@ app.post('/api/physics/visualize', async (req, res) => {
             wfStateIndex?: number;
         };
 
-        // Build padded wavefunction filename from state index
         const stateIdx = wfStateIndex ?? 1;
-        const wfFile = `wf-st${String(stateIdx).padStart(5, '0')}.y=0,z=0`;
+        const wfSliceFile = `wf-st${String(stateIdx).padStart(5, '0')}.y=0,z=0`;
+        const wfCubeFile  = `wf-st${String(stateIdx).padStart(5, '0')}.cube`;
 
-        const defaultInputs: Record<string, string> = {
-            wavefunction_1d: path.join(OCTOPUS_OUTPUT_DIR, wfFile),
-            density_2d:      path.join(OCTOPUS_OUTPUT_DIR, 'density.y=0,z=0'),
-            density_3d:      path.join(OCTOPUS_OUTPUT_DIR, 'density.y=0,z=0'),
-        };
+        // Resolve input file path (docker path → host path if needed)
+        const resolveInput = (filePath: string) =>
+            filePath.startsWith('/') ? dockerPathToWindows(filePath) : filePath;
 
-        const inputWindowsPath = inputFile
-            ? (inputFile.startsWith('/') ? dockerPathToWindows(inputFile) : inputFile)
-            : (defaultInputs[plotType ?? 'wavefunction_1d'] ?? defaultInputs.wavefunction_1d);
+        // ── Wavefunction 1D (axis_x slice file) ────────────────────────────
+        if (plotType === 'wavefunction_1d') {
+            const inputPath = inputFile
+                ? resolveInput(inputFile)
+                : path.join(OCTOPUS_OUTPUT_DIR, wfSliceFile);
 
-        if (!fs.existsSync(inputWindowsPath)) {
-            return res.json({ status: 'error', reason: `Data file not found: ${path.basename(inputWindowsPath)}. Run an Octopus calculation first.` });
-        }
+            // Prefer 2D cube render if cube file exists
+            const cubeFile = path.join(OCTOPUS_OUTPUT_DIR, wfCubeFile);
+            if (!inputFile && fs.existsSync(cubeFile)) {
+                const outputPng = path.join(OCTOPUS_OUTPUT_DIR, `render_wf_state${stateIdx}_2d.png`);
+                console.log(`[mpl] Rendering wavefunction_2d_cube for state ${stateIdx}`);
+                const result = await renderWithMatplotlib(cubeFile, 'wavefunction_2d_cube', outputPng);
+                if (result.success && result.pngBase64) {
+                    return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_2d' });
+                }
+                // fallback to 1D slice below
+            }
 
-        const outputPngPath = path.join(OCTOPUS_OUTPUT_DIR, `render_${plotType}.png`);
-
-        // ── 1D/2D → matplotlib (fast, proper dark-themed chart) ──────────────
-        if (plotType === 'wavefunction_1d' || plotType === 'density_2d') {
-            console.log(`[mpl] Rendering ${plotType}: ${path.basename(inputWindowsPath)}`);
-            const result = await renderWithMatplotlib(inputWindowsPath, plotType, outputPngPath);
+            if (!fs.existsSync(inputPath)) {
+                return res.json({ status: 'error', reason: `Data file not found: ${path.basename(inputPath)}. Run an Octopus GS calculation first.` });
+            }
+            const outputPng = path.join(OCTOPUS_OUTPUT_DIR, `render_wavefunction_1d_st${stateIdx}.png`);
+            console.log(`[mpl] Rendering wavefunction_1d: ${path.basename(inputPath)}`);
+            const result = await renderWithMatplotlib(inputPath, 'wavefunction_1d', outputPng);
             if (result.success && result.pngBase64) {
-                return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs });
+                return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'axis_x' });
             }
             return res.json({ status: 'error', reason: result.reason });
         }
 
-        // ── 3D → VisIt (isosurface / volume rendering) ────────────────────────
-        if (!isVisItAvailable()) {
-            return res.json({
-                status: 'not_available',
-                reason: 'VisIt not found. Set VISIT_EXE env var to your visit executable path, or ensure "visit" is on PATH.'
-            });
+        // ── Density 2D — true heatmap from cube file ───────────────────────
+        if (plotType === 'density_2d') {
+            const cubeFile = inputFile ? resolveInput(inputFile) : path.join(OCTOPUS_OUTPUT_DIR, 'density.cube');
+            const outputPng = path.join(OCTOPUS_OUTPUT_DIR, 'render_density_2d.png');
+
+            if (fs.existsSync(cubeFile)) {
+                console.log(`[mpl] Rendering density_2d_cube from: ${path.basename(cubeFile)}`);
+                const result = await renderWithMatplotlib(
+                    cubeFile, 'density_2d_cube', outputPng,
+                    undefined, colormap ?? 'plasma'
+                );
+                if (result.success && result.pngBase64) {
+                    return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_2d' });
+                }
+                console.warn(`[mpl] Cube render failed: ${result.reason} — falling back to 1D slice`);
+            }
+
+            // Fallback: legacy 1D line slice
+            const sliceFile = path.join(OCTOPUS_OUTPUT_DIR, 'density.y=0,z=0');
+            if (!fs.existsSync(sliceFile)) {
+                return res.json({ status: 'error', reason: 'density.cube and density.y=0,z=0 not found. Run an Octopus GS calculation first.' });
+            }
+            const result = await renderWithMatplotlib(sliceFile, 'density_2d', outputPng);
+            if (result.success && result.pngBase64) {
+                return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'axis_x_fallback' });
+            }
+            return res.json({ status: 'error', reason: result.reason });
         }
 
-        const scriptPath = writeVisItScript({
-            plotType: plotType as any,
-            inputWindowsPath,
-            outputPngWindowsPath: outputPngPath,
-            isoValue,
-            colormap,
-        });
+        // ── Density 3D — isosurface panels from cube file (no VisIt needed) ─
+        if (plotType === 'density_3d') {
+            const cubeFile = inputFile ? resolveInput(inputFile) : path.join(OCTOPUS_OUTPUT_DIR, 'density.cube');
+            const outputPng = path.join(OCTOPUS_OUTPUT_DIR, 'render_density_3d.png');
 
-        console.log(`[VisIt] Rendering ${plotType}: ${scriptPath}`);
-        const result = await renderWithVisIt({ scriptPath, outputPngPath, timeoutMs: 90_000 });
+            if (!fs.existsSync(cubeFile)) {
+                return res.json({
+                    status: 'not_available',
+                    reason: 'density.cube not found. Run a 3D GS Octopus calculation first (the cube file requires OutputFormat = cube + axis_x in the input).'
+                });
+            }
 
-        if (result.success && result.pngBase64) {
-            return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs });
+            const isoArg = isoValue ?? 0.15;
+            const cmapArg = colormap ?? 'hot';
+            console.log(`[mpl] Rendering density_3d_iso from: ${path.basename(cubeFile)} iso=${isoArg}`);
+            const result = await renderWithMatplotlib(cubeFile, 'density_3d_iso', outputPng, isoArg, cmapArg);
+            if (result.success && result.pngBase64) {
+                return res.json({ status: 'ok', pngBase64: result.pngBase64, durationMs: result.durationMs, source: 'cube_3d' });
+            }
+            return res.json({ status: 'error', reason: result.reason });
         }
-        return res.json({ status: 'error', reason: result.reason || result.stderr });
+
+        return res.json({ status: 'error', reason: `Unknown plotType: ${plotType}` });
 
     } catch (e: any) {
         console.error("[Visualize] Error:", e.message);
