@@ -191,11 +191,11 @@ def render_density_2d_legacy(input_path: str, output_png: str):
 # ══════════════════════════════════════════════════════════════════
 
 def render_density_2d_cube(cube_path: str, output_png: str, colormap: str = "plasma",
-                           slice_pos: float = None):
+                           slice_pos: float = None, slice_axis: str = 'z'):
     """
     True 2D electron density map — three orthogonal slices from .cube file.
-    If slice_pos is given, XY panel uses that z value, XZ uses that y, YZ uses that x.
-    Otherwise defaults to the box centre.
+    slice_axis ('x','y','z') selects which panel is moved by slice_pos.
+    The other two panels remain at the box centre.
     """
     data, x, y, z = parse_cube_file(cube_path)
 
@@ -204,9 +204,9 @@ def render_density_2d_cube(cube_path: str, output_png: str, colormap: str = "pla
             return len(arr) // 2
         return int(np.abs(arr - val).argmin())
 
-    ix = _nearest(x, slice_pos)
-    iy = _nearest(y, slice_pos)
-    iz = _nearest(z, slice_pos)
+    ix = _nearest(x, slice_pos if slice_axis == 'x' else None)
+    iy = _nearest(y, slice_pos if slice_axis == 'y' else None)
+    iz = _nearest(z, slice_pos if slice_axis == 'z' else None)
 
     sl_xy = np.abs(data[:, :, iz]).T    # (NY, NX)
     sl_xz = np.abs(data[:, iy, :]).T    # (NZ, NX)
@@ -413,6 +413,7 @@ if __name__ == "__main__":
     colormap   = sys.argv[5] if len(sys.argv) > 5 else None
     raw_sp     = sys.argv[6] if len(sys.argv) > 6 else ''
     slice_pos  = float(raw_sp) if raw_sp else None     # slice position in Bohr
+    slice_axis = sys.argv[7] if len(sys.argv) > 7 else 'z'  # which axis slice_pos applies to
 
     if not os.path.isfile(input_file):
         print(f"[mpl] ERROR: input file not found: {input_file}", file=sys.stderr)
@@ -426,7 +427,7 @@ if __name__ == "__main__":
         render_density_2d_legacy(input_file, out_png)
     elif plot_type == "density_2d_cube":
         render_density_2d_cube(input_file, out_png, colormap=colormap or "plasma",
-                               slice_pos=slice_pos)
+                               slice_pos=slice_pos, slice_axis=slice_axis)
     elif plot_type == "density_3d_iso":
         render_density_3d_iso(input_file, out_png,
                               isovalue=isovalue, colormap=colormap or "hot",

@@ -1663,6 +1663,7 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
             if (plotType === 'density_2d' || plotType === 'density_3d') {
                 const sp = parseFloat(slicePos);
                 if (!isNaN(sp)) body.slicePos = sp;
+                body.sliceAxis = sliceAxis;
             }
             const resp = await fetch(`${API_BASE}/api/physics/visualize`, {
                 method: 'POST',
