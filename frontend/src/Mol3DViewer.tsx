@@ -154,7 +154,7 @@ export function Mol3DViewer({
     const rotRef = useRef({ rx: 0.35, ry: 0.25 });
     const dragRef = useRef<{ x: number; y: number } | null>(null);
     const scaleRef = useRef(1.0);
-    const autoRef = useRef(true);
+    const autoRef = useRef(false);  // no auto-rotation by default
     const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const [tableOpen, setTableOpen] = React.useState(false);
 
@@ -445,13 +445,13 @@ export function Mol3DViewer({
     };
     const onMouseUp = () => {
         dragRef.current = null;
-        timerRef.current = setTimeout(() => { autoRef.current = true; }, 2500);
+        // no auto-rotation restart — user controls orientation
     };
 
     const onReset = () => {
         rotRef.current = { rx: 0.35, ry: 0.25 };
         scaleRef.current = 1.0;
-        autoRef.current = true;
+        autoRef.current = false;
     };
 
     const uniqueElems = [...new Set(atoms.map(a => a.symbol))];

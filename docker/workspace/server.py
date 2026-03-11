@@ -1,5 +1,6 @@
 import asyncio
 import json
+import math
 import os
 import re
 import shutil
@@ -13,6 +14,19 @@ from starlette.responses import JSONResponse
 
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
+
+
+def sanitize_floats(obj):
+    """Recursively replace NaN/Inf with 0.0 so JSON serialization never crashes."""
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return 0.0
+        return obj
+    elif isinstance(obj, dict):
+        return {k: sanitize_floats(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [sanitize_floats(v) for v in obj]
+    return obj
 import mcp.types as types
 from jinja2 import Template
 
@@ -1200,7 +1214,7 @@ async def solve_handler(request: Request):
         "potential_components": result.get("potential_components"),
         "message": result.get("stderr_tail", str(result.get("message", ""))),
     }
-    return JSONResponse(response)
+    return JSONResponse(sanitize_floats(response))
 
 
 # ─── MCP tool handlers (kept for MCP SDK clients) ─────────────────

@@ -1538,13 +1538,13 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
     const [sliceAxis, setSliceAxis] = React.useState<'x'|'y'|'z'>('z');
     const [slicePos, setSlicePos] = React.useState('0.0');
     const [colormap, setColormap] = React.useState('hot');
-    const [isoValue, setIsoValue] = React.useState('0.01');
+    const [isoValue, setIsoValue] = React.useState('0.05');
     const [durationMs, setDurationMs] = React.useState<number|null>(null);
 
     const PLOT_LABELS: Record<VisItPlotType, string> = {
         wavefunction_1d: '波函数 1D',
         density_2d:      '密度 2D切片',
-        density_3d:      '密度 3D等值面',
+        density_3d:      '电子云 3D',
     };
 
     const handleRender = async () => {
@@ -1665,8 +1665,8 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
                     )}
                     {plotType === 'density_3d' && (
                         <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
-                            等值面阈值
-                            <input type="number" value={isoValue} onChange={e => setIsoValue(e.target.value)} step="0.001"
+                            云密度阈值 (0–1)
+                            <input type="number" value={isoValue} onChange={e => setIsoValue(e.target.value)} step="0.01" min="0.01" max="0.5"
                                 style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 80 }} />
                         </label>
                     )}

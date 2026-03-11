@@ -262,75 +262,125 @@ def render_density_3d_iso(cube_path: str, output_png: str,
                            isovalue: float = None, colormap: str = "hot",
                            slice_pos: float = None, slice_axis: str = 'z'):
     """
-    3D electron density: 4 panels (XY, XZ, YZ slices + max-intensity projection).
-    slice_axis ('x','y','z') selects which panel is moved by slice_pos.
+    Electron cloud visualization: 3D volumetric scatter cloud (left) +
+    max-intensity projection with contours (right).
+    Shows the actual 3D spatial extent of the electron density, unlike
+    the 2D slice mode which repeats the same information.
     """
-    data, x, y, z = parse_cube_file(cube_path)
+    from mpl_toolkits.mplot3d import Axes3D   # noqa: F401
 
+    data, x, y, z = parse_cube_file(cube_path)
     vmax = float(data.max())
-    if vmax <= 0:
-        vmax = 1.0
+    if vmax <= 1e-30:
+        vmax = 1e-30
     data_norm = data / vmax
 
-    if isovalue is None:
-        isovalue = 0.15   # 15% of maximum density
+    cloud_thresh = isovalue if (isovalue is not None) else 0.05
 
-    def _nearest(arr, val):
-        if val is None:
-            return len(arr) // 2
-        return int(np.abs(arr - val).argmin())
+    # ── Extract voxel coordinates above threshold ─────────────────
+    X3, Y3, Z3 = np.meshgrid(x, y, z, indexing='ij')
+    mask = data_norm > cloud_thresh
+    xs = X3[mask].ravel()
+    ys = Y3[mask].ravel()
+    zs = Z3[mask].ravel()
+    vs = data_norm[mask].ravel()
 
-    ix = _nearest(x, slice_pos if slice_axis == 'x' else None)
-    iy = _nearest(y, slice_pos if slice_axis == 'y' else None)
-    iz = _nearest(z, slice_pos if slice_axis == 'z' else None)
+    # Downsample: weight high-density voxels more (they convey most info)
+    MAX_PTS = 4000
+    if len(xs) > MAX_PTS:
+        p = (vs ** 0.4)
+        p /= p.sum()
+        idx = np.random.choice(len(xs), MAX_PTS, replace=False, p=p)
+        xs, ys, zs, vs = xs[idx], ys[idx], zs[idx], vs[idx]
 
-    sl_xy = data_norm[:, :, iz].T     # (NY, NX)
-    sl_xz = data_norm[:, iy, :].T     # (NZ, NX)
-    sl_yz = data_norm[ix, :, :].T     # (NZ, NY)
-    mip   = data_norm.max(axis=2).T   # max projection along z: (NY, NX)
+    # Sort low-density first so high-density paints on top (painter's algo)
+    order = np.argsort(vs)
+    xs, ys, zs, vs = xs[order], ys[order], zs[order], vs[order]
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10), dpi=100)
-    fig.patch.set_facecolor(BG)
+    # ── Figure layout ─────────────────────────────────────────────
+    fig = plt.figure(figsize=(13, 6), dpi=110, facecolor=BG)
 
-    panels = [
-        (axes[0, 0], sl_xy, x, y, "x (Bohr)", "y (Bohr)", f"XY  z={z[iz]:.2f} Bohr"),
-        (axes[0, 1], sl_xz, x, z, "x (Bohr)", "z (Bohr)", f"XZ  y={y[iy]:.2f} Bohr"),
-        (axes[1, 0], sl_yz, y, z, "y (Bohr)", "z (Bohr)", f"YZ  x={x[ix]:.2f} Bohr"),
-        (axes[1, 1], mip,   x, y, "x (Bohr)", "y (Bohr)", "Max Intensity Projection (z-axis)"),
-    ]
+    # ── Panel 1: 3D electron cloud scatter ───────────────────────
+    ax3d = fig.add_subplot(121, projection='3d', facecolor=BG)
 
-    for ax, sl, xa, ya, xl, yl, ttl in panels:
-        apply_dark_style(fig, ax)
-        im = ax.imshow(
-            sl, origin="lower", aspect="auto",
-            extent=[xa[0], xa[-1], ya[0], ya[-1]],
-            cmap=colormap, vmin=0, vmax=1.0,
-            interpolation="bilinear",
-        )
-        try:
-            Xa, Ya = np.meshgrid(xa, ya)
-            ax.contour(Xa, Ya, sl, levels=[isovalue],
-                       colors="#00d4ff", linewidths=1.2, alpha=0.85)
-            ax.contour(Xa, Ya, sl, levels=[isovalue * 0.5],
-                       colors="#00d4ff", linewidths=0.5, alpha=0.35, linestyles="--")
-        except Exception:
-            pass
-        _dark_cbar(fig, im, ax, "ρ/ρ_max")
-        ax.set_xlabel(xl, fontsize=8)
-        ax.set_ylabel(yl, fontsize=8)
-        ax.set_title(ttl, fontsize=9, pad=5, color="#e2e8f0")
+    cmap_fn = plt.get_cmap(colormap)
+    # Multi-layer: plot quartile bands with increasing alpha for cloud depth
+    bands = [(0.00, 0.20, 0.12, 4),
+             (0.20, 0.45, 0.22, 10),
+             (0.45, 0.70, 0.40, 24),
+             (0.70, 0.90, 0.65, 50),
+             (0.90, 1.01, 0.90, 80)]
+    for lo, hi, alpha, sz in bands:
+        bm = (vs >= lo) & (vs < hi)
+        if bm.sum() == 0:
+            continue
+        colors_rgba = cmap_fn(vs[bm])
+        colors_rgba[:, 3] = alpha
+        ax3d.scatter(xs[bm], ys[bm], zs[bm],
+                     c=colors_rgba, s=sz,
+                     depthshade=True, linewidths=0)
+
+    # Axis appearance
+    ax3d.xaxis.pane.fill = False
+    ax3d.yaxis.pane.fill = False
+    ax3d.zaxis.pane.fill = False
+    for pane in (ax3d.xaxis.pane, ax3d.yaxis.pane, ax3d.zaxis.pane):
+        pane.set_edgecolor(GRID_COLOR)
+    ax3d.tick_params(colors=MUTED, labelsize=7)
+    ax3d.set_xlabel("x (Bohr)", fontsize=7, color=MUTED, labelpad=2)
+    ax3d.set_ylabel("y (Bohr)", fontsize=7, color=MUTED, labelpad=2)
+    ax3d.set_zlabel("z (Bohr)", fontsize=7, color=MUTED, labelpad=2)
+    ax3d.set_title("Electron Cloud  (3D)", fontsize=9, color="#e2e8f0", pad=6)
+
+    # Equal axes: force same range on all three axes
+    _all = np.concatenate([xs, ys, zs])
+    _mid = (_all.max() + _all.min()) / 2.0
+    _hw  = max((_all.max() - _all.min()) / 2.0, 0.5)
+    ax3d.set_xlim(_mid - _hw, _mid + _hw)
+    ax3d.set_ylim(_mid - _hw, _mid + _hw)
+    ax3d.set_zlim(_mid - _hw, _mid + _hw)
+    try:
+        ax3d.set_box_aspect([1, 1, 1])
+    except Exception:
+        pass
+    ax3d.view_init(elev=25, azim=45)
+
+    # ── Panel 2: max-intensity projection + contours ──────────────
+    ax2d = fig.add_subplot(122)
+    apply_dark_style(fig, ax2d)
+
+    mip = data_norm.max(axis=2).T   # (NY, NX) — project along z
+    im = ax2d.imshow(
+        mip, origin="lower", aspect="equal",
+        extent=[x[0], x[-1], y[0], y[-1]],
+        cmap=colormap, vmin=0, vmax=1.0,
+        interpolation="gaussian",
+    )
+    Xm, Ym = np.meshgrid(x, y)
+    contour_levels = [cloud_thresh, min(0.35, 0.35), min(0.70, 0.70)]
+    contour_levels = sorted(set(lv for lv in contour_levels if 0 < lv < 1))
+    if contour_levels:
+        ax2d.contour(Xm, Ym, mip, levels=contour_levels,
+                     colors=["#3b82f6", "#00d4ff", "white"],
+                     linewidths=[0.6, 1.1, 1.6],
+                     alpha=0.85)
+    _dark_cbar(fig, im, ax2d, "ρ/ρ_max")
+    ax2d.set_xlabel("x (Bohr)", fontsize=8)
+    ax2d.set_ylabel("y (Bohr)", fontsize=8)
+    ax2d.set_title("Max-Intensity Projection  (XY plane, z-integrated)",
+                   fontsize=9, color="#e2e8f0")
 
     fig.suptitle(
-        f"3D Electron Density  —  Isosurface iso={isovalue:.2f}  (cyan contour)",
-        color="#e2e8f0", fontsize=11, fontweight="light", y=1.01,
+        f"3D Electron Density  —  cloud threshold {cloud_thresh:.2f}ρ_max  ·  {colormap} colormap",
+        color="#e2e8f0", fontsize=10, fontweight="light", y=1.01,
     )
-    plt.tight_layout(pad=1.8)
-    fig.savefig(output_png, dpi=100, bbox_inches="tight",
+    plt.tight_layout(pad=1.6)
+    fig.savefig(output_png, dpi=110, bbox_inches="tight",
                 facecolor=BG, edgecolor="none")
     plt.close(fig)
-    del data, data_norm
+    del data, data_norm, X3, Y3, Z3
     gc.collect()
-    print(f"[mpl] Saved density_3d_iso: {output_png}")
+    print(f"[mpl] Saved density_3d_cloud: {output_png}")
 
 
 # ══════════════════════════════════════════════════════════════════
