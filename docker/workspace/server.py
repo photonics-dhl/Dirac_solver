@@ -457,51 +457,71 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                 inp += f"TDDeltaStrength = {amplitude}\n"
                 inp += "TDDeltaKickTime = 0.0\n"
                 inp += f"TDPolarizationDirection = {polarization}\n\n"
-                
-                # Free electron probe alongside delta kick: needs its own %TDExternalFields block
+
+                # Free electron probe alongside delta kick
+                # Octopus v14+: TDExternalFields format changed to:
+                #   type | "func_name" | pol_x | pol_y | pol_z | amplitude
+                # The probe uses the dipole-approximation Coulomb E-field at the molecule:
+                #   E(t) = q*(r_mol - r_probe) / |r|^3   [evaluated at origin]
+                # Probe travels along x, passes closest at t = t_center.
                 if config.get("feProbeEnabled", False):
-                    fe_v   = float(config.get("feProbeVelocity", 0.5))
-                    fe_y0  = float(config.get("feProbeY0", 2.0))
-                    fe_z0  = float(config.get("feProbeZ0", 0.0))
-                    fe_q   = float(config.get("feProbeCharge", -1.0))
-                    c_au   = 137.036
-                    v_au   = fe_v * c_au
-                    expr = f"{fe_q}/sqrt((x - {v_au:.4f}*t)^2 + {fe_y0}^2 + {fe_z0}^2 + 0.01)"
-                    inp += "# ── Free Electron Probe potential ──\n"
+                    fe_v     = float(config.get("feProbeVelocity", 0.5))
+                    fe_y0    = float(config.get("feProbeY0", 2.0))
+                    fe_z0    = float(config.get("feProbeZ0", 0.0))
+                    fe_q     = float(config.get("feProbeCharge", -1.0))
+                    c_au     = 137.036
+                    v_au     = fe_v * c_au
+                    t_center = float(steps) * float(td_dt) / 2.0
+                    neg_q    = -fe_q  # = +1 for electron (q=-1)
+                    r3 = (f"(({v_au:.4f}*(t-{t_center:.3f}))^2"
+                          f"+{fe_y0:.4f}^2+{fe_z0:.4f}^2+0.01)^1.5")
+                    Ex = f"({neg_q:.6f}*({v_au:.4f}*(t-{t_center:.3f})))/({r3})"
+                    Ey = f"({neg_q:.6f}*{fe_y0:.6f})/({r3})"
+                    inp += "# ── Free Electron Probe (Coulomb E-field at molecule) ──\n"
                     inp += "%TDExternalFields\n"
-                    inp += f"  scalar_potential | 1 | 0 | 0 | 1.0 | \"fe_probe\"\n"
+                    inp += '  electric_field | "probe_x" | 1 | 0 | 0 | 1.0\n'
+                    inp += '  electric_field | "probe_y" | 0 | 1 | 0 | 1.0\n'
                     inp += "%\n"
                     inp += "%TDFunctions\n"
-                    inp += f"  \"fe_probe\" | tdf_from_expr | \"{expr}\"\n"
+                    inp += f'  "probe_x" | tdf_from_expr | "{Ex}"\n'
+                    inp += f'  "probe_y" | tdf_from_expr | "{Ey}"\n'
                     inp += "%\n\n"
             else:
                 # External field via %TDExternalFields + %TDFunctions
+                # Octopus v14+: type | "func_name" | pol_x | pol_y | pol_z | amplitude
                 pol_vec = {1: "1 | 0 | 0", 2: "0 | 1 | 0", 3: "0 | 0 | 1"}[polarization]
-                # Build the external fields block — may include both signal and probe
-                ext_fields = [f"  electric_field | {pol_vec} | {amplitude} | \"td_pulse\""]
-                td_funcs = []
+                ext_fields = [f'  electric_field | "td_pulse" | {pol_vec} | {amplitude}']
+                td_funcs: list = []
                 if excitation_type == "gaussian":
                     sigma = float(config.get("tdGaussianSigma", 5.0))
-                    t0    = float(config.get("tdGaussianT0",    10.0))
-                    td_funcs.append(f"  \"td_pulse\" | tdf_gaussian | {sigma} | {t0} | {sigma}")
+                    t0    = float(config.get("tdGaussianT0",   10.0))
+                    # tdf_gaussian: height | center | width  (height=1 → amplitude controlled by TDExternalFields)
+                    td_funcs.append(f'  "td_pulse" | tdf_gaussian | 1.0 | {t0} | {sigma}')
                 elif excitation_type == "sin":
                     freq = float(config.get("tdSinFrequency", 0.057))
-                    td_funcs.append(f"  \"td_pulse\" | tdf_from_expr | \"sin({freq}*t)\"")
+                    td_funcs.append(f'  "td_pulse" | tdf_from_expr | "sin({freq}*t)"')
                 elif excitation_type == "continuous_wave":
                     freq = float(config.get("tdSinFrequency", 0.057))
-                    td_funcs.append(f"  \"td_pulse\" | tdf_from_expr | \"cos({freq}*t)\"")
+                    td_funcs.append(f'  "td_pulse" | tdf_from_expr | "cos({freq}*t)"')
 
-                # Append probe if enabled — combined into same %TDExternalFields block
+                # Append probe if enabled — same %TDExternalFields block
                 if config.get("feProbeEnabled", False):
-                    fe_v   = float(config.get("feProbeVelocity", 0.5))
-                    fe_y0  = float(config.get("feProbeY0", 2.0))
-                    fe_z0  = float(config.get("feProbeZ0", 0.0))
-                    fe_q   = float(config.get("feProbeCharge", -1.0))
-                    c_au   = 137.036
-                    v_au   = fe_v * c_au
-                    expr = f"{fe_q}/sqrt((x - {v_au:.4f}*t)^2 + {fe_y0}^2 + {fe_z0}^2 + 0.01)"
-                    ext_fields.append(f"  scalar_potential | 1 | 0 | 0 | 1.0 | \"fe_probe\"")
-                    td_funcs.append(f"  \"fe_probe\" | tdf_from_expr | \"{expr}\"")
+                    fe_v     = float(config.get("feProbeVelocity", 0.5))
+                    fe_y0    = float(config.get("feProbeY0", 2.0))
+                    fe_z0    = float(config.get("feProbeZ0", 0.0))
+                    fe_q     = float(config.get("feProbeCharge", -1.0))
+                    c_au     = 137.036
+                    v_au     = fe_v * c_au
+                    t_center = float(steps) * float(td_dt) / 2.0
+                    neg_q    = -fe_q
+                    r3 = (f"(({v_au:.4f}*(t-{t_center:.3f}))^2"
+                          f"+{fe_y0:.4f}^2+{fe_z0:.4f}^2+0.01)^1.5")
+                    Ex = f"({neg_q:.6f}*({v_au:.4f}*(t-{t_center:.3f})))/({r3})"
+                    Ey = f"({neg_q:.6f}*{fe_y0:.6f})/({r3})"
+                    ext_fields.append('  electric_field | "probe_x" | 1 | 0 | 0 | 1.0')
+                    ext_fields.append('  electric_field | "probe_y" | 0 | 1 | 0 | 1.0')
+                    td_funcs.append(f'  "probe_x" | tdf_from_expr | "{Ex}"')
+                    td_funcs.append(f'  "probe_y" | tdf_from_expr | "{Ey}"')
 
                 inp += "%TDExternalFields\n"
                 inp += "\n".join(ext_fields) + "\n"
@@ -852,6 +872,86 @@ def parse_td_dipole(td_dir: str) -> dict:
     return result
 
 
+def compute_radiation_spectrum(td_dipole: dict) -> dict:
+    """Far-field emission power spectrum P(ω) ∝ ω²|d(ω)|² from Larmor formula.
+    A direct observable: intensity of photons emitted at each energy.
+    """
+    import numpy as np
+    t = np.array(td_dipole.get("time", []), dtype=float)
+    if len(t) < 8:
+        return {"frequency_ev": [], "intensity": []}
+    dt = float(t[1] - t[0])
+    n  = len(t)
+    dx = np.nan_to_num(np.array(td_dipole["dipole_x"], dtype=float))
+    dy = np.nan_to_num(np.array(td_dipole["dipole_y"], dtype=float))
+    dz = np.nan_to_num(np.array(td_dipole["dipole_z"], dtype=float))
+    # DC-remove + Hann window to suppress spectral leakage
+    win = np.hanning(n)
+    dx_w = (dx - dx.mean()) * win
+    dy_w = (dy - dy.mean()) * win
+    dz_w = (dz - dz.mean()) * win
+    # Ordinary frequency in a.u. → angular frequency → eV
+    freq_au = np.fft.rfftfreq(n, d=dt)   # units: 1/t_au
+    omega_au = 2.0 * np.pi * freq_au          # angular freq in a.u.
+    omega_ev = omega_au * 27.2114              # eV (1 Ha = 27.2114 eV)
+    d_sq = (np.abs(np.fft.rfft(dx_w))**2 +
+            np.abs(np.fft.rfft(dy_w))**2 +
+            np.abs(np.fft.rfft(dz_w))**2)
+    power = omega_au**2 * d_sq                 # P(ω) ∝ ω²|d(ω)|²
+    mask  = (omega_ev > 0.05) & (omega_ev < 60.0)
+    p_sel = power[mask]
+    p_max = float(p_sel.max()) if p_sel.size > 0 else 1.0
+    return {
+        "frequency_ev": omega_ev[mask].tolist(),
+        "intensity":    (p_sel / max(p_max, 1e-30)).tolist(),
+    }
+
+
+def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
+    """Energy Loss Spectroscopy (EELS) from TDDFT + electron probe.
+    EELS(ω) = (ω/π) · Im[ −d(ω) · E*_probe(ω) ]
+    The probe E-field is the dipole-approximation Coulomb field at the molecule.
+    """
+    import numpy as np
+    t = np.array(td_dipole.get("time", []), dtype=float)
+    if len(t) < 8:
+        return {"energy_ev": [], "eels": []}
+    dt       = float(t[1] - t[0])
+    n        = len(t)
+    steps    = int(config.get("octopusTdSteps", config.get("TDMaxSteps", 200)))
+    td_dt_c  = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05)))
+    fe_v     = float(config.get("feProbeVelocity", 0.5))
+    fe_y0    = float(config.get("feProbeY0", 2.0))
+    fe_z0    = float(config.get("feProbeZ0", 0.0))
+    fe_q     = float(config.get("feProbeCharge", -1.0))
+    v_au     = fe_v * 137.036
+    t_center = steps * td_dt_c / 2.0
+    neg_q    = -fe_q  # +1 for electron
+    # Reconstruct probe Coulomb E-field at molecule (origin)
+    r3       = ((v_au * (t - t_center))**2 + fe_y0**2 + fe_z0**2 + 0.01)**1.5
+    E_px     = neg_q * (v_au * (t - t_center)) / r3
+    E_py     = neg_q * fe_y0 / r3
+    dx = np.nan_to_num(np.array(td_dipole["dipole_x"], dtype=float))
+    dy = np.nan_to_num(np.array(td_dipole["dipole_y"], dtype=float))
+    win      = np.hanning(n)
+    freq_au  = np.fft.rfftfreq(n, d=dt)
+    omega_au = 2.0 * np.pi * freq_au
+    omega_ev = omega_au * 27.2114
+    dx_f = np.fft.rfft((dx - dx.mean()) * win)
+    dy_f = np.fft.rfft((dy - dy.mean()) * win)
+    Ex_f = np.fft.rfft(E_px * win)
+    Ey_f = np.fft.rfft(E_py * win)
+    cross = -(dx_f * np.conj(Ex_f) + dy_f * np.conj(Ey_f))
+    eels  = (omega_au / np.pi) * np.imag(cross)
+    mask     = (omega_ev > 0.05) & (omega_ev < 60.0)
+    eels_sel = np.clip(eels[mask], 0.0, None)
+    e_max    = float(eels_sel.max()) if eels_sel.size > 0 else 1.0
+    return {
+        "energy_ev": omega_ev[mask].tolist(),
+        "eels":      (eels_sel / max(e_max, 1e-30)).tolist(),
+    }
+
+
 async def run_octopus_calculation(config: dict) -> dict:
     """Run an Octopus calculation and return parsed results."""
     print(f"[DEBUG] run_octopus_calculation starting...")
@@ -1114,6 +1214,20 @@ async def run_octopus_calculation(config: dict) -> dict:
                     td_dipole_data = parse_td_dipole(td_dir)
                     print(f"[DEBUG] parse_td_dipole: {len(td_dipole_data.get('time', []))} steps")
                     response_data["molecular"]["td_dipole"] = td_dipole_data
+
+                    # Far-field radiation spectrum P(ω) ∝ ω²|d(ω)|²
+                    if len(td_dipole_data.get("time", [])) >= 8:
+                        response_data["molecular"]["radiation_spectrum"] = \
+                            compute_radiation_spectrum(td_dipole_data)
+                        print(f"[DEBUG] radiation_spectrum: "
+                              f"{len(response_data['molecular']['radiation_spectrum'].get('frequency_ev', []))} pts")
+
+                    # EELS from probe (only if probe was active)
+                    if config.get("feProbeEnabled") and len(td_dipole_data.get("time", [])) >= 8:
+                        response_data["molecular"]["eels_spectrum"] = \
+                            compute_eels_spectrum(td_dipole_data, config)
+                        print(f"[DEBUG] eels_spectrum: "
+                              f"{len(response_data['molecular']['eels_spectrum'].get('energy_ev', []))} pts")
 
                     # Persist TD output to /workspace/output for host access
                     output_dir = "/workspace/output"

@@ -138,6 +138,8 @@ export interface PhysicsResult {
             dipole_y: number[];
             dipole_z: number[];
         };
+        radiation_spectrum?: { frequency_ev: number[]; intensity: number[] };
+        eels_spectrum?: { energy_ev: number[]; eels: number[] };
     };
     computationTime: number;
 }
@@ -654,6 +656,8 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 converged: molData.converged,
                 optical_spectrum: molData.optical_spectrum,
                 td_dipole: molData.td_dipole,
+                radiation_spectrum: molData.radiation_spectrum,
+                eels_spectrum: molData.eels_spectrum,
             } : undefined,
         };
     }

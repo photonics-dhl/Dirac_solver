@@ -78,6 +78,8 @@ interface PhysicsResult {
             dipole_y: number[];
             dipole_z: number[];
         };
+        radiation_spectrum?: { frequency_ev: number[]; intensity: number[] };
+        eels_spectrum?: { energy_ev: number[]; eels: number[] };
         band_structure_data?: {
             kpoints: number[];
             bands: number[][];
@@ -955,6 +957,12 @@ function MolecularView({ result, resultHistory = {} }: {
                     ? <TdDipolePanel dipole={mol.td_dipole} />
                     : <div style={{ color: '#8892a4', fontSize: 11, padding: '12px 16px' }}>TD 计算完成，时域偶极数据暂未解析或为空。</div>
                 }
+                {mol.radiation_spectrum && mol.radiation_spectrum.frequency_ev.length > 0 && (
+                    <RadiationPanel spec={mol.radiation_spectrum} />
+                )}
+                {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
+                    <EELSPanel spec={mol.eels_spectrum} />
+                )}
                 <VisItRenderPanel moleculeName={mol.moleculeName} />
             </div>
         );
@@ -982,6 +990,12 @@ function MolecularView({ result, resultHistory = {} }: {
                 {/* TD Dipole Chart */}
                 {mol.td_dipole && mol.td_dipole.time.length > 0 && (
                     <TdDipolePanel dipole={mol.td_dipole} />
+                )}
+                {mol.radiation_spectrum && mol.radiation_spectrum.frequency_ev.length > 0 && (
+                    <RadiationPanel spec={mol.radiation_spectrum} />
+                )}
+                {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
+                    <EELSPanel spec={mol.eels_spectrum} />
                 )}
                 {/* ── GS Panels from history ── */}
                 {gsResult?.molecular && gsResult.molecular.energy_levels && gsResult.molecular.energy_levels.length > 0 && (() => {
@@ -1339,6 +1353,12 @@ function MolecularView({ result, resultHistory = {} }: {
             {mol.td_dipole && mol.td_dipole.time.length > 0 && (
                 <TdDipolePanel dipole={mol.td_dipole} />
             )}
+            {mol.radiation_spectrum && mol.radiation_spectrum.frequency_ev.length > 0 && (
+                <RadiationPanel spec={mol.radiation_spectrum} />
+            )}
+            {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
+                <EELSPanel spec={mol.eels_spectrum} />
+            )}
 
             {/* Band Structure — only for periodic crystals */}
             {mol.band_structure_data && mol.band_structure_data.kpoints.length > 0 && (
@@ -1429,6 +1449,60 @@ function TdDipolePanel({ dipole }: {
                     xMin={tMin} xMax={tMax} yMin={yMin} yMax={yMax} />
                 <LinePath xData={dipole.time} yData={yData} color="#a78bfa" strokeWidth={1.5}
                     xMin={tMin} xMax={tMax} yMin={yMin} yMax={yMax} />
+            </ChartContainer>
+        </div>
+    );
+}
+
+// ─── Radiation Spectrum Panel ─────────────────────────────────────
+
+function RadiationPanel({ spec }: { spec: { frequency_ev: number[]; intensity: number[] } }) {
+    const { frequency_ev, intensity } = spec;
+    if (!frequency_ev.length) return null;
+    const xMin = Math.min(...frequency_ev);
+    const xMax = Math.max(...frequency_ev);
+    const yMax = Math.max(...intensity.filter(isFinite), 0.001);
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 8 }}>
+            <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                远场辐射谱 &nbsp;
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#6b7280' }}>
+                    P(ω) ∝ ω²|d(ω)|²
+                </span>
+            </div>
+            <ChartContainer title="辐射功率谱  [归一化]"
+                exportData={{ x: frequency_ev, y: intensity, xLabel: 'E(eV)', yLabel: 'P(norm)', filename: 'radiation_spectrum' }}>
+                <Axes xLabel="Photon Energy (eV)" yLabel="P (norm.)"
+                    xMin={xMin} xMax={xMax} yMin={0} yMax={yMax} />
+                <LinePath xData={frequency_ev} yData={intensity} color="#f59e0b" strokeWidth={1.5}
+                    xMin={xMin} xMax={xMax} yMin={0} yMax={yMax} />
+            </ChartContainer>
+        </div>
+    );
+}
+
+// ─── EELS Panel ───────────────────────────────────────────────────
+
+function EELSPanel({ spec }: { spec: { energy_ev: number[]; eels: number[] } }) {
+    const { energy_ev, eels } = spec;
+    if (!energy_ev.length) return null;
+    const xMin = Math.min(...energy_ev);
+    const xMax = Math.max(...energy_ev);
+    const yMax = Math.max(...eels.filter(isFinite), 0.001);
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: 8 }}>
+            <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                电子能量损失谱 (EELS) &nbsp;
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#6b7280' }}>
+                    EELS(ω) = (ω/π) Im[−d·E*_probe]
+                </span>
+            </div>
+            <ChartContainer title="EELS  [归一化]"
+                exportData={{ x: energy_ev, y: eels, xLabel: 'E(eV)', yLabel: 'EELS(norm)', filename: 'eels_spectrum' }}>
+                <Axes xLabel="Energy Loss (eV)" yLabel="EELS (norm.)"
+                    xMin={xMin} xMax={xMax} yMin={0} yMax={yMax} />
+                <LinePath xData={energy_ev} yData={eels} color="#34d399" strokeWidth={1.5}
+                    xMin={xMin} xMax={xMax} yMin={0} yMax={yMax} />
             </ChartContainer>
         </div>
     );
