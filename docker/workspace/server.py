@@ -288,6 +288,10 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             periodic_dims = _CRYSTAL_DEFAULT_PD.get(molecule, 0)
         if periodic_dims > 0:
             inp += f"PeriodicDimensions = {periodic_dims}\n"
+            # Mixed periodicity (1D or 2D periodic + remaining finite directions with sphere bc)
+            # requires ExperimentalFeatures = yes in Octopus ≥ 13
+            if periodic_dims < dimensions:
+                inp += "ExperimentalFeatures = yes\n"
             # Use provided latticeVectors or built-in defaults
             lv = config.get("latticeVectors")
             if not lv:
@@ -323,6 +327,12 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "%\n"
             kgrid = config.get("kpointsGrid", "2 2 2")
             k_parts = kgrid.replace(',', ' ').split()
+            # For mixed-periodicity systems, only fill k-points along periodic axes;
+            # set k=1 for all finite (non-periodic) directions to avoid spurious bands.
+            if periodic_dims == 1:
+                k_parts = [k_parts[0], "1", "1"]
+            elif periodic_dims == 2:
+                k_parts = [k_parts[0], k_parts[1] if len(k_parts) > 1 else "2", "1"]
             inp += "%KPointsGrid\n"
             inp += f"  {'  |  '.join(k_parts[:3])}\n"
             inp += "%\n"
