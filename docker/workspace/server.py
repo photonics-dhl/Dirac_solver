@@ -459,11 +459,8 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                 inp += f"TDPolarizationDirection = {polarization}\n\n"
 
                 # Free electron probe alongside delta kick
-                # Octopus v14+: TDExternalFields format changed to:
-                #   type | "func_name" | pol_x | pol_y | pol_z | amplitude
-                # The probe uses the dipole-approximation Coulomb E-field at the molecule:
-                #   E(t) = q*(r_mol - r_probe) / |r|^3   [evaluated at origin]
-                # Probe travels along x, passes closest at t = t_center.
+                # Octopus 16.3 electric_field format:
+                #   type | pol_x | pol_y | pol_z | amplitude | "func_name"  (name LAST)
                 if config.get("feProbeEnabled", False):
                     fe_v     = float(config.get("feProbeVelocity", 0.5))
                     fe_y0    = float(config.get("feProbeY0", 2.0))
@@ -479,8 +476,8 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                     Ey = f"({neg_q:.6f}*{fe_y0:.6f})/({r3})"
                     inp += "# ── Free Electron Probe (Coulomb E-field at molecule) ──\n"
                     inp += "%TDExternalFields\n"
-                    inp += '  electric_field | "probe_x" | 1 | 0 | 0 | 1.0\n'
-                    inp += '  electric_field | "probe_y" | 0 | 1 | 0 | 1.0\n'
+                    inp += '  electric_field | 1 | 0 | 0 | 1.0 | "probe_x"\n'
+                    inp += '  electric_field | 0 | 1 | 0 | 1.0 | "probe_y"\n'
                     inp += "%\n"
                     inp += "%TDFunctions\n"
                     inp += f'  "probe_x" | tdf_from_expr | "{Ex}"\n'
@@ -488,9 +485,10 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                     inp += "%\n\n"
             else:
                 # External field via %TDExternalFields + %TDFunctions
-                # Octopus v14+: type | "func_name" | pol_x | pol_y | pol_z | amplitude
+                # Octopus 16.3 electric_field format:
+                #   type | pol_x | pol_y | pol_z | amplitude | "func_name"  (name LAST)
                 pol_vec = {1: "1 | 0 | 0", 2: "0 | 1 | 0", 3: "0 | 0 | 1"}[polarization]
-                ext_fields = [f'  electric_field | "td_pulse" | {pol_vec} | {amplitude}']
+                ext_fields = [f'  electric_field | {pol_vec} | {amplitude} | "td_pulse"']
                 td_funcs: list = []
                 if excitation_type == "gaussian":
                     sigma = float(config.get("tdGaussianSigma", 5.0))
@@ -518,8 +516,8 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                           f"+{fe_y0:.4f}^2+{fe_z0:.4f}^2+0.01)^1.5")
                     Ex = f"({neg_q:.6f}*({v_au:.4f}*(t-{t_center:.3f})))/({r3})"
                     Ey = f"({neg_q:.6f}*{fe_y0:.6f})/({r3})"
-                    ext_fields.append('  electric_field | "probe_x" | 1 | 0 | 0 | 1.0')
-                    ext_fields.append('  electric_field | "probe_y" | 0 | 1 | 0 | 1.0')
+                    ext_fields.append('  electric_field | 1 | 0 | 0 | 1.0 | "probe_x"')
+                    ext_fields.append('  electric_field | 0 | 1 | 0 | 1.0 | "probe_y"')
                     td_funcs.append(f'  "probe_x" | tdf_from_expr | "{Ex}"')
                     td_funcs.append(f'  "probe_y" | tdf_from_expr | "{Ey}"')
 
