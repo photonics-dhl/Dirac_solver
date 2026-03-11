@@ -153,6 +153,9 @@ function DiracSolverView() {
     const [showGeomPreview, setShowGeomPreview] = useState<boolean>(false);
     const [geomMode, setGeomMode] = useState<'preset' | 'custom'>('preset');
     const [customAtoms, setCustomAtoms] = useState<Atom3D[]>([]);
+    /** Atoms that have been explicitly confirmed for computation. null = user hasn't confirmed yet */
+    const [confirmedAtoms, setConfirmedAtoms] = useState<Atom3D[] | null>(null);
+    const [confirmedLabel, setConfirmedLabel] = useState<string>('');
 
     // ── Potential Field (Local 1D) ──
     const [potentialType, setPotentialType] = useState('InfiniteWell');
@@ -259,10 +262,10 @@ function DiracSolverView() {
                 octopusSpacing: parseFloat(octopusSpacing),
                 octopusRadius: parseFloat(octopusRadius),
                 octopusBoxShape,
-                molecule: geomMode === 'custom' && customAtoms.length > 0
-                    ? { name: 'Custom', atoms: customAtoms }
+                molecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
+                    ? { name: confirmedLabel || 'Custom', atoms: confirmedAtoms }
                     : octopusMolecule,
-                ...(geomMode === 'custom' && customAtoms.length > 0 ? { customAtoms } : {}),
+                ...(geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0 ? { customAtoms: confirmedAtoms } : {}),
                 octopusTdSteps: parseInt(octopusTdSteps),
                 octopusTdTimeStep: parseFloat(octopusTdTimeStep),
                 octopusPropagator,
@@ -639,7 +642,10 @@ function DiracSolverView() {
                                     {/* Preset / Custom mode selector */}
                                     <div style={{ display: 'flex', border: '1px solid #1f2937', borderRadius: 6, overflow: 'hidden', marginBottom: 6 }}>
                                         {(['preset', 'custom'] as const).map(m => (
-                                            <button key={m} onClick={() => setGeomMode(m)} style={{
+                                            <button key={m} onClick={() => {
+                                                setGeomMode(m);
+                                                if (m === 'preset') { setConfirmedAtoms(null); setConfirmedLabel(''); }
+                                            }} style={{
                                                 flex: 1, padding: '4px 0', fontSize: 10, cursor: 'pointer', border: 'none',
                                                 background: geomMode === m ? 'rgba(0,212,255,0.12)' : 'transparent',
                                                 color: geomMode === m ? '#00d4ff' : '#4b5563',
@@ -726,10 +732,60 @@ function DiracSolverView() {
                                     })()}
                                     </>) : (
                                         /* Custom geometry editor */
+                                        <>
                                         <GeometryEditor
                                             onChange={setCustomAtoms}
                                             boxRadius={parseFloat(octopusRadius) || 5}
+                                            initAtoms={MOLECULE_ATOMS[octopusMolecule]}
+                                            initLabel={octopusMolecule}
                                         />
+                                        {/* ── Confirm button ── */}
+                                        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                            <button
+                                                disabled={customAtoms.length === 0}
+                                                onClick={() => {
+                                                    setConfirmedAtoms([...customAtoms]);
+                                                    const cnt: Record<string,number> = {};
+                                                    customAtoms.forEach(a => { cnt[a.symbol] = (cnt[a.symbol] || 0) + 1; });
+                                                    const f = Object.entries(cnt).sort().map(([s,n]) => n===1?s:`${s}${n}`).join('');
+                                                    setConfirmedLabel(f || 'Custom');
+                                                }}
+                                                style={{
+                                                    width: '100%', padding: '7px 0', fontSize: 11,
+                                                    cursor: customAtoms.length === 0 ? 'not-allowed' : 'pointer',
+                                                    border: 'none', borderRadius: 6,
+                                                    background: customAtoms.length === 0
+                                                        ? 'rgba(255,255,255,0.04)'
+                                                        : 'rgba(0,212,255,0.12)',
+                                                    outline: customAtoms.length === 0
+                                                        ? '1px solid #1f2937'
+                                                        : '1px solid rgba(0,212,255,0.4)',
+                                                    color: customAtoms.length === 0 ? '#374151' : '#00d4ff',
+                                                    fontWeight: 600, letterSpacing: '0.04em',
+                                                    transition: 'all 0.15s',
+                                                }}
+                                            >
+                                                ✓ 确认坐标用于计算
+                                                {customAtoms.length > 0 && ` (${customAtoms.length} 原子)`}
+                                            </button>
+                                            {confirmedAtoms && confirmedAtoms.length > 0
+                                                ? (
+                                                    <div style={{ fontSize: 9, color: '#22c55e', padding: '3px 8px',
+                                                        background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
+                                                        borderRadius: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                        <span>✓</span>
+                                                        <span>已确认：<b style={{ fontFamily: 'monospace' }}>{confirmedLabel}</b> · {confirmedAtoms.length} 原子 — 将用于 Octopus 输入文件</span>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ fontSize: 9, color: '#f59e0b', padding: '3px 8px',
+                                                        background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+                                                        borderRadius: 4 }}>
+                                                        ⚠ 尚未确认 — 计算将使用预设分子坐标
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                        </>
                                     )}
                                     {octopusDimensions === '2D' && geomMode === 'preset' && (
                                         <div className="text-[10px] text-yellow-600 bg-yellow-950/30 border border-yellow-900/50 rounded-lg p-2 mt-1">

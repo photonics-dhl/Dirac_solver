@@ -129,9 +129,13 @@ function genHoleArray(
 export interface GeometryEditorProps {
     onChange: (atoms: Atom3D[]) => void;
     boxRadius: number;
+    /** Optional preset atoms to offer as a quick-import seed */
+    initAtoms?: Atom3D[];
+    /** Label for the preset (e.g. "N2") shown in the import button */
+    initLabel?: string;
 }
 
-export function GeometryEditor({ onChange, boxRadius }: GeometryEditorProps) {
+export function GeometryEditor({ onChange, boxRadius, initAtoms, initLabel }: GeometryEditorProps) {
 
     // ── UI state ─────────────────────────────────────────────────
     const [pattern, setPattern] = useState<PatternType>('regular_ring');
@@ -311,6 +315,20 @@ export function GeometryEditor({ onChange, boxRadius }: GeometryEditorProps) {
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#00d4ff', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
                     几何构型编辑器
                 </span>
+                {/* Import from preset button */}
+                {initAtoms && initAtoms.length > 0 && (
+                    <button
+                        onClick={() => { setPattern('manual'); setManAtoms(initAtoms!); }}
+                        title={`将 ${initLabel ?? '预设分子'} 的坐标导入到手动编辑模式`}
+                        style={{
+                            fontSize: 9, padding: '2px 8px', borderRadius: 3, border: 'none',
+                            cursor: 'pointer', background: 'rgba(0,212,255,0.08)',
+                            color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.25)',
+                        }}
+                    >
+                        ← 导入 {initLabel ?? '预设'}
+                    </button>
+                )}
                 {/* Coord unit toggle */}
                 <div style={{ display: 'flex', border: '1px solid #1f2937', borderRadius: 5, overflow: 'hidden', marginLeft: 'auto' }}>
                     {(['bohr', 'angstrom'] as CoordUnit[]).map(cu => (
