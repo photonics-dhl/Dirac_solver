@@ -6,6 +6,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { Mol3DViewer } from './Mol3DViewer';
 
 const API_BASE = '';
 
@@ -1365,9 +1366,16 @@ function MolecularView({ result, resultHistory = {} }: {
                 );
             })()}
 
-            {/* Molecular/Crystal Geometry Viewer */}
+            {/* Molecular/Crystal Geometry Viewer (3D) */}
             {mol.atom_positions && mol.atom_positions.length > 0 && (
-                <MoleculeGeometryView atoms={mol.atom_positions} boxRadius={mol.box_radius ?? 10} />
+                <Mol3DViewer
+                    atoms={mol.atom_positions}
+                    boxRadius={mol.box_radius ?? 10}
+                    width={420}
+                    height={300}
+                    showLegend
+                    showTable
+                />
             )}
 
             {/* VisIt 3D Rendering Panel */}
@@ -1495,126 +1503,6 @@ function DensityDifferencePanel({ data }: {
                         xMin={xMin} xMax={xMax} yMin={0} yMax={yAbs} />;
                 })()}
             </ChartContainer>
-        </div>
-    );
-}
-
-// ─── Molecule Geometry View ───────────────────────────────────────
-
-const ELEMENT_COLORS: Record<string, string> = {
-    H: '#e2e8f0', He: '#ff69b4', Li: '#cc80ff', C: '#909090',
-    N: '#3050F8', O: '#FF2010', Si: '#F0C8A0', Al: '#BFA6A6',
-    Na: '#AB5CF2', S: '#FFFF30', P: '#FF8000',
-};
-const COVALENT_R: Record<string, number> = {
-    H: 0.31, He: 0.28, Li: 1.28, C: 0.77, N: 0.75, O: 0.73, Si: 1.11, Al: 1.21, Na: 1.66,
-};
-
-function MoleculeGeometryView({ atoms, boxRadius }: {
-    atoms: Array<{ symbol: string; x: number; y: number; z: number }>;
-    boxRadius: number;
-}) {
-    const [proj, setProj] = React.useState<'xy' | 'xz' | 'yz'>('xy');
-    const W = 320; const H_SVG = 240; const PAD = 28;
-    const IW = W - 2 * PAD; const IH = H_SVG - 2 * PAD;
-    const R = boxRadius;
-
-    // Map 2 coords to SVG pixel space within the box ([-R, R] → [PAD, PAD+IW])
-    const toSVG = (a: number, b: number) => ({
-        sx: PAD + ((a + R) / (2 * R)) * IW,
-        sy: H_SVG - PAD - ((b + R) / (2 * R)) * IH,
-    });
-
-    const projCoords = (at: { x: number; y: number; z: number }) => {
-        if (proj === 'xy') return toSVG(at.x, at.y);
-        if (proj === 'xz') return toSVG(at.x, at.z);
-        return toSVG(at.y, at.z);
-    };
-    const [hA, hB] = proj === 'xy' ? ['x','y'] : proj === 'xz' ? ['x','z'] : ['y','z'];
-
-    const atomRadius = (sym: string) => Math.max(5, Math.min(10, (COVALENT_R[sym] ?? 0.8) * 6));
-
-    return (
-        <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:8, padding:10 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                <span style={{ fontSize:10, color:'#8892a4', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.05em' }}>
-                    几何构型 (Bohr)
-                </span>
-                {(['xy','xz','yz'] as const).map(p => (
-                    <button key={p} onClick={() => setProj(p)} style={{
-                        padding:'2px 7px', fontSize:9, cursor:'pointer', border:'none', borderRadius:3,
-                        background: proj===p ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.04)',
-                        outline: proj===p ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
-                        color: proj===p ? '#00d4ff' : '#8892a4',
-                    }}>{p.toUpperCase()}</button>
-                ))}
-                <span style={{ fontSize:9, color:'#4b5563', marginLeft:'auto' }}>
-                    Box: ±{R.toFixed(1)} Bohr  ·  {atoms.length} 原子
-                </span>
-            </div>
-            <svg width={W} height={H_SVG} style={{ display:'block', margin:'0 auto' }}>
-                {/* Box boundary */}
-                <rect x={PAD} y={PAD} width={IW} height={IH}
-                    fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={1} strokeDasharray="4,3" />
-                {/* Axis labels */}
-                <text x={PAD + IW/2} y={H_SVG - 4} textAnchor="middle" fontSize={8} fill="#4b5563">{hA} (Bohr)</text>
-                <text x={6} y={PAD + IH/2} textAnchor="middle" fontSize={8} fill="#4b5563"
-                    transform={`rotate(-90, 6, ${PAD + IH/2})`}>{hB} (Bohr)</text>
-                {/* Origin crosshair */}
-                {(() => { const {sx,sy}=toSVG(0,0); return <>
-                    <line x1={sx-4} x2={sx+4} y1={sy} y2={sy} stroke="rgba(255,255,255,0.15)" strokeWidth={0.8} />
-                    <line x1={sx} x2={sx} y1={sy-4} y2={sy+4} stroke="rgba(255,255,255,0.15)" strokeWidth={0.8} />
-                </>; })()}
-                {/* Bonds — draw first (under atoms) */}
-                {atoms.flatMap((a, i) => atoms.slice(i+1).map((b, j) => {
-                    const dx = a.x-b.x, dy = a.y-b.y, dz = a.z-b.z;
-                    const d = Math.sqrt(dx*dx+dy*dy+dz*dz);
-                    const maxBond = (COVALENT_R[a.symbol]??0.8) + (COVALENT_R[b.symbol]??0.8) + 0.6;
-                    if (d > maxBond * 1.5) return null;
-                    const {sx:ax,sy:ay}=projCoords(a); const {sx:bx,sy:by}=projCoords(b);
-                    return <line key={`b${i}-${i+1+j}`} x1={ax} y1={ay} x2={bx} y2={by}
-                        stroke="rgba(255,255,255,0.18)" strokeWidth={1.5} />;
-                }))}
-                {/* Atoms */}
-                {atoms.map((at, i) => {
-                    const {sx,sy} = projCoords(at);
-                    const r = atomRadius(at.symbol);
-                    const col = ELEMENT_COLORS[at.symbol] ?? '#a0aec0';
-                    return (
-                        <g key={i}>
-                            <circle cx={sx} cy={sy} r={r} fill={col} fillOpacity={0.85} stroke={col} strokeWidth={0.8} strokeOpacity={0.4} />
-                            <text x={sx} y={sy + r + 9} textAnchor="middle" fontSize={7} fill={col} opacity={0.9}>{at.symbol}</text>
-                        </g>
-                    );
-                })}
-            </svg>
-            {/* Coordinate table */}
-            <details style={{ marginTop:6 }}>
-                <summary style={{ fontSize:9, color:'#4b5563', cursor:'pointer', userSelect:'none' }}>
-                    原子坐标表 ▾
-                </summary>
-                <table style={{ width:'100%', fontSize:9, fontFamily:'monospace', borderCollapse:'collapse', marginTop:4 }}>
-                    <thead><tr style={{ color:'#4b5563' }}>
-                        <th style={{ textAlign:'left', padding:'2px 6px', fontWeight:400 }}>符号</th>
-                        <th style={{ textAlign:'right', padding:'2px 6px', fontWeight:400 }}>x (Bohr)</th>
-                        <th style={{ textAlign:'right', padding:'2px 6px', fontWeight:400 }}>y (Bohr)</th>
-                        <th style={{ textAlign:'right', padding:'2px 6px', fontWeight:400 }}>z (Bohr)</th>
-                    </tr></thead>
-                    <tbody>
-                        {atoms.map((at, i) => (
-                            <tr key={i} style={{ borderTop:'1px solid rgba(255,255,255,0.04)', color: ELEMENT_COLORS[at.symbol] ?? '#8892a4' }}>
-                                <td style={{ padding:'2px 6px' }}>{at.symbol}</td>
-                                <td style={{ padding:'2px 6px', textAlign:'right' }}>{at.x.toFixed(4)}</td>
-                                <td style={{ padding:'2px 6px', textAlign:'right' }}>{at.y.toFixed(4)}</td>
-                                <td style={{ padding:'2px 6px', textAlign:'right' }}>{at.z.toFixed(4)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </details>
-            <div style={{ marginTop:4, fontSize:9, color:'#4b5563', lineHeight:1.5 }}>
-                <span style={{ color:'#8892a4' }}>注：</span>电子不是"放置"的 — Box 内的格点是有限差分网格，电子密度 ρ(r) 由自洽 Kohn-Sham 方程求解后分布在整个网格上。原子核位置即上图坐标，Box 边界（虚线）= 球形截断半径。
-            </div>
         </div>
     );
 }

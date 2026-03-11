@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Cpu, Settings2, PlayCircle, Loader2, Atom, Zap, Grid3x3, FlaskConical, ChevronDown, ChevronRight } from 'lucide-react';
 import DevFlowDashboard from './DevFlowDashboard';
-import ResultsPanel from './ResultsPanel'; type TabId = 'solver' | 'devflow';
+import ResultsPanel from './ResultsPanel';
+import { Mol3DViewer, MOLECULE_ATOMS } from './Mol3DViewer';
+type TabId = 'solver' | 'devflow';
 
 export default function App() {
     const [activeTab, setActiveTab] = useState<TabId>('solver')
@@ -144,6 +146,7 @@ function DiracSolverView() {
     const [curvMethod, setCurvMethod] = useState<'uniform'|'gygi'>('uniform');
     const [curvGygiAlpha, setCurvGygiAlpha] = useState<string>('2.0');
     const [doubleGrid, setDoubleGrid] = useState<boolean>(false);
+    const [showGeomPreview, setShowGeomPreview] = useState<boolean>(false);
 
     // ── Potential Field (Local 1D) ──
     const [potentialType, setPotentialType] = useState('InfiniteWell');
@@ -621,6 +624,7 @@ function DiracSolverView() {
 
                             {octopusDimensions !== '1D' ? (
                                 <Field label="Molecule / Crystal">
+                                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                                     <select value={octopusMolecule} onChange={e => {
                                         setOctopusMolecule(e.target.value);
                                         // Auto-set periodic dims and lattice constants for crystals
@@ -637,7 +641,7 @@ function DiracSolverView() {
                                         const _ld = _latticeDefaults[e.target.value];
                                         if (_ld) { setLatticeA(_ld[0]); setLatticeB(_ld[1]); setLatticeC(_ld[2]); }
                                         else { setLatticeA('10.263'); setLatticeB('10.263'); setLatticeC('10.263'); }
-                                    }} className={selectClass}>
+                                    }} className={selectClass} style={{ flex: 1 }}>
                                         <optgroup label="Atoms">
                                             <option value="H">H — Hydrogen</option>
                                             <option value="He">He — Helium</option>
@@ -662,6 +666,38 @@ function DiracSolverView() {
                                             <option value="Al2O3">Al₂O₃ — Sapphire (corundum)</option>
                                         </optgroup>
                                     </select>
+                                    {/* 3D preview toggle button */}
+                                    <button
+                                        onClick={() => setShowGeomPreview(v => !v)}
+                                        title="3D 几何构型预览"
+                                        style={{
+                                            padding: '6px 10px', fontSize: 11, cursor: 'pointer',
+                                            border: 'none', borderRadius: 7, whiteSpace: 'nowrap',
+                                            background: showGeomPreview ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.05)',
+                                            outline: showGeomPreview ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
+                                            color: showGeomPreview ? '#00d4ff' : '#8892a4',
+                                        }}
+                                    >
+                                        3D ◈
+                                    </button>
+                                    </div>
+                                    {/* 3D preview panel */}
+                                    {showGeomPreview && (() => {
+                                        const previewAtoms = MOLECULE_ATOMS[octopusMolecule];
+                                        const boxR = parseFloat(octopusRadius) || 5;
+                                        return previewAtoms ? (
+                                            <div style={{ marginTop: 8 }}>
+                                                <Mol3DViewer
+                                                    atoms={previewAtoms}
+                                                    boxRadius={boxR}
+                                                    width={380}
+                                                    height={260}
+                                                    showLegend
+                                                    showTable
+                                                />
+                                            </div>
+                                        ) : null;
+                                    })()}
                                     {octopusDimensions === '2D' && (
                                         <div className="text-[10px] text-yellow-600 bg-yellow-950/30 border border-yellow-900/50 rounded-lg p-2 mt-1">
                                             2D mode: bond axes projected onto xy-plane.
