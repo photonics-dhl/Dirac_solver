@@ -124,6 +124,11 @@ function project(
     return { sx: cx + p.x * d * scale, sy: cy - p.y * d * scale, sz: p.z };
 }
 
+// ── LOD thresholds (module-level constants) ─────────────────────
+const LOD_FAST = 50;       // skip gradients/labels above this
+const LOD_NO_BONDS = 100;  // skip bond drawing above this
+const MAX_RENDER = 500;    // cap total rendered atoms
+
 // ── Component ────────────────────────────────────────────────────
 
 interface Mol3DViewerProps {
@@ -153,8 +158,9 @@ export function Mol3DViewer({
     const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const [tableOpen, setTableOpen] = React.useState(false);
 
-    // Bond detection (memoised — only recomputes when atoms changes)
+    // Bond detection — skip for large structures (O(N²) cost)
     const bonds = useMemo<[number, number][]>(() => {
+        if (atoms.length > LOD_NO_BONDS) return [];
         const b: [number, number][] = [];
         for (let i = 0; i < atoms.length; i++) {
             for (let j = i + 1; j < atoms.length; j++) {
@@ -167,6 +173,28 @@ export function Mol3DViewer({
             }
         }
         return b;
+    }, [atoms]);
+
+    // Bounding box of all atoms (for wireframe outline)
+    const bbox = useMemo(() => {
+        if (atoms.length === 0) return null;
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+        for (const a of atoms) {
+            if (a.x < minX) minX = a.x; if (a.x > maxX) maxX = a.x;
+            if (a.y < minY) minY = a.y; if (a.y > maxY) maxY = a.y;
+            if (a.z < minZ) minZ = a.z; if (a.z > maxZ) maxZ = a.z;
+        }
+        return { minX, maxX, minY, maxY, minZ, maxZ };
+    }, [atoms]);
+
+    // Element formula string
+    const formula = useMemo(() => {
+        const counts: Record<string, number> = {};
+        for (const a of atoms) counts[a.symbol] = (counts[a.symbol] || 0) + 1;
+        return Object.entries(counts).sort(([a], [b]) => a.localeCompare(b))
+            .map(([s, n]) => n === 1 ? s : `${s}${n}`).join('');
     }, [atoms]);
 
     const drawFrame = useCallback(() => {
@@ -183,6 +211,9 @@ export function Mol3DViewer({
         const autoScale =
             (Math.min(W, H) / 2 - 30) * scaleRef.current / Math.max(boxRadius, 1.5);
 
+        const fastMode = atoms.length > LOD_FAST;
+        const truncated = atoms.length > MAX_RENDER;
+
         // Background
         ctx.fillStyle = '#0a0e1a';
         ctx.fillRect(0, 0, W, H);
@@ -197,28 +228,66 @@ export function Mol3DViewer({
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Project atoms
+        // Project all atoms
         const projs = atoms.map(a => project(a, rx, ry, autoScale, cx, cy));
 
-        // Draw bonds
-        for (const [i, j] of bonds) {
-            ctx.beginPath();
-            ctx.moveTo(projs[i].sx, projs[i].sy);
-            ctx.lineTo(projs[j].sx, projs[j].sy);
-            ctx.strokeStyle = 'rgba(255,255,255,0.20)';
-            ctx.lineWidth = 1.8;
-            ctx.stroke();
+        // Bounding box wireframe (for multi-atom structures)
+        if (atoms.length > 5 && bbox) {
+            const { minX, maxX, minY, maxY, minZ, maxZ } = bbox;
+            const corners: Array<[number, number, number]> = [
+                [minX, minY, minZ], [maxX, minY, minZ], [maxX, maxY, minZ], [minX, maxY, minZ],
+                [minX, minY, maxZ], [maxX, minY, maxZ], [maxX, maxY, maxZ], [minX, maxY, maxZ],
+            ];
+            const edges: Array<[number, number]> = [
+                [0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7],
+            ];
+            const pc = corners.map(([x, y, z]) => project({ x, y, z }, rx, ry, autoScale, cx, cy));
+            ctx.strokeStyle = 'rgba(0,212,255,0.14)';
+            ctx.lineWidth = 0.7;
+            ctx.setLineDash([3, 4]);
+            for (const [i, j] of edges) {
+                ctx.beginPath();
+                ctx.moveTo(pc[i].sx, pc[i].sy);
+                ctx.lineTo(pc[j].sx, pc[j].sy);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+        }
+
+        // Draw bonds (skip in fast mode)
+        if (!fastMode) {
+            for (const [i, j] of bonds) {
+                ctx.beginPath();
+                ctx.moveTo(projs[i].sx, projs[i].sy);
+                ctx.lineTo(projs[j].sx, projs[j].sy);
+                ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+            }
+        }
+
+        // Determine which atoms to render (cap at MAX_RENDER)
+        let renderIdx = atoms.map((_, i) => i);
+        if (truncated) {
+            const gcx = atoms.reduce((s, a) => s + a.x, 0) / atoms.length;
+            const gcy = atoms.reduce((s, a) => s + a.y, 0) / atoms.length;
+            const gcz = atoms.reduce((s, a) => s + a.z, 0) / atoms.length;
+            renderIdx = atoms
+                .map((a, i) => ({ i, d2: (a.x - gcx) ** 2 + (a.y - gcy) ** 2 + (a.z - gcz) ** 2 }))
+                .sort((a, b) => a.d2 - b.d2)
+                .slice(0, MAX_RENDER)
+                .map(x => x.i);
         }
 
         // Depth sort: far atoms first (painter's algorithm)
-        const order = atoms.map((_, i) => i).sort((a, b) => projs[a].sz - projs[b].sz);
+        const order = renderIdx.sort((a, b) => projs[a].sz - projs[b].sz);
 
         // Draw atoms
         for (const i of order) {
             const a = atoms[i];
             const { sx, sy, sz } = projs[i];
             const baseR = GET_R(a.symbol) * autoScale * 0.45;
-            const r = Math.max(4, Math.min(22, baseR));
+            const r = Math.max(3, Math.min(22, baseR));
             const col = GET_RGB(a.symbol);
 
             // Depth shading [0→1 where 1=closest]
@@ -226,34 +295,54 @@ export function Mol3DViewer({
                 (sz + boxRadius) / (2 * boxRadius + 0.01)));
             const bright = 0.45 + depthNorm * 0.55;
 
-            // Radial gradient: off-center highlight for 3D sphere look
-            const hlx = sx - r * 0.32;
-            const hly = sy - r * 0.32;
-            const grd = ctx.createRadialGradient(hlx, hly, r * 0.04, sx, sy, r);
-            grd.addColorStop(0.0, `rgba(${col.map(c => Math.min(255, Math.round(c * 1.6))).join(',')},1)`);
-            grd.addColorStop(0.5, `rgba(${col.map(c => Math.min(255, Math.round(c * bright))).join(',')},1)`);
-            grd.addColorStop(1.0, `rgba(${col.map(c => Math.round(c * bright * 0.3)).join(',')},1)`);
+            if (fastMode) {
+                // Fast render: flat depth-shaded fill (no gradient)
+                ctx.beginPath();
+                ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgb(${col.map(c => Math.min(255, Math.round(c * bright))).join(',')})`;
+                ctx.fill();
+            } else {
+                // Full quality: radial gradient + specular highlight
+                const hlx = sx - r * 0.32;
+                const hly = sy - r * 0.32;
+                const grd = ctx.createRadialGradient(hlx, hly, r * 0.04, sx, sy, r);
+                grd.addColorStop(0.0, `rgba(${col.map(c => Math.min(255, Math.round(c * 1.6))).join(',')},1)`);
+                grd.addColorStop(0.5, `rgba(${col.map(c => Math.min(255, Math.round(c * bright))).join(',')},1)`);
+                grd.addColorStop(1.0, `rgba(${col.map(c => Math.round(c * bright * 0.3)).join(',')},1)`);
 
-            ctx.beginPath();
-            ctx.arc(sx, sy, r, 0, Math.PI * 2);
-            ctx.fillStyle = grd;
-            ctx.fill();
+                ctx.beginPath();
+                ctx.arc(sx, sy, r, 0, Math.PI * 2);
+                ctx.fillStyle = grd;
+                ctx.fill();
 
-            // Small specular highlight
-            ctx.beginPath();
-            ctx.arc(hlx, hly, r * 0.22, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.16)';
-            ctx.fill();
+                // Small specular highlight
+                ctx.beginPath();
+                ctx.arc(hlx, hly, r * 0.22, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.16)';
+                ctx.fill();
 
-            // Element symbol — only if atom is large enough
-            if (r >= 8) {
-                const fs = Math.max(7, Math.round(r * 0.72));
-                ctx.font = `bold ${fs}px 'SF Mono', ui-monospace, monospace`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = `rgba(10,14,26,${0.85 * bright + 0.1})`;
-                ctx.fillText(a.symbol, sx, sy + 0.5);
+                // Element symbol — only if atom is large enough
+                if (r >= 8) {
+                    const fs = Math.max(7, Math.round(r * 0.72));
+                    ctx.font = `bold ${fs}px 'SF Mono', ui-monospace, monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = `rgba(10,14,26,${0.85 * bright + 0.1})`;
+                    ctx.fillText(a.symbol, sx, sy + 0.5);
+                }
             }
+        }
+
+        // LOD/truncation overlay
+        if (fastMode || truncated) {
+            ctx.font = '9px monospace';
+            ctx.fillStyle = 'rgba(0,212,255,0.50)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            const msg = truncated
+                ? `⚡ 显示 ${MAX_RENDER}/${atoms.length} 个原子 (最近)`
+                : `⚡ LOD · ${atoms.length} 原子 · 渐变/键已隐藏`;
+            ctx.fillText(msg, cx, H - 4);
         }
 
         // XYZ axis widget (bottom-right corner)
@@ -289,7 +378,7 @@ export function Mol3DViewer({
         ctx.textAlign = 'left';
         ctx.fillText(`Box r=${boxRadius.toFixed(1)} Bohr`, 8, 14);
 
-    }, [atoms, bonds, boxRadius]);
+    }, [atoms, bonds, bbox, boxRadius]);
 
     // Animation loop
     useEffect(() => {
@@ -353,6 +442,11 @@ export function Mol3DViewer({
                     textTransform: 'uppercase', letterSpacing: '0.05em',
                 }}>
                     {title ?? '几何构型 (3D)'}
+                    {atoms.length > 0 && (
+                        <span style={{ fontWeight: 400, color: '#374151', marginLeft: 6, textTransform: 'none' }}>
+                            {formula} · {atoms.length} 原子
+                        </span>
+                    )}
                 </span>
                 <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
                     <span style={{ fontSize: 9, color: '#374151' }}>拖拽旋转 · 滚轮缩放</span>

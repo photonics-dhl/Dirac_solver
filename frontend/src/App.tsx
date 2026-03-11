@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Activity, Cpu, Settings2, PlayCircle, Loader2, Atom, Zap, Grid3x3, FlaskConical, ChevronDown, ChevronRight } from 'lucide-react';
 import DevFlowDashboard from './DevFlowDashboard';
 import ResultsPanel from './ResultsPanel';
-import { Mol3DViewer, MOLECULE_ATOMS } from './Mol3DViewer';
+import { Mol3DViewer, MOLECULE_ATOMS, Atom3D } from './Mol3DViewer';
+import GeometryEditor from './GeometryEditor';
 type TabId = 'solver' | 'devflow';
 
 export default function App() {
@@ -147,6 +148,8 @@ function DiracSolverView() {
     const [curvGygiAlpha, setCurvGygiAlpha] = useState<string>('2.0');
     const [doubleGrid, setDoubleGrid] = useState<boolean>(false);
     const [showGeomPreview, setShowGeomPreview] = useState<boolean>(false);
+    const [geomMode, setGeomMode] = useState<'preset' | 'custom'>('preset');
+    const [customAtoms, setCustomAtoms] = useState<Atom3D[]>([]);
 
     // ── Potential Field (Local 1D) ──
     const [potentialType, setPotentialType] = useState('InfiniteWell');
@@ -253,7 +256,10 @@ function DiracSolverView() {
                 octopusSpacing: parseFloat(octopusSpacing),
                 octopusRadius: parseFloat(octopusRadius),
                 octopusBoxShape,
-                molecule: octopusMolecule,
+                molecule: geomMode === 'custom' && customAtoms.length > 0
+                    ? { name: 'Custom', atoms: customAtoms }
+                    : octopusMolecule,
+                ...(geomMode === 'custom' && customAtoms.length > 0 ? { customAtoms } : {}),
                 octopusTdSteps: parseInt(octopusTdSteps),
                 octopusTdTimeStep: parseFloat(octopusTdTimeStep),
                 octopusPropagator,
@@ -624,6 +630,20 @@ function DiracSolverView() {
 
                             {octopusDimensions !== '1D' ? (
                                 <Field label="Molecule / Crystal">
+                                    {/* Preset / Custom mode selector */}
+                                    <div style={{ display: 'flex', border: '1px solid #1f2937', borderRadius: 6, overflow: 'hidden', marginBottom: 6 }}>
+                                        {(['preset', 'custom'] as const).map(m => (
+                                            <button key={m} onClick={() => setGeomMode(m)} style={{
+                                                flex: 1, padding: '4px 0', fontSize: 10, cursor: 'pointer', border: 'none',
+                                                background: geomMode === m ? 'rgba(0,212,255,0.12)' : 'transparent',
+                                                color: geomMode === m ? '#00d4ff' : '#4b5563',
+                                            }}>
+                                                {m === 'preset' ? '预设分子' : '自定义几何'}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {geomMode === 'preset' ? (<>
                                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                                     <select value={octopusMolecule} onChange={e => {
                                         setOctopusMolecule(e.target.value);
@@ -698,7 +718,14 @@ function DiracSolverView() {
                                             </div>
                                         ) : null;
                                     })()}
-                                    {octopusDimensions === '2D' && (
+                                    </>) : (
+                                        /* Custom geometry editor */
+                                        <GeometryEditor
+                                            onChange={setCustomAtoms}
+                                            boxRadius={parseFloat(octopusRadius) || 5}
+                                        />
+                                    )}
+                                    {octopusDimensions === '2D' && geomMode === 'preset' && (
                                         <div className="text-[10px] text-yellow-600 bg-yellow-950/30 border border-yellow-900/50 rounded-lg p-2 mt-1">
                                             2D mode: bond axes projected onto xy-plane.
                                         </div>
