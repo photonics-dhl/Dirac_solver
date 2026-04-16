@@ -20,23 +20,24 @@
         "xc_functional": "LDA",
         "pseudo_family": "standard (N, 5 valence electrons)",
         "geometry_ref": "single N atom at origin",
-        "confidence_tier": "B-needs-unit-resolution",
-        "verified": false,
-        "unit_note": "UNIT AMBIGUOUS. N atom script does NOT set UnitsOutput → defaults to Hartree. BUT: (1) -262 Ha ≈ -7136 eV is 10× too large for 5e N pseudopotential (cross-ref: O atom -68 Ha all-electron); (2) -262 eV ≈ -9.6 Ha is physically reasonable. Gnuplot offset evidence is circular. RESOLUTION NEEDED: re-run with UnitsOutput=eV_Angstrom."
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "unit_note": "CONFIRMED IN eV via NIST SRD 141 cross-validation. Octopus 2s eigenvalue (-18.28 eV = -0.672 Ha) matches NIST LDA -0.676 Ha within 0.6%. Octopus 2p eigenvalue (-7.30 eV = -0.268 Ha) matches NIST LDA -0.266 Ha within 0.7%. Total energy -262 eV ≈ -9.6 Ha consistent with 5-valence-electron PP picture."
       },
       "reference_values": {
-        "total_energy_spacing_0.18A": -262.24120934,
-        "unit_pending_resolution": "Ha or eV — CANNOT DETERMINE from tutorial alone",
-        "Ha_interpretation_total_Ha": -262.24120934,
-        "Ha_interpretation_total_eV": -7136.7,
-        "eV_interpretation_total_eV": -262.24120934,
-        "eV_interpretation_total_Ha": -9.64,
-        "s_eigenvalue": -18.282871,
-        "p_eigenvalue": -7.302321,
+        "total_energy_spacing_0.18A_eV": -262.24120934,
+        "total_energy_spacing_0.18A_Ha": -9.64,
+        "s_eigenvalue_spacing_0.18A_eV": -18.282871,
+        "s_eigenvalue_spacing_0.18A_Ha": -0.672,
+        "p_eigenvalue_spacing_0.18A_eV": -7.302321,
+        "p_eigenvalue_spacing_0.18A_Ha": -0.268,
+        "unit": "eV",
         "convergence_spacing": "0.18 Angstrom",
         "convergence_criterion_eV": 0.1,
-        "finest_grid_reference_Ha": -261.78536939,
-        "status": "PENDING_UNIT_RESOLUTION"
+        "finest_grid_reference_eV": -261.78536939,
+        "status": "RESOLVED",
+        "nist_reference": "NIST SRD 141 - Kotochigova et al. Phys. Rev. A 55, 191 (1997)",
+        "nist_url": "https://www.nist.gov/pml/atomic-reference-data-electronic-structure-calculations-nitrogen-0"
       }
     },
     {

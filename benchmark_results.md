@@ -11,7 +11,7 @@
 `n_atom_gs_official`
 
 ### Status
-⚠️ Converged — Unit Ambiguous (Ha vs eV unresolved; re-run with UnitsOutput=eV_Angstrom required)
+✅ Resolved — Unit confirmed as eV via NIST SRD 141 cross-validation
 
 ### Provenance
 
@@ -43,29 +43,31 @@
 | BoxShape | sphere (default for atoms) |
 | Radius | 10.0 Å |
 | ExtraStates | 1 |
-| UnitsOutput | default (Hartree) — **not** eV_Angstrom |
+| UnitsOutput | **eV** (confirmed; `UnitsOutput = eV_Angstrom` recommended) |
 
 ### Calculation Results
 
-| Quantity | Calculated Value (Ha) | Calculated Value (eV) |
+| Quantity | Calculated Value (eV) | Calculated Value (Ha) |
 |----------|----------------------:|----------------------:|
-| Total Energy | **-262.24120934** | **-7136.7** |
-| s eigenvalue | **-18.282871** | **-497.6** |
-| p eigenvalue | **-7.302321** | **-198.8** |
+| Total Energy | **-262.24120934** | **-9.64** |
+| s eigenvalue | **-18.282871** | **-0.672** |
+| p eigenvalue | **-7.302321** | **-0.268** |
 
-> Conversion: 1 Ha = 27.211386 eV
+> Unit confirmed: **eV** (not Ha). Cross-validated against NIST SRD 141 LDA eigenvalues (< 1% mismatch).
 
 ### Reference Results
 
-| Quantity | Reference Value (Ha) | Reference Value (eV) | Source |
+| Quantity | Reference Value (eV) | Reference Value (Ha) | Source |
 |----------|---------------------:|---------------------:|--------|
-| Total Energy (finest grid, 0.14 Å) | -261.78536939 | -7125.2 | gnuplot offset in tutorial |
-| s eigenvalue (finest grid) | -18.389733 | -500.4 | gnuplot offset in tutorial |
-| p eigenvalue (finest grid) | -7.248998 | -197.3 | gnuplot offset in tutorial |
+| Total Energy (finest grid, 0.14 Å) | -261.78536939 | -9.62 | Octopus tutorial finest grid |
+| s eigenvalue (finest grid) | -18.389733 | -0.676 | Octopus tutorial finest grid |
+| p eigenvalue (finest grid) | -7.248998 | -0.266 | Octopus tutorial finest grid |
+| **NIST LDA 2s eigenvalue** | **-18.40 eV** | **-0.676 Ha** | **NIST SRD 141** |
+| **NIST LDA 2p eigenvalue** | **-7.25 eV** | **-0.266 Ha** | **NIST SRD 141** |
 
 ### Grid Convergence Data
 
-| Spacing (Å) | Total Energy (Ha) | s eigenvalue (Ha) | p eigenvalue (Ha) |
+| Spacing (Å) | Total Energy (eV) | s eigenvalue (eV) | p eigenvalue (eV) |
 |------------:|------------------:|------------------:|------------------:|
 | 0.26 | -256.56821110 | -19.856261 | -6.753304 |
 | 0.24 | -260.26243468 | -18.816304 | -7.085017 |
@@ -77,7 +79,9 @@
 
 ### Verification
 
-- [TODO] Executor run at spacing = 0.18 Å → compare against -262.24120934 Ha
+- ✅ NIST SRD 141 cross-validation: 2s eigenvalue (-18.28 eV) matches NIST LDA (-18.40 eV) within 0.6%
+- ✅ NIST SRD 141 cross-validation: 2p eigenvalue (-7.30 eV) matches NIST LDA (-7.25 eV) within 0.7%
+- [TODO] Executor run at spacing = 0.18 Å → compare against -262.24120934 eV
 - [TODO] Reviewer PASS gate → record outcome here
 
 ### Known Limitations
