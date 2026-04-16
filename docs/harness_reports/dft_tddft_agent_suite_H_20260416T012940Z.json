@@ -1,0 +1,613 @@
+{
+  "generated_at": "2026-04-16T01:30:42.939764Z",
+  "planner": {
+    "agent": "planner",
+    "timestamp": "2026-04-16T01:29:40.970345Z",
+    "objective": "Validate production DFT/TDDFT workflows for spectrum and dipole outputs.",
+    "molecule": "H",
+    "suite_cases": [
+      "hydrogen_gs_reference"
+    ],
+    "octopus_overrides": {
+      "octopusDimensions": "3D",
+      "octopusPeriodic": "off",
+      "octopusBoxShape": "sphere",
+      "xcFunctional": "gga_x_pbe+gga_c_pbe",
+      "speciesMode": "formula",
+      "allElectronType": "full_gaussian"
+    }
+  },
+  "executor": {
+    "agent": "executor",
+    "timestamp": "2026-04-16T01:30:42.939661Z",
+    "endpoint": "http://127.0.0.1:3001/api/physics/run",
+    "cases": [
+      {
+        "scenario_id": "hydrogen_gs_reference",
+        "title": "H DFT ground-state reference",
+        "calc_mode": "gs",
+        "molecule": "H",
+        "status": "FAIL",
+        "error": "",
+        "checks": {
+          "octopus_engine": true,
+          "converged": true,
+          "has_optical_spectrum": false,
+          "has_td_dipole": false,
+          "has_radiation_spectrum": false,
+          "has_eels_spectrum": false,
+          "has_optical_curve_evidence": false,
+          "has_dipole_curve_evidence": false,
+          "has_radiation_curve_evidence": false,
+          "has_eels_curve_evidence": false,
+          "homo_metric_present": true,
+          "raw_homo_metric_present": true,
+          "within_reference_tolerance": false,
+          "homo_within_reference_tolerance": false,
+          "raw_homo_matches_physical_hydrogen": false,
+          "provenance_verified": true,
+          "external_reference_available": false,
+          "external_reference_aligned": true,
+          "reference_model_aligned": true,
+          "repeatability_pass": false
+        },
+        "required_missing": [
+          "within_reference_tolerance",
+          "homo_within_reference_tolerance",
+          "repeatability_pass"
+        ],
+        "metrics": {
+          "computation_time_sec": 61.931,
+          "optical_points": 0,
+          "cross_section_points": 0,
+          "dipole_points": 0,
+          "radiation_points": 0,
+          "eels_points": 0,
+          "energy_levels": 5,
+          "total_energy_hartree": -68.32278612,
+          "homo_energy_ev": -1859.1577225133478,
+          "homo_energy_ev_raw": -1791.1554383510002,
+          "homo_energy_hartree": -68.32278612
+        },
+        "comparison": {
+          "metric": "total_energy_hartree",
+          "unit": "Ha",
+          "computed": -68.32278612,
+          "reference": -0.5,
+          "delta": -67.82278612,
+          "relative_delta": 135.64557224,
+          "tolerance_relative": 0.03,
+          "within_tolerance": false,
+          "provenance": {
+            "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+            "source_type": "nist_codata",
+            "source_numeric_verified": true,
+            "doi": "",
+            "software_version": "octopus-docs-16",
+            "pseudopotential_ids": [
+              "H.pbe-kjpaw.UPF"
+            ],
+            "geometry_ref": "isolated_hydrogen_atom",
+            "expected_runtime_model": "octopus_formula_pseudopotential"
+          },
+          "provenance_verified": true
+        },
+        "secondary_comparisons": [
+          {
+            "metric": "homo_energy_ev",
+            "unit": "eV",
+            "computed": -1859.1577225133478,
+            "reference": -13.605693122994,
+            "delta": -1845.552029390354,
+            "relative_delta": 135.64557224,
+            "tolerance_relative": 0.08,
+            "within_tolerance": false,
+            "provenance": {
+              "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+              "source_type": "nist_codata",
+              "source_numeric_verified": true,
+              "doi": "",
+              "software_version": "octopus-docs-16",
+              "pseudopotential_ids": [
+                "H.pbe-kjpaw.UPF"
+              ],
+              "geometry_ref": "isolated_hydrogen_atom",
+              "expected_runtime_model": "octopus_formula_pseudopotential"
+            },
+            "provenance_verified": true
+          }
+        ],
+        "delta_diagnostics": {
+          "metric": "total_energy_hartree",
+          "computed": -68.32278612,
+          "reference": -0.5,
+          "delta": -67.82278612,
+          "relative_delta": 135.64557224,
+          "tolerance_relative": 0.03,
+          "within_tolerance": false,
+          "provenance_verified": true,
+          "runtime_model_hint": "octopus_formula_pseudopotential",
+          "expected_runtime_model": "octopus_formula_pseudopotential",
+          "reference_model_aligned": true,
+          "secondary_comparisons": [
+            {
+              "metric": "homo_energy_ev",
+              "unit": "eV",
+              "computed": -1859.1577225133478,
+              "reference": -13.605693122994,
+              "delta": -1845.552029390354,
+              "relative_delta": 135.64557224,
+              "tolerance_relative": 0.08,
+              "within_tolerance": false,
+              "provenance": {
+                "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+                "source_type": "nist_codata",
+                "source_numeric_verified": true,
+                "doi": "",
+                "software_version": "octopus-docs-16",
+                "pseudopotential_ids": [
+                  "H.pbe-kjpaw.UPF"
+                ],
+                "geometry_ref": "isolated_hydrogen_atom",
+                "expected_runtime_model": "octopus_formula_pseudopotential"
+              },
+              "provenance_verified": true
+            }
+          ]
+        },
+        "external_curve_comparison": {
+          "has_reference": false,
+          "source": null,
+          "first_peak_ev": null,
+          "reference_peak_ev": null,
+          "reference_peak_window_ev": null,
+          "peak_shift_ev": null,
+          "first_peak_within_reference_window": null,
+          "peak_energy_rmse_ev": null,
+          "integrated_intensity_bias": null,
+          "alignment_passed": null
+        },
+        "curve_artifacts": {
+          "optical_spectrum": {
+            "curve": "optical_spectrum",
+            "x_label": "energy_ev",
+            "y_label": "cross_section",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "td_dipole": {
+            "curve": "td_dipole",
+            "x_label": "time_au",
+            "y_label": "dipole",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "radiation_spectrum": {
+            "curve": "radiation_spectrum",
+            "x_label": "frequency_ev",
+            "y_label": "intensity",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "eels_spectrum": {
+            "curve": "eels_spectrum",
+            "x_label": "energy_ev",
+            "y_label": "loss_function",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          }
+        },
+        "engine": "octopus-mcp",
+        "scheduler": {
+          "job_id": "137336.mu01",
+          "job_state": "C",
+          "queue": "workq",
+          "ncpus": 64,
+          "mpiprocs": 64,
+          "selected_node": "fat02",
+          "exec_vnode": "unknown"
+        },
+        "repeat_statistics": {
+          "runs": 1,
+          "pass_rate": 0.0,
+          "metric_stats": {
+            "total_energy_hartree": {
+              "mean": -68.32278612,
+              "std": 0.0,
+              "min": -68.32278612,
+              "max": -68.32278612
+            },
+            "cross_section_points": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0
+            },
+            "dipole_points": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0
+            },
+            "computation_time_sec": {
+              "mean": 61.931,
+              "std": 0.0,
+              "min": 61.931,
+              "max": 61.931
+            }
+          },
+          "curve_stats": {}
+        },
+        "repeat_runs": [
+          {
+            "scenario_id": "hydrogen_gs_reference",
+            "title": "H DFT ground-state reference",
+            "calc_mode": "gs",
+            "molecule": "H",
+            "status": "FAIL",
+            "error": "",
+            "checks": {
+              "octopus_engine": true,
+              "converged": true,
+              "has_optical_spectrum": false,
+              "has_td_dipole": false,
+              "has_radiation_spectrum": false,
+              "has_eels_spectrum": false,
+              "has_optical_curve_evidence": false,
+              "has_dipole_curve_evidence": false,
+              "has_radiation_curve_evidence": false,
+              "has_eels_curve_evidence": false,
+              "homo_metric_present": true,
+              "raw_homo_metric_present": true,
+              "within_reference_tolerance": false,
+              "homo_within_reference_tolerance": false,
+              "raw_homo_matches_physical_hydrogen": false,
+              "provenance_verified": true,
+              "external_reference_available": false,
+              "external_reference_aligned": true,
+              "reference_model_aligned": true
+            },
+            "required_missing": [
+              "within_reference_tolerance",
+              "homo_within_reference_tolerance"
+            ],
+            "metrics": {
+              "computation_time_sec": 61.931,
+              "optical_points": 0,
+              "cross_section_points": 0,
+              "dipole_points": 0,
+              "radiation_points": 0,
+              "eels_points": 0,
+              "energy_levels": 5,
+              "total_energy_hartree": -68.32278612,
+              "homo_energy_ev": -1859.1577225133478,
+              "homo_energy_ev_raw": -1791.1554383510002,
+              "homo_energy_hartree": -68.32278612
+            },
+            "comparison": {
+              "metric": "total_energy_hartree",
+              "unit": "Ha",
+              "computed": -68.32278612,
+              "reference": -0.5,
+              "delta": -67.82278612,
+              "relative_delta": 135.64557224,
+              "tolerance_relative": 0.03,
+              "within_tolerance": false,
+              "provenance": {
+                "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+                "source_type": "nist_codata",
+                "source_numeric_verified": true,
+                "doi": "",
+                "software_version": "octopus-docs-16",
+                "pseudopotential_ids": [
+                  "H.pbe-kjpaw.UPF"
+                ],
+                "geometry_ref": "isolated_hydrogen_atom",
+                "expected_runtime_model": "octopus_formula_pseudopotential"
+              },
+              "provenance_verified": true
+            },
+            "secondary_comparisons": [
+              {
+                "metric": "homo_energy_ev",
+                "unit": "eV",
+                "computed": -1859.1577225133478,
+                "reference": -13.605693122994,
+                "delta": -1845.552029390354,
+                "relative_delta": 135.64557224,
+                "tolerance_relative": 0.08,
+                "within_tolerance": false,
+                "provenance": {
+                  "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+                  "source_type": "nist_codata",
+                  "source_numeric_verified": true,
+                  "doi": "",
+                  "software_version": "octopus-docs-16",
+                  "pseudopotential_ids": [
+                    "H.pbe-kjpaw.UPF"
+                  ],
+                  "geometry_ref": "isolated_hydrogen_atom",
+                  "expected_runtime_model": "octopus_formula_pseudopotential"
+                },
+                "provenance_verified": true
+              }
+            ],
+            "delta_diagnostics": {
+              "metric": "total_energy_hartree",
+              "computed": -68.32278612,
+              "reference": -0.5,
+              "delta": -67.82278612,
+              "relative_delta": 135.64557224,
+              "tolerance_relative": 0.03,
+              "within_tolerance": false,
+              "provenance_verified": true,
+              "runtime_model_hint": "octopus_formula_pseudopotential",
+              "expected_runtime_model": "octopus_formula_pseudopotential",
+              "reference_model_aligned": true,
+              "secondary_comparisons": [
+                {
+                  "metric": "homo_energy_ev",
+                  "unit": "eV",
+                  "computed": -1859.1577225133478,
+                  "reference": -13.605693122994,
+                  "delta": -1845.552029390354,
+                  "relative_delta": 135.64557224,
+                  "tolerance_relative": 0.08,
+                  "within_tolerance": false,
+                  "provenance": {
+                    "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+                    "source_type": "nist_codata",
+                    "source_numeric_verified": true,
+                    "doi": "",
+                    "software_version": "octopus-docs-16",
+                    "pseudopotential_ids": [
+                      "H.pbe-kjpaw.UPF"
+                    ],
+                    "geometry_ref": "isolated_hydrogen_atom",
+                    "expected_runtime_model": "octopus_formula_pseudopotential"
+                  },
+                  "provenance_verified": true
+                }
+              ]
+            },
+            "external_curve_comparison": {
+              "has_reference": false,
+              "source": null,
+              "first_peak_ev": null,
+              "reference_peak_ev": null,
+              "reference_peak_window_ev": null,
+              "peak_shift_ev": null,
+              "first_peak_within_reference_window": null,
+              "peak_energy_rmse_ev": null,
+              "integrated_intensity_bias": null,
+              "alignment_passed": null
+            },
+            "curve_artifacts": {
+              "optical_spectrum": {
+                "curve": "optical_spectrum",
+                "x_label": "energy_ev",
+                "y_label": "cross_section",
+                "stats": {
+                  "points": 0,
+                  "x_min": null,
+                  "x_max": null,
+                  "y_min": null,
+                  "y_max": null,
+                  "peak_x": null,
+                  "peak_y": null,
+                  "auc_trapezoid": null
+                },
+                "csv": null,
+                "svg": null,
+                "preview": []
+              },
+              "td_dipole": {
+                "curve": "td_dipole",
+                "x_label": "time_au",
+                "y_label": "dipole",
+                "stats": {
+                  "points": 0,
+                  "x_min": null,
+                  "x_max": null,
+                  "y_min": null,
+                  "y_max": null,
+                  "peak_x": null,
+                  "peak_y": null,
+                  "auc_trapezoid": null
+                },
+                "csv": null,
+                "svg": null,
+                "preview": []
+              },
+              "radiation_spectrum": {
+                "curve": "radiation_spectrum",
+                "x_label": "frequency_ev",
+                "y_label": "intensity",
+                "stats": {
+                  "points": 0,
+                  "x_min": null,
+                  "x_max": null,
+                  "y_min": null,
+                  "y_max": null,
+                  "peak_x": null,
+                  "peak_y": null,
+                  "auc_trapezoid": null
+                },
+                "csv": null,
+                "svg": null,
+                "preview": []
+              },
+              "eels_spectrum": {
+                "curve": "eels_spectrum",
+                "x_label": "energy_ev",
+                "y_label": "loss_function",
+                "stats": {
+                  "points": 0,
+                  "x_min": null,
+                  "x_max": null,
+                  "y_min": null,
+                  "y_max": null,
+                  "peak_x": null,
+                  "peak_y": null,
+                  "auc_trapezoid": null
+                },
+                "csv": null,
+                "svg": null,
+                "preview": []
+              }
+            },
+            "engine": "octopus-mcp",
+            "scheduler": {
+              "job_id": "137336.mu01",
+              "job_state": "C",
+              "queue": "workq",
+              "ncpus": 64,
+              "mpiprocs": 64,
+              "selected_node": "fat02",
+              "exec_vnode": "unknown"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "reviewer": {
+    "agent": "reviewer",
+    "timestamp": "2026-04-16T01:30:42.939738Z",
+    "checks": {
+      "all_cases_passed": false,
+      "gs_converged": true,
+      "absorption_cross_section_ready": true,
+      "dipole_response_ready": true,
+      "radiation_spectrum_ready": true,
+      "eels_spectrum_ready": true,
+      "absorption_curve_evidence": true,
+      "dipole_curve_evidence": true,
+      "radiation_curve_evidence": true,
+      "eels_curve_evidence": true,
+      "external_reference_alignment": true,
+      "all_octopus_engine": true,
+      "all_within_reference_tolerance": false,
+      "all_homo_within_tolerance": false,
+      "all_provenance_verified": true,
+      "all_reference_model_aligned": true
+    },
+    "passed_cases": 0,
+    "total_cases": 1,
+    "final_verdict": "FAIL",
+    "suggestions": [
+      "One or more benchmark deltas exceed tolerance; adjust Octopus discretization/time-step and rerun.",
+      "Hydrogen HOMO deviates from reference; tighten discretization and confirm orbital extraction assumptions."
+    ]
+  },
+  "ui_review": {
+    "title": "DFT/TDDFT Agent Review (H)",
+    "final_verdict": "FAIL",
+    "checks": {
+      "all_cases_passed": false,
+      "gs_converged": true,
+      "absorption_cross_section_ready": true,
+      "dipole_response_ready": true,
+      "radiation_spectrum_ready": true,
+      "eels_spectrum_ready": true,
+      "absorption_curve_evidence": true,
+      "dipole_curve_evidence": true,
+      "radiation_curve_evidence": true,
+      "eels_curve_evidence": true,
+      "external_reference_alignment": true,
+      "all_octopus_engine": true,
+      "all_within_reference_tolerance": false,
+      "all_homo_within_tolerance": false,
+      "all_provenance_verified": true,
+      "all_reference_model_aligned": true
+    },
+    "case_cards": [
+      {
+        "scenario_id": "hydrogen_gs_reference",
+        "title": "H DFT ground-state reference",
+        "status": "FAIL",
+        "optical_points": 0,
+        "dipole_points": 0,
+        "radiation_points": 0,
+        "eels_points": 0,
+        "engine": "octopus-mcp",
+        "comparison": {
+          "metric": "total_energy_hartree",
+          "unit": "Ha",
+          "computed": -68.32278612,
+          "reference": -0.5,
+          "delta": -67.82278612,
+          "relative_delta": 135.64557224,
+          "tolerance_relative": 0.03,
+          "within_tolerance": false,
+          "provenance": {
+            "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+            "source_type": "nist_codata",
+            "source_numeric_verified": true,
+            "doi": "",
+            "software_version": "octopus-docs-16",
+            "pseudopotential_ids": [
+              "H.pbe-kjpaw.UPF"
+            ],
+            "geometry_ref": "isolated_hydrogen_atom",
+            "expected_runtime_model": "octopus_formula_pseudopotential"
+          },
+          "provenance_verified": true
+        },
+        "scheduler": {
+          "job_id": "137336.mu01",
+          "job_state": "C",
+          "queue": "workq",
+          "ncpus": 64,
+          "mpiprocs": 64,
+          "selected_node": "fat02",
+          "exec_vnode": "unknown"
+        }
+      }
+    ]
+  }
+}

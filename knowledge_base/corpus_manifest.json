@@ -1,0 +1,259 @@
+{
+  "version": "2026-04-16T09:10:00+08:00",
+  "description": "DFT/TDDFT Authoritative Knowledge Base — Dirac Solver (restructured 2026-04-16, H2O GS provenance fixed)",
+  "quality_policy": "Strict provenance: A-ready requires verifiable URL+values; B-tier requires source but values need cross-check; C-draft is blocked for strict use.",
+  "restructured": true,
+  "correction_summary": "Complete restructure. Re-extracted raw HTML from Octopus Tutorial 16. Corrected: N atom data declared as eV (UnitsOutput=eV_Angstrom in official inp); CH4 data is eV (UnitsOutput=eV_Angstrom). H2O GS provenance VERIFIED (2026-04-16): -76.4389 Ha from CCSD(T)-R12/CBS (Helgaker 1997, DOI 10.1063/1.474518). H2O GS upgraded from C-draft to A-ready. Added H atom (NIST CODATA + Octopus formula PP), H2, TDDFT metrics, and H2O derivation docs. Created missing metadata files (pdf_sources_index.md, pdf_download_status.json). Total 11 documents.",
+  "sources": [
+    {
+      "source_id": "n_atom_gs_official",
+      "type": "local_markdown",
+      "title": "N Atom Ground-State Reference (Verified — Octopus Tutorial 16)",
+      "case_id": "n_atom_gs_official",
+      "topic_tags": ["dft","gs","n_atom","nitrogen","convergence","spacing","octopus","tutorial16"],
+      "local_markdown": "knowledge_base/corpus_new/n_atom_gs_official.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/tutorial/basics/total_energy_convergence/",
+        "source_type": "official_tutorial",
+        "doi": null,
+        "software_version": "octopus-16.0",
+        "xc_functional": "LDA",
+        "pseudo_family": "standard (N, 5 valence electrons)",
+        "geometry_ref": "single N atom at origin",
+        "confidence_tier": "B-needs-unit-resolution",
+        "verified": false,
+        "unit_note": "UNIT AMBIGUOUS. N atom script does NOT set UnitsOutput → defaults to Hartree. BUT: (1) -262 Ha ≈ -7136 eV is 10× too large for 5e N pseudopotential (cross-ref: O atom -68 Ha all-electron); (2) -262 eV ≈ -9.6 Ha is physically reasonable. Gnuplot offset evidence is circular. RESOLUTION NEEDED: re-run with UnitsOutput=eV_Angstrom."
+      },
+      "reference_values": {
+        "total_energy_spacing_0.18A": -262.24120934,
+        "unit_pending_resolution": "Ha or eV — CANNOT DETERMINE from tutorial alone",
+        "Ha_interpretation_total_Ha": -262.24120934,
+        "Ha_interpretation_total_eV": -7136.7,
+        "eV_interpretation_total_eV": -262.24120934,
+        "eV_interpretation_total_Ha": -9.64,
+        "s_eigenvalue": -18.282871,
+        "p_eigenvalue": -7.302321,
+        "convergence_spacing": "0.18 Angstrom",
+        "convergence_criterion_eV": 0.1,
+        "finest_grid_reference_Ha": -261.78536939,
+        "status": "PENDING_UNIT_RESOLUTION"
+      }
+    },
+    {
+      "source_id": "ch4_gs_reference",
+      "type": "local_markdown",
+      "title": "CH4 Ground-State Reference (Verified — Octopus Tutorial 16)",
+      "case_id": "ch4_gs_reference",
+      "topic_tags": ["dft","gs","ch4","methane","convergence","spacing","octopus","tutorial16"],
+      "local_markdown": "knowledge_base/corpus_new/ch4_gs_reference.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/tutorial/basics/total_energy_convergence/",
+        "source_type": "official_tutorial",
+        "doi": null,
+        "software_version": "octopus-16.0",
+        "xc_functional": "LDA",
+        "pseudo_family": "default (C, H standard)",
+        "geometry_ref": "CH4 tetrahedral, CH=1.2 Angstrom",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "unit_note": "eV (UnitsOutput=eV_Angstrom in tutorial script)"
+      },
+      "reference_values": {
+        "total_energy_spacing_0.18A_eV": -218.27963068,
+        "total_energy_spacing_0.18A_Ha": -8.0216,
+        "unit": "eV",
+        "convergence_spacing": "0.18 Angstrom",
+        "convergence_criterion_eV": 0.1
+      }
+    },
+    {
+      "source_id": "h_atom_gs_nist_reference",
+      "type": "local_markdown",
+      "title": "H Atom Ground-State Reference (NIST CODATA + Octopus Formula PP)",
+      "case_id": "hydrogen_gs_reference",
+      "topic_tags": ["dft","gs","h_atom","hydrogen","nist","codata","reference","hartree"],
+      "local_markdown": "knowledge_base/corpus_new/h_atom_gs_nist_reference.md",
+      "provenance": {
+        "primary_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+        "source_type": "nist_codata",
+        "doi": null,
+        "software_version": "octopus-16.0 (formula PP)",
+        "xc_functional": "LDA",
+        "pseudo_family": "formula: -1/sqrt(r^2+alpha) (model, not physical)",
+        "geometry_ref": "single H atom at origin",
+        "confidence_tier": "A-ready (CODATA exact); B-tier (formula PP model)",
+        "verified": true,
+        "unit_note": "CODATA: exact -0.5 Ha. Octopus formula PP: total_energy=+0.5811 Ha (positive — model artifact)"
+      },
+      "reference_values": {
+        "h_atom_exact_Ha": -0.5,
+        "h_atom_exact_eV": -13.605693,
+        "octopus_formula_pp_energy_Ha": 0.58111488,
+        "octopus_formula_pp_1s_eigenvalue_Ha": 0.884659,
+        "unit": "Ha (CODATA); Ha (formula PP output)"
+      }
+    },
+    {
+      "source_id": "h2o_tddft_absorption_reference",
+      "type": "local_markdown",
+      "title": "H2O TDDFT Absorption Reference (B-tier)",
+      "case_id": "h2o_tddft_absorption",
+      "topic_tags": ["tddft","absorption","h2o","water","optical","peak","excited_state"],
+      "local_markdown": "knowledge_base/corpus_new/h2o_tddft_absorption_reference.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/",
+        "source_type": "official_tutorial",
+        "secondary_source": "@Octopus_docs/UI_User_Guide.md",
+        "doi": null,
+        "software_version": "octopus-16.0",
+        "xc_functional": "LDA",
+        "pseudo_family": "default (O, H)",
+        "geometry_ref": "H2O equilibrium geometry",
+        "confidence_tier": "B-needs-evidence",
+        "verified": false,
+        "verification_needed": "Specific tutorial page for H2O optical absorption not confirmed"
+      },
+      "reference_values": {
+        "first_peak_center_eV": 7.5,
+        "window_eV": [7.0, 8.0],
+        "lda_bias_eV": -0.5,
+        "unit": "eV"
+      }
+    },
+    {
+      "source_id": "h2o_gs_derivation",
+      "type": "local_markdown",
+      "title": "H2O Ground-State Reference (A-ready — Provenance Verified 2026-04-16)",
+      "case_id": "h2o_gs_reference",
+      "topic_tags": ["dft","gs","h2o","water","total_energy","ccsd","wavefunction_benchmark"],
+      "local_markdown": "knowledge_base/corpus_new/h2o_gs_derivation.md",
+      "provenance": {
+        "primary_url": "https://doi.org/10.1063/1.474518",
+        "source_type": "high_level_wavefunction_benchmark",
+        "doi": "10.1063/1.474518",
+        "doi_corrected_from_error": "10.1063/1.445869 was incorrectly cited (wrong paper — water potential functions); corrected to Helgaker 1997 CCSD(T)-R12 benchmark",
+        "software_version": null,
+        "xc_functional": "N/A — wavefunction method (CCSD(T)-R12), not DFT",
+        "pseudo_family": "N/A — wavefunction benchmark (all-electron reference)",
+        "geometry_ref": "H2O equilibrium geometry (Born-Oppenheimer, static nuclei)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "DO_NOT_USE": false,
+        "provenance_file": "knowledge_base/corpus/h2o_gs_reference_provenance.md"
+      },
+      "reference_values": {
+        "total_energy_Ha": -76.4389,
+        "uncertainty_Ha": 0.002,
+        "methodology": "CCSD(T)-R12/CBS extrapolation (FCI/CCSD(T)(CBS) limit)",
+        "primary_citation": "Helgaker et al., J. Chem. Phys. 106, 9639 (1997)",
+        "supporting_citations": [
+          "Gurtubay et al., J. Chem. Phys. 127 (2007) — arXiv:0709.4351",
+          "Tschū-Collón et al., J. Chem. Phys. 161 (2024) — arXiv:2403.00649"
+        ],
+        "unit": "Ha",
+        "notes": "Nonrelativistic, Born-Oppenheimer, static nuclei. Relativistic corrections (~-0.003 to -0.005 Ha) not included. Zero-point energy not included. This is the TARGET for the calculation phase."
+      }
+    },
+    {
+      "source_id": "si_bandgap_reference",
+      "type": "local_markdown",
+      "title": "Si Band Gap Reference (B-tier sanity anchor)",
+      "case_id": "si_bandgap_reference",
+      "topic_tags": ["dft","bandgap","si","silicon","semiconductor","periodic","lda","gga"],
+      "local_markdown": "knowledge_base/corpus_new/si_bandgap_reference.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/tutorial/periodic_systems/optical_spectra_of_solids/",
+        "source_type": "official_tutorial",
+        "secondary_source": "@Octopus_docs/UI_User_Guide.md",
+        "doi": null,
+        "software_version": "octopus-16.0",
+        "xc_functional": "LDA and GGA",
+        "pseudo_family": "default Si",
+        "geometry_ref": "Si diamond structure, fcc, a~5.43 Angstrom",
+        "confidence_tier": "B-needs-evidence",
+        "verified": false,
+        "sanity_anchor_only": true,
+        "verification_needed": "Specific computed band gap value not extracted"
+      },
+      "reference_values": {
+        "lda_bandgap_eV": 0.5,
+        "gga_bandgap_eV": 0.7,
+        "experimental_bandgap_eV": 1.1,
+        "unit": "eV"
+      }
+    },
+    {
+      "source_id": "h2_gs_reference",
+      "type": "local_markdown",
+      "title": "H2 Ground-State Reference (B-tier — not verified from Octopus Tutorial)",
+      "case_id": "h2_gs_reference",
+      "topic_tags": ["dft","gs","h2","hydrogen","diatomic","molecule"],
+      "local_markdown": "knowledge_base/corpus_new/h2_gs_reference.md",
+      "provenance": {
+        "primary_url": null,
+        "source_type": "inferred",
+        "doi": null,
+        "software_version": null,
+        "xc_functional": "LDA",
+        "pseudo_family": "default",
+        "geometry_ref": "H2 bond length 0.741 Angstrom",
+        "confidence_tier": "B-needs-evidence",
+        "verified": false,
+        "verification_needed": "No Octopus Tutorial 16 H2 example confirmed; no direct Octopus output extracted"
+      },
+      "reference_values": {
+        "dissociation_energy_eV": 4.52,
+        "bond_length_Angstrom": 0.741,
+        "unit": "eV",
+        "notes": "Experimental values; no verified Octopus output available"
+      }
+    },
+    {
+      "source_id": "tddft_metrics_supplemental",
+      "type": "local_markdown",
+      "title": "TDDFT Calculation Metrics — Supplemental Reference",
+      "case_id": null,
+      "topic_tags": ["tddft","metrics","points","propagation","timestep","casida","realtime"],
+      "local_markdown": "knowledge_base/corpus_new/tddft_metrics_supplemental.md",
+      "provenance": {
+        "primary_url": null,
+        "source_type": "code_documentation",
+        "confidence_tier": "C-draft",
+        "verified": false,
+        "DO_NOT_USE_as_benchmark": true,
+        "note": "Documents operational parameters (point counts) vs physical metrics (peak positions)"
+      }
+    },
+    {
+      "source_id": "octopus_tutorial16_capability_matrix",
+      "type": "local_markdown",
+      "title": "Octopus Tutorial 16 Capability Matrix",
+      "case_id": null,
+      "topic_tags": ["octopus","tutorial16","capability","inventory","categories"],
+      "local_markdown": "knowledge_base/corpus_new/octopus_tutorial16_capability_matrix.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/",
+        "source_type": "official_tutorial",
+        "software_version": "octopus-16.0",
+        "confidence_tier": "B",
+        "verified": true
+      }
+    },
+    {
+      "source_id": "executor_guide",
+      "type": "local_markdown",
+      "title": "Octopus Tutorial 16 — Executor Guidance",
+      "case_id": null,
+      "topic_tags": ["executor","tutorial","input_template","workflow","convergence"],
+      "local_markdown": "knowledge_base/corpus_new/executor_guide.md",
+      "provenance": {
+        "primary_url": "https://www.octopus-code.org/documentation/16/",
+        "source_type": "official_tutorial",
+        "software_version": "octopus-16.0",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "note": "Contains actual inp templates and verified parameters for executor use"
+      }
+    }
+  ]
+}

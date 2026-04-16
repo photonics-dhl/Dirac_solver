@@ -1,0 +1,14 @@
+{
+  "task_id": "CG-20260403T025316Z",
+  "state": "running",
+  "created_at": "2026-04-03T02:53:16.004176Z",
+  "updated_at": "2026-04-03T02:53:18.228884Z",
+  "request": {
+    "user_instruction": "gateway smoke after fix",
+    "intent_type": "dirac_full_debug",
+    "task_id": "manual-smoke-2",
+    "source": "manual-smoke"
+  },
+  "result": {},
+  "started_at": "2026-04-03T02:53:18.228873Z"
+}

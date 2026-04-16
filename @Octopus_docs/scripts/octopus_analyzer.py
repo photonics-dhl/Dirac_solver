@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # 默认分析当前目录下的 output
     target = os.path.join(os.getcwd(), "output")
     if not os.path.exists(target):
-        # 尝试父目录或指定路径
-        target = r"e:\PostGraduate\Dirac_solver\@Octopus_docs\output"
+        # 尝试回退到仓库内 @Octopus_docs/output
+        target = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
     
     analyze_octopus_results(target)

@@ -1,0 +1,329 @@
+{
+  "version": "v1",
+  "updated_at": "2026-04-16T01:25:06.528154Z",
+  "recent_failures": [
+    {
+      "at": "2026-04-12T02:08:29.936275Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "b428b71035db",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "logs_consistent",
+        "octopus_ok",
+        "openclaw_flow_ok",
+        "physics_result_ok",
+        "planner_executor_chain_ok",
+        "provenance_verified",
+        "retrieval_skill_ok",
+        "ui_ok",
+        "ui_rendering_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T02:17:16.358733Z",
+      "case": "h2o_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "3a1e7d83da53",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "logs_consistent",
+        "octopus_ok",
+        "physics_result_ok",
+        "planner_executor_chain_ok",
+        "provenance_verified",
+        "retrieval_skill_ok",
+        "ui_ok",
+        "ui_rendering_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T02:53:28.394831Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "ae078111cb1a",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "provenance_verified"
+      ]
+    },
+    {
+      "at": "2026-04-12T03:04:49.718012Z",
+      "case": "h2o_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "ae078111cb1a",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "provenance_verified"
+      ]
+    },
+    {
+      "at": "2026-04-12T03:20:39.548217Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T03:32:05.299229Z",
+      "case": "h2o_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T06:16:26.496404Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T06:26:42.961946Z",
+      "case": "h2o_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T06:39:36.051112Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T06:49:29.076952Z",
+      "case": "h2o_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T07:01:58.883427Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-12T07:45:44.315099Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "c3d5effa0cbc",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok"
+      ]
+    },
+    {
+      "at": "2026-04-13T02:03:44.633598Z",
+      "case": "infinite_well_v1",
+      "repair_type": "case_scope_mismatch",
+      "failure_type": "case_scope_mismatch",
+      "signature_hash": "934ed94a15ba",
+      "failed_checks": [
+        "case_scope_ok",
+        "kb_richness_ok",
+        "provenance_verified",
+        "retrieval_skill_ok"
+      ]
+    },
+    {
+      "at": "2026-04-13T02:12:48.536824Z",
+      "case": "infinite_well_v1",
+      "repair_type": "case_scope_mismatch",
+      "failure_type": "case_scope_mismatch",
+      "signature_hash": "934ed94a15ba",
+      "failed_checks": [
+        "case_scope_ok",
+        "kb_richness_ok",
+        "provenance_verified",
+        "retrieval_skill_ok"
+      ]
+    },
+    {
+      "at": "2026-04-13T04:25:35.795340Z",
+      "case": "infinite_well_v1",
+      "repair_type": "case_scope_mismatch",
+      "failure_type": "case_scope_mismatch",
+      "signature_hash": "934ed94a15ba",
+      "failed_checks": [
+        "case_scope_ok",
+        "kb_richness_ok",
+        "provenance_verified",
+        "retrieval_skill_ok"
+      ]
+    },
+    {
+      "at": "2026-04-15T16:57:12.447555Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "448e6fb33dd4",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "openclaw_flow_ok",
+        "planner_executor_chain_ok",
+        "retrieval_skill_ok",
+        "web_evidence_ok"
+      ]
+    },
+    {
+      "at": "2026-04-15T17:12:53.537976Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "endpoint_topology_or_service_liveness",
+      "failure_type": "endpoint_or_service",
+      "signature_hash": "13b0dcd42f50",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "retrieval_skill_ok",
+        "web_evidence_ok"
+      ]
+    },
+    {
+      "at": "2026-04-15T17:28:23.323579Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "448e6fb33dd4",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "openclaw_flow_ok",
+        "planner_executor_chain_ok",
+        "retrieval_skill_ok",
+        "web_evidence_ok"
+      ]
+    },
+    {
+      "at": "2026-04-16T00:55:40.326026Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "448e6fb33dd4",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "openclaw_flow_ok",
+        "planner_executor_chain_ok",
+        "retrieval_skill_ok",
+        "web_evidence_ok"
+      ]
+    },
+    {
+      "at": "2026-04-16T01:25:06.528219Z",
+      "case": "hydrogen_gs_reference",
+      "repair_type": "planner_executor_chain_break",
+      "failure_type": "planner_executor_chain_break",
+      "signature_hash": "448e6fb33dd4",
+      "failed_checks": [
+        "accuracy_ok",
+        "benchmarks_aligned_ok",
+        "execution_ok",
+        "kb_richness_ok",
+        "openclaw_flow_ok",
+        "planner_executor_chain_ok",
+        "retrieval_skill_ok",
+        "web_evidence_ok"
+      ]
+    }
+  ],
+  "failure_type_counts": {
+    "benchmark_provenance": 9,
+    "case_scope_mismatch": 4,
+    "planner_executor_chain_break": 11,
+    "endpoint_or_service": 15
+  },
+  "last_run": {
+    "at": "2026-04-16T01:25:06.528190Z",
+    "case": "hydrogen_gs_reference",
+    "verdict": "FAIL",
+    "repair_type": "planner_executor_chain_break",
+    "failure_type": "planner_executor_chain_break",
+    "failure_signature_hash": "448e6fb33dd4",
+    "checks": {
+      "accuracy_ok": false,
+      "benchmarks_aligned_ok": false,
+      "provenance_verified": true,
+      "case_scope_ok": true,
+      "execution_ok": false,
+      "logs_consistent": true,
+      "kb_richness_ok": false,
+      "retrieval_skill_ok": false,
+      "web_evidence_ok": false,
+      "openclaw_flow_ok": false,
+      "planner_executor_chain_ok": false,
+      "deep_model_priority_ok": true,
+      "mcp_attempted_ok": true,
+      "octopus_ok": true,
+      "ui_ok": true,
+      "ui_rendering_ok": true,
+      "physics_result_ok": true,
+      "skills_contracts_ok": true
+    }
+  },
+  "last_pass_at": "2026-04-11T08:50:18.227423Z",
+  "pass_count": 1
+}

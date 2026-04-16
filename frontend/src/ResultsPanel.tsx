@@ -8,7 +8,8 @@
 import React, { useMemo, useState } from 'react';
 import { Mol3DViewer } from './Mol3DViewer';
 
-const API_BASE = '';
+const ENV_API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
+const API_BASE = ENV_API_BASE || '';
 
 // ─── Shared Types ─────────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ interface PhysicsResult {
         optical_spectrum?: {
             energy_ev: number[];
             cross_section: number[];
+            warning?: string;
         };
         convergence_data?: {
             iterations: number[];
@@ -99,6 +101,149 @@ interface PhysicsResult {
         vxc?: number[];
         vks?: number[];
     };
+    scheduler?: {
+        strategy?: string;
+        run_dir?: string;
+        job_id?: string;
+        job_state?: string;
+        queue?: string;
+        ncpus?: number;
+        mpiprocs?: number;
+        selected_node?: string;
+        exec_vnode?: string;
+        resource_selector?: string;
+    };
+    harness?: {
+        caseId: string;
+        configHash: string;
+        relativeError: number | null;
+        threshold: number | null;
+        passed: boolean;
+        escalation?: {
+            required: boolean;
+            reason?: string | null;
+        };
+        constraints?: {
+            maxRetries?: number;
+            timeoutSeconds?: number;
+            attemptsUsed?: number;
+        };
+        logRefs?: {
+            eventLog?: string;
+            resultJson?: string;
+        };
+        eventChain?: Array<Record<string, unknown>>;
+        controlLoop?: {
+            qualityScore?: number;
+            iterations?: number;
+        };
+    };
+}
+
+type ResultsErrorBoundaryProps = {
+    children: React.ReactNode;
+};
+
+type ResultsErrorBoundaryState = {
+    hasError: boolean;
+    message: string;
+};
+
+class ResultsErrorBoundary extends React.Component<ResultsErrorBoundaryProps, ResultsErrorBoundaryState> {
+    constructor(props: ResultsErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false, message: '' };
+    }
+
+    static getDerivedStateFromError(error: Error): ResultsErrorBoundaryState {
+        return {
+            hasError: true,
+            message: error?.message || 'Unknown rendering error',
+        };
+    }
+
+    componentDidCatch(error: Error) {
+        console.error('[ResultsPanel] render error:', error);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{
+                    marginTop: 10,
+                    padding: '10px 12px',
+                    borderRadius: 8,
+                    border: '1px solid rgba(239,68,68,0.35)',
+                    background: 'rgba(127,29,29,0.25)',
+                    color: '#fecaca',
+                    fontSize: 12,
+                }}>
+                    Result render failed: {this.state.message}
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+function HarnessAuditPanel({
+    harness,
+    previousHarness,
+}: {
+    harness: NonNullable<PhysicsResult['harness']>;
+    previousHarness?: NonNullable<PhysicsResult['harness']> | null;
+}) {
+    const relErrPct = harness.relativeError != null ? `${(harness.relativeError * 100).toFixed(4)}%` : 'N/A';
+    const thresholdPct = harness.threshold != null ? `${(harness.threshold * 100).toFixed(2)}%` : 'N/A';
+    const events = Array.isArray(harness.eventChain) ? harness.eventChain.slice(-8) : [];
+    const deltaErrPct =
+        previousHarness?.relativeError != null && harness.relativeError != null
+            ? (harness.relativeError - previousHarness.relativeError) * 100
+            : null;
+
+    return (
+        <div style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(22,163,74,0.08)' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#bbf7d0', marginBottom: 6 }}>Harness Audit Snapshot</div>
+            <div style={{ display: 'grid', gap: 4, fontSize: 10, color: '#d1fae5' }}>
+                <div><span style={{ color: '#86efac' }}>Case:</span> {harness.caseId || 'infinite_well_v1'}</div>
+                <div><span style={{ color: '#86efac' }}>Config Hash:</span> {harness.configHash || 'N/A'}</div>
+                <div><span style={{ color: '#86efac' }}>Relative Error:</span> {relErrPct} (threshold {thresholdPct})</div>
+                {previousHarness && (
+                    <div>
+                        <span style={{ color: '#86efac' }}>Vs Previous Run:</span>{' '}
+                        {deltaErrPct == null
+                            ? 'N/A'
+                            : `${deltaErrPct > 0 ? '+' : ''}${deltaErrPct.toFixed(4)}%`}
+                        {previousHarness.passed !== harness.passed
+                            ? ` | verdict changed (${previousHarness.passed ? 'PASS' : 'FAIL'} -> ${harness.passed ? 'PASS' : 'FAIL'})`
+                            : ''}
+                    </div>
+                )}
+                <div><span style={{ color: '#86efac' }}>Verdict:</span> {harness.passed ? 'PASS' : 'FAIL'}{harness.escalation?.required ? ` | escalation: ${harness.escalation.reason || 'required'}` : ''}</div>
+                <div><span style={{ color: '#86efac' }}>Attempts:</span> {harness.constraints?.attemptsUsed ?? '-'} / {harness.constraints?.maxRetries ?? '-'} &nbsp; <span style={{ color: '#86efac' }}>Timeout:</span> {harness.constraints?.timeoutSeconds ?? '-'}s</div>
+                <div><span style={{ color: '#86efac' }}>Control Loop:</span> quality={harness.controlLoop?.qualityScore != null ? harness.controlLoop.qualityScore.toFixed(4) : 'N/A'} | iterations={harness.controlLoop?.iterations ?? '-'}</div>
+                <div><span style={{ color: '#86efac' }}>Event Log:</span> {harness.logRefs?.eventLog || 'N/A'}</div>
+                <div><span style={{ color: '#86efac' }}>Result JSON:</span> {harness.logRefs?.resultJson || 'N/A'}</div>
+            </div>
+            {events.length > 0 && (
+                <div style={{ marginTop: 8, borderTop: '1px solid rgba(187,247,208,0.2)', paddingTop: 6 }}>
+                    <div style={{ fontSize: 10, color: '#86efac', marginBottom: 4 }}>Recent Events</div>
+                    <div style={{ display: 'grid', gap: 3 }}>
+                        {events.map((evt, idx) => {
+                            const phase = String(evt.phase || 'unknown');
+                            const ts = String(evt.timestamp || '');
+                            const attempt = evt.attempt != null ? ` #${String(evt.attempt)}` : '';
+                            return (
+                                <div key={`${phase}-${idx}-${ts}`} style={{ fontSize: 10, color: '#a7f3d0' }}>
+                                    {phase}{attempt}{ts ? ` @ ${ts}` : ''}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 // ─── SVG Chart Primitives ─────────────────────────────────────────
@@ -824,7 +969,7 @@ function BoundStateView({ result }: { result: PhysicsResult }) {
 
 // ─── Summary Header ───────────────────────────────────────────────
 
-function ResultsSummary({ result }: { result: PhysicsResult }) {
+function ResultsSummary({ result, runDurationSeconds }: { result: PhysicsResult; runDurationSeconds?: number | null }) {
     const pt = (result.problemType || 'boundstate').toLowerCase();
     const eq = result.equationType || '';
 
@@ -844,18 +989,44 @@ function ResultsSummary({ result }: { result: PhysicsResult }) {
     ];
     if (result.verified) badges.push({ label: '✓ Verified', color: '#22c55e' });
 
+    const scheduler = result.scheduler;
+    const shouldShowSchedulerRow = Boolean(scheduler) || result.equationType === 'Octopus DFT' || Boolean(result.molecular);
+    const vnodeRaw = scheduler?.exec_vnode || '';
+    const vnodeMatch = vnodeRaw.match(/[A-Za-z0-9._-]+/);
+    const nodeName = scheduler?.selected_node || (vnodeMatch ? vnodeMatch[0] : '');
+
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '4px 0' }}>
-            {badges.map((b, i) => (
-                <span key={i} style={{
-                    fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 12,
-                    background: `${b.color}20`, border: `1px solid ${b.color}40`, color: b.color
-                }}>{b.label}</span>
-            ))}
-            {result.computationTime > 0 && (
-                <span style={{ fontSize: 10, color: '#4b5563', marginLeft: 'auto' }}>
-                    {result.computationTime.toFixed(2)}s
-                </span>
+        <div style={{ display: 'grid', gap: 6, padding: '4px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                {badges.map((b, i) => (
+                    <span key={i} style={{
+                        fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 12,
+                        background: `${b.color}20`, border: `1px solid ${b.color}40`, color: b.color
+                    }}>{b.label}</span>
+                ))}
+                {((runDurationSeconds ?? result.computationTime) > 0) && (
+                    <span style={{ fontSize: 10, color: '#4b5563', marginLeft: 'auto' }}>
+                        {(runDurationSeconds ?? result.computationTime).toFixed(2)}s
+                    </span>
+                )}
+            </div>
+
+            {shouldShowSchedulerRow && (
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                    fontSize: 10,
+                    color: '#94a3b8'
+                }}>
+                    <span style={{ color: '#64748b' }}>Run:</span><span style={{ color: '#cbd5e1' }}>{scheduler?.run_dir || '—'}</span>
+                    <span style={{ color: '#64748b' }}>Job:</span><span style={{ color: '#cbd5e1' }}>{scheduler?.job_id || '—'}</span>
+                    <span style={{ color: '#64748b' }}>Node:</span><span style={{ color: '#cbd5e1' }}>{nodeName || '—'}</span>
+                    <span style={{ color: '#64748b' }}>CPU:</span><span style={{ color: '#cbd5e1' }}>{scheduler?.ncpus ?? '—'}</span>
+                    <span style={{ color: '#64748b' }}>MPI:</span><span style={{ color: '#cbd5e1' }}>{scheduler?.mpiprocs ?? '—'}</span>
+                    <span style={{ color: '#64748b' }}>Queue:</span><span style={{ color: '#cbd5e1' }}>{scheduler?.queue || '—'}</span>
+                </div>
             )}
         </div>
     );
@@ -863,28 +1034,121 @@ function ResultsSummary({ result }: { result: PhysicsResult }) {
 
 // ─── Main Export ─────────────────────────────────────────────────
 
-export default function ResultsPanel({ result, resultHistory = {} }: {
+export default function ResultsPanel({ result, resultHistory = {}, runDurationSeconds }: {
     result: PhysicsResult;
     resultHistory?: Record<string, PhysicsResult>;
+    runDurationSeconds?: number | null;
 }) {
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [genError, setGenError] = React.useState<string | null>(null);
+    const [genStatus, setGenStatus] = React.useState<string | null>(null);
+    const quickTypeRows = React.useMemo(() => {
+        const rows: Array<{ key: string; type: string; value: string }> = [];
+        rows.push({ key: 'eigenvalues', type: 'number[]', value: String(result.eigenvalues?.length ?? 0) + ' items' });
+        rows.push({ key: 'computationTime', type: 'number', value: String(result.computationTime) });
+        if (result.molecular) {
+            rows.push({ key: 'molecular.converged', type: 'boolean', value: String(result.molecular.converged ?? false) });
+            rows.push({ key: 'molecular.homo_energy', type: 'number | null', value: String(result.molecular.homo_energy ?? 'null') });
+            rows.push({ key: 'molecular.lumo_energy', type: 'number | null', value: String(result.molecular.lumo_energy ?? 'null') });
+            rows.push({
+                key: 'molecular.optical_spectrum.energy_ev',
+                type: 'number[]',
+                value: String(result.molecular.optical_spectrum?.energy_ev?.length ?? 0) + ' items',
+            });
+        }
+        if (result.scheduler) {
+            rows.push({ key: 'scheduler', type: 'object', value: result.scheduler.run_dir || 'present' });
+        }
+        if (result.harness) {
+            rows.push({ key: 'harness.caseId', type: 'string', value: result.harness.caseId });
+            rows.push({ key: 'harness.configHash', type: 'string', value: result.harness.configHash || 'N/A' });
+            rows.push({ key: 'harness.eventChain', type: 'object[]', value: `${result.harness.eventChain?.length ?? 0} items` });
+            rows.push({ key: 'harness.logRefs', type: 'object', value: result.harness.logRefs?.eventLog || 'present' });
+        }
+        return rows;
+    }, [result]);
+
+    const previousHarness = React.useMemo(() => {
+        if (!result?.harness) return null;
+        const candidates = Object.values(resultHistory || {})
+            .filter((item: any) => {
+                const h = item?.harness;
+                if (!h || !h.caseId) return false;
+                if (h.caseId !== result.harness?.caseId) return false;
+                if (h.configHash && result.harness?.configHash && h.configHash === result.harness.configHash) return false;
+                return true;
+            })
+            .map((item: any) => item.harness as NonNullable<PhysicsResult['harness']>);
+        if (candidates.length === 0) return null;
+        return candidates[candidates.length - 1];
+    }, [result, resultHistory]);
 
     const handleGenerateExplanation = async () => {
         setIsGenerating(true);
         setGenError(null);
+        setGenStatus('Submitting explanation job...');
         try {
-            const res = await fetch(`${API_BASE}/api/physics/explain`, {
+            const submitRes = await fetch(`${API_BASE}/api/physics/explain`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Explain-Async': '1',
+                },
                 body: JSON.stringify(result)
             });
-            const data = await res.json();
-            if (res.ok && data.status === 'success') {
-                window.open(`${API_BASE}/api/physics/explanation`, '_blank');
-            } else {
-                setGenError(data.error || 'Failed to generate explanation');
+            const submitData = await submitRes.json();
+
+            if (!submitRes.ok) {
+                const msg = String(submitData?.error || 'Failed to submit explanation job');
+                if (msg.toLowerCase().includes('timed out')) {
+                    setGenError('Detailed explanation timed out. Please retry later when ZChat is reachable.');
+                } else {
+                    setGenError(msg);
+                }
+                return;
             }
+
+            // Backward compatibility: old sync route might return immediate success.
+            if (submitData.status === 'success') {
+                const file = submitData.file || 'physics_explanation.md';
+                window.open(`${API_BASE}/api/physics/explanation?file=${encodeURIComponent(file)}`, '_blank');
+                setGenStatus('Explanation ready. Opened in new tab.');
+                return;
+            }
+
+            if (submitData.status !== 'accepted' || !submitData.jobId) {
+                setGenError(submitData.error || 'Unexpected explanation API response');
+                return;
+            }
+
+            const pollUrl = `${API_BASE}/api/physics/explain/jobs/${submitData.jobId}`;
+            const pollDeadline = Date.now() + 3 * 60 * 1000;
+
+            while (Date.now() < pollDeadline) {
+                setGenStatus('AI is generating detailed explanation...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                const pollRes = await fetch(pollUrl);
+                const pollData = await pollRes.json();
+
+                if (!pollRes.ok) {
+                    setGenError(pollData.error || 'Explanation job polling failed');
+                    return;
+                }
+
+                if (pollData.status === 'success') {
+                    const file = pollData.file || submitData.file || 'physics_explanation.md';
+                    window.open(`${API_BASE}/api/physics/explanation?file=${encodeURIComponent(file)}`, '_blank');
+                    setGenStatus('Explanation ready. Opened in new tab.');
+                    return;
+                }
+
+                if (pollData.status === 'error' || pollData.status === 'timeout') {
+                    setGenError(pollData.error || 'Explanation generation failed');
+                    return;
+                }
+            }
+
+            setGenError('Explanation job is taking too long. Please try again.');
         } catch (e: any) {
             setGenError(e.message);
         } finally {
@@ -897,7 +1161,23 @@ export default function ResultsPanel({ result, resultHistory = {} }: {
             <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
 
             {/* Summary row */}
-            <ResultsSummary result={result} />
+            <ResultsSummary result={result} runDurationSeconds={runDurationSeconds} />
+
+            {/* Quick type guide for run outputs (local, no LLM) */}
+            <div style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid rgba(56,189,248,0.25)', background: 'rgba(2,132,199,0.08)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#bae6fd', marginBottom: 6 }}>Run Output Quick Type Guide (Local)</div>
+                <div style={{ display: 'grid', gap: 4 }}>
+                    {quickTypeRows.map((row) => (
+                        <div key={row.key} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1.2fr', gap: 8, fontSize: 10 }}>
+                            <span style={{ color: '#cbd5e1' }}>{row.key}</span>
+                            <span style={{ color: '#7dd3fc' }}>{row.type}</span>
+                            <span style={{ color: '#94a3b8' }}>{row.value}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {result.harness && <HarnessAuditPanel harness={result.harness} previousHarness={previousHarness} />}
 
             {/* AI Explanation button */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -910,22 +1190,25 @@ export default function ResultsPanel({ result, resultHistory = {} }: {
                     {isGenerating ? (
                         <span style={{ width: 12, height: 12, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s linear infinite', display: 'inline-block' }} />
                     ) : '✦'}
-                    {isGenerating ? 'Generating...' : 'Generate AI Explanation'}
+                    {isGenerating ? 'Generating...' : 'Generate Detailed AI Explanation'}
                 </button>
+                {genStatus && !genError && <span style={{ fontSize: 11, color: '#93c5fd' }}>{genStatus}</span>}
                 {genError && <span style={{ fontSize: 11, color: '#ef4444' }}>{genError}</span>}
             </div>
 
             {/* Adaptive view based on problem type */}
             {/* Priority: molecular > timeevolution > scattering > default boundstate */}
-            {result.molecular ? (
-                <MolecularView result={result} resultHistory={resultHistory} />
-            ) : result.timeEvolution ? (
-                <TimeEvolutionView result={result} />
-            ) : result.scattering ? (
-                <ScatteringView result={result} />
-            ) : (
-                <BoundStateView result={result} />
-            )}
+            <ResultsErrorBoundary>
+                {result.molecular ? (
+                    <MolecularView result={result} resultHistory={resultHistory} />
+                ) : result.timeEvolution ? (
+                    <TimeEvolutionView result={result} />
+                ) : result.scattering ? (
+                    <ScatteringView result={result} />
+                ) : (
+                    <BoundStateView result={result} />
+                )}
+            </ResultsErrorBoundary>
         </div>
     );
 }
@@ -937,7 +1220,10 @@ function MolecularView({ result, resultHistory = {} }: {
     resultHistory?: Record<string, PhysicsResult>;
 }) {
     const mol = result.molecular;
+    const renderSignature = `${result.scheduler?.job_id || ''}:${result.computationTime || 0}`;
     const [selectedState, setSelectedState] = React.useState(0);
+    const [specCurve, setSpecCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, width: 2 });
+    const [specRange, setSpecRange] = React.useState<AxisRange>(emptyRange);
     // Cross-mode persistent history
     const gsResult: PhysicsResult | undefined =
         (resultHistory['gs'] ?? resultHistory['molecular'] ?? (mol?.calcMode === 'gs' ? result : undefined)) as PhysicsResult | undefined;
@@ -946,12 +1232,33 @@ function MolecularView({ result, resultHistory = {} }: {
 
     if (!mol) return null;
 
+    const moleculeName = String(mol.moleculeName || '').trim();
+    const isNAtomCase = moleculeName === 'N_atom';
+    const hasTdDipole = Boolean(mol.td_dipole && mol.td_dipole.time.length > 0);
+
+    const nAtomSPDiagnostics = (() => {
+        if (!isNAtomCase || !Array.isArray(mol.energy_levels) || mol.energy_levels.length < 4) {
+            return null;
+        }
+        const s = Number(mol.energy_levels[0]);
+        const p = (Number(mol.energy_levels[1]) + Number(mol.energy_levels[2]) + Number(mol.energy_levels[3])) / 3;
+        if (!isFinite(s) || !isFinite(p)) {
+            return null;
+        }
+        return { s, p };
+    })();
+
     // ── TD mode without optical spectrum (Gaussian / sine / CW excitation) ──
     if (mol.calcMode === 'td' && (!mol.optical_spectrum || mol.optical_spectrum.energy_ev.length === 0)) {
+        const spectrumWarning = mol.optical_spectrum?.warning;
         return (
             <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ padding: '6px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.24)', borderRadius: 6, fontSize: 10, color: '#bbf7d0' }}>
+                    Result-driven visualization: TDDFT dipole response panel is shown because `td_dipole` data is available.
+                </div>
                 <div style={{ padding: '6px 12px', background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: 6, fontSize: 10, color: '#8892a4' }}>
-                    非 delta-kick 激励（Gaussian / 正弦 / CW）不产生线性光学吸收谱。以下展示时域偶极响应。
+                    未检测到可用吸收谱数据，当前展示时域偶极响应。常见原因：非 delta-kick 激励，或 `oct-propagation_spectrum` 未生成 `cross_section_vector`。
+                    {spectrumWarning ? ` 诊断：${spectrumWarning}` : ''}
                 </div>
                 {mol.td_dipole && mol.td_dipole.time.length > 0
                     ? <TdDipolePanel dipole={mol.td_dipole} />
@@ -963,7 +1270,7 @@ function MolecularView({ result, resultHistory = {} }: {
                 {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
                     <EELSPanel spec={mol.eels_spectrum} />
                 )}
-                <VisItRenderPanel moleculeName={mol.moleculeName} />
+                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
             </div>
         );
     }
@@ -971,14 +1278,15 @@ function MolecularView({ result, resultHistory = {} }: {
     // ── Optical Absorption Spectrum (TD mode — delta-kick only) ──
     if (mol.calcMode === 'td' && mol.optical_spectrum) {
         const { energy_ev, cross_section } = mol.optical_spectrum;
-        const [specCurve, setSpecCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, width: 2 });
-        const [specRange, setSpecRange] = React.useState<AxisRange>(emptyRange);
         const eMax = applyRange(Math.max(...energy_ev), specRange.xMax);
         const csMax = applyRange(Math.max(...cross_section), specRange.yMax);
         const eMin = applyRange(0, specRange.xMin);
         const csMin = applyRange(0, specRange.yMin);
         return (
             <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ padding: '6px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.24)', borderRadius: 6, fontSize: 10, color: '#bbf7d0' }}>
+                    Result-driven visualization: optical spectrum panel is active; dipole response panel {hasTdDipole ? 'is included' : 'is hidden'} based on returned `td_dipole` data.
+                </div>
                 <CurveStyleBar style={specCurve} onChange={setSpecCurve} />
                 <AxisRangeBar range={specRange} onChange={setSpecRange} />
                 <ChartContainer title={`光学吸收谱 — ${mol.moleculeName}`}
@@ -1029,7 +1337,7 @@ function MolecularView({ result, resultHistory = {} }: {
                         </>
                     );
                 })()}
-                <VisItRenderPanel moleculeName={mol.moleculeName} />
+                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
             </div>
         );
     }
@@ -1038,7 +1346,27 @@ function MolecularView({ result, resultHistory = {} }: {
     const levels = mol.energy_levels || [];
     const homoEV = mol.homo_energy;
     const lumoEV = mol.lumo_energy;
+    const levelMatchTol = 1e-3;
+    const homoIndices = homoEV == null ? [] : levels
+        .map((e, i) => ({ e, i }))
+        .filter(({ e }) => Math.abs(e - homoEV) < levelMatchTol)
+        .map(({ i }) => i);
+    const lumoIndices = lumoEV == null ? [] : levels
+        .map((e, i) => ({ e, i }))
+        .filter(({ e }) => Math.abs(e - lumoEV) < levelMatchTol)
+        .map(({ i }) => i);
+    const primaryHomoIdx = homoIndices.length > 0 ? homoIndices[0] : null;
+    const primaryLumoIdx = lumoIndices.length > 0 ? lumoIndices[0] : null;
+    const totalEnergyHa = mol.total_energy_hartree;
     const gapEV = homoEV != null && lumoEV != null ? lumoEV - homoEV : null;
+    const HARTREE_TO_EV = 27.2114;
+    const totalEnergyEV = totalEnergyHa != null ? totalEnergyHa * HARTREE_TO_EV : null;
+    const hydrogenRefHa = -0.5;
+    const hydrogenRefEV = hydrogenRefHa * HARTREE_TO_EV;
+    const hydrogenEnergyDeltaEV = totalEnergyEV != null ? totalEnergyEV - hydrogenRefEV : null;
+    const unitContractWarning = totalEnergyHa != null && Math.abs(totalEnergyHa) > 5 && Math.abs(totalEnergyHa) < 30
+        ? 'Unit warning: total_energy_hartree appears to be in an eV-like range. Verify backend payload contract (Ha expected).'
+        : null;
 
     // Wavefunction visualization (populated if axis_x output was enabled)
     const wf = result.wavefunctions?.[selectedState];
@@ -1070,30 +1398,74 @@ function MolecularView({ result, resultHistory = {} }: {
                 <MetricCell label="SCF Converged" value={mol.converged ? '✓ Yes' : '✗ No'}
                     accent={mol.converged ? '#22c55e' : '#ef4444'} />
                 <MetricCell label="SCF Iterations" value={mol.scf_iterations != null ? String(mol.scf_iterations) : '—'} accent="#8892a4" />
-                {mol.total_energy_hartree != null && (
-                    <MetricCell label="Total Energy" value={`${mol.total_energy_hartree.toFixed(5)} H`} accent="#8892a4" />
+                {totalEnergyHa != null && (
+                    <MetricCell
+                        label="Total Energy"
+                        value={`${totalEnergyHa.toFixed(5)} Ha${totalEnergyEV != null ? ` (${totalEnergyEV.toFixed(3)} eV)` : ''}`}
+                        accent="#8892a4"
+                    />
                 )}
                 {homoEV != null && <MetricCell label="HOMO" value={`${homoEV.toFixed(3)} eV`} accent="#22c55e" />}
                 {lumoEV != null && <MetricCell label="LUMO" value={`${lumoEV.toFixed(3)} eV`} accent="#ef4444" />}
                 {gapEV != null && <MetricCell label="Gap (HOMO-LUMO)" value={`${gapEV.toFixed(3)} eV`} accent="#00d4ff" />}
             </div>
 
+            {unitContractWarning && (
+                <div style={{ color: '#f59e0b', fontSize: 12, padding: '0 2px' }}>{unitContractWarning}</div>
+            )}
+
+            {String(result?.config?.speciesMode || '').trim().toLowerCase() === 'pseudo' && (
+                <div style={{ color: '#7dd3fc', fontSize: 12, padding: '0 2px' }}>
+                    Electron count note: pseudopotential mode reports valence electrons.
+                    N atom is typically 5 valence electrons (1s core is frozen), not full 7 all-electron count.
+                </div>
+            )}
+
+            {(homoIndices.length > 1 || lumoIndices.length > 1) && (
+                <div style={{ color: '#7dd3fc', fontSize: 12, padding: '0 2px' }}>
+                    Note: Degenerate Kohn-Sham levels detected.
+                    {homoIndices.length > 1 ? ` HOMO appears on ${homoIndices.length} equal-energy states.` : ''}
+                    {lumoIndices.length > 1 ? ` LUMO appears on ${lumoIndices.length} equal-energy states.` : ''}
+                </div>
+            )}
+
+            {isNAtomCase && (
+                <div style={{ color: '#7dd3fc', fontSize: 12, padding: '0 2px' }}>
+                    Result-driven visualization: N-atom case enables S/P eigenstate diagnostics for official-style review.
+                    {nAtomSPDiagnostics
+                        ? ` S(approx)=${nAtomSPDiagnostics.s.toFixed(4)} eV, P(approx)=${nAtomSPDiagnostics.p.toFixed(4)} eV.`
+                        : ' Waiting for enough eigenlevels to estimate S/P channels.'}
+                </div>
+            )}
+
+            {String(mol.moleculeName || '').trim().toUpperCase() === 'H' && totalEnergyEV != null && (
+                <div style={{ color: '#7dd3fc', fontSize: 12, padding: '0 2px' }}>
+                    Hydrogen benchmark compares total energy to -0.50000 Ha ({hydrogenRefEV.toFixed(4)} eV).
+                    Current delta: {hydrogenEnergyDeltaEV != null ? `${hydrogenEnergyDeltaEV.toFixed(4)} eV` : 'N/A'}.
+                </div>
+            )}
+
             {/* Kohn-Sham energy level diagram */}
             {levels.length > 0 && (
                 <ChartContainer title={`Kohn-Sham Energy Levels — ${mol.moleculeName} (eV)`}>
                     <Axes xMin={0} xMax={1} yMin={levelsMin} yMax={levelsMax} yLabel="E (eV)" />
                     {levels.map((e, i) => {
-                        const isHomo = homoEV != null && Math.abs(e - homoEV) < 0.001;
-                        const isLumo = lumoEV != null && Math.abs(e - lumoEV) < 0.001;
+                        const isHomo = homoIndices.includes(i);
+                        const isLumo = lumoIndices.includes(i);
                         const color = isHomo ? '#22c55e' : isLumo ? '#ef4444' : '#00d4ff';
                         const y = PAD.top + INNER_H - ((e - levelsMin) / ((levelsMax - levelsMin) || 1)) * INNER_H;
+                        const label = isHomo
+                            ? (i === primaryHomoIdx ? (homoIndices.length > 1 ? `HOMO×${homoIndices.length}` : 'HOMO') : '')
+                            : isLumo
+                                ? (i === primaryLumoIdx ? (lumoIndices.length > 1 ? `LUMO×${lumoIndices.length}` : 'LUMO') : '')
+                                : `n=${i}`;
                         return (
                             <g key={i}>
                                 <line x1={PAD.left + INNER_W * 0.15} x2={PAD.left + INNER_W * 0.85}
                                     y1={y} y2={y} stroke={color} strokeWidth={isHomo || isLumo ? 2 : 1}
                                     opacity={isHomo || isLumo ? 1 : 0.5} />
                                 <text x={PAD.left + INNER_W * 0.87} y={y + 3} fill={color} fontSize={8}>
-                                    {isHomo ? 'HOMO' : isLumo ? 'LUMO' : `n=${i}`}
+                                    {label}
                                 </text>
                                 <text x={PAD.left + INNER_W * 0.13} y={y + 3} fill={color} fontSize={7} textAnchor="end">
                                     {e.toFixed(2)}
@@ -1133,90 +1505,25 @@ function MolecularView({ result, resultHistory = {} }: {
             })()}
 
             {/* Wavefunction chart — only if 1D slice data is available */}
-            {x.length > 0 && psi.length > 0 && (() => {
-                const [wfCurve, setWfCurve] = React.useState<CurveStyle>(DEFAULT_CURVE);
-                const [wfRange, setWfRange] = React.useState<AxisRange>(emptyRange);
-                const [wfUnit, setWfUnit] = React.useState<'bohr'|'ang'>('bohr');
-                const ANG = 0.529177; // 1 Bohr = 0.529177 Å
-                const xScaled = wfUnit === 'ang' ? x.map(v => v * ANG) : x;
-                const xMinS = applyRange(wfUnit === 'ang' ? xMin * ANG : xMin, wfRange.xMin);
-                const xMaxS = applyRange(wfUnit === 'ang' ? xMax * ANG : xMax, wfRange.xMax);
-                const psiYMin = applyRange(Math.min(...psi.filter(isFinite)), wfRange.yMin);
-                const psiYMax = applyRange(Math.max(...psi.filter(isFinite), 0.01), wfRange.yMax);
-                const psiSqYMax = applyRange(psiMax * 1.1, wfRange.yMax);
-                const xLabelU = wfUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
-                return (
-                    <>
-                        {/* State selector */}
-                        {result.wavefunctions && result.wavefunctions.length > 1 && (
-                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
-                                <span style={{ fontSize: 9, color: '#4b5563', marginRight: 2 }}>态选择 →</span>
-                                {result.eigenvalues.map((ev, i) => (
-                                    <button key={i} onClick={() => setSelectedState(i)}
-                                        style={{
-                                            padding: '3px 8px', fontSize: 10, borderRadius: 4, cursor: 'pointer', border: 'none',
-                                            background: selectedState === i ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
-                                            outline: selectedState === i ? '1px solid #00d4ff' : '1px solid #374151',
-                                            color: selectedState === i ? '#00d4ff' : '#8892a4',
-                                        }}>
-                                        n={i} ({ev.toFixed(3)} H)
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                        <CurveStyleBar style={wfCurve} onChange={setWfCurve} />
-                        <AxisRangeBar range={wfRange} onChange={setWfRange} unit={wfUnit} onUnitToggle={() => setWfUnit(u => u === 'bohr' ? 'ang' : 'bohr')} />
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                            <ChartContainer title={`ψₙ(x) — 态 ${selectedState}`}
-                                exportData={{ x: xScaled, y: psi, xLabel: xLabelU, yLabel: 'psi', filename: `wavefunction_state${selectedState}` }}>
-                                <Axes xLabel={xLabelU} yLabel="ψ" xTicks={makeXTicks(xMinS, xMaxS, 5)}
-                                    yTicks={makeYTicks(psiYMin, psiYMax, 4)} />
-                                <LinePath xData={xScaled} yData={psi} color={wfCurve.color} strokeWidth={wfCurve.width}
-                                    xMin={xMinS} xMax={xMaxS} yMin={psiYMin} yMax={psiYMax} />
-                            </ChartContainer>
-                            <ChartContainer title={`|ψₙ(x)|² — 概率密度`}
-                                exportData={{ x: xScaled, y: psiSq, xLabel: xLabelU, yLabel: '|psi|^2', filename: `prob_density_state${selectedState}` }}>
-                                <Axes xLabel={xLabelU} yLabel="|ψ|²" xTicks={makeXTicks(xMinS, xMaxS, 5)}
-                                    yTicks={makeYTicks(0, psiSqYMax, 4)} />
-                                <LinePath xData={x} yData={scaledPot} color="#3f3f46" strokeWidth={1.5}
-                                    xMin={xMin} xMax={xMax} yMin={0} yMax={psiSqYMax} />
-                                <FillPath xData={xScaled} yData={psiSq} color={wfCurve.color}
-                                    xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
-                                <LinePath xData={xScaled} yData={psiSq} color={wfCurve.color} strokeWidth={wfCurve.width}
-                                    xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
-                            </ChartContainer>
-                        </div>
-                    </>
-                );
-            })()}
+            {x.length > 0 && psi.length > 0 && (
+                <WavefunctionSection
+                    result={result}
+                    x={x}
+                    psi={psi}
+                    psiSq={psiSq}
+                    scaledPot={scaledPot}
+                    xMin={xMin}
+                    xMax={xMax}
+                    psiMax={psiMax}
+                    selectedState={selectedState}
+                    setSelectedState={setSelectedState}
+                />
+            )}
 
             {/* Electron density n(x) */}
-            {result.x_grid && result.x_grid.length > 0 && result.density_1d && result.density_1d.length > 0 && (() => {
-                const rho = result.density_1d!;
-                const xg = result.x_grid!;
-                const [rhoRange, setRhoRange] = React.useState<AxisRange>(emptyRange);
-                const [rhoUnit, setRhoUnit] = React.useState<'bohr'|'ang'>('bohr');
-                const ANG2 = 0.529177;
-                const xgS = rhoUnit === 'ang' ? xg.map(v => v * ANG2) : xg;
-                const rhoMax = applyRange(Math.max(...rho.filter(isFinite), 0.001) * 1.1, rhoRange.yMax);
-                const rhoXMin = applyRange(xgS[0], rhoRange.xMin);
-                const rhoXMax = applyRange(xgS[xgS.length - 1], rhoRange.xMax);
-                const xLabelR = rhoUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
-                return (
-                    <>
-                        <AxisRangeBar range={rhoRange} onChange={setRhoRange} unit={rhoUnit} onUnitToggle={() => setRhoUnit(u => u === 'bohr' ? 'ang' : 'bohr')} />
-                        <ChartContainer title="电子密度 n(x)"
-                            exportData={{ x: xgS, y: rho, xLabel: xLabelR, yLabel: 'n(x) a.u.', filename: 'electron_density' }}>
-                            <Axes xLabel={xLabelR} yLabel="n(x) (a.u.)"
-                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
-                            <FillPath xData={xgS} yData={rho} color="#f59e0b"
-                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
-                            <LinePath xData={xgS} yData={rho} color="#f59e0b"
-                                xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
-                        </ChartContainer>
-                    </>
-                );
-            })()}
+            {result.x_grid && result.x_grid.length > 0 && result.density_1d && result.density_1d.length > 0 && (
+                <ElectronDensitySection xg={result.x_grid} rho={result.density_1d} />
+            )}
 
             {/* Eigenvalue table */}
             {levels.length > 0 && (
@@ -1239,18 +1546,30 @@ function MolecularView({ result, resultHistory = {} }: {
                         <tbody>
                             {levels.map((e_eV, i) => {
                                 const e_H = result.eigenvalues[i] ?? e_eV / 27.2114;
-                                const isHomo = homoEV != null && Math.abs(e_eV - homoEV) < 0.001;
-                                const isLumo = lumoEV != null && Math.abs(e_eV - lumoEV) < 0.001;
+                                const isHomo = homoIndices.includes(i);
+                                const isLumo = lumoIndices.includes(i);
                                 const rowColor = isHomo ? '#22c55e' : isLumo ? '#ef4444' : '#8892a4';
+                                const label = isHomo
+                                    ? (i === primaryHomoIdx ? (homoIndices.length > 1 ? `HOMO×${homoIndices.length}` : 'HOMO') : '')
+                                    : isLumo
+                                        ? (i === primaryLumoIdx ? (lumoIndices.length > 1 ? `LUMO×${lumoIndices.length}` : 'LUMO') : '')
+                                        : '';
                                 return (
                                     <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.03)', color: rowColor }}>
                                         <td style={{ padding: '3px 12px' }}>{i}</td>
                                         <td style={{ padding: '3px 12px', textAlign: 'right' }}>{e_eV.toFixed(4)}</td>
                                         <td style={{ padding: '3px 12px', textAlign: 'right' }}>{e_H.toFixed(5)}</td>
                                         <td style={{ padding: '3px 12px' }}>
-                                            {isHomo ? <span style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', padding: '1px 5px', borderRadius: 3 }}>HOMO</span>
-                                                : isLumo ? <span style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', padding: '1px 5px', borderRadius: 3 }}>LUMO</span>
-                                                    : ''}
+                                            {label ? (
+                                                <span style={{
+                                                    background: isHomo ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                                                    border: isHomo ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(239,68,68,0.3)',
+                                                    padding: '1px 5px',
+                                                    borderRadius: 3,
+                                                }}>
+                                                    {label}
+                                                </span>
+                                            ) : ''}
                                         </td>
                                     </tr>
                                 );
@@ -1261,34 +1580,9 @@ function MolecularView({ result, resultHistory = {} }: {
             )}
 
             {/* Density of States */}
-            {mol.dos_data && mol.dos_data.energy_ev.length > 0 && (() => {
-                const dd = mol.dos_data!;
-                const [dosRange, setDosRange] = React.useState<AxisRange>(emptyRange);
-                const [dosCurve, setDosCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, color: '#a78bfa' });
-                const eMinDOS = applyRange(Math.min(...dd.energy_ev.filter(isFinite)), dosRange.xMin);
-                const eMaxDOS = applyRange(Math.max(...dd.energy_ev.filter(isFinite)), dosRange.xMax);
-                const dosMax = applyRange(Math.max(...dd.dos.filter(isFinite), 0.001) * 1.1, dosRange.yMax);
-                return (
-                    <>
-                        <CurveStyleBar style={dosCurve} onChange={setDosCurve} />
-                        <AxisRangeBar range={dosRange} onChange={setDosRange} />
-                        <ChartContainer title="态密度 (DOS)"
-                            exportData={{ x: dd.energy_ev, y: dd.dos, xLabel: 'E(eV)', yLabel: 'DOS', filename: 'dos' }}>
-                            <Axes xLabel="E (eV)" yLabel="DOS (states/H)"
-                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
-                            {homoEV != null && (() => {
-                                const pxH = PAD.left + ((homoEV - eMinDOS) / ((eMaxDOS - eMinDOS) || 1)) * INNER_W;
-                                return <line x1={pxH} x2={pxH} y1={PAD.top} y2={PAD.top + INNER_H}
-                                    stroke="#22c55e" strokeWidth={1} strokeDasharray="4,3" opacity={0.7} />;
-                            })()}
-                            <FillPath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color}
-                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
-                            <LinePath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color} strokeWidth={dosCurve.width}
-                                xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
-                        </ChartContainer>
-                    </>
-                );
-            })()}
+            {mol.dos_data && mol.dos_data.energy_ev.length > 0 && (
+                <DosSection dd={mol.dos_data} homoEV={homoEV} />
+            )}
 
             {levels.length === 0 && (
                 <div style={{ color: '#4b5563', fontSize: 12, padding: 20, textAlign: 'center', border: '1px dashed #1f2937', borderRadius: 8 }}>
@@ -1297,57 +1591,9 @@ function MolecularView({ result, resultHistory = {} }: {
             )}
 
             {/* Effective Potential Components: v0 + vh + vxc vs vks along x-axis */}
-            {result.potential_components && result.x_grid && result.x_grid.length > 0 && (() => {
-                const pc = result.potential_components!;
-                const xg = result.x_grid!;
-                const [potUnit, setPotUnit] = React.useState<'bohr' | 'ang'>('bohr');
-                const ANG = 0.529177;
-                const xgS = potUnit === 'ang' ? xg.map(v => v * ANG) : xg;
-                const xLabel = potUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
-                const allVals = [
-                    ...(pc.vks ?? []), ...(pc.v0 ?? []),
-                    ...(pc.vh ?? []), ...(pc.vxc ?? []),
-                ].filter(isFinite);
-                const vMin = Math.min(...allVals, 0) * 1.1;
-                const vMax = Math.max(...allVals, 0.001) * 1.1;
-                const labels: Array<[keyof typeof pc, string, string]> = [
-                    ['vks', 'V_KS', '#00d4ff'],
-                    ['v0', 'V₀ (ext)', '#f59e0b'],
-                    ['vh', 'V_H (Hartree)', '#22c55e'],
-                    ['vxc', 'V_XC', '#a78bfa'],
-                ];
-                const exportArrays: Record<string, number[]> = { x: xgS };
-                for (const [k, label] of labels) if (pc[k]?.length) exportArrays[label] = pc[k]!;
-                return (
-                    <>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-                            <span style={{ fontSize: 9, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>单位</span>
-                            <button onClick={() => setPotUnit(u => u === 'bohr' ? 'ang' : 'bohr')}
-                                style={{ padding: '2px 8px', fontSize: 9, cursor: 'pointer', border: 'none', borderRadius: 3,
-                                    background: 'rgba(255,255,255,0.04)', outline: '1px solid #374151', color: '#8892a4' }}>
-                                {potUnit === 'bohr' ? 'Bohr → Å' : 'Å → Bohr'}
-                            </button>
-                            <span style={{ fontSize: 9, color: '#4b5563', marginLeft: 8 }}>图例:</span>
-                            {labels.filter(([k]) => pc[k]?.length).map(([k, lbl, clr]) => (
-                                <span key={k} style={{ fontSize: 9, color: clr, display: 'flex', alignItems: 'center', gap: 3 }}>
-                                    <span style={{ display: 'inline-block', width: 16, height: 2, background: clr, borderRadius: 1 }} />
-                                    {lbl}
-                                </span>
-                            ))}
-                        </div>
-                        <ChartContainer title="有效势分量 (Hartree)"
-                            exportData={{ x: xgS, y: pc.vks ?? [], xLabel, yLabel: 'V (Ha)', filename: 'potential_components' }}>
-                            <Axes xLabel={xLabel} yLabel="V (Ha)"
-                                xMin={xgS[0]} xMax={xgS[xgS.length - 1]} yMin={vMin} yMax={vMax} />
-                            {labels.filter(([k]) => pc[k]?.length).map(([k, , clr]) => (
-                                <LinePath key={k} xData={xgS} yData={pc[k]!}
-                                    color={clr} strokeWidth={k === 'vks' ? 2 : 1}
-                                    xMin={xgS[0]} xMax={xgS[xgS.length - 1]} yMin={vMin} yMax={vMax} />
-                            ))}
-                        </ChartContainer>
-                    </>
-                );
-            })()}
+            {result.potential_components && result.x_grid && result.x_grid.length > 0 && (
+                <PotentialComponentsSection pc={result.potential_components} xg={result.x_grid} />
+            )}
 
             {/* TD Dipole — available in GS+unocc runs that follow a kick */}
             {mol.td_dipole && mol.td_dipole.time.length > 0 && (
@@ -1412,12 +1658,209 @@ function MolecularView({ result, resultHistory = {} }: {
             )}
 
             {/* VisIt 3D Rendering Panel */}
-            <VisItRenderPanel moleculeName={mol.moleculeName} />
+            <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
         </div>
     );
 }
 
 // ─── TD Dipole Panel ──────────────────────────────────────────────
+
+function WavefunctionSection({
+    result,
+    x,
+    psi,
+    psiSq,
+    scaledPot,
+    xMin,
+    xMax,
+    psiMax,
+    selectedState,
+    setSelectedState,
+}: {
+    result: PhysicsResult;
+    x: number[];
+    psi: number[];
+    psiSq: number[];
+    scaledPot: number[];
+    xMin: number;
+    xMax: number;
+    psiMax: number;
+    selectedState: number;
+    setSelectedState: (idx: number) => void;
+}) {
+    const [wfCurve, setWfCurve] = React.useState<CurveStyle>(DEFAULT_CURVE);
+    const [wfRange, setWfRange] = React.useState<AxisRange>(emptyRange);
+    const [wfUnit, setWfUnit] = React.useState<'bohr' | 'ang'>('bohr');
+    const ANG = 0.529177;
+    const xScaled = wfUnit === 'ang' ? x.map((v) => v * ANG) : x;
+    const xMinS = applyRange(wfUnit === 'ang' ? xMin * ANG : xMin, wfRange.xMin);
+    const xMaxS = applyRange(wfUnit === 'ang' ? xMax * ANG : xMax, wfRange.xMax);
+    const psiYMin = applyRange(Math.min(...psi.filter(isFinite)), wfRange.yMin);
+    const psiYMax = applyRange(Math.max(...psi.filter(isFinite), 0.01), wfRange.yMax);
+    const psiSqYMax = applyRange(psiMax * 1.1, wfRange.yMax);
+    const xLabelU = wfUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
+
+    return (
+        <>
+            {result.wavefunctions && result.wavefunctions.length > 1 && (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: 9, color: '#4b5563', marginRight: 2 }}>态选择 →</span>
+                    {result.eigenvalues.map((ev, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setSelectedState(i)}
+                            style={{
+                                padding: '3px 8px',
+                                fontSize: 10,
+                                borderRadius: 4,
+                                cursor: 'pointer',
+                                border: 'none',
+                                background: selectedState === i ? 'rgba(0,212,255,0.15)' : 'rgba(255,255,255,0.04)',
+                                outline: selectedState === i ? '1px solid #00d4ff' : '1px solid #374151',
+                                color: selectedState === i ? '#00d4ff' : '#8892a4',
+                            }}
+                        >
+                            n={i} ({ev.toFixed(3)} H)
+                        </button>
+                    ))}
+                </div>
+            )}
+            <CurveStyleBar style={wfCurve} onChange={setWfCurve} />
+            <AxisRangeBar range={wfRange} onChange={setWfRange} unit={wfUnit} onUnitToggle={() => setWfUnit((u) => (u === 'bohr' ? 'ang' : 'bohr'))} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <ChartContainer
+                    title={`ψₙ(x) — 态 ${selectedState}`}
+                    exportData={{ x: xScaled, y: psi, xLabel: xLabelU, yLabel: 'psi', filename: `wavefunction_state${selectedState}` }}
+                >
+                    <Axes xLabel={xLabelU} yLabel="ψ" xTicks={makeXTicks(xMinS, xMaxS, 5)} yTicks={makeYTicks(psiYMin, psiYMax, 4)} />
+                    <LinePath xData={xScaled} yData={psi} color={wfCurve.color} strokeWidth={wfCurve.width} xMin={xMinS} xMax={xMaxS} yMin={psiYMin} yMax={psiYMax} />
+                </ChartContainer>
+                <ChartContainer
+                    title={`|ψₙ(x)|² — 概率密度`}
+                    exportData={{ x: xScaled, y: psiSq, xLabel: xLabelU, yLabel: '|psi|^2', filename: `prob_density_state${selectedState}` }}
+                >
+                    <Axes xLabel={xLabelU} yLabel="|ψ|²" xTicks={makeXTicks(xMinS, xMaxS, 5)} yTicks={makeYTicks(0, psiSqYMax, 4)} />
+                    <LinePath xData={x} yData={scaledPot} color="#3f3f46" strokeWidth={1.5} xMin={xMin} xMax={xMax} yMin={0} yMax={psiSqYMax} />
+                    <FillPath xData={xScaled} yData={psiSq} color={wfCurve.color} xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
+                    <LinePath xData={xScaled} yData={psiSq} color={wfCurve.color} strokeWidth={wfCurve.width} xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
+                </ChartContainer>
+            </div>
+        </>
+    );
+}
+
+function ElectronDensitySection({ xg, rho }: { xg: number[]; rho: number[] }) {
+    const [rhoRange, setRhoRange] = React.useState<AxisRange>(emptyRange);
+    const [rhoUnit, setRhoUnit] = React.useState<'bohr' | 'ang'>('bohr');
+    const ANG2 = 0.529177;
+    const xgS = rhoUnit === 'ang' ? xg.map((v) => v * ANG2) : xg;
+    const rhoMax = applyRange(Math.max(...rho.filter(isFinite), 0.001) * 1.1, rhoRange.yMax);
+    const rhoXMin = applyRange(xgS[0], rhoRange.xMin);
+    const rhoXMax = applyRange(xgS[xgS.length - 1], rhoRange.xMax);
+    const xLabelR = rhoUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
+    return (
+        <>
+            <AxisRangeBar range={rhoRange} onChange={setRhoRange} unit={rhoUnit} onUnitToggle={() => setRhoUnit((u) => (u === 'bohr' ? 'ang' : 'bohr'))} />
+            <ChartContainer title="电子密度 n(x)" exportData={{ x: xgS, y: rho, xLabel: xLabelR, yLabel: 'n(x) a.u.', filename: 'electron_density' }}>
+                <Axes xLabel={xLabelR} yLabel="n(x) (a.u.)" xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+                <FillPath xData={xgS} yData={rho} color="#f59e0b" xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+                <LinePath xData={xgS} yData={rho} color="#f59e0b" xMin={rhoXMin} xMax={rhoXMax} yMin={0} yMax={rhoMax} />
+            </ChartContainer>
+        </>
+    );
+}
+
+function DosSection({ dd, homoEV }: { dd: NonNullable<PhysicsResult['molecular']>['dos_data']; homoEV?: number }) {
+    if (!dd) return null;
+    const [dosRange, setDosRange] = React.useState<AxisRange>(emptyRange);
+    const [dosCurve, setDosCurve] = React.useState<CurveStyle>({ ...DEFAULT_CURVE, color: '#a78bfa' });
+    const eMinDOS = applyRange(Math.min(...dd.energy_ev.filter(isFinite)), dosRange.xMin);
+    const eMaxDOS = applyRange(Math.max(...dd.energy_ev.filter(isFinite)), dosRange.xMax);
+    const dosMax = applyRange(Math.max(...dd.dos.filter(isFinite), 0.001) * 1.1, dosRange.yMax);
+    return (
+        <>
+            <CurveStyleBar style={dosCurve} onChange={setDosCurve} />
+            <AxisRangeBar range={dosRange} onChange={setDosRange} />
+            <ChartContainer title="态密度 (DOS)" exportData={{ x: dd.energy_ev, y: dd.dos, xLabel: 'E(eV)', yLabel: 'DOS', filename: 'dos' }}>
+                <Axes xLabel="E (eV)" yLabel="DOS (states/H)" xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+                {homoEV != null && (() => {
+                    const pxH = PAD.left + ((homoEV - eMinDOS) / ((eMaxDOS - eMinDOS) || 1)) * INNER_W;
+                    return <line x1={pxH} x2={pxH} y1={PAD.top} y2={PAD.top + INNER_H} stroke="#22c55e" strokeWidth={1} strokeDasharray="4,3" opacity={0.7} />;
+                })()}
+                <FillPath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color} xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+                <LinePath xData={dd.energy_ev} yData={dd.dos} color={dosCurve.color} strokeWidth={dosCurve.width} xMin={eMinDOS} xMax={eMaxDOS} yMin={0} yMax={dosMax} />
+            </ChartContainer>
+        </>
+    );
+}
+
+function PotentialComponentsSection({
+    pc,
+    xg,
+}: {
+    pc: NonNullable<PhysicsResult['potential_components']>;
+    xg: number[];
+}) {
+    const [potUnit, setPotUnit] = React.useState<'bohr' | 'ang'>('bohr');
+    const ANG = 0.529177;
+    const xgS = potUnit === 'ang' ? xg.map((v) => v * ANG) : xg;
+    const xLabel = potUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
+    const allVals = [...(pc.vks ?? []), ...(pc.v0 ?? []), ...(pc.vh ?? []), ...(pc.vxc ?? [])].filter(isFinite);
+    const vMin = Math.min(...allVals, 0) * 1.1;
+    const vMax = Math.max(...allVals, 0.001) * 1.1;
+    const labels: Array<[keyof typeof pc, string, string]> = [
+        ['vks', 'V_KS', '#00d4ff'],
+        ['v0', 'V₀ (ext)', '#f59e0b'],
+        ['vh', 'V_H (Hartree)', '#22c55e'],
+        ['vxc', 'V_XC', '#a78bfa'],
+    ];
+
+    return (
+        <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+                <span style={{ fontSize: 9, color: '#4b5563', textTransform: 'uppercase', letterSpacing: '0.05em' }}>单位</span>
+                <button
+                    onClick={() => setPotUnit((u) => (u === 'bohr' ? 'ang' : 'bohr'))}
+                    style={{
+                        padding: '2px 8px',
+                        fontSize: 9,
+                        cursor: 'pointer',
+                        border: 'none',
+                        borderRadius: 3,
+                        background: 'rgba(255,255,255,0.04)',
+                        outline: '1px solid #374151',
+                        color: '#8892a4',
+                    }}
+                >
+                    {potUnit === 'bohr' ? 'Bohr → Å' : 'Å → Bohr'}
+                </button>
+                <span style={{ fontSize: 9, color: '#4b5563', marginLeft: 8 }}>图例:</span>
+                {labels.filter(([k]) => pc[k]?.length).map(([k, lbl, clr]) => (
+                    <span key={k} style={{ fontSize: 9, color: clr, display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <span style={{ display: 'inline-block', width: 16, height: 2, background: clr, borderRadius: 1 }} />
+                        {lbl}
+                    </span>
+                ))}
+            </div>
+            <ChartContainer title="有效势分量 (Hartree)" exportData={{ x: xgS, y: pc.vks ?? [], xLabel, yLabel: 'V (Ha)', filename: 'potential_components' }}>
+                <Axes xLabel={xLabel} yLabel="V (Ha)" xMin={xgS[0]} xMax={xgS[xgS.length - 1]} yMin={vMin} yMax={vMax} />
+                {labels.filter(([k]) => pc[k]?.length).map(([k, , clr]) => (
+                    <LinePath
+                        key={k}
+                        xData={xgS}
+                        yData={pc[k]!}
+                        color={clr}
+                        strokeWidth={k === 'vks' ? 2 : 1}
+                        xMin={xgS[0]}
+                        xMax={xgS[xgS.length - 1]}
+                        yMin={vMin}
+                        yMax={vMax}
+                    />
+                ))}
+            </ChartContainer>
+        </>
+    );
+}
 
 function TdDipolePanel({ dipole }: {
     dipole: { time: number[]; dipole_x: number[]; dipole_y: number[]; dipole_z: number[] };
@@ -1600,12 +2043,13 @@ type VisItPlotType = 'wavefunction_1d' | 'density_2d' | 'density_3d';
 
 const COLORMAPS = ['hot', 'Blues', 'Purples', 'RdBu', 'viridis', 'jet'];
 
-function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
+function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: string; renderSignature?: string }) {
     const [plotType, setPlotType] = React.useState<VisItPlotType>('wavefunction_1d');
     const [loading, setLoading] = React.useState(false);
     const [pngBase64, setPngBase64] = React.useState<string | null>(null);
     const [status, setStatus] = React.useState<'idle' | 'not_available' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+    const [renderSource, setRenderSource] = React.useState<string | null>(null);
     const [showControls, setShowControls] = React.useState(false);
     // Slice + advanced controls
     const [wfState, setWfState] = React.useState(1);   // wavefunction state index (1-based)
@@ -1614,6 +2058,15 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
     const [colormap, setColormap] = React.useState('hot');
     const [isoValue, setIsoValue] = React.useState('0.05');
     const [durationMs, setDurationMs] = React.useState<number|null>(null);
+
+    React.useEffect(() => {
+        // New computation result arrived (same molecule name possible): clear prior render snapshot.
+        setPngBase64(null);
+        setRenderSource(null);
+        setStatus('idle');
+        setErrorMsg(null);
+        setDurationMs(null);
+    }, [renderSignature]);
 
     const PLOT_LABELS: Record<VisItPlotType, string> = {
         wavefunction_1d: '波函数 1D',
@@ -1625,7 +2078,9 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
         setLoading(true);
         setPngBase64(null);
         setErrorMsg(null);
+        setRenderSource(null);
         setStatus('idle');
+        let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
         try {
             const body: Record<string, unknown> = {
                 plotType,
@@ -1640,15 +2095,20 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
                 if (!isNaN(sp)) body.slicePos = sp;
                 body.sliceAxis = sliceAxis;
             }
+            const ctrl = new AbortController();
+            timeoutHandle = setTimeout(() => ctrl.abort(), 35_000);
             const resp = await fetch(`${API_BASE}/api/physics/visualize`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: ctrl.signal,
                 body: JSON.stringify(body),
             });
+            if (timeoutHandle) clearTimeout(timeoutHandle);
             const data = await resp.json();
             if (data.status === 'ok' && data.pngBase64) {
                 setPngBase64(data.pngBase64);
                 setDurationMs(data.durationMs ?? null);
+                setRenderSource(data.source ?? null);
             } else if (data.status === 'not_available') {
                 setStatus('not_available');
                 setErrorMsg(data.reason);
@@ -1658,8 +2118,9 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
             }
         } catch (e: any) {
             setStatus('error');
-            setErrorMsg(e.message);
+            setErrorMsg(e?.name === 'AbortError' ? '渲染请求超时（35s），已停止等待。' : e.message);
         } finally {
+            if (timeoutHandle) clearTimeout(timeoutHandle);
             setLoading(false);
         }
     };
@@ -1678,6 +2139,7 @@ function VisItRenderPanel({ moleculeName }: { moleculeName: string }) {
                 <div style={{ fontSize: 10, color: '#8892a4', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     3D 可视化  <span style={{ color: '#3f3f46', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>via VisIt / matplotlib</span>
                     {durationMs && <span style={{ color: '#4b5563', fontWeight: 400 }}>  {durationMs}ms</span>}
+                    {renderSource && <span style={{ color: '#4b5563', fontWeight: 400 }}>  [{renderSource}]</span>}
                 </div>
                 <button onClick={() => setShowControls(s => !s)} style={{ ...btnStyle(showControls), padding: '2px 7px', fontSize: 9 }}>
                     {showControls ? '隐藏控制' : '⚙ 高级控制'}

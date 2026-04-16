@@ -1,0 +1,23 @@
+{
+  "version": "2026-04-16T00:00:00+08:00",
+  "description": "PDF download status tracker — placeholder",
+  "items": [
+    {
+      "arXiv_id": "arXiv:1207.0402",
+      "title": "TBD",
+      "requested": null,
+      "downloaded": false,
+      "local_path": null,
+      "error": null
+    },
+    {
+      "arXiv_id": "arXiv:1511.05686",
+      "title": "TBD",
+      "requested": null,
+      "downloaded": false,
+      "local_path": null,
+      "error": null
+    }
+  ],
+  "note": "This is a placeholder. Literature PDF downloading is not yet implemented."
+}

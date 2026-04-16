@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-04-16T01:17:44.481176Z",
+  "manifest": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json",
+  "mode": "incremental",
+  "total_sources": 10,
+  "ingested_sources": 0,
+  "unchanged_sources": 0,
+  "skipped_sources": 0,
+  "failed_sources": 10,
+  "total_chunks_added": 0,
+  "local_chunk_evidence_count": 41,
+  "local_chunks_dir": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks",
+  "rows": [
+    {
+      "source_id": "n_atom_gs_official",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "ch4_gs_reference",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "h_atom_gs_nist_reference",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "h2o_tddft_absorption_reference",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "h2o_gs_derivation",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "si_bandgap_reference",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "h2_gs_reference",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "tddft_metrics_supplemental",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "octopus_tutorial16_capability_matrix",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    },
+    {
+      "source_id": "executor_guide",
+      "type": "local_markdown",
+      "status": "failed",
+      "chunks_added": 0,
+      "local_chunks": 0,
+      "local_chunk_file": "",
+      "note": "HTTP 404 calling http://127.0.0.1:8001/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest-markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:8001/api/kb/ingest_markdown: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}\n ; HTTP 404 calling http://127.0.0.1:3001/api/kb/ingest-markdown: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/ingest-markdown</pre>\n</body>\n</html>\n ; HTTP 500 calling http://127.0.0.1:8011/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"} ; HTTP 404 calling http://127.0.0.1:8011/kb/ingest-markdown: {\"detail\":\"Not Found\"} ; HTTP 500 calling http://127.0.0.1:8101/kb/ingest_markdown: {\"detail\":\"KB ingest failed: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}"
+    }
+  ]
+}

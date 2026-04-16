@@ -1,0 +1,66 @@
+{
+  "replan_id": "RPL-20260415T172441Z",
+  "task_id": "T-20260415T171309Z",
+  "trigger": "blocked_physics_mismatch",
+  "convergence_unmet": [],
+  "reviewer_checks": {
+    "accuracy_ok": false,
+    "benchmarks_aligned_ok": false,
+    "provenance_verified": true,
+    "case_scope_ok": true,
+    "execution_ok": false,
+    "logs_consistent": true,
+    "kb_richness_ok": false,
+    "retrieval_skill_ok": false,
+    "web_evidence_ok": false,
+    "openclaw_flow_ok": false,
+    "planner_executor_chain_ok": false,
+    "deep_model_priority_ok": true,
+    "mcp_attempted_ok": true,
+    "octopus_ok": true,
+    "ui_ok": true,
+    "ui_rendering_ok": true,
+    "physics_result_ok": true,
+    "skills_contracts_ok": true
+  },
+  "failure_type": "planner_executor_chain_break",
+  "anti_repeat_triggered": false,
+  "delta_diagnostics": {
+    "relative_error": 111.38452462,
+    "threshold": 0.03,
+    "within_tolerance": false,
+    "reference_energy_hartree": -0.5,
+    "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+    "fallback_applied": true
+  },
+  "failure_reason_taxonomy": "physics_mismatch",
+  "actions": [
+    {
+      "step": 1,
+      "owner": "planner",
+      "action": "rebuild_plan_and_handoff_with_remote_openclaw_first",
+      "why": "planner->executor continuity failed under strict gate",
+      "source": "reviewer.next_action_packet",
+      "status": "skipped",
+      "note": "no command mapping"
+    },
+    {
+      "step": 2,
+      "owner": "executor",
+      "action": "execute_via_remote_openclaw_path_only",
+      "why": "avoid local-only fallback when chain continuity is broken",
+      "source": "reviewer.next_action_packet",
+      "status": "skipped",
+      "note": "no command mapping"
+    }
+  ],
+  "source_report": "/data/home/zju321/miniconda3/envs/ai_agent/bin/python3 scripts/run_multi_agent_orchestration.py --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8001 --case-id hydrogen_gs_reference --max-iterations 6 --octopus-molecule H --octopus-calc-mode gs --skills-manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json --planner-model-priority gpt-5-thinking,deepseek-r1 --reviewer-model-priority gpt-5-thinking,deepseek-r1 --planner-thinking-budget 8000 --reviewer-thinking-budget 8000",
+  "created_at": "2026-04-15T17:24:41.049104Z",
+  "executed_at": "2026-04-15T17:24:59.542991Z",
+  "all_passed": false,
+  "execution_stats": {
+    "total_actions": 2,
+    "executed_actions": 0,
+    "unmapped_actions": 2
+  }
+}

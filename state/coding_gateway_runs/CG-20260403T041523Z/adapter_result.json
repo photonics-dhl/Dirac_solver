@@ -1,0 +1,40 @@
+{
+  "adapter": "coding_execution_adapter",
+  "task_id": "CG-20260403T041523Z",
+  "intent_type": "dirac_full_debug",
+  "user_instruction": "Dirac_solver debug regression L1 strict-fix",
+  "task_file": "/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260403T041523Z.json",
+  "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T041521Z.json",
+  "generated_at": "2026-04-03T04:15:28.953548Z",
+  "ok": true,
+  "plan": [
+    {
+      "step": "execute_replan_packet",
+      "command": "/data/home/zju321/miniconda3/bin/python3 scripts/execute_replan_packet.py --packet /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260403T041521Z.json --state /data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8001 --case-id infinite_well_v1 --octopus-molecule H2 --octopus-calc-mode gs --report-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports"
+    }
+  ],
+  "steps": [
+    {
+      "step": "execute_replan_packet",
+      "command": "/data/home/zju321/miniconda3/bin/python3 scripts/execute_replan_packet.py --packet /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260403T041521Z.json --state /data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8001 --case-id infinite_well_v1 --octopus-molecule H2 --octopus-calc-mode gs --report-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports",
+      "exit_code": 2,
+      "stdout": "replan_packet=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260403T041521Z.json\nreplan_execution_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_execution_20260403T041528Z.json\nreplan_all_passed=False\n",
+      "stderr": "",
+      "kv": {
+        "replan_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260403T041521Z.json",
+        "replan_execution_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_execution_20260403T041528Z.json",
+        "replan_all_passed": "False"
+      },
+      "soft_failed": true,
+      "soft_failure_reason": "replan_business_gate_failed"
+    }
+  ],
+  "artifacts": [
+    "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260403T041521Z.json",
+    "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_execution_20260403T041528Z.json"
+  ],
+  "warnings": [
+    "execute_replan_packet: replan_business_gate_failed"
+  ],
+  "run_dir": "/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T041523Z"
+}

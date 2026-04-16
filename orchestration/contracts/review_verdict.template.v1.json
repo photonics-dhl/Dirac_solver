@@ -1,0 +1,31 @@
+{
+  "review_id": "R-20260401-001",
+  "task_id": "T-20260401-001",
+  "final_verdict": "FAIL",
+  "checks": {
+    "accuracy_ok": true,
+    "execution_ok": true,
+    "logs_consistent": false,
+    "ui_ok": true,
+    "skills_contracts_ok": true,
+    "security_ok": true,
+    "regression_ok": true
+  },
+  "findings": [
+    {
+      "severity": "high",
+      "item": "execution result and user-visible response diverge"
+    }
+  ],
+  "required_fixes": [
+    "stabilize message send path"
+  ],
+  "evidence": [
+    ".openclaw/logs/exec-hook.log",
+    "docs/harness_reports/example.json"
+  ],
+  "next_route": {
+    "on_pass": "DONE",
+    "on_fail": "REPLAN"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "task_id": "CG-20260403T031704Z",
+  "state": "running",
+  "created_at": "2026-04-03T03:17:04.961743Z",
+  "updated_at": "2026-04-03T03:17:05.184076Z",
+  "request": {
+    "source": "smoke-real-adapter-2",
+    "task_id": "SMOKE-REAL-ADAPTER-2",
+    "intent_type": "dirac_full_debug",
+    "routing": {
+      "route": "L1",
+      "assignee": "openclaw-supervisor"
+    },
+    "user_instruction": "Dirac_solver \u8c03\u8bd5\uff1a\u9ed8\u8ba4\u7a33\u5b9a\u6a21\u5f0f\u6267\u884c\u4e00\u6b21",
+    "dispatch_report": "",
+    "workflow": {
+      "next_route": "L1"
+    },
+    "acceptance": {
+      "status": "blocked_reviewer_gate",
+      "failure_reason": "smoke2"
+    }
+  },
+  "result": {},
+  "started_at": "2026-04-03T03:17:05.184062Z"
+}

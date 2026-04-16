@@ -1,12 +1,11 @@
 CalculationMode = gs
 Dimensions = 3
-Spacing = 0.3
-Radius = 5
+Spacing = 0.36
+Radius = 7
 BoxShape = sphere
 
 %Coordinates
-  "H" | 0 | 0 | -0.35
-  "H" | 0 | 0 | 0.35
+  "H" | 0 | 0 | 0
 %
 
 %Output

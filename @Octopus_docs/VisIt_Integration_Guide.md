@@ -287,9 +287,9 @@ export async function renderVisualizationNode(
   // 1. Ask MCP to generate the VisIt script
   const scriptResp = await callMcpTool("generate_visit_script", {
     plot_type: "wavefunction_1d",
-    // Windows absolute path — Docker volume maps to E:\PostGraduate\Dirac_solver\docker\workspace\output\
-    input_path: octopusRunDir.replace("/workspace/output", "E:\\PostGraduate\\Dirac_solver\\docker\\workspace\\output") + "\\static\\wf-st00001.y=0,z=0",
-    output_png: octopusRunDir.replace("/workspace/output", "E:\\PostGraduate\\Dirac_solver\\docker\\workspace\\output") + "\\render_wf1.png",
+    // Windows absolute path — Docker volume maps to z:\.openclaw\workspace\projects\Dirac\docker\workspace\output\
+    input_path: octopusRunDir.replace("/workspace/output", "z:\\.openclaw\\workspace\\projects\\Dirac\\docker\\workspace\\output") + "\\static\\wf-st00001.y=0,z=0",
+    output_png: octopusRunDir.replace("/workspace/output", "z:\\.openclaw\\workspace\\projects\\Dirac\\docker\\workspace\\output") + "\\render_wf1.png",
     state_label: `State 1 (E = ${parsedResults.info.eigenvalues[0]?.eigenvalue_hartree.toFixed(4)} H)`,
   });
 
@@ -322,13 +322,13 @@ volumes:
 | Context | Path |
 | :--- | :--- |
 | Docker / Python MCP | `/workspace/output/` |
-| Windows / Node.js / VisIt | `E:\PostGraduate\Dirac_solver\docker\workspace\output\` |
+| Windows / Node.js / VisIt | `z:\.openclaw\workspace\projects\Dirac\docker\workspace\output\` |
 
 The **path translation function** to keep in `src/langgraph_agent.ts`:
 
 ```typescript
 const DOCKER_OUTPUT = "/workspace/output";
-const WINDOWS_OUTPUT = "E:\\PostGraduate\\Dirac_solver\\docker\\workspace\\output";
+const WINDOWS_OUTPUT = "z:\\.openclaw\\workspace\\projects\\Dirac\\docker\\workspace\\output";
 
 export function dockerToWindowsPath(linuxPath: string): string {
   return linuxPath.replace(DOCKER_OUTPUT, WINDOWS_OUTPUT).replace(/\//g, "\\");

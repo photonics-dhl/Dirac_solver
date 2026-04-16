@@ -1,0 +1,30 @@
+{
+  "updated_at": null,
+  "version": "v1",
+  "current_task": {
+    "run_id": null,
+    "phase": null,
+    "state_machine": null,
+    "initiator": null,
+    "agent_id": null
+  },
+  "progress": {
+    "overall_pct": 0,
+    "planner_done": false,
+    "executor_done": false,
+    "reviewer_done": false
+  },
+  "last_transition": {
+    "from": null,
+    "to": null,
+    "timestamp": null,
+    "trigger": null
+  },
+  "verdict": {
+    "final": null,
+    "benchmark_delta": null,
+    "threshold": null
+  },
+  "active_blockers": [],
+  "recent_events": []
+}

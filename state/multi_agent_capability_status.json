@@ -1,0 +1,44 @@
+{
+  "updated_at": "2026-04-08T11:21:45.365894Z",
+  "source_capability_report": "Z:/.openclaw/workspace/projects/Dirac/docs/harness_reports/agent_capability_health_20260408T103744Z.json",
+  "source_dispatch_report": "Z:/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260408T112145Z.json",
+  "capability_verdict": "WARN",
+  "latest_orchestration_ok": false,
+  "latest_orchestration_final_verdict": "FAIL",
+  "latest_orchestration_checks": {
+    "retrieval_skill_ok": true,
+    "web_evidence_ok": false,
+    "mcp_attempted_ok": true,
+    "skills_contracts_ok": true
+  },
+  "dispatch_status": "execution_failed",
+  "dispatch_human_status": "EXECUTED_AND_WAITING_REPLAN",
+  "dispatch_failure_reason": "resume_service_bootstrap_timeout_after_90s",
+  "workflow_state": "RETRY_WAIT",
+  "workflow_next_route": "L0",
+  "plugin_gate_passed": true,
+  "adaptive_timeout": {
+    "enabled": true,
+    "escalation_factor": 1.5,
+    "increment_seconds": 30,
+    "base_exec_timeout_seconds": 120,
+    "max_exec_timeout_seconds": 1800,
+    "final_exec_timeout_seconds": 180
+  },
+  "loop_iterations": 1,
+  "loop_max": 1,
+  "autonomous_assessment": {
+    "enabled": false,
+    "completion_state": "not_applicable",
+    "health_state": "unknown",
+    "ready_for_next_auto_task": false,
+    "blockers": [],
+    "workflow_state": "RETRY_WAIT",
+    "workflow_next_route": "L0",
+    "status": "execution_failed",
+    "public_status": "execution_failed"
+  },
+  "autonomous_completion": "not_applicable",
+  "autonomous_health": "unknown",
+  "autonomous_ready": false
+}

@@ -1,7 +1,7 @@
 import sys, os
 
-input_path = r"E:\PostGraduate\Dirac_solver\@Octopus_docs\output\wf-st00001.y=0,z=0"
-output_png = r"E:\PostGraduate\Dirac_solver\@Octopus_docs\output\render_smoke_test.png"
+input_path = r"z:\.openclaw\workspace\projects\Dirac\@Octopus_docs\output\wf-st00001.y=0,z=0"
+output_png = r"z:\.openclaw\workspace\projects\Dirac\@Octopus_docs\output\render_smoke_test.png"
 
 # Convert Octopus 3-column ASCII to VisIt Ultra 2-column format
 ultra_path = input_path + ".ultra"

@@ -1,7 +1,7 @@
 /**
  * visit_renderer.ts
- * Windows-native VisIt headless rendering helper.
- * VisIt runs on the Windows host; all paths must be Windows absolute paths.
+ * Windows/Linux VisIt headless rendering helper.
+ * VisIt runs on the host; paths must be host absolute paths.
  */
 
 import { spawn } from "child_process";
@@ -34,6 +34,7 @@ export interface VisItRenderResult {
 export const VISIT_EXE = process.env.VISIT_EXE ?? "visit";
 
 let _visitPath: string | null | undefined;
+let _visitTemporarilyDisabledReason: string | null = null;
 
 /** Returns the path to visit.exe, or null if not found. Cached after first call. */
 export function findVisItExe(explicitPath?: string): string | null {
@@ -71,6 +72,9 @@ export function findVisItExe(explicitPath?: string): string | null {
 }
 
 export function isVisItAvailable(visitExePath?: string): boolean {
+    if (_visitTemporarilyDisabledReason) {
+        return false;
+    }
     return findVisItExe(visitExePath) !== null;
 }
 
@@ -79,8 +83,18 @@ export function isVisItAvailable(visitExePath?: string): boolean {
 export async function renderWithVisIt(
     opts: VisItRenderOptions
 ): Promise<VisItRenderResult> {
-    const { scriptPath, outputPngPath, timeoutMs = 90_000, visitExePath } = opts;
+    const envTimeout = Number(process.env.VISIT_TIMEOUT_MS ?? 0);
+    const effectiveDefault = Number.isFinite(envTimeout) && envTimeout > 0 ? envTimeout : 12_000;
+    const { scriptPath, outputPngPath, timeoutMs = effectiveDefault, visitExePath } = opts;
     const start = Date.now();
+
+    if (_visitTemporarilyDisabledReason) {
+        return {
+            success: false,
+            reason: `VisIt disabled for this session: ${_visitTemporarilyDisabledReason}`,
+            durationMs: 0,
+        };
+    }
 
     const resolvedExe = findVisItExe(visitExePath);
     if (!resolvedExe) {
@@ -114,6 +128,9 @@ export async function renderWithVisIt(
         // Catch ENOENT / permission errors so the server never crashes
         proc.on("error", (err: NodeJS.ErrnoException) => {
             clearTimeout(timer);
+            if (err.code === "ENOENT") {
+                _visitTemporarilyDisabledReason = `executable not found (${resolvedExe})`;
+            }
             settle({
                 success: false,
                 reason: err.code === "ENOENT"
@@ -125,6 +142,7 @@ export async function renderWithVisIt(
 
         const timer = setTimeout(() => {
             proc.kill("SIGKILL");
+            _visitTemporarilyDisabledReason = `timeout after ${timeoutMs}ms`;
             settle({
                 success: false,
                 reason: `VisIt timed out after ${timeoutMs}ms`,
@@ -152,6 +170,11 @@ export async function renderWithVisIt(
                 durationMs: Date.now() - start,
                 reason: code !== 0 ? `VisIt exited with code ${code}` : (!actualPath ? "PNG not produced" : undefined),
             });
+            if (code !== 0 || !actualPath) {
+                _visitTemporarilyDisabledReason = code !== 0
+                    ? `non-zero exit (${code})`
+                    : "png not produced";
+            }
         });
     });
 }
@@ -160,47 +183,47 @@ export async function renderWithVisIt(
 
 const WORKSPACE_ROOT = process.env.WORKSPACE_ROOT ?? process.cwd();
 // Maps Docker /workspace/output → host output directory (env-var driven)
-const DOCKER_TO_WINDOWS_OUTPUT = process.env.OCTOPUS_OUTPUT_DIR
+const DOCKER_TO_HOST_OUTPUT = process.env.OCTOPUS_OUTPUT_DIR
     ?? path.join(WORKSPACE_ROOT, '@Octopus_docs', 'output');
 
-export function dockerPathToWindows(linuxPath: string): string {
-    const resolved = linuxPath.replace('/workspace/output', DOCKER_TO_WINDOWS_OUTPUT);
+export function dockerPathToHost(containerPath: string): string {
+    const resolved = containerPath.replace('/workspace/output', DOCKER_TO_HOST_OUTPUT);
     // On Windows normalize forward slashes to backslashes
     return process.platform === 'win32' ? resolved.replaceAll('/', '\\') : resolved;
 }
 
 export interface VisItScriptParams {
     plotType: "wavefunction_1d" | "density_2d" | "density_3d";
-    inputWindowsPath: string;
-    outputPngWindowsPath: string;
+    inputHostPath: string;
+    outputPngHostPath: string;
     stateLabel?: string;
     isoValue?: number;
     colormap?: string;
     densityMax?: number;
 }
 
-/** Writes a VisIt Python render script and returns its Windows path */
+/** Writes a VisIt Python render script and returns its host path */
 export function writeVisItScript(params: VisItScriptParams): string {
     const {
-        plotType, inputWindowsPath, outputPngWindowsPath,
+        plotType, inputHostPath, outputPngHostPath,
         stateLabel = "State", isoValue = 0.01,
         colormap = "hot", densityMax = 1.0,
     } = params;
 
-    const scriptDir = DOCKER_TO_WINDOWS_OUTPUT;
+    const scriptDir = DOCKER_TO_HOST_OUTPUT;
     fs.mkdirSync(scriptDir, { recursive: true });
     const scriptPath = path.join(scriptDir, `visit_render_${plotType}.py`);
 
     let content = "";
 
+    // Helper for Python raw strings (handles backslashes on Windows)
+    const pyPath = (p: string) => process.platform === 'win32' ? `r"${p}"` : `"${p}"`;
+
     if (plotType === "wavefunction_1d") {
-        // Octopus .y=0,z=0 files have 3 columns (x, Re, Im).
-        // VisIt Ultra format needs 2-column (x y) files.
-        // The script converts inline before opening the database.
         content = `import sys, os
 
-input_path = r"${inputWindowsPath}"
-output_png = r"${outputPngWindowsPath}"
+input_path = ${pyPath(inputHostPath)}
+output_png = ${pyPath(outputPngHostPath)}
 
 # Convert Octopus 3-column ASCII to VisIt Ultra 2-column format
 ultra_path = input_path + ".ultra"
@@ -249,8 +272,8 @@ sys.exit(0)
         // density.y=0,z=0 is a 1D slice (x, rho) — same Ultra conversion
         content = `import sys, os
 
-input_path = r"${inputWindowsPath}"
-output_png = r"${outputPngWindowsPath}"
+input_path = ${pyPath(inputHostPath)}
+output_png = ${pyPath(outputPngHostPath)}
 
 ultra_path = input_path + ".ultra"
 xs, rhos = [], []
@@ -292,8 +315,8 @@ sys.exit(0)
         // density_3d isosurface
         content = `import sys
 # 3D electron density isosurface
-nc_path    = r"${inputWindowsPath}"
-output_png = r"${outputPngWindowsPath}"
+nc_path    = ${pyPath(inputHostPath)}
+output_png = ${pyPath(outputPngHostPath)}
 
 OpenDatabase(nc_path)
 AddPlot("Contour", "density")

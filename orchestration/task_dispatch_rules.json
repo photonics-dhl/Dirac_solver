@@ -1,0 +1,236 @@
+{
+  "version": "2026-04-01",
+  "default_assignee": "openclaw-supervisor",
+  "global": {
+    "protocol_version": "v1",
+    "default_max_iterations": 4,
+    "default_stop_conditions": [
+      "acceptance_criteria_met",
+      "hard_blocked",
+      "max_iterations_reached",
+      "time_budget_exhausted"
+    ]
+  },
+  "routing": [
+    {
+      "name": "resume_debug_session",
+      "keywords": [
+        "恢复调试",
+        "resume debug",
+        "resume session",
+        "继续调试"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "resume_debug_session",
+      "intent_confidence": 0.97,
+      "requires_reviewer": false,
+      "max_iterations": 1,
+      "auto_escalation_policy": "none",
+      "stop_conditions": [
+        "resume_packet_generated"
+      ]
+    },
+    {
+      "name": "auto_kb_openclaw_planner_first",
+      "keywords": [
+        "知识库",
+        "kb",
+        "rag",
+        "构建知识库",
+        "添加案例"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_kb_collaboration",
+      "intent_confidence": 0.98,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "auto_default_orchestration",
+      "keywords": [
+        "/auto",
+        "自动调试",
+        "自动执行",
+        "auto debug",
+        "auto"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_orchestration",
+      "intent_confidence": 0.96,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass_and_benchmark_delta_ok",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "octopus_capacity_campaign",
+      "keywords": [
+        "压榨octopus",
+        "尽可能多",
+        "更多octopus计算",
+        "octopus campaign",
+        "octopus matrix",
+        "多agent批量",
+        "多agents框架"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_octopus_campaign",
+      "intent_confidence": 0.95,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "campaign_pass",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "knowledge_base_collaboration",
+      "keywords": [
+        "向量知识库",
+        "知识库",
+        "kb",
+        "rag",
+        "DFT",
+        "TDDFT",
+        "创建知识库",
+        "构建知识库"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_kb_collaboration",
+      "intent_confidence": 0.92,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "dirac_full_debug",
+      "keywords": [
+        "Dirac_solver 调试",
+        "dirac_solver debug",
+        "auto",
+        "自动执行",
+        "TDDFT",
+        "Octopus",
+        "经典案例",
+        "差异审查",
+        "UI美观",
+        "可操作性",
+        "run harness",
+        "run octopus",
+        "自动调试"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_orchestration",
+      "intent_confidence": 0.9,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass_and_benchmark_delta_ok",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "code_implementation",
+      "keywords": [
+        "实现",
+        "编写代码",
+        "refactor",
+        "fix bug",
+        "新增功能"
+      ],
+      "assignee": "copilot-executor",
+      "action": "prepare_code_task",
+      "intent_confidence": 0.8,
+      "requires_reviewer": true,
+      "max_iterations": 5,
+      "auto_escalation_policy": "soft",
+      "stop_conditions": [
+        "reviewer_pass_and_benchmark_delta_ok",
+        "same_error_no_progress_for_2_iterations",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "complex_code_escalation",
+      "keywords": [
+        "复杂代码",
+        "复杂重构",
+        "系统级改造",
+        "跨模块重构",
+        "复杂任务"
+      ],
+      "assignee": "openclaw-planner",
+      "action": "prepare_complex_escalation",
+      "intent_confidence": 0.9,
+      "requires_reviewer": true,
+      "max_iterations": 4,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass",
+        "escalation_packet_ready",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "quality_review",
+      "keywords": [
+        "review",
+        "审查",
+        "code review",
+        "质量门禁",
+        "rebuttal"
+      ],
+      "assignee": "openclaw-reviewer",
+      "action": "prepare_review_task",
+      "intent_confidence": 0.85,
+      "requires_reviewer": true,
+      "max_iterations": 3,
+      "auto_escalation_policy": "none",
+      "stop_conditions": [
+        "reviewer_pass",
+        "reviewer_fail_with_required_fixes"
+      ]
+    },
+    {
+      "name": "infra_or_permission_issue",
+      "keywords": [
+        "无法执行",
+        "没权限",
+        "gateway",
+        "hook error",
+        "终端不可用",
+        "permission denied"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_exec_readiness_and_repair",
+      "intent_confidence": 0.95,
+      "requires_reviewer": false,
+      "max_iterations": 3,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "execution_ready_true",
+        "hard_blocked",
+        "max_iterations_reached"
+      ]
+    }
+  ]
+}

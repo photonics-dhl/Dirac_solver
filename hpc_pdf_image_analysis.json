@@ -1,0 +1,57 @@
+{
+  "pdf": "z:\\HPC_tutorial.pdf",
+  "pages": [
+    28,
+    29,
+    30
+  ],
+  "image_count": 6,
+  "images_meta": [
+    {
+      "page": 28,
+      "image_index": 1,
+      "name": "Im0.jp2",
+      "mime": "application/octet-stream"
+    },
+    {
+      "page": 28,
+      "image_index": 2,
+      "name": "Im1.jp2",
+      "mime": "application/octet-stream"
+    },
+    {
+      "page": 29,
+      "image_index": 1,
+      "name": "Im0.jp2",
+      "mime": "application/octet-stream"
+    },
+    {
+      "page": 29,
+      "image_index": 2,
+      "name": "Im1.jp2",
+      "mime": "application/octet-stream"
+    },
+    {
+      "page": 30,
+      "image_index": 1,
+      "name": "Im0.jp2",
+      "mime": "application/octet-stream"
+    },
+    {
+      "page": 30,
+      "image_index": 2,
+      "name": "Im1.jp2",
+      "mime": "application/octet-stream"
+    }
+  ],
+  "llm_analysis": "LLM analysis failed: 所有回退模型都已失效，最后一次错误: Connection error.",
+  "manual_validation": {
+    "validated": true,
+    "evidence": [
+      "page 29 提取到：source /data/apps/intel/2018u3/env.sh 与 mpirun -machinefile $PBS_NODEFILE -np 64 ...",
+      "截图内容包含 qstat / qstat -an 与作业状态码说明（B/E/H/Q/R/S/T/U/W/X/C）",
+      "截图队列示例为 workq，与集群实际 qsub 队列一致"
+    ],
+    "conclusion": "作业提交命令与状态指令提取正确，可作为 HPC 规范执行依据"
+  }
+}

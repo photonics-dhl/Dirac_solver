@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+  <text x="70" y="24" font-family="Arial" font-size="18" fill="#1f2937">H2O TDDFT absorption cross section :: radiation_spectrum</text>
+  <line x1="70" y1="458" x2="940" y2="458" stroke="#5f6b7a" stroke-width="1.5"/>
+  <line x1="70" y1="42" x2="70" y2="458" stroke="#5f6b7a" stroke-width="1.5"/>
+  <polyline fill="none" stroke="#0b6cff" stroke-width="2" points="70.00,42.00 101.07,187.86 132.14,443.16 163.21,456.52 194.29,457.40 225.36,457.98 256.43,457.87 287.50,458.00 318.57,457.98 349.64,458.00 380.71,458.00 411.79,457.99 442.86,457.70 473.93,457.78 505.00,457.97 536.07,457.91 567.14,457.88 598.21,457.89 629.29,457.96 660.36,457.97 691.43,457.94 722.50,457.93 753.57,457.93 784.64,457.96 815.71,457.97 846.79,457.98 877.86,457.99 908.93,458.00 940.00,458.00"/>
+  <text x="505.0" y="500" text-anchor="middle" font-family="Arial" font-size="14" fill="#1f2937">frequency_ev [17.09, 495.6]</text>
+  <text x="24" y="250.0" transform="rotate(-90 24 250.0)" text-anchor="middle" font-family="Arial" font-size="14" fill="#1f2937">intensity [3.102e-06, 1]</text>
+</svg>

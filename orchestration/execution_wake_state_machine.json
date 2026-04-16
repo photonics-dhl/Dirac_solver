@@ -1,0 +1,162 @@
+{
+  "name": "openclaw-planner-codex-reviewer-loop",
+  "version": "v1",
+  "states": [
+    "NEW",
+    "VALIDATING",
+    "ROUTED",
+    "QUEUED",
+    "EXEC_L0",
+    "EXEC_L1",
+    "REVIEWING",
+    "REPLAN",
+    "RETRY_WAIT",
+    "DONE",
+    "FAILED",
+    "CANCELLED"
+  ],
+  "events": [
+    "TASK_SUBMITTED",
+    "TASK_VALID",
+    "TASK_INVALID",
+    "ROUTE_TO_L0",
+    "ROUTE_TO_L1",
+    "RETRY_DUE",
+    "EXEC_SUCCESS",
+    "EXEC_FAIL",
+    "REVIEW_PASS",
+    "REVIEW_FAIL",
+    "REPLAN_READY",
+    "REPLAN_EMPTY",
+    "RETRY_EXHAUSTED",
+    "MANUAL_CANCEL",
+    "TIMEOUT"
+  ],
+  "initial_state": "NEW",
+  "final_states": [
+    "DONE",
+    "FAILED",
+    "CANCELLED"
+  ],
+  "policy": {
+    "max_attempts_l0": 2,
+    "max_attempts_l1": 2,
+    "retry_backoff_seconds": 30,
+    "orchestration_timeout_seconds": 900,
+    "kb_stage_timeout_seconds": 3600,
+    "kb_http_timeout_seconds": 120,
+    "suite_stage_timeout_seconds": 1800,
+    "web_export_timeout_seconds": 600,
+    "auto_loop_max_iterations": 3,
+    "auto_timeout_escalation_factor": 1.5,
+    "auto_timeout_increment_seconds": 30,
+    "auto_timeout_cap_seconds": 1800,
+    "auto_loop_retryable_statuses": [
+      "blocked_reviewer_gate",
+      "execution_failed",
+      "blocked_permissions"
+    ],
+    "case_validation_gate": {
+      "enabled": true,
+      "golden_cases": [
+        "n_atom_gs_official",
+        "ch4_gs_reference"
+      ],
+      "promotion_rule": "three_consecutive_passes_with_provenance_and_variance_bound",
+      "pending_order": [
+        "hydrogen_gs_reference",
+        "h2o_gs_reference",
+        "h2o_tddft_dipole_response",
+        "h2o_tddft_absorption"
+      ]
+    },
+    "openclaw_autonomy_enabled": true,
+    "openclaw_action_switch_enabled": true,
+    "escalate_l0_to_l1_if": [
+      "reviewer_gate_failed",
+      "deterministic_pipeline_failed"
+    ],
+    "task_policy_overrides": {
+      "auto_default_orchestration": {
+        "max_attempts_l0": 1,
+        "max_attempts_l1": 2,
+        "retry_backoff_seconds": 45,
+        "orchestration_timeout_seconds": 900,
+        "auto_loop_max_iterations": 5,
+        "auto_timeout_escalation_factor": 1.5,
+        "auto_timeout_increment_seconds": 30,
+        "auto_timeout_cap_seconds": 1800,
+        "plugin_gate_required": true,
+        "required_plugins": [
+          "dirac.planner.*",
+          "dirac.executor.*",
+          "dirac.reviewer.*",
+          "acpx",
+          "browser",
+          "feishu"
+        ],
+        "auto_loop_retryable_statuses": [
+          "blocked_reviewer_gate",
+          "execution_failed",
+          "blocked_permissions"
+        ],
+        "openclaw_autonomy_enabled": true,
+        "openclaw_action_switch_enabled": true,
+        "escalate_l0_to_l1_if": [
+          "reviewer_gate_failed",
+          "deterministic_pipeline_failed"
+        ]
+      },
+      "dirac_full_debug": {
+        "max_attempts_l0": 1,
+        "max_attempts_l1": 2,
+        "retry_backoff_seconds": 45,
+        "orchestration_timeout_seconds": 900,
+        "auto_loop_max_iterations": 5,
+        "auto_timeout_escalation_factor": 1.5,
+        "auto_timeout_increment_seconds": 30,
+        "auto_timeout_cap_seconds": 1800,
+        "plugin_gate_required": true,
+        "required_plugins": [
+          "dirac.planner.*",
+          "dirac.executor.*",
+          "dirac.reviewer.*",
+          "acpx",
+          "browser",
+          "feishu"
+        ],
+        "auto_loop_retryable_statuses": [
+          "blocked_reviewer_gate",
+          "execution_failed",
+          "blocked_permissions"
+        ],
+        "openclaw_autonomy_enabled": true,
+        "openclaw_action_switch_enabled": true,
+        "escalate_l0_to_l1_if": [
+          "reviewer_gate_failed",
+          "deterministic_pipeline_failed"
+        ]
+      },
+      "knowledge_base_collaboration": {
+        "max_attempts_l0": 2,
+        "max_attempts_l1": 1,
+        "retry_backoff_seconds": 20,
+        "orchestration_timeout_seconds": 900,
+        "kb_stage_timeout_seconds": 5400,
+        "kb_http_timeout_seconds": 180,
+        "suite_stage_timeout_seconds": 2400,
+        "web_export_timeout_seconds": 900,
+        "auto_loop_max_iterations": 3,
+        "auto_loop_retryable_statuses": [
+          "blocked_reviewer_gate",
+          "execution_failed"
+        ],
+        "openclaw_autonomy_enabled": true,
+        "openclaw_action_switch_enabled": true,
+        "escalate_l0_to_l1_if": [
+          "deterministic_pipeline_failed"
+        ]
+      }
+    }
+  }
+}

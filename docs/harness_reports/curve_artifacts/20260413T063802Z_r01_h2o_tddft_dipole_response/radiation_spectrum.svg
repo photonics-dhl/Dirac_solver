@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <rect x="0" y="0" width="100%" height="100%" fill="#ffffff"/>
+  <text x="70" y="24" font-family="Arial" font-size="18" fill="#1f2937">H2O TDDFT dipole response :: radiation_spectrum</text>
+  <line x1="70" y1="458" x2="940" y2="458" stroke="#5f6b7a" stroke-width="1.5"/>
+  <line x1="70" y1="42" x2="70" y2="458" stroke="#5f6b7a" stroke-width="1.5"/>
+  <polyline fill="none" stroke="#0b6cff" stroke-width="2" points="70.00,42.00 106.25,54.26 142.50,447.48 178.75,452.15 215.00,457.40 251.25,457.79 287.50,457.87 323.75,457.99 360.00,457.97 396.25,458.00 432.50,457.99 468.75,458.00 505.00,458.00 541.25,458.00 577.50,458.00 613.75,458.00 650.00,458.00 686.25,458.00 722.50,458.00 758.75,458.00 795.00,458.00 831.25,458.00 867.50,458.00 903.75,458.00 940.00,458.00"/>
+  <text x="505.0" y="500" text-anchor="middle" font-family="Arial" font-size="14" fill="#1f2937">frequency_ev [19.34, 483.5]</text>
+  <text x="24" y="250.0" transform="rotate(-90 24 250.0)" text-anchor="middle" font-family="Arial" font-size="14" fill="#1f2937">intensity [4.757e-07, 1]</text>
+</svg>

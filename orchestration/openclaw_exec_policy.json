@@ -1,0 +1,21 @@
+{
+  "version": "2026-04-05",
+  "mode": "full_auto",
+  "description": "Execution governance for OpenClaw terminal operations in Dirac automation (elevated full-auto mode).",
+  "required_device_scopes": [
+    "operator.admin",
+    "operator.read",
+    "operator.write",
+    "operator.approvals"
+  ],
+  "auto_allow_commands": [
+    "^.+$"
+  ],
+  "require_approval_commands": [],
+  "deny_commands": [],
+  "notes": [
+    "Elevated by user request: all commands default to auto_allow for autonomous remote debugging.",
+    "Policy is aligned to currently approved device scopes; subprocess execution remains governed by audit + report traceability.",
+    "Policy intent: OpenClaw acts as full-auto control-plane agent (planner+executor+reviewer) with auditable guardrails."
+  ]
+}
