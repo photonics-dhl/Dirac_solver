@@ -1,0 +1,2752 @@
+{
+  "updated_at": "2026-04-16T01:57:51.809310Z",
+  "protocol_version": "v1",
+  "project": "Dirac_solver",
+  "phase": "IN_PROGRESS",
+  "status": "blocked",
+  "state_machine": {
+    "current": "BLOCKED",
+    "allowed": [
+      "RECEIVED",
+      "PLANNED",
+      "EXECUTING",
+      "REVIEWING",
+      "REPLAN",
+      "ESCALATING",
+      "DONE",
+      "BLOCKED"
+    ]
+  },
+  "multi_agent": {
+    "planner": {
+      "case": "hydrogen_gs_reference",
+      "threshold": 0.03,
+      "max_iterations": 6
+    },
+    "executor": {
+      "harness_passed": false,
+      "octopus_passed": true
+    },
+    "reviewer": {
+      "verdict": "FAIL",
+      "primary_acceptance": {
+        "physics_equivalence": false,
+        "provenance_complete": true,
+        "case_scope_ok": true,
+        "execution_health": false,
+        "primary_verdict": "FAIL"
+      },
+      "checks": {
+        "accuracy_ok": false,
+        "benchmarks_aligned_ok": false,
+        "provenance_verified": true,
+        "case_scope_ok": true,
+        "execution_ok": false,
+        "logs_consistent": true,
+        "kb_richness_ok": false,
+        "retrieval_skill_ok": false,
+        "web_evidence_ok": false,
+        "openclaw_flow_ok": false,
+        "planner_executor_chain_ok": false,
+        "deep_model_priority_ok": true,
+        "mcp_attempted_ok": true,
+        "octopus_ok": true,
+        "ui_ok": true,
+        "ui_rendering_ok": true,
+        "physics_result_ok": true,
+        "skills_contracts_ok": true
+      },
+      "retrieval": {
+        "skill_id": "dirac-vector-kb-ops",
+        "skill_invoked": true,
+        "ok": false,
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/run_vector_kb_ops.py --mode query --base-url http://127.0.0.1:8101 --query infinite well schrodinger benchmark octopus settings --top-k 6 --timeout 180",
+        "exit_code": 2,
+        "endpoint": "",
+        "hits_count": 0,
+        "result": {},
+        "stderr": "",
+        "error": "HTTP 500 http://127.0.0.1:8101/kb/query: {\"detail\":\"KB query failed: Error getting collection: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}; HTTP 404 http://127.0.0.1:8101/api/kb/query: {\"detail\":\"Not Found\"}; HTTP 404 http://127.0.0.1:3001/api/kb/query: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/kb/query</pre>\n</body>\n</html>\n; HTTP 500 http://127.0.0.1:8011/kb/query: {\"detail\":\"KB query failed: Error getting collection: Collection [e5e40b7d-a588-416b-9b7f-066fb6d87e64] does not exist.\"}; HTTP 404 http://127.0.0.1:8001/kb/query: {\"reason\":\"Nirvana:Router:RouterNotFound\",\"message\":\"can't find router\"}"
+      },
+      "suggestions": [
+        "Reviewer: accuracy gate failed; rerun harness with finer discretization and inspect comparator mapping.",
+        "Reviewer: benchmark delta is not aligned with threshold; check comparator mapping and expected tolerance.",
+        "Reviewer: no model-axis tuning detected (XC/pseudopotential/propagator/TD knobs); run model-axis scan before further grid-only retries.",
+        "Reviewer: KB richness is insufficient; ingest more sources and re-run retrieval quality checks.",
+        "Reviewer: KB retrieval skill invocation failed; inspect run_vector_kb_ops query step and endpoint health.",
+        "Reviewer: real-web evidence gate failed; run OpenClaw web-automation plus Playwright screenshot collection on authoritative URLs before pass.",
+        "Reviewer: OpenClaw planner flow not active; restore OpenClaw runtime/permissions and rerun planner-first automation.",
+        "Reviewer: planner->executor continuity gate failed; force remote OpenClaw-first remediation and rerun strict workflow.",
+        "Reviewer: repeated failure fingerprint detected; enabling anti-repeat remediation packet with a changed execution path."
+      ],
+      "failure_type": "planner_executor_chain_break",
+      "failure_signature_hash": "448e6fb33dd4",
+      "repeat_count": 3,
+      "anti_repeat_triggered": true,
+      "next_action_packet": [
+        {
+          "owner": "planner",
+          "action": "rebuild_plan_and_handoff_with_remote_openclaw_first",
+          "why": "planner->executor continuity failed under strict gate"
+        },
+        {
+          "owner": "executor",
+          "action": "execute_via_remote_openclaw_path_only",
+          "why": "avoid local-only fallback when chain continuity is broken"
+        }
+      ]
+    },
+    "skill_contracts": {
+      "planner": true,
+      "executor": true,
+      "reviewer": true,
+      "all_passed": true
+    },
+    "openclaw_flow": {
+      "planner_attempted": true,
+      "planner_ok": false,
+      "planner_trace_log": "docs/harness_reports/openclaw_planner_trace_20260416T011746Z.log"
+    },
+    "report_json": "docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T012940Z.json",
+    "report_md": "docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T012940Z.md",
+    "case_rows": [
+      {
+        "case_id": "hydrogen_gs_reference",
+        "metric": "E1",
+        "computed_value": "-",
+        "reference_value": "-",
+        "absolute_delta": "-",
+        "relative_delta": 111.38452462,
+        "tolerance": 0.03,
+        "within_tolerance": false,
+        "provenance_complete": true,
+        "missing_provenance_fields": [],
+        "physics_fields_complete": true,
+        "missing_physics_fields": [],
+        "reviewer_verdict": "FAIL"
+      }
+    ]
+  },
+  "skills_usage": {
+    "planner": {
+      "id": "dirac.planner.v1",
+      "contract_passed": true,
+      "missing_outputs": []
+    },
+    "executor": {
+      "id": "dirac.executor.v1",
+      "contract_passed": true,
+      "missing_outputs": []
+    },
+    "reviewer": {
+      "id": "dirac.reviewer.v1",
+      "contract_passed": true,
+      "missing_outputs": []
+    },
+    "status": "active_with_contract_checks",
+    "all_contracts_passed": true
+  },
+  "sandbox_usage": {
+    "used": false,
+    "mode": "no_remote_sandbox_required_in_this_run",
+    "note": "Execution used remote HPC + udocker pipeline rather than E2B sandbox."
+  },
+  "last_task": {
+    "task_id": "T-20260416T011741Z",
+    "session_id": "dispatch-20260416T011741Z",
+    "user_instruction": "\u8865\u5145 DFT/TDDFT \u7684\u5411\u91cf\u77e5\u8bc6\u5e93\u5e76\u8fdb\u884c\u4e09\u89d2\u8272\u534f\u540c\u5ba1\u67e5 workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T011716Z",
+    "intent_type": "auto_kb_openclaw_planner_first",
+    "owner_role": "supervisor",
+    "phase": "REPLAN",
+    "iteration": {
+      "current": 1,
+      "max": 6,
+      "budget_seconds": 1800
+    },
+    "routing": {
+      "matched_rule": "auto_kb_openclaw_planner_first",
+      "assignee": "openclaw-supervisor",
+      "action": "run_kb_collaboration",
+      "intent_confidence": 0.98,
+      "requires_reviewer": true,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+        "blocked_permissions",
+        "max_iterations_reached"
+      ]
+    },
+    "last_action": {
+      "by": "supervisor",
+      "at": "2026-04-16T01:31:08.659466Z",
+      "summary": "dispatch finished: auto_repairing"
+    },
+    "last_result": {
+      "status": "unknown",
+      "internal_status": "blocked_physics_mismatch",
+      "human_status": "CONSISTENCY_CHECK_FAILED",
+      "failure_reason": "auto_repair_physics_mismatch",
+      "failure_reason_taxonomy": "physics_mismatch",
+      "evidence": [
+        "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260416T013043Z.json"
+      ],
+      "physics_result": {
+        "calc_mode": "gs",
+        "molecule_name": "H",
+        "ground_state_energy_hartree": -56.19226231,
+        "homo_energy": -1449.9344689348,
+        "lumo_energy": 1.3623931638,
+        "absorption_spectrum_points": 0,
+        "absorption_spectrum": {
+          "energy_ev": [],
+          "cross_section": []
+        },
+        "benchmark_delta": {
+          "relative_error": 111.38452462,
+          "threshold": 0.03,
+          "within_tolerance": false,
+          "reference_energy_hartree": -0.5,
+          "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+          "fallback_applied": true
+        },
+        "requires_absorption_spectrum": false,
+        "has_required_fields": true,
+        "missing_fields": [],
+        "provenance_verified": true,
+        "available": true
+      },
+      "delta_diagnostics": {
+        "relative_error": 111.38452462,
+        "threshold": 0.03,
+        "within_tolerance": false,
+        "reference_energy_hartree": -0.5,
+        "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+        "fallback_applied": true
+      },
+      "convergence_gate_applied": false,
+      "convergence_gate_passed": false,
+      "convergence_gate_unmet": [],
+      "autonomous_assessment": {
+        "enabled": true,
+        "completion_state": "repairing",
+        "health_state": "degraded",
+        "ready_for_next_auto_task": false,
+        "blockers": [
+          "reviewer_gate_failed",
+          "auto_repair_physics_mismatch"
+        ],
+        "workflow_state": "REPLAN",
+        "workflow_next_route": "L0",
+        "status": "blocked_physics_mismatch",
+        "public_status": "auto_repairing"
+      },
+      "replan_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T013043Z.json",
+      "reviewer_verdict": "FAIL",
+      "retryable": true,
+      "consistency_token": "1418f5bf",
+      "consistency_check": "legacy",
+      "mismatch_reason": "",
+      "expected_consistency_token": ""
+    },
+    "blocked": {
+      "is_blocked": true,
+      "reason_code": "auto_repair_physics_mismatch",
+      "reason_detail": "auto_repair_physics_mismatch"
+    },
+    "next_action": {
+      "by": "codex-executor",
+      "todo": "escalate to L1 backend coding executor"
+    },
+    "updated_at": "2026-04-16T01:31:08.659519Z",
+    "source": "feishu-queue",
+    "workflow": {
+      "version": "v2",
+      "current": "QUEUED",
+      "route": "L1",
+      "attempts": {
+        "l0": 2,
+        "l1": 0
+      },
+      "policy": {
+        "max_attempts_l0": 2,
+        "max_attempts_l1": 2,
+        "retry_backoff_seconds": 30,
+        "escalate_l0_to_l1_if": [
+          "reviewer_gate_failed",
+          "deterministic_pipeline_failed"
+        ],
+        "policy_override_for": null,
+        "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+      },
+      "history": [
+        {
+          "event": "TASK_SUBMITTED",
+          "from": "NEW",
+          "to": "VALIDATING",
+          "at": "2026-04-16T01:17:41.891173Z"
+        },
+        {
+          "event": "TASK_VALID",
+          "from": "VALIDATING",
+          "to": "ROUTED",
+          "at": "2026-04-16T01:17:41.891173Z"
+        },
+        {
+          "event": "RETRY_DUE",
+          "from": "ROUTED",
+          "to": "EXEC_L0",
+          "at": "2026-04-16T01:31:08.659341Z"
+        },
+        {
+          "event": "AUTO_REPAIR",
+          "from": "EXEC_L0",
+          "to": "REPLAN",
+          "at": "2026-04-16T01:31:08.659405Z"
+        },
+        {
+          "event": "REVIEW_FAIL",
+          "from": "REPLAN",
+          "to": "REPLAN",
+          "at": "2026-04-16T01:31:08.659420Z"
+        },
+        {
+          "event": "ROUTE_TO_L1",
+          "from": "REPLAN",
+          "to": "QUEUED",
+          "at": "2026-04-16T01:31:08.659448Z"
+        }
+      ],
+      "last_event": "ROUTE_TO_L1",
+      "updated_at": "2026-04-16T01:31:08.659448Z",
+      "escalation_reason": "reviewer_gate_failed",
+      "next_route": "L1"
+    },
+    "previous_task": {
+      "task_id": "T-20260416T011328Z",
+      "session_id": "dispatch-20260416T011328Z",
+      "user_instruction": "\u8865\u5145 DFT/TDDFT \u7684\u5411\u91cf\u77e5\u8bc6\u5e93\u5e76\u8fdb\u884c\u4e09\u89d2\u8272\u534f\u540c\u5ba1\u67e5 workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T011309Z",
+      "intent_type": "auto_kb_openclaw_planner_first",
+      "owner_role": "supervisor",
+      "phase": "RECEIVED",
+      "iteration": {
+        "current": 0,
+        "max": 6,
+        "budget_seconds": 1800
+      },
+      "routing": {
+        "matched_rule": "auto_kb_openclaw_planner_first",
+        "assignee": "openclaw-supervisor",
+        "action": "run_kb_collaboration",
+        "intent_confidence": 0.98,
+        "requires_reviewer": true,
+        "auto_escalation_policy": "strict",
+        "stop_conditions": [
+          "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+          "blocked_permissions",
+          "max_iterations_reached"
+        ]
+      },
+      "last_action": {
+        "by": "supervisor",
+        "at": "2026-04-16T01:13:28.110165Z",
+        "summary": "task received and routed"
+      },
+      "last_result": {
+        "status": "pending",
+        "evidence": []
+      },
+      "blocked": {
+        "is_blocked": false,
+        "reason_code": "none",
+        "reason_detail": ""
+      },
+      "next_action": {
+        "by": "openclaw-supervisor",
+        "todo": "run_kb_collaboration"
+      },
+      "updated_at": "2026-04-16T01:13:28.110210Z",
+      "source": "feishu-queue",
+      "workflow": {
+        "version": "v2",
+        "current": "ROUTED",
+        "route": "L0",
+        "attempts": {
+          "l0": 0,
+          "l1": 0
+        },
+        "policy": {
+          "max_attempts_l0": 2,
+          "max_attempts_l1": 2,
+          "retry_backoff_seconds": 30,
+          "escalate_l0_to_l1_if": [
+            "reviewer_gate_failed",
+            "deterministic_pipeline_failed"
+          ],
+          "policy_override_for": null,
+          "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+        },
+        "history": [
+          {
+            "event": "TASK_SUBMITTED",
+            "from": "NEW",
+            "to": "VALIDATING",
+            "at": "2026-04-16T01:13:28.110223Z"
+          },
+          {
+            "event": "TASK_VALID",
+            "from": "VALIDATING",
+            "to": "ROUTED",
+            "at": "2026-04-16T01:13:28.110223Z"
+          }
+        ],
+        "last_event": "TASK_VALID",
+        "updated_at": "2026-04-16T01:13:28.110223Z"
+      },
+      "previous_task": {
+        "task_id": "T-20260416T004342Z",
+        "session_id": "dispatch-20260416T004342Z",
+        "user_instruction": "\u4f60\u7406\u89e3\u9519\u4e86\uff0c\u53c2\u8003\u4e0d\u662f\u53c2\u8003\u8ba1\u7b97\u7ed3\u679c\uff0c\u800c\u662f\u53c2\u8003\u5b98\u65b9\u6848\u4f8b\u6216\u53ef\u6eaf\u6e90\u77e5\u8bc6\u5e93\u4e2d\u7684\u7ed3\u679c\u6765\u642d\u5efa\u77e5\u8bc6\u5e93\uff0c\u76f8\u5f53\u4e8e\u76ee\u524d\u5728\u6293\u53d6\u6570\u636e\u3002\u642d\u5efa\u5b8c\u77e5\u8bc6\u5e93\uff0c\u7136\u540e\u624d\u662f\u8ba1\u7b97\u9636\u6bb5\uff0c\u76ee\u7684\u662f\u8ba9\u8ba1\u7b97\u7ed3\u679c\u9760\u8fd1\u77e5\u8bc6\u5e93\u91cc\u5b58\u50a8\u7684\u5b98\u65b9\u6848\u4f8b\u548c\u53c2\u8003\u6587\u732e\u7684\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T004317Z",
+        "intent_type": "auto_kb_openclaw_planner_first",
+        "owner_role": "supervisor",
+        "phase": "REPLAN",
+        "iteration": {
+          "current": 1,
+          "max": 6,
+          "budget_seconds": 1800
+        },
+        "routing": {
+          "matched_rule": "auto_kb_openclaw_planner_first",
+          "assignee": "openclaw-supervisor",
+          "action": "run_kb_collaboration",
+          "intent_confidence": 0.98,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "last_action": {
+          "by": "supervisor",
+          "at": "2026-04-16T00:57:08.420421Z",
+          "summary": "dispatch finished: auto_repairing"
+        },
+        "last_result": {
+          "status": "execution_failed",
+          "internal_status": "blocked_physics_mismatch",
+          "human_status": "CONSISTENCY_CHECK_FAILED",
+          "failure_reason": "auto_repair_physics_mismatch",
+          "failure_reason_taxonomy": "physics_mismatch",
+          "evidence": [
+            "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260416T005642Z.json"
+          ],
+          "physics_result": {
+            "calc_mode": "gs",
+            "molecule_name": "H",
+            "ground_state_energy_hartree": -56.19226231,
+            "homo_energy": -1449.9344689348,
+            "lumo_energy": 1.3623931638,
+            "absorption_spectrum_points": 0,
+            "absorption_spectrum": {
+              "energy_ev": [],
+              "cross_section": []
+            },
+            "benchmark_delta": {
+              "relative_error": 111.38452462,
+              "threshold": 0.03,
+              "within_tolerance": false,
+              "reference_energy_hartree": -0.5,
+              "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+              "fallback_applied": true
+            },
+            "requires_absorption_spectrum": false,
+            "has_required_fields": true,
+            "missing_fields": [],
+            "provenance_verified": true,
+            "available": true
+          },
+          "delta_diagnostics": {
+            "relative_error": 111.38452462,
+            "threshold": 0.03,
+            "within_tolerance": false,
+            "reference_energy_hartree": -0.5,
+            "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+            "fallback_applied": true
+          },
+          "convergence_gate_applied": false,
+          "convergence_gate_passed": true,
+          "convergence_gate_unmet": [],
+          "autonomous_assessment": {
+            "enabled": true,
+            "completion_state": "repairing",
+            "health_state": "degraded",
+            "ready_for_next_auto_task": false,
+            "blockers": [
+              "reviewer_gate_failed",
+              "auto_repair_physics_mismatch"
+            ],
+            "workflow_state": "REPLAN",
+            "workflow_next_route": "L0",
+            "status": "blocked_physics_mismatch",
+            "public_status": "auto_repairing"
+          },
+          "replan_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T005642Z.json",
+          "reviewer_verdict": "FAIL",
+          "retryable": false,
+          "consistency_token": "c9986989",
+          "consistency_check": "failed",
+          "mismatch_reason": "",
+          "expected_consistency_token": ""
+        },
+        "blocked": {
+          "is_blocked": true,
+          "reason_code": "auto_repair_physics_mismatch",
+          "reason_detail": "auto_repair_physics_mismatch"
+        },
+        "next_action": {
+          "by": "codex-executor",
+          "todo": "escalate to L1 backend coding executor"
+        },
+        "updated_at": "2026-04-16T00:57:08.420450Z",
+        "source": "feishu-hard-guard-queue",
+        "workflow": {
+          "version": "v2",
+          "current": "QUEUED",
+          "route": "L1",
+          "attempts": {
+            "l0": 2,
+            "l1": 0
+          },
+          "policy": {
+            "max_attempts_l0": 2,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 30,
+            "escalate_l0_to_l1_if": [
+              "reviewer_gate_failed",
+              "deterministic_pipeline_failed"
+            ],
+            "policy_override_for": null,
+            "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+          },
+          "history": [
+            {
+              "event": "TASK_SUBMITTED",
+              "from": "NEW",
+              "to": "VALIDATING",
+              "at": "2026-04-16T00:43:42.924519Z"
+            },
+            {
+              "event": "TASK_VALID",
+              "from": "VALIDATING",
+              "to": "ROUTED",
+              "at": "2026-04-16T00:43:42.924519Z"
+            },
+            {
+              "event": "RETRY_DUE",
+              "from": "ROUTED",
+              "to": "EXEC_L0",
+              "at": "2026-04-16T00:57:08.420355Z"
+            },
+            {
+              "event": "AUTO_REPAIR",
+              "from": "EXEC_L0",
+              "to": "REPLAN",
+              "at": "2026-04-16T00:57:08.420390Z"
+            },
+            {
+              "event": "REVIEW_FAIL",
+              "from": "REPLAN",
+              "to": "REPLAN",
+              "at": "2026-04-16T00:57:08.420397Z"
+            },
+            {
+              "event": "ROUTE_TO_L1",
+              "from": "REPLAN",
+              "to": "QUEUED",
+              "at": "2026-04-16T00:57:08.420411Z"
+            }
+          ],
+          "last_event": "ROUTE_TO_L1",
+          "updated_at": "2026-04-16T00:57:08.420411Z",
+          "escalation_reason": "reviewer_gate_failed",
+          "next_route": "L1"
+        },
+        "previous_task": {
+          "task_id": "T-20260416T003932Z",
+          "session_id": "dispatch-20260416T003932Z",
+          "user_instruction": "\u4f60\u7406\u89e3\u9519\u4e86\uff0c\u53c2\u8003\u4e0d\u662f\u53c2\u8003\u8ba1\u7b97\u7ed3\u679c\uff0c\u800c\u662f\u53c2\u8003\u5b98\u65b9\u6848\u4f8b\u6216\u53ef\u6eaf\u6e90\u77e5\u8bc6\u5e93\u4e2d\u7684\u7ed3\u679c\u6765\u642d\u5efa\u77e5\u8bc6\u5e93\uff0c\u76f8\u5f53\u4e8e\u76ee\u524d\u5728\u6293\u53d6\u6570\u636e\u3002\u642d\u5efa\u5b8c\u77e5\u8bc6\u5e93\uff0c\u7136\u540e\u624d\u662f\u8ba1\u7b97\u9636\u6bb5\uff0c\u76ee\u7684\u662f\u8ba9\u8ba1\u7b97\u7ed3\u679c\u9760\u8fd1\u77e5\u8bc6\u5e93\u91cc\u5b58\u50a8\u7684\u5b98\u65b9\u6848\u4f8b\u548c\u53c2\u8003\u6587\u732e\u7684\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T003913Z",
+          "intent_type": "auto_kb_openclaw_planner_first",
+          "owner_role": "supervisor",
+          "phase": "RECEIVED",
+          "iteration": {
+            "current": 0,
+            "max": 6,
+            "budget_seconds": 1800
+          },
+          "routing": {
+            "matched_rule": "auto_kb_openclaw_planner_first",
+            "assignee": "openclaw-supervisor",
+            "action": "run_kb_collaboration",
+            "intent_confidence": 0.98,
+            "requires_reviewer": true,
+            "auto_escalation_policy": "strict",
+            "stop_conditions": [
+              "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+              "blocked_permissions",
+              "max_iterations_reached"
+            ]
+          },
+          "last_action": {
+            "by": "supervisor",
+            "at": "2026-04-16T00:39:32.584264Z",
+            "summary": "task received and routed"
+          },
+          "last_result": {
+            "status": "pending",
+            "evidence": []
+          },
+          "blocked": {
+            "is_blocked": false,
+            "reason_code": "none",
+            "reason_detail": ""
+          },
+          "next_action": {
+            "by": "openclaw-supervisor",
+            "todo": "run_kb_collaboration"
+          },
+          "updated_at": "2026-04-16T00:39:32.584307Z",
+          "source": "feishu-hard-guard-queue",
+          "workflow": {
+            "version": "v2",
+            "current": "ROUTED",
+            "route": "L0",
+            "attempts": {
+              "l0": 0,
+              "l1": 0
+            },
+            "policy": {
+              "max_attempts_l0": 2,
+              "max_attempts_l1": 2,
+              "retry_backoff_seconds": 30,
+              "escalate_l0_to_l1_if": [
+                "reviewer_gate_failed",
+                "deterministic_pipeline_failed"
+              ],
+              "policy_override_for": null,
+              "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+            },
+            "history": [
+              {
+                "event": "TASK_SUBMITTED",
+                "from": "NEW",
+                "to": "VALIDATING",
+                "at": "2026-04-16T00:39:32.584321Z"
+              },
+              {
+                "event": "TASK_VALID",
+                "from": "VALIDATING",
+                "to": "ROUTED",
+                "at": "2026-04-16T00:39:32.584321Z"
+              }
+            ],
+            "last_event": "TASK_VALID",
+            "updated_at": "2026-04-16T00:39:32.584321Z"
+          },
+          "previous_task": {
+            "task_id": "T-20260415T171720Z",
+            "session_id": "dispatch-20260415T171720Z",
+            "user_instruction": "\u7ea0\u6b63\u4e00\u4e0b\u6c2e\u539f\u5b50\u603b\u80fd\u91cf\u5355\u4f4d\u5e94\u8be5\u662feV\uff0c\u4e0d\u662fHa\u3002\u4f60\u662f\u4e0d\u662f\u63d0\u53d6\u9875\u9762\u65f6\u591a\u6a21\u6001\u5904\u7406\u9519\u4e86\uff1f\u8bf7\u518d\u6838\u67e5\u4e00\u904d\uff0c\u5fc5\u8981\u7684\u8bdd\u8c03\u7528zchat\u6765\u6e90\u7684gpt-5\u591a\u6a21\u6001\u6a21\u578b\u590d\u67e5\u4e00\u904d octopus\u5b98\u65b9\u7f51\u9875\u9664\u4e86\u63d0\u53d6\u8ba1\u7b97\u7ed3\u679c\u5916\uff0c\u8fd8\u8981\u63d0\u53d6\u5b98\u65b9\u6559\u7a0b\u4f5c\u4e3a\u80fd\u529b\u63d0\u5347\u4ee5\u540e\u7eed\u6307\u5bfcexecutor\u6267\u884c\u8fd0\u7b97 \u5b98\u65b9\u6570\u636e\u67e5\u8be2\u5b8c\u6bd5\u540e\uff0c\u68c0\u7d22\u6587\u732e\u3001\u7f51\u9875\u6570\u636e\u63d0\u53d6\u53ef\u9760\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260415T171655Z",
+            "intent_type": "auto_default_orchestration",
+            "owner_role": "supervisor",
+            "phase": "REPLAN",
+            "iteration": {
+              "current": 1,
+              "max": 6,
+              "budget_seconds": 1800
+            },
+            "routing": {
+              "matched_rule": "auto_default_orchestration",
+              "assignee": "openclaw-supervisor",
+              "action": "run_orchestration",
+              "intent_confidence": 0.96,
+              "requires_reviewer": true,
+              "auto_escalation_policy": "strict",
+              "stop_conditions": [
+                "reviewer_pass_and_benchmark_delta_ok",
+                "blocked_permissions",
+                "max_iterations_reached"
+              ]
+            },
+            "last_action": {
+              "by": "supervisor",
+              "at": "2026-04-15T17:28:48.806274Z",
+              "summary": "dispatch finished: auto_repairing"
+            },
+            "last_result": {
+              "status": "execution_failed",
+              "internal_status": "blocked_physics_mismatch",
+              "human_status": "CONSISTENCY_CHECK_FAILED",
+              "failure_reason": "auto_repair_physics_mismatch",
+              "failure_reason_taxonomy": "physics_mismatch",
+              "evidence": [
+                "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T172823Z.json"
+              ],
+              "physics_result": {
+                "calc_mode": "gs",
+                "molecule_name": "H",
+                "ground_state_energy_hartree": -56.19226231,
+                "homo_energy": -1449.9344689348,
+                "lumo_energy": 1.3623931638,
+                "absorption_spectrum_points": 0,
+                "absorption_spectrum": {
+                  "energy_ev": [],
+                  "cross_section": []
+                },
+                "benchmark_delta": {
+                  "relative_error": 111.38452462,
+                  "threshold": 0.03,
+                  "within_tolerance": false,
+                  "reference_energy_hartree": -0.5,
+                  "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+                  "fallback_applied": true
+                },
+                "requires_absorption_spectrum": false,
+                "has_required_fields": true,
+                "missing_fields": [],
+                "provenance_verified": true,
+                "available": true
+              },
+              "delta_diagnostics": {
+                "relative_error": 111.38452462,
+                "threshold": 0.03,
+                "within_tolerance": false,
+                "reference_energy_hartree": -0.5,
+                "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+                "fallback_applied": true
+              },
+              "convergence_gate_applied": false,
+              "convergence_gate_passed": true,
+              "convergence_gate_unmet": [],
+              "autonomous_assessment": {
+                "enabled": true,
+                "completion_state": "repairing",
+                "health_state": "degraded",
+                "ready_for_next_auto_task": false,
+                "blockers": [
+                  "reviewer_gate_failed",
+                  "auto_repair_physics_mismatch",
+                  "escalated_to_l1"
+                ],
+                "workflow_state": "REPLAN",
+                "workflow_next_route": "L1",
+                "status": "blocked_physics_mismatch",
+                "public_status": "auto_repairing"
+              },
+              "replan_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260415T172823Z.json",
+              "coding_submission": {
+                "submitted": true,
+                "task_id": "CG-20260415T172848Z",
+                "state": "queued",
+                "submit_url": "http://127.0.0.1:8111/coding/submit",
+                "config_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+              },
+              "reviewer_verdict": "FAIL",
+              "retryable": false,
+              "consistency_token": "7b1b91d3",
+              "consistency_check": "failed",
+              "mismatch_reason": "",
+              "expected_consistency_token": ""
+            },
+            "blocked": {
+              "is_blocked": true,
+              "reason_code": "auto_repair_physics_mismatch",
+              "reason_detail": "auto_repair_physics_mismatch"
+            },
+            "next_action": {
+              "by": "codex-executor",
+              "todo": "escalate to L1 backend coding executor"
+            },
+            "updated_at": "2026-04-15T17:28:48.806313Z",
+            "source": "feishu-hard-guard-queue",
+            "workflow": {
+              "version": "v2",
+              "current": "QUEUED",
+              "route": "L1",
+              "attempts": {
+                "l0": 2,
+                "l1": 0
+              },
+              "policy": {
+                "max_attempts_l0": 1,
+                "max_attempts_l1": 2,
+                "retry_backoff_seconds": 45,
+                "escalate_l0_to_l1_if": [
+                  "reviewer_gate_failed",
+                  "deterministic_pipeline_failed"
+                ],
+                "policy_override_for": "auto_default_orchestration",
+                "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+              },
+              "history": [
+                {
+                  "event": "TASK_SUBMITTED",
+                  "from": "NEW",
+                  "to": "VALIDATING",
+                  "at": "2026-04-15T17:17:20.372794Z"
+                },
+                {
+                  "event": "TASK_VALID",
+                  "from": "VALIDATING",
+                  "to": "ROUTED",
+                  "at": "2026-04-15T17:17:20.372794Z"
+                },
+                {
+                  "event": "RETRY_DUE",
+                  "from": "ROUTED",
+                  "to": "EXEC_L0",
+                  "at": "2026-04-15T17:28:48.806200Z"
+                },
+                {
+                  "event": "AUTO_REPAIR",
+                  "from": "EXEC_L0",
+                  "to": "REPLAN",
+                  "at": "2026-04-15T17:28:48.806234Z"
+                },
+                {
+                  "event": "REVIEW_FAIL",
+                  "from": "REPLAN",
+                  "to": "REPLAN",
+                  "at": "2026-04-15T17:28:48.806243Z"
+                },
+                {
+                  "event": "ROUTE_TO_L1",
+                  "from": "REPLAN",
+                  "to": "QUEUED",
+                  "at": "2026-04-15T17:28:48.806260Z"
+                }
+              ],
+              "last_event": "ROUTE_TO_L1",
+              "updated_at": "2026-04-15T17:28:48.806260Z",
+              "escalation_reason": "reviewer_gate_failed",
+              "next_route": "L1"
+            },
+            "previous_task": {
+              "task_id": "T-20260415T171309Z",
+              "session_id": "dispatch-20260415T171309Z",
+              "user_instruction": "\u7ea0\u6b63\u4e00\u4e0b\u6c2e\u539f\u5b50\u603b\u80fd\u91cf\u5355\u4f4d\u5e94\u8be5\u662feV\uff0c\u4e0d\u662fHa\u3002\u4f60\u662f\u4e0d\u662f\u63d0\u53d6\u9875\u9762\u65f6\u591a\u6a21\u6001\u5904\u7406\u9519\u4e86\uff1f\u8bf7\u518d\u6838\u67e5\u4e00\u904d\uff0c\u5fc5\u8981\u7684\u8bdd\u8c03\u7528zchat\u6765\u6e90\u7684gpt-5\u591a\u6a21\u6001\u6a21\u578b\u590d\u67e5\u4e00\u904d octopus\u5b98\u65b9\u7f51\u9875\u9664\u4e86\u63d0\u53d6\u8ba1\u7b97\u7ed3\u679c\u5916\uff0c\u8fd8\u8981\u63d0\u53d6\u5b98\u65b9\u6559\u7a0b\u4f5c\u4e3a\u80fd\u529b\u63d0\u5347\u4ee5\u540e\u7eed\u6307\u5bfcexecutor\u6267\u884c\u8fd0\u7b97 \u5b98\u65b9\u6570\u636e\u67e5\u8be2\u5b8c\u6bd5\u540e\uff0c\u68c0\u7d22\u6587\u732e\u3001\u7f51\u9875\u6570\u636e\u63d0\u53d6\u53ef\u9760\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260415T171250Z",
+              "intent_type": "auto_default_orchestration",
+              "owner_role": "supervisor",
+              "phase": "RECEIVED",
+              "iteration": {
+                "current": 0,
+                "max": 6,
+                "budget_seconds": 1800
+              },
+              "routing": {
+                "matched_rule": "auto_default_orchestration",
+                "assignee": "openclaw-supervisor",
+                "action": "run_orchestration",
+                "intent_confidence": 0.96,
+                "requires_reviewer": true,
+                "auto_escalation_policy": "strict",
+                "stop_conditions": [
+                  "reviewer_pass_and_benchmark_delta_ok",
+                  "blocked_permissions",
+                  "max_iterations_reached"
+                ]
+              },
+              "last_action": {
+                "by": "supervisor",
+                "at": "2026-04-15T17:13:09.511624Z",
+                "summary": "task received and routed"
+              },
+              "last_result": {
+                "status": "pending",
+                "evidence": []
+              },
+              "blocked": {
+                "is_blocked": false,
+                "reason_code": "none",
+                "reason_detail": ""
+              },
+              "next_action": {
+                "by": "openclaw-supervisor",
+                "todo": "run_orchestration"
+              },
+              "updated_at": "2026-04-15T17:13:09.511664Z",
+              "source": "feishu-hard-guard-queue",
+              "workflow": {
+                "version": "v2",
+                "current": "ROUTED",
+                "route": "L0",
+                "attempts": {
+                  "l0": 0,
+                  "l1": 0
+                },
+                "policy": {
+                  "max_attempts_l0": 1,
+                  "max_attempts_l1": 2,
+                  "retry_backoff_seconds": 45,
+                  "escalate_l0_to_l1_if": [
+                    "reviewer_gate_failed",
+                    "deterministic_pipeline_failed"
+                  ],
+                  "policy_override_for": "auto_default_orchestration",
+                  "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                },
+                "history": [
+                  {
+                    "event": "TASK_SUBMITTED",
+                    "from": "NEW",
+                    "to": "VALIDATING",
+                    "at": "2026-04-15T17:13:09.511677Z"
+                  },
+                  {
+                    "event": "TASK_VALID",
+                    "from": "VALIDATING",
+                    "to": "ROUTED",
+                    "at": "2026-04-15T17:13:09.511677Z"
+                  }
+                ],
+                "last_event": "TASK_VALID",
+                "updated_at": "2026-04-15T17:13:09.511677Z"
+              },
+              "previous_task": {
+                "task_id": "T-20260415T164928Z",
+                "session_id": "dispatch-20260415T164928Z",
+                "user_instruction": "Dirac test notify 20260416 run_id=TEST-20260416-001",
+                "intent_type": "default",
+                "owner_role": "supervisor",
+                "phase": "PLANNED",
+                "iteration": {
+                  "current": 0,
+                  "max": 4,
+                  "budget_seconds": 1800
+                },
+                "routing": {
+                  "matched_rule": "default",
+                  "assignee": "openclaw-supervisor",
+                  "action": "prepare",
+                  "intent_confidence": null,
+                  "requires_reviewer": true,
+                  "auto_escalation_policy": "soft",
+                  "stop_conditions": []
+                },
+                "last_action": {
+                  "by": "supervisor",
+                  "at": "2026-04-15T16:49:28.470976Z",
+                  "summary": "dispatch finished: routed_only"
+                },
+                "last_result": {
+                  "status": "routed_only",
+                  "internal_status": "routed_only",
+                  "human_status": "ROUTED_NOT_EXECUTED",
+                  "failure_reason": "",
+                  "failure_reason_taxonomy": "not_executed",
+                  "evidence": [
+                    "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T164928Z.json"
+                  ],
+                  "convergence_gate_applied": false,
+                  "convergence_gate_passed": true,
+                  "convergence_gate_unmet": [],
+                  "autonomous_assessment": {
+                    "enabled": false,
+                    "completion_state": "not_applicable",
+                    "health_state": "unknown",
+                    "ready_for_next_auto_task": false,
+                    "blockers": [],
+                    "workflow_state": "ROUTED",
+                    "workflow_next_route": "L0",
+                    "status": "routed_only"
+                  }
+                },
+                "blocked": {
+                  "is_blocked": false,
+                  "reason_code": "none",
+                  "reason_detail": ""
+                },
+                "next_action": {
+                  "by": "openclaw-supervisor",
+                  "todo": "wait for execution"
+                },
+                "updated_at": "2026-04-15T16:49:28.471027Z",
+                "source": "cli-test",
+                "workflow": {
+                  "version": "v2",
+                  "current": "QUEUED",
+                  "route": "L0",
+                  "attempts": {
+                    "l0": 0,
+                    "l1": 0
+                  },
+                  "policy": {
+                    "max_attempts_l0": 2,
+                    "max_attempts_l1": 2,
+                    "retry_backoff_seconds": 30,
+                    "escalate_l0_to_l1_if": [
+                      "reviewer_gate_failed",
+                      "deterministic_pipeline_failed"
+                    ],
+                    "policy_override_for": null,
+                    "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                  },
+                  "history": [
+                    {
+                      "event": "TASK_SUBMITTED",
+                      "from": "NEW",
+                      "to": "VALIDATING",
+                      "at": "2026-04-15T16:49:28.414059Z"
+                    },
+                    {
+                      "event": "TASK_VALID",
+                      "from": "VALIDATING",
+                      "to": "ROUTED",
+                      "at": "2026-04-15T16:49:28.414059Z"
+                    },
+                    {
+                      "event": "ROUTE_TO_L0",
+                      "from": "ROUTED",
+                      "to": "QUEUED",
+                      "at": "2026-04-15T16:49:28.470942Z"
+                    }
+                  ],
+                  "last_event": "ROUTE_TO_L0",
+                  "updated_at": "2026-04-15T16:49:28.470942Z"
+                },
+                "previous_task": {
+                  "task_id": "T-20260415T164859Z",
+                  "session_id": "dispatch-20260415T164859Z",
+                  "user_instruction": "Dirac test notify 20260416",
+                  "intent_type": "default",
+                  "owner_role": "supervisor",
+                  "phase": "BLOCKED",
+                  "iteration": {
+                    "current": 0,
+                    "max": 4,
+                    "budget_seconds": 1800
+                  },
+                  "routing": {
+                    "matched_rule": "default",
+                    "assignee": "openclaw-supervisor",
+                    "action": "prepare",
+                    "intent_confidence": null,
+                    "requires_reviewer": true,
+                    "auto_escalation_policy": "soft",
+                    "stop_conditions": []
+                  },
+                  "last_action": {
+                    "by": "supervisor",
+                    "at": "2026-04-15T16:48:59.215901Z",
+                    "summary": "dispatch finished: input_contract_invalid"
+                  },
+                  "last_result": {
+                    "status": "input_contract_invalid",
+                    "internal_status": "input_contract_invalid",
+                    "human_status": "INPUT_CONTRACT_INCOMPLETE",
+                    "failure_reason": "missing_required_fields:run_id",
+                    "failure_reason_taxonomy": "",
+                    "evidence": [
+                      "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T164859Z.json"
+                    ],
+                    "convergence_gate_applied": false,
+                    "convergence_gate_passed": true,
+                    "convergence_gate_unmet": [],
+                    "autonomous_assessment": {
+                      "enabled": false,
+                      "completion_state": "not_applicable",
+                      "health_state": "unknown",
+                      "ready_for_next_auto_task": false,
+                      "blockers": [],
+                      "workflow_state": "FAILED",
+                      "workflow_next_route": "L0",
+                      "status": "input_contract_invalid"
+                    }
+                  },
+                  "blocked": {
+                    "is_blocked": true,
+                    "reason_code": "input_contract_invalid",
+                    "reason_detail": "missing_required_fields:run_id"
+                  },
+                  "next_action": {
+                    "by": "openclaw-supervisor",
+                    "todo": "wait for execution"
+                  },
+                  "updated_at": "2026-04-15T16:48:59.215971Z",
+                  "source": "cli-test",
+                  "workflow": {
+                    "version": "v2",
+                    "current": "ROUTED",
+                    "route": "L0",
+                    "attempts": {
+                      "l0": 0,
+                      "l1": 0
+                    },
+                    "policy": {
+                      "max_attempts_l0": 2,
+                      "max_attempts_l1": 2,
+                      "retry_backoff_seconds": 30,
+                      "escalate_l0_to_l1_if": [
+                        "reviewer_gate_failed",
+                        "deterministic_pipeline_failed"
+                      ],
+                      "policy_override_for": null,
+                      "source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                    },
+                    "history": [
+                      {
+                        "event": "TASK_SUBMITTED",
+                        "from": "NEW",
+                        "to": "VALIDATING",
+                        "at": "2026-04-15T16:48:59.126217Z"
+                      },
+                      {
+                        "event": "TASK_VALID",
+                        "from": "VALIDATING",
+                        "to": "ROUTED",
+                        "at": "2026-04-15T16:48:59.126217Z"
+                      }
+                    ],
+                    "last_event": "TASK_VALID",
+                    "updated_at": "2026-04-15T16:48:59.126217Z"
+                  },
+                  "previous_task": {
+                    "task_id": "T-20260413T015410Z",
+                    "session_id": "dispatch-20260413T015410Z",
+                    "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto case=infinite_well_v1 workflow=fullchain mode=autonomous octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260413T015410Z",
+                    "intent_type": "auto_default_orchestration",
+                    "owner_role": "supervisor",
+                    "phase": "REPLAN",
+                    "iteration": {
+                      "current": 1,
+                      "max": 6,
+                      "budget_seconds": 1800
+                    },
+                    "routing": {
+                      "matched_rule": "auto_default_orchestration",
+                      "assignee": "openclaw-supervisor",
+                      "action": "run_orchestration",
+                      "intent_confidence": 0.96,
+                      "requires_reviewer": true,
+                      "auto_escalation_policy": "strict",
+                      "stop_conditions": [
+                        "reviewer_pass_and_benchmark_delta_ok",
+                        "blocked_permissions",
+                        "max_iterations_reached"
+                      ]
+                    },
+                    "last_action": {
+                      "by": "supervisor",
+                      "at": "2026-04-13T02:12:51.305272Z",
+                      "summary": "dispatch finished: auto_repairing"
+                    },
+                    "last_result": {
+                      "status": "unknown",
+                      "internal_status": "blocked_provenance_unverified",
+                      "human_status": "AUTO_REPAIRING_PROVENANCE",
+                      "failure_reason": "auto_repair_provenance",
+                      "failure_reason_taxonomy": "provenance_unverified",
+                      "evidence": [
+                        "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260413T020344Z.json"
+                      ],
+                      "physics_result": {
+                        "calc_mode": "gs",
+                        "molecule_name": "H2",
+                        "ground_state_energy_hartree": -1.0445483,
+                        "homo_energy": -7.8099983368,
+                        "lumo_energy": 7.3166284434,
+                        "absorption_spectrum_points": 0,
+                        "absorption_spectrum": {
+                          "energy_ev": [],
+                          "cross_section": []
+                        },
+                        "benchmark_delta": {
+                          "relative_error": 0.00032894352353338613,
+                          "threshold": 0.03,
+                          "within_tolerance": true,
+                          "reference_energy_hartree": null,
+                          "reference_source": "",
+                          "fallback_applied": false
+                        },
+                        "requires_absorption_spectrum": false,
+                        "has_required_fields": true,
+                        "missing_fields": [],
+                        "provenance_verified": false,
+                        "available": true
+                      },
+                      "delta_diagnostics": {
+                        "relative_error": 0.00032894352353338613,
+                        "threshold": 0.03,
+                        "within_tolerance": true,
+                        "reference_energy_hartree": null,
+                        "reference_source": "",
+                        "fallback_applied": false
+                      },
+                      "convergence_gate_applied": false,
+                      "convergence_gate_passed": false,
+                      "convergence_gate_unmet": [],
+                      "autonomous_assessment": {
+                        "enabled": true,
+                        "completion_state": "repairing",
+                        "health_state": "degraded",
+                        "ready_for_next_auto_task": false,
+                        "blockers": [
+                          "reviewer_gate_failed",
+                          "auto_repair_provenance",
+                          "escalated_to_l1"
+                        ],
+                        "workflow_state": "REPLAN",
+                        "workflow_next_route": "L1",
+                        "status": "blocked_provenance_unverified",
+                        "public_status": "auto_repairing"
+                      },
+                      "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260413T020344Z.json",
+                      "coding_submission": {
+                        "submitted": false,
+                        "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                        "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                      },
+                      "reviewer_verdict": "",
+                      "retryable": true,
+                      "consistency_token": "",
+                      "consistency_check": "legacy",
+                      "mismatch_reason": "",
+                      "expected_consistency_token": ""
+                    },
+                    "blocked": {
+                      "is_blocked": true,
+                      "reason_code": "auto_repair_provenance",
+                      "reason_detail": "auto_repair_provenance"
+                    },
+                    "next_action": {
+                      "by": "codex-executor",
+                      "todo": "escalate to L1 backend coding executor"
+                    },
+                    "updated_at": "2026-04-13T02:12:51.305290Z",
+                    "source": "cli",
+                    "workflow": {
+                      "version": "v2",
+                      "current": "QUEUED",
+                      "route": "L1",
+                      "attempts": {
+                        "l0": 2,
+                        "l1": 0
+                      },
+                      "policy": {
+                        "max_attempts_l0": 1,
+                        "max_attempts_l1": 2,
+                        "retry_backoff_seconds": 45,
+                        "escalate_l0_to_l1_if": [
+                          "reviewer_gate_failed",
+                          "deterministic_pipeline_failed"
+                        ],
+                        "policy_override_for": "auto_default_orchestration",
+                        "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                      },
+                      "history": [
+                        {
+                          "event": "TASK_SUBMITTED",
+                          "from": "NEW",
+                          "to": "VALIDATING",
+                          "at": "2026-04-13T01:54:10.968025Z"
+                        },
+                        {
+                          "event": "TASK_VALID",
+                          "from": "VALIDATING",
+                          "to": "ROUTED",
+                          "at": "2026-04-13T01:54:10.968025Z"
+                        },
+                        {
+                          "event": "RETRY_DUE",
+                          "from": "ROUTED",
+                          "to": "EXEC_L0",
+                          "at": "2026-04-13T02:12:51.305236Z"
+                        },
+                        {
+                          "event": "AUTO_REPAIR",
+                          "from": "EXEC_L0",
+                          "to": "REPLAN",
+                          "at": "2026-04-13T02:12:51.305258Z"
+                        },
+                        {
+                          "event": "REVIEW_FAIL",
+                          "from": "REPLAN",
+                          "to": "REPLAN",
+                          "at": "2026-04-13T02:12:51.305262Z"
+                        },
+                        {
+                          "event": "ROUTE_TO_L1",
+                          "from": "REPLAN",
+                          "to": "QUEUED",
+                          "at": "2026-04-13T02:12:51.305268Z"
+                        }
+                      ],
+                      "last_event": "ROUTE_TO_L1",
+                      "updated_at": "2026-04-13T02:12:51.305268Z",
+                      "escalation_reason": "reviewer_gate_failed",
+                      "next_route": "L1"
+                    },
+                    "previous_task": {
+                      "task_id": "T-20260411T114852Z",
+                      "session_id": "dispatch-20260411T114852Z",
+                      "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-CONT-20260411T120500 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                      "intent_type": "auto_default_orchestration",
+                      "owner_role": "supervisor",
+                      "phase": "RECEIVED",
+                      "iteration": {
+                        "current": 0,
+                        "max": 6,
+                        "budget_seconds": 1800
+                      },
+                      "routing": {
+                        "matched_rule": "auto_default_orchestration",
+                        "assignee": "openclaw-supervisor",
+                        "action": "run_orchestration",
+                        "intent_confidence": 0.96,
+                        "requires_reviewer": true,
+                        "auto_escalation_policy": "strict",
+                        "stop_conditions": [
+                          "reviewer_pass_and_benchmark_delta_ok",
+                          "blocked_permissions",
+                          "max_iterations_reached"
+                        ]
+                      },
+                      "last_action": {
+                        "by": "supervisor",
+                        "at": "2026-04-11T11:48:52.226498Z",
+                        "summary": "task received and routed"
+                      },
+                      "last_result": {
+                        "status": "pending",
+                        "evidence": []
+                      },
+                      "blocked": {
+                        "is_blocked": false,
+                        "reason_code": "none",
+                        "reason_detail": ""
+                      },
+                      "next_action": {
+                        "by": "openclaw-supervisor",
+                        "todo": "run_orchestration"
+                      },
+                      "updated_at": "2026-04-11T11:48:52.226505Z",
+                      "source": "cli",
+                      "workflow": {
+                        "version": "v2",
+                        "current": "ROUTED",
+                        "route": "L0",
+                        "attempts": {
+                          "l0": 0,
+                          "l1": 0
+                        },
+                        "policy": {
+                          "max_attempts_l0": 1,
+                          "max_attempts_l1": 2,
+                          "retry_backoff_seconds": 45,
+                          "escalate_l0_to_l1_if": [
+                            "reviewer_gate_failed",
+                            "deterministic_pipeline_failed"
+                          ],
+                          "policy_override_for": "auto_default_orchestration",
+                          "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                        },
+                        "history": [
+                          {
+                            "event": "TASK_SUBMITTED",
+                            "from": "NEW",
+                            "to": "VALIDATING",
+                            "at": "2026-04-11T11:48:52.226508Z"
+                          },
+                          {
+                            "event": "TASK_VALID",
+                            "from": "VALIDATING",
+                            "to": "ROUTED",
+                            "at": "2026-04-11T11:48:52.226508Z"
+                          }
+                        ],
+                        "last_event": "TASK_VALID",
+                        "updated_at": "2026-04-11T11:48:52.226508Z"
+                      },
+                      "previous_task": {
+                        "task_id": "T-20260411T114818Z",
+                        "session_id": "dispatch-20260411T114818Z",
+                        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-CONT-20260411T115000 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                        "intent_type": "auto_default_orchestration",
+                        "owner_role": "supervisor",
+                        "phase": "RECEIVED",
+                        "iteration": {
+                          "current": 0,
+                          "max": 6,
+                          "budget_seconds": 1800
+                        },
+                        "routing": {
+                          "matched_rule": "auto_default_orchestration",
+                          "assignee": "openclaw-supervisor",
+                          "action": "run_orchestration",
+                          "intent_confidence": 0.96,
+                          "requires_reviewer": true,
+                          "auto_escalation_policy": "strict",
+                          "stop_conditions": [
+                            "reviewer_pass_and_benchmark_delta_ok",
+                            "blocked_permissions",
+                            "max_iterations_reached"
+                          ]
+                        },
+                        "last_action": {
+                          "by": "supervisor",
+                          "at": "2026-04-11T11:48:18.519184Z",
+                          "summary": "task received and routed"
+                        },
+                        "last_result": {
+                          "status": "pending",
+                          "evidence": []
+                        },
+                        "blocked": {
+                          "is_blocked": false,
+                          "reason_code": "none",
+                          "reason_detail": ""
+                        },
+                        "next_action": {
+                          "by": "openclaw-supervisor",
+                          "todo": "run_orchestration"
+                        },
+                        "updated_at": "2026-04-11T11:48:18.519194Z",
+                        "source": "cli",
+                        "workflow": {
+                          "version": "v2",
+                          "current": "ROUTED",
+                          "route": "L0",
+                          "attempts": {
+                            "l0": 0,
+                            "l1": 0
+                          },
+                          "policy": {
+                            "max_attempts_l0": 1,
+                            "max_attempts_l1": 2,
+                            "retry_backoff_seconds": 45,
+                            "escalate_l0_to_l1_if": [
+                              "reviewer_gate_failed",
+                              "deterministic_pipeline_failed"
+                            ],
+                            "policy_override_for": "auto_default_orchestration",
+                            "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                          },
+                          "history": [
+                            {
+                              "event": "TASK_SUBMITTED",
+                              "from": "NEW",
+                              "to": "VALIDATING",
+                              "at": "2026-04-11T11:48:18.519197Z"
+                            },
+                            {
+                              "event": "TASK_VALID",
+                              "from": "VALIDATING",
+                              "to": "ROUTED",
+                              "at": "2026-04-11T11:48:18.519197Z"
+                            }
+                          ],
+                          "last_event": "TASK_VALID",
+                          "updated_at": "2026-04-11T11:48:18.519197Z"
+                        },
+                        "previous_task": {
+                          "task_id": "T-20260411T113329Z",
+                          "session_id": "dispatch-20260411T113329Z",
+                          "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-CONT-20260411T114000 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                          "intent_type": "auto_default_orchestration",
+                          "owner_role": "supervisor",
+                          "phase": "REPLAN",
+                          "iteration": {
+                            "current": 1,
+                            "max": 6,
+                            "budget_seconds": 1800
+                          },
+                          "routing": {
+                            "matched_rule": "auto_default_orchestration",
+                            "assignee": "openclaw-supervisor",
+                            "action": "run_orchestration",
+                            "intent_confidence": 0.96,
+                            "requires_reviewer": true,
+                            "auto_escalation_policy": "strict",
+                            "stop_conditions": [
+                              "reviewer_pass_and_benchmark_delta_ok",
+                              "blocked_permissions",
+                              "max_iterations_reached"
+                            ]
+                          },
+                          "last_action": {
+                            "by": "supervisor",
+                            "at": "2026-04-11T11:46:47.779037Z",
+                            "summary": "dispatch finished: auto_repairing"
+                          },
+                          "last_result": {
+                            "status": "auto_repairing",
+                            "internal_status": "blocked_physics_mismatch",
+                            "human_status": "AUTO_REPAIRING_PHYSICS_MISMATCH",
+                            "failure_reason": "auto_repair_physics_mismatch",
+                            "failure_reason_taxonomy": "physics_mismatch",
+                            "evidence": [
+                              "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T114010Z.json"
+                            ],
+                            "physics_result": {
+                              "calc_mode": "gs",
+                              "molecule_name": "H2O",
+                              "ground_state_energy_hartree": -90.07929722,
+                              "homo_energy": -1.9734251508000002,
+                              "lumo_energy": 4.2636454204,
+                              "absorption_spectrum_points": 0,
+                              "absorption_spectrum": {
+                                "energy_ev": [],
+                                "cross_section": []
+                              },
+                              "benchmark_delta": {
+                                "relative_error": 0.4318565102100149,
+                                "threshold": 0.03,
+                                "within_tolerance": false,
+                                "reference_energy_hartree": -62.91084098,
+                                "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                "fallback_applied": true
+                              },
+                              "requires_absorption_spectrum": false,
+                              "has_required_fields": true,
+                              "missing_fields": [],
+                              "available": true
+                            },
+                            "delta_diagnostics": {
+                              "relative_error": 0.4318565102100149,
+                              "threshold": 0.03,
+                              "within_tolerance": false,
+                              "reference_energy_hartree": -62.91084098,
+                              "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                              "fallback_applied": true
+                            },
+                            "convergence_gate_applied": false,
+                            "convergence_gate_passed": true,
+                            "convergence_gate_unmet": [],
+                            "autonomous_assessment": {
+                              "enabled": true,
+                              "completion_state": "repairing",
+                              "health_state": "degraded",
+                              "ready_for_next_auto_task": false,
+                              "blockers": [
+                                "reviewer_gate_failed",
+                                "auto_repair_physics_mismatch",
+                                "escalated_to_l1"
+                              ],
+                              "workflow_state": "REPLAN",
+                              "workflow_next_route": "L1",
+                              "status": "blocked_physics_mismatch",
+                              "public_status": "auto_repairing"
+                            },
+                            "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T114010Z.json",
+                            "coding_submission": {
+                              "submitted": false,
+                              "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                              "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                            }
+                          },
+                          "blocked": {
+                            "is_blocked": true,
+                            "reason_code": "auto_repair_physics_mismatch",
+                            "reason_detail": "auto_repair_physics_mismatch"
+                          },
+                          "next_action": {
+                            "by": "codex-executor",
+                            "todo": "escalate to L1 backend coding executor"
+                          },
+                          "updated_at": "2026-04-11T11:46:47.779052Z",
+                          "source": "cli",
+                          "workflow": {
+                            "version": "v2",
+                            "current": "QUEUED",
+                            "route": "L1",
+                            "attempts": {
+                              "l0": 2,
+                              "l1": 0
+                            },
+                            "policy": {
+                              "max_attempts_l0": 1,
+                              "max_attempts_l1": 2,
+                              "retry_backoff_seconds": 45,
+                              "escalate_l0_to_l1_if": [
+                                "reviewer_gate_failed",
+                                "deterministic_pipeline_failed"
+                              ],
+                              "policy_override_for": "auto_default_orchestration",
+                              "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                            },
+                            "history": [
+                              {
+                                "event": "TASK_SUBMITTED",
+                                "from": "NEW",
+                                "to": "VALIDATING",
+                                "at": "2026-04-11T11:33:29.041095Z"
+                              },
+                              {
+                                "event": "TASK_VALID",
+                                "from": "VALIDATING",
+                                "to": "ROUTED",
+                                "at": "2026-04-11T11:33:29.041095Z"
+                              },
+                              {
+                                "event": "RETRY_DUE",
+                                "from": "ROUTED",
+                                "to": "EXEC_L0",
+                                "at": "2026-04-11T11:46:47.779006Z"
+                              },
+                              {
+                                "event": "AUTO_REPAIR",
+                                "from": "EXEC_L0",
+                                "to": "REPLAN",
+                                "at": "2026-04-11T11:46:47.779023Z"
+                              },
+                              {
+                                "event": "REVIEW_FAIL",
+                                "from": "REPLAN",
+                                "to": "REPLAN",
+                                "at": "2026-04-11T11:46:47.779027Z"
+                              },
+                              {
+                                "event": "ROUTE_TO_L1",
+                                "from": "REPLAN",
+                                "to": "QUEUED",
+                                "at": "2026-04-11T11:46:47.779033Z"
+                              }
+                            ],
+                            "last_event": "ROUTE_TO_L1",
+                            "updated_at": "2026-04-11T11:46:47.779033Z",
+                            "escalation_reason": "reviewer_gate_failed",
+                            "next_route": "L1"
+                          },
+                          "previous_task": {
+                            "task_id": "T-20260411T112509Z",
+                            "session_id": "dispatch-20260411T112509Z",
+                            "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-CONT-20260411T111500 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                            "intent_type": "auto_default_orchestration",
+                            "owner_role": "supervisor",
+                            "phase": "REPLAN",
+                            "iteration": {
+                              "current": 1,
+                              "max": 6,
+                              "budget_seconds": 1800
+                            },
+                            "routing": {
+                              "matched_rule": "auto_default_orchestration",
+                              "assignee": "openclaw-supervisor",
+                              "action": "run_orchestration",
+                              "intent_confidence": 0.96,
+                              "requires_reviewer": true,
+                              "auto_escalation_policy": "strict",
+                              "stop_conditions": [
+                                "reviewer_pass_and_benchmark_delta_ok",
+                                "blocked_permissions",
+                                "max_iterations_reached"
+                              ]
+                            },
+                            "last_action": {
+                              "by": "supervisor",
+                              "at": "2026-04-11T11:31:50.761290Z",
+                              "summary": "dispatch finished: auto_repairing"
+                            },
+                            "last_result": {
+                              "status": "auto_repairing",
+                              "internal_status": "blocked_physics_mismatch",
+                              "human_status": "AUTO_REPAIRING_PHYSICS_MISMATCH",
+                              "failure_reason": "auto_repair_physics_mismatch",
+                              "failure_reason_taxonomy": "physics_mismatch",
+                              "evidence": [
+                                "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T113147Z.json"
+                              ],
+                              "physics_result": {
+                                "calc_mode": "gs",
+                                "molecule_name": "H2O",
+                                "ground_state_energy_hartree": -90.07929722,
+                                "homo_energy": -1.9734251508000002,
+                                "lumo_energy": 4.2636454204,
+                                "absorption_spectrum_points": 0,
+                                "absorption_spectrum": {
+                                  "energy_ev": [],
+                                  "cross_section": []
+                                },
+                                "benchmark_delta": {
+                                  "relative_error": 0.4318565102100149,
+                                  "threshold": 0.03,
+                                  "within_tolerance": false,
+                                  "reference_energy_hartree": -62.91084098,
+                                  "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                  "fallback_applied": true
+                                },
+                                "requires_absorption_spectrum": false,
+                                "has_required_fields": true,
+                                "missing_fields": [],
+                                "available": true
+                              },
+                              "delta_diagnostics": {
+                                "relative_error": 0.4318565102100149,
+                                "threshold": 0.03,
+                                "within_tolerance": false,
+                                "reference_energy_hartree": -62.91084098,
+                                "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                "fallback_applied": true
+                              },
+                              "convergence_gate_applied": false,
+                              "convergence_gate_passed": true,
+                              "convergence_gate_unmet": [],
+                              "autonomous_assessment": {
+                                "enabled": true,
+                                "completion_state": "repairing",
+                                "health_state": "degraded",
+                                "ready_for_next_auto_task": false,
+                                "blockers": [
+                                  "reviewer_gate_failed",
+                                  "auto_repair_physics_mismatch",
+                                  "escalated_to_l1"
+                                ],
+                                "workflow_state": "REPLAN",
+                                "workflow_next_route": "L1",
+                                "status": "blocked_physics_mismatch",
+                                "public_status": "auto_repairing"
+                              },
+                              "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T113147Z.json",
+                              "coding_submission": {
+                                "submitted": false,
+                                "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                                "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                              }
+                            },
+                            "blocked": {
+                              "is_blocked": true,
+                              "reason_code": "auto_repair_physics_mismatch",
+                              "reason_detail": "auto_repair_physics_mismatch"
+                            },
+                            "next_action": {
+                              "by": "codex-executor",
+                              "todo": "escalate to L1 backend coding executor"
+                            },
+                            "updated_at": "2026-04-11T11:31:50.761304Z",
+                            "source": "cli",
+                            "workflow": {
+                              "version": "v2",
+                              "current": "QUEUED",
+                              "route": "L1",
+                              "attempts": {
+                                "l0": 2,
+                                "l1": 0
+                              },
+                              "policy": {
+                                "max_attempts_l0": 1,
+                                "max_attempts_l1": 2,
+                                "retry_backoff_seconds": 45,
+                                "escalate_l0_to_l1_if": [
+                                  "reviewer_gate_failed",
+                                  "deterministic_pipeline_failed"
+                                ],
+                                "policy_override_for": "auto_default_orchestration",
+                                "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                              },
+                              "history": [
+                                {
+                                  "event": "TASK_SUBMITTED",
+                                  "from": "NEW",
+                                  "to": "VALIDATING",
+                                  "at": "2026-04-11T11:25:09.192801Z"
+                                },
+                                {
+                                  "event": "TASK_VALID",
+                                  "from": "VALIDATING",
+                                  "to": "ROUTED",
+                                  "at": "2026-04-11T11:25:09.192801Z"
+                                },
+                                {
+                                  "event": "RETRY_DUE",
+                                  "from": "ROUTED",
+                                  "to": "EXEC_L0",
+                                  "at": "2026-04-11T11:31:50.761262Z"
+                                },
+                                {
+                                  "event": "AUTO_REPAIR",
+                                  "from": "EXEC_L0",
+                                  "to": "REPLAN",
+                                  "at": "2026-04-11T11:31:50.761278Z"
+                                },
+                                {
+                                  "event": "REVIEW_FAIL",
+                                  "from": "REPLAN",
+                                  "to": "REPLAN",
+                                  "at": "2026-04-11T11:31:50.761281Z"
+                                },
+                                {
+                                  "event": "ROUTE_TO_L1",
+                                  "from": "REPLAN",
+                                  "to": "QUEUED",
+                                  "at": "2026-04-11T11:31:50.761286Z"
+                                }
+                              ],
+                              "last_event": "ROUTE_TO_L1",
+                              "updated_at": "2026-04-11T11:31:50.761286Z",
+                              "escalation_reason": "reviewer_gate_failed",
+                              "next_route": "L1"
+                            },
+                            "previous_task": {
+                              "task_id": "T-20260411T103804Z",
+                              "session_id": "dispatch-20260411T103804Z",
+                              "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-VERIFY-20260411TTEST3 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                              "intent_type": "auto_default_orchestration",
+                              "owner_role": "supervisor",
+                              "phase": "REPLAN",
+                              "iteration": {
+                                "current": 1,
+                                "max": 6,
+                                "budget_seconds": 1800
+                              },
+                              "routing": {
+                                "matched_rule": "auto_default_orchestration",
+                                "assignee": "openclaw-supervisor",
+                                "action": "run_orchestration",
+                                "intent_confidence": 0.96,
+                                "requires_reviewer": true,
+                                "auto_escalation_policy": "strict",
+                                "stop_conditions": [
+                                  "reviewer_pass_and_benchmark_delta_ok",
+                                  "blocked_permissions",
+                                  "max_iterations_reached"
+                                ]
+                              },
+                              "last_action": {
+                                "by": "supervisor",
+                                "at": "2026-04-11T10:44:44.288760Z",
+                                "summary": "dispatch finished: auto_repairing"
+                              },
+                              "last_result": {
+                                "status": "auto_repairing",
+                                "internal_status": "blocked_physics_mismatch",
+                                "human_status": "AUTO_REPAIRING_PHYSICS_MISMATCH",
+                                "failure_reason": "auto_repair_physics_mismatch",
+                                "failure_reason_taxonomy": "physics_mismatch",
+                                "evidence": [
+                                  "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T104441Z.json"
+                                ],
+                                "physics_result": {
+                                  "calc_mode": "gs",
+                                  "molecule_name": "H2",
+                                  "ground_state_energy_hartree": -1.0445483,
+                                  "homo_energy": -7.8099983368,
+                                  "lumo_energy": 7.3166284434,
+                                  "absorption_spectrum_points": 0,
+                                  "absorption_spectrum": {
+                                    "energy_ev": [],
+                                    "cross_section": []
+                                  },
+                                  "benchmark_delta": {
+                                    "relative_error": 0.9833963704231505,
+                                    "threshold": 0.03,
+                                    "within_tolerance": false,
+                                    "reference_energy_hartree": -62.91084098,
+                                    "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                    "fallback_applied": true
+                                  },
+                                  "requires_absorption_spectrum": false,
+                                  "has_required_fields": true,
+                                  "missing_fields": [],
+                                  "available": true
+                                },
+                                "delta_diagnostics": {
+                                  "relative_error": 0.9833963704231505,
+                                  "threshold": 0.03,
+                                  "within_tolerance": false,
+                                  "reference_energy_hartree": -62.91084098,
+                                  "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                  "fallback_applied": true
+                                },
+                                "convergence_gate_applied": false,
+                                "convergence_gate_passed": true,
+                                "convergence_gate_unmet": [],
+                                "autonomous_assessment": {
+                                  "enabled": true,
+                                  "completion_state": "repairing",
+                                  "health_state": "degraded",
+                                  "ready_for_next_auto_task": false,
+                                  "blockers": [
+                                    "reviewer_gate_failed",
+                                    "auto_repair_physics_mismatch",
+                                    "escalated_to_l1"
+                                  ],
+                                  "workflow_state": "REPLAN",
+                                  "workflow_next_route": "L1",
+                                  "status": "blocked_physics_mismatch",
+                                  "public_status": "auto_repairing"
+                                },
+                                "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T104441Z.json",
+                                "coding_submission": {
+                                  "submitted": false,
+                                  "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                                  "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                                }
+                              },
+                              "blocked": {
+                                "is_blocked": true,
+                                "reason_code": "auto_repair_physics_mismatch",
+                                "reason_detail": "auto_repair_physics_mismatch"
+                              },
+                              "next_action": {
+                                "by": "codex-executor",
+                                "todo": "escalate to L1 backend coding executor"
+                              },
+                              "updated_at": "2026-04-11T10:44:44.288774Z",
+                              "source": "cli",
+                              "workflow": {
+                                "version": "v2",
+                                "current": "QUEUED",
+                                "route": "L1",
+                                "attempts": {
+                                  "l0": 2,
+                                  "l1": 0
+                                },
+                                "policy": {
+                                  "max_attempts_l0": 1,
+                                  "max_attempts_l1": 2,
+                                  "retry_backoff_seconds": 45,
+                                  "escalate_l0_to_l1_if": [
+                                    "reviewer_gate_failed",
+                                    "deterministic_pipeline_failed"
+                                  ],
+                                  "policy_override_for": "auto_default_orchestration",
+                                  "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                                },
+                                "history": [
+                                  {
+                                    "event": "TASK_SUBMITTED",
+                                    "from": "NEW",
+                                    "to": "VALIDATING",
+                                    "at": "2026-04-11T10:38:04.778760Z"
+                                  },
+                                  {
+                                    "event": "TASK_VALID",
+                                    "from": "VALIDATING",
+                                    "to": "ROUTED",
+                                    "at": "2026-04-11T10:38:04.778760Z"
+                                  },
+                                  {
+                                    "event": "RETRY_DUE",
+                                    "from": "ROUTED",
+                                    "to": "EXEC_L0",
+                                    "at": "2026-04-11T10:44:44.288732Z"
+                                  },
+                                  {
+                                    "event": "AUTO_REPAIR",
+                                    "from": "EXEC_L0",
+                                    "to": "REPLAN",
+                                    "at": "2026-04-11T10:44:44.288748Z"
+                                  },
+                                  {
+                                    "event": "REVIEW_FAIL",
+                                    "from": "REPLAN",
+                                    "to": "REPLAN",
+                                    "at": "2026-04-11T10:44:44.288752Z"
+                                  },
+                                  {
+                                    "event": "ROUTE_TO_L1",
+                                    "from": "REPLAN",
+                                    "to": "QUEUED",
+                                    "at": "2026-04-11T10:44:44.288757Z"
+                                  }
+                                ],
+                                "last_event": "ROUTE_TO_L1",
+                                "updated_at": "2026-04-11T10:44:44.288757Z",
+                                "escalation_reason": "reviewer_gate_failed",
+                                "next_route": "L1"
+                              },
+                              "previous_task": {
+                                "task_id": "T-20260411T102835Z",
+                                "session_id": "dispatch-20260411T102835Z",
+                                "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-VERIFY-20260411TTEST2 workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                                "intent_type": "auto_default_orchestration",
+                                "owner_role": "supervisor",
+                                "phase": "REPLAN",
+                                "iteration": {
+                                  "current": 1,
+                                  "max": 6,
+                                  "budget_seconds": 1800
+                                },
+                                "routing": {
+                                  "matched_rule": "auto_default_orchestration",
+                                  "assignee": "openclaw-supervisor",
+                                  "action": "run_orchestration",
+                                  "intent_confidence": 0.96,
+                                  "requires_reviewer": true,
+                                  "auto_escalation_policy": "strict",
+                                  "stop_conditions": [
+                                    "reviewer_pass_and_benchmark_delta_ok",
+                                    "blocked_permissions",
+                                    "max_iterations_reached"
+                                  ]
+                                },
+                                "last_action": {
+                                  "by": "supervisor",
+                                  "at": "2026-04-11T10:36:10.275704Z",
+                                  "summary": "dispatch finished: auto_repairing"
+                                },
+                                "last_result": {
+                                  "status": "auto_repairing",
+                                  "internal_status": "blocked_physics_result_missing",
+                                  "human_status": "AUTO_REPAIRING_PHYSICS_RESULT",
+                                  "failure_reason": "auto_repair_physics_result",
+                                  "failure_reason_taxonomy": "missing_required_physics_fields",
+                                  "evidence": [
+                                    "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T103607Z.json"
+                                  ],
+                                  "physics_result": {
+                                    "calc_mode": "gs",
+                                    "molecule_name": "H2",
+                                    "ground_state_energy_hartree": -1.0445483,
+                                    "homo_energy": -7.8099983368,
+                                    "lumo_energy": 7.3166284434,
+                                    "absorption_spectrum_points": 0,
+                                    "absorption_spectrum": {
+                                      "energy_ev": [],
+                                      "cross_section": []
+                                    },
+                                    "benchmark_delta": {
+                                      "relative_error": 0.9833963704231505,
+                                      "threshold": 0.03,
+                                      "within_tolerance": false,
+                                      "reference_energy_hartree": -62.91084098,
+                                      "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                      "fallback_applied": true
+                                    },
+                                    "requires_absorption_spectrum": false,
+                                    "has_required_fields": false,
+                                    "missing_fields": [
+                                      "absorption_spectrum"
+                                    ],
+                                    "available": true
+                                  },
+                                  "delta_diagnostics": {
+                                    "relative_error": 0.9833963704231505,
+                                    "threshold": 0.03,
+                                    "within_tolerance": false,
+                                    "reference_energy_hartree": -62.91084098,
+                                    "reference_source": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+                                    "fallback_applied": true
+                                  },
+                                  "convergence_gate_applied": false,
+                                  "convergence_gate_passed": true,
+                                  "convergence_gate_unmet": [],
+                                  "autonomous_assessment": {
+                                    "enabled": true,
+                                    "completion_state": "repairing",
+                                    "health_state": "degraded",
+                                    "ready_for_next_auto_task": false,
+                                    "blockers": [
+                                      "reviewer_gate_failed",
+                                      "auto_repair_physics_result",
+                                      "escalated_to_l1"
+                                    ],
+                                    "workflow_state": "REPLAN",
+                                    "workflow_next_route": "L1",
+                                    "status": "blocked_physics_result_missing",
+                                    "public_status": "auto_repairing"
+                                  },
+                                  "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T103607Z.json",
+                                  "coding_submission": {
+                                    "submitted": false,
+                                    "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                                    "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                                  }
+                                },
+                                "blocked": {
+                                  "is_blocked": true,
+                                  "reason_code": "auto_repair_physics_result",
+                                  "reason_detail": "auto_repair_physics_result"
+                                },
+                                "next_action": {
+                                  "by": "codex-executor",
+                                  "todo": "escalate to L1 backend coding executor"
+                                },
+                                "updated_at": "2026-04-11T10:36:10.275721Z",
+                                "source": "cli",
+                                "workflow": {
+                                  "version": "v2",
+                                  "current": "QUEUED",
+                                  "route": "L1",
+                                  "attempts": {
+                                    "l0": 2,
+                                    "l1": 0
+                                  },
+                                  "policy": {
+                                    "max_attempts_l0": 1,
+                                    "max_attempts_l1": 2,
+                                    "retry_backoff_seconds": 45,
+                                    "escalate_l0_to_l1_if": [
+                                      "reviewer_gate_failed",
+                                      "deterministic_pipeline_failed"
+                                    ],
+                                    "policy_override_for": "auto_default_orchestration",
+                                    "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                                  },
+                                  "history": [
+                                    {
+                                      "event": "TASK_SUBMITTED",
+                                      "from": "NEW",
+                                      "to": "VALIDATING",
+                                      "at": "2026-04-11T10:28:35.431112Z"
+                                    },
+                                    {
+                                      "event": "TASK_VALID",
+                                      "from": "VALIDATING",
+                                      "to": "ROUTED",
+                                      "at": "2026-04-11T10:28:35.431112Z"
+                                    },
+                                    {
+                                      "event": "RETRY_DUE",
+                                      "from": "ROUTED",
+                                      "to": "EXEC_L0",
+                                      "at": "2026-04-11T10:36:10.275633Z"
+                                    },
+                                    {
+                                      "event": "AUTO_REPAIR",
+                                      "from": "EXEC_L0",
+                                      "to": "REPLAN",
+                                      "at": "2026-04-11T10:36:10.275687Z"
+                                    },
+                                    {
+                                      "event": "REVIEW_FAIL",
+                                      "from": "REPLAN",
+                                      "to": "REPLAN",
+                                      "at": "2026-04-11T10:36:10.275694Z"
+                                    },
+                                    {
+                                      "event": "ROUTE_TO_L1",
+                                      "from": "REPLAN",
+                                      "to": "QUEUED",
+                                      "at": "2026-04-11T10:36:10.275700Z"
+                                    }
+                                  ],
+                                  "last_event": "ROUTE_TO_L1",
+                                  "updated_at": "2026-04-11T10:36:10.275700Z",
+                                  "escalation_reason": "reviewer_gate_failed",
+                                  "next_route": "L1"
+                                },
+                                "previous_task": {
+                                  "task_id": "T-20260411T101936Z",
+                                  "session_id": "dispatch-20260411T101936Z",
+                                  "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=RSH-VERIFY-20260411TTEST workflow=fullchain mode=autonomous case=h2o_gs_reference octopus=required ncpus=64 mpiprocs=64",
+                                  "intent_type": "auto_default_orchestration",
+                                  "owner_role": "supervisor",
+                                  "phase": "REPLAN",
+                                  "iteration": {
+                                    "current": 1,
+                                    "max": 6,
+                                    "budget_seconds": 1800
+                                  },
+                                  "routing": {
+                                    "matched_rule": "auto_default_orchestration",
+                                    "assignee": "openclaw-supervisor",
+                                    "action": "run_orchestration",
+                                    "intent_confidence": 0.96,
+                                    "requires_reviewer": true,
+                                    "auto_escalation_policy": "strict",
+                                    "stop_conditions": [
+                                      "reviewer_pass_and_benchmark_delta_ok",
+                                      "blocked_permissions",
+                                      "max_iterations_reached"
+                                    ]
+                                  },
+                                  "last_action": {
+                                    "by": "supervisor",
+                                    "at": "2026-04-11T10:26:23.317116Z",
+                                    "summary": "dispatch finished: auto_repairing"
+                                  },
+                                  "last_result": {
+                                    "status": "auto_repairing",
+                                    "internal_status": "blocked_physics_result_missing",
+                                    "human_status": "AUTO_REPAIRING_PHYSICS_RESULT",
+                                    "failure_reason": "auto_repair_physics_result",
+                                    "failure_reason_taxonomy": "missing_required_physics_fields",
+                                    "evidence": [
+                                      "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T102620Z.json"
+                                    ],
+                                    "physics_result": {
+                                      "calc_mode": "gs",
+                                      "molecule_name": "H2",
+                                      "ground_state_energy_hartree": -1.0445483,
+                                      "homo_energy": -7.8099983368,
+                                      "lumo_energy": 7.3166284434,
+                                      "absorption_spectrum_points": 0,
+                                      "absorption_spectrum": {
+                                        "energy_ev": [],
+                                        "cross_section": []
+                                      },
+                                      "benchmark_delta": {
+                                        "relative_error": -1.0,
+                                        "threshold": 0.03,
+                                        "within_tolerance": false
+                                      },
+                                      "requires_absorption_spectrum": false,
+                                      "has_required_fields": false,
+                                      "missing_fields": [
+                                        "benchmark_delta.relative_error"
+                                      ],
+                                      "available": true
+                                    },
+                                    "delta_diagnostics": {
+                                      "relative_error": -1.0,
+                                      "threshold": 0.03,
+                                      "within_tolerance": false
+                                    },
+                                    "convergence_gate_applied": false,
+                                    "convergence_gate_passed": true,
+                                    "convergence_gate_unmet": [],
+                                    "autonomous_assessment": {
+                                      "enabled": true,
+                                      "completion_state": "repairing",
+                                      "health_state": "degraded",
+                                      "ready_for_next_auto_task": false,
+                                      "blockers": [
+                                        "reviewer_gate_failed",
+                                        "auto_repair_physics_result",
+                                        "escalated_to_l1"
+                                      ],
+                                      "workflow_state": "REPLAN",
+                                      "workflow_next_route": "L1",
+                                      "status": "blocked_physics_result_missing",
+                                      "public_status": "auto_repairing"
+                                    },
+                                    "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T102620Z.json",
+                                    "coding_submission": {
+                                      "submitted": false,
+                                      "error": "Network error calling http://127.0.0.1:8111/coding/submit: <urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>",
+                                      "config_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/coding_gateway_config.json"
+                                    }
+                                  },
+                                  "blocked": {
+                                    "is_blocked": true,
+                                    "reason_code": "auto_repair_physics_result",
+                                    "reason_detail": "auto_repair_physics_result"
+                                  },
+                                  "next_action": {
+                                    "by": "codex-executor",
+                                    "todo": "escalate to L1 backend coding executor"
+                                  },
+                                  "updated_at": "2026-04-11T10:26:23.317130Z",
+                                  "source": "cli",
+                                  "workflow": {
+                                    "version": "v2",
+                                    "current": "QUEUED",
+                                    "route": "L1",
+                                    "attempts": {
+                                      "l0": 2,
+                                      "l1": 0
+                                    },
+                                    "policy": {
+                                      "max_attempts_l0": 1,
+                                      "max_attempts_l1": 2,
+                                      "retry_backoff_seconds": 45,
+                                      "escalate_l0_to_l1_if": [
+                                        "reviewer_gate_failed",
+                                        "deterministic_pipeline_failed"
+                                      ],
+                                      "policy_override_for": "auto_default_orchestration",
+                                      "source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+                                    },
+                                    "history": [
+                                      {
+                                        "event": "TASK_SUBMITTED",
+                                        "from": "NEW",
+                                        "to": "VALIDATING",
+                                        "at": "2026-04-11T10:19:36.172739Z"
+                                      },
+                                      {
+                                        "event": "TASK_VALID",
+                                        "from": "VALIDATING",
+                                        "to": "ROUTED",
+                                        "at": "2026-04-11T10:19:36.172739Z"
+                                      },
+                                      {
+                                        "event": "RETRY_DUE",
+                                        "from": "ROUTED",
+                                        "to": "EXEC_L0",
+                                        "at": "2026-04-11T10:26:23.317087Z"
+                                      },
+                                      {
+                                        "event": "AUTO_REPAIR",
+                                        "from": "EXEC_L0",
+                                        "to": "REPLAN",
+                                        "at": "2026-04-11T10:26:23.317104Z"
+                                      },
+                                      {
+                                        "event": "REVIEW_FAIL",
+                                        "from": "REPLAN",
+                                        "to": "REPLAN",
+                                        "at": "2026-04-11T10:26:23.317108Z"
+                                      },
+                                      {
+                                        "event": "ROUTE_TO_L1",
+                                        "from": "REPLAN",
+                                        "to": "QUEUED",
+                                        "at": "2026-04-11T10:26:23.317113Z"
+                                      }
+                                    ],
+                                    "last_event": "ROUTE_TO_L1",
+                                    "updated_at": "2026-04-11T10:26:23.317113Z",
+                                    "escalation_reason": "reviewer_gate_failed",
+                                    "next_route": "L1"
+                                  },
+                                  "conversation_handoff": {
+                                    "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_result",
+                                    "carry_over_required": true,
+                                    "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T102620Z.json",
+                                    "generated_at": "2026-04-11T10:26:23.317128Z"
+                                  }
+                                },
+                                "conversation_handoff": {
+                                  "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_result",
+                                  "carry_over_required": true,
+                                  "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T103607Z.json",
+                                  "generated_at": "2026-04-11T10:36:10.275719Z"
+                                }
+                              },
+                              "conversation_handoff": {
+                                "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+                                "carry_over_required": true,
+                                "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T104441Z.json",
+                                "generated_at": "2026-04-11T10:44:44.288772Z"
+                              }
+                            },
+                            "conversation_handoff": {
+                              "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+                              "carry_over_required": true,
+                              "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T113147Z.json",
+                              "generated_at": "2026-04-11T11:31:50.761302Z"
+                            }
+                          },
+                          "conversation_handoff": {
+                            "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+                            "carry_over_required": true,
+                            "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260411T114010Z.json",
+                            "generated_at": "2026-04-11T11:46:47.779050Z"
+                          }
+                        }
+                      }
+                    },
+                    "conversation_handoff": {
+                      "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_provenance",
+                      "carry_over_required": true,
+                      "next_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260413T020344Z.json",
+                      "generated_at": "2026-04-13T02:12:51.305287Z"
+                    },
+                    "multi_agent": {
+                      "reviewer": {
+                        "verdict": "",
+                        "dispatch_status_at_time_of_verdict": "unknown",
+                        "consistency_checkpoint": ""
+                      }
+                    }
+                  },
+                  "conversation_handoff": {
+                    "summary": "status=input_contract_invalid; phase=BLOCKED; reviewer_verdict=missing_required_fields:run_id",
+                    "carry_over_required": true,
+                    "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T164859Z.json",
+                    "generated_at": "2026-04-15T16:48:59.215959Z"
+                  }
+                },
+                "conversation_handoff": {
+                  "summary": "status=routed_only; phase=PLANNED; reviewer_verdict=pass_or_pending",
+                  "carry_over_required": true,
+                  "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T164928Z.json",
+                  "generated_at": "2026-04-15T16:49:28.471018Z"
+                }
+              }
+            },
+            "conversation_handoff": {
+              "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+              "carry_over_required": true,
+              "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260415T172823Z.json",
+              "generated_at": "2026-04-15T17:28:48.806306Z"
+            },
+            "multi_agent": {
+              "reviewer": {
+                "verdict": "FAIL",
+                "dispatch_status_at_time_of_verdict": "execution_failed",
+                "consistency_checkpoint": "7b1b91d3"
+              }
+            }
+          }
+        },
+        "conversation_handoff": {
+          "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+          "carry_over_required": true,
+          "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T005642Z.json",
+          "generated_at": "2026-04-16T00:57:08.420446Z"
+        },
+        "multi_agent": {
+          "reviewer": {
+            "verdict": "FAIL",
+            "dispatch_status_at_time_of_verdict": "execution_failed",
+            "consistency_checkpoint": "c9986989"
+          }
+        }
+      }
+    },
+    "conversation_handoff": {
+      "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+      "carry_over_required": true,
+      "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T013043Z.json",
+      "generated_at": "2026-04-16T01:31:08.659510Z"
+    },
+    "multi_agent": {
+      "reviewer": {
+        "verdict": "FAIL",
+        "dispatch_status_at_time_of_verdict": "unknown",
+        "consistency_checkpoint": "1418f5bf"
+      }
+    }
+  },
+  "task_id": "T-20260416T011741Z",
+  "session_id": "dispatch-20260416T011741Z",
+  "user_instruction": "\u8865\u5145 DFT/TDDFT \u7684\u5411\u91cf\u77e5\u8bc6\u5e93\u5e76\u8fdb\u884c\u4e09\u89d2\u8272\u534f\u540c\u5ba1\u67e5 workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T011716Z",
+  "intent_type": "auto_kb_openclaw_planner_first",
+  "owner_role": "supervisor",
+  "iteration": {
+    "current": 1,
+    "max": 6,
+    "budget_seconds": 1800
+  },
+  "routing": {
+    "matched_rule": "auto_kb_openclaw_planner_first",
+    "assignee": "openclaw-supervisor",
+    "action": "run_kb_collaboration",
+    "intent_confidence": 0.98,
+    "requires_reviewer": true,
+    "auto_escalation_policy": "strict",
+    "stop_conditions": [
+      "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+      "blocked_permissions",
+      "max_iterations_reached"
+    ]
+  },
+  "last_action": {
+    "by": "dirac_exec_worker",
+    "at": "2026-04-16T01:57:51.809401Z",
+    "summary": "worker ack: unknown"
+  },
+  "last_result": {
+    "status": "unknown",
+    "human_status": "",
+    "failure_reason": "",
+    "reviewer_verdict": "",
+    "retryable": true,
+    "consistency_token": "",
+    "consistency_check": "legacy",
+    "mismatch_reason": "",
+    "expected_consistency_token": "",
+    "convergence_gate_applied": false,
+    "convergence_gate_passed": false,
+    "convergence_gate_unmet": []
+  },
+  "blocked": {
+    "is_blocked": false,
+    "reason_code": "none",
+    "reason_detail": ""
+  },
+  "next_action": {
+    "by": "openclaw-supervisor",
+    "todo": "retry_or_replan"
+  },
+  "source": "feishu-queue",
+  "workflow": {
+    "route": "L0",
+    "state": "UNKNOWN",
+    "event": "",
+    "next_route": "L0",
+    "policy_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+  },
+  "conversation_handoff": {
+    "summary": "status=auto_repairing; phase=REPLAN; reviewer_verdict=auto_repair_physics_mismatch",
+    "carry_over_required": true,
+    "next_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T013043Z.json",
+    "generated_at": "2026-04-16T01:31:08.659510Z"
+  },
+  "dft_tddft_suite": {
+    "final_verdict": "FAIL",
+    "checks": {
+      "all_cases_passed": false,
+      "gs_converged": true,
+      "absorption_cross_section_ready": true,
+      "dipole_response_ready": true,
+      "radiation_spectrum_ready": true,
+      "eels_spectrum_ready": true,
+      "absorption_curve_evidence": true,
+      "dipole_curve_evidence": true,
+      "radiation_curve_evidence": true,
+      "eels_curve_evidence": true,
+      "external_reference_alignment": true,
+      "all_octopus_engine": true,
+      "all_within_reference_tolerance": false,
+      "all_homo_within_tolerance": false,
+      "all_provenance_verified": true,
+      "all_reference_model_aligned": true
+    },
+    "passed_cases": 0,
+    "total_cases": 1,
+    "progress": {
+      "state": "completed",
+      "completed_cases": 1,
+      "total_cases": 1
+    },
+    "parameter_combo": {
+      "molecule": "H",
+      "spacing": null,
+      "radius": null,
+      "extra_states": null,
+      "xc_functional": "gga_x_pbe+gga_c_pbe",
+      "max_scf_iterations": null,
+      "scf_tolerance": null
+    },
+    "case_rows": [
+      {
+        "scenario_id": "hydrogen_gs_reference",
+        "status": "FAIL",
+        "engine": "octopus-mcp",
+        "computed": -68.32278612,
+        "reference": -0.5,
+        "delta": -67.82278612,
+        "relative_delta": 135.64557224,
+        "tolerance_relative": 0.03,
+        "within_tolerance": false,
+        "secondary_comparisons": [
+          {
+            "metric": "homo_energy_ev",
+            "unit": "eV",
+            "computed": -1859.1577225133478,
+            "reference": -13.605693122994,
+            "delta": -1845.552029390354,
+            "relative_delta": 135.64557224,
+            "tolerance_relative": 0.08,
+            "within_tolerance": false,
+            "provenance": {
+              "source_url": "https://physics.nist.gov/cgi-bin/cuu/Value?rydhcev",
+              "source_type": "nist_codata",
+              "source_numeric_verified": true,
+              "doi": "",
+              "software_version": "octopus-docs-16",
+              "pseudopotential_ids": [
+                "H.pbe-kjpaw.UPF"
+              ],
+              "geometry_ref": "isolated_hydrogen_atom",
+              "expected_runtime_model": "octopus_formula_pseudopotential"
+            },
+            "provenance_verified": true
+          }
+        ],
+        "job_id": "137336.mu01",
+        "queue": "workq",
+        "ncpus": 64,
+        "mpiprocs": 64,
+        "exec_vnode": "unknown",
+        "curve_artifacts": {
+          "optical_spectrum": {
+            "curve": "optical_spectrum",
+            "x_label": "energy_ev",
+            "y_label": "cross_section",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "td_dipole": {
+            "curve": "td_dipole",
+            "x_label": "time_au",
+            "y_label": "dipole",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "radiation_spectrum": {
+            "curve": "radiation_spectrum",
+            "x_label": "frequency_ev",
+            "y_label": "intensity",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          },
+          "eels_spectrum": {
+            "curve": "eels_spectrum",
+            "x_label": "energy_ev",
+            "y_label": "loss_function",
+            "stats": {
+              "points": 0,
+              "x_min": null,
+              "x_max": null,
+              "y_min": null,
+              "y_max": null,
+              "peak_x": null,
+              "peak_y": null,
+              "auc_trapezoid": null
+            },
+            "csv": null,
+            "svg": null,
+            "preview": []
+          }
+        },
+        "external_curve_comparison": {
+          "has_reference": false,
+          "source": null,
+          "first_peak_ev": null,
+          "reference_peak_ev": null,
+          "reference_peak_window_ev": null,
+          "peak_shift_ev": null,
+          "first_peak_within_reference_window": null,
+          "peak_energy_rmse_ev": null,
+          "integrated_intensity_bias": null,
+          "alignment_passed": null
+        },
+        "repeat_statistics": {
+          "runs": 1,
+          "pass_rate": 0.0,
+          "metric_stats": {
+            "total_energy_hartree": {
+              "mean": -68.32278612,
+              "std": 0.0,
+              "min": -68.32278612,
+              "max": -68.32278612
+            },
+            "cross_section_points": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0
+            },
+            "dipole_points": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0
+            },
+            "computation_time_sec": {
+              "mean": 61.931,
+              "std": 0.0,
+              "min": 61.931,
+              "max": 61.931
+            }
+          },
+          "curve_stats": {}
+        }
+      }
+    ],
+    "report_json": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T012940Z.json",
+    "report_md": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T012940Z.md"
+  },
+  "kb_sync": {
+    "mode": "force_reingest",
+    "manifest": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json",
+    "total_sources": 10,
+    "ingested_sources": 0,
+    "unchanged_sources": 0,
+    "skipped_sources": 0,
+    "failed_sources": 10,
+    "total_chunks_added": 0,
+    "local_chunk_evidence_count": 41,
+    "local_chunks_dir": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks",
+    "report_json": "docs/harness_reports/kb_ingestion_report_20260416T011745Z.json",
+    "report_md": "docs/harness_reports/kb_ingestion_report_20260416T011745Z.md",
+    "source_index": {
+      "octopus_official_knowledge_base": {
+        "content_hash": "aa4d7b807758d854e249196d5e52726d854e704d127101fdb2fb17196006b55e",
+        "source_type": "local_markdown",
+        "title": "Octopus Knowledge Base",
+        "last_ingested_at": "2026-04-12T15:54:29.472659Z"
+      },
+      "octopus_ui_user_guide": {
+        "content_hash": "1d669545d21c763ec40b4c1b98d014abbdb1050b2f8598b59e574241cc84fa5b",
+        "source_type": "local_markdown",
+        "title": "Octopus UI User Guide",
+        "last_ingested_at": "2026-04-12T15:54:29.716119Z"
+      },
+      "h2o_gs_reference_provenance": {
+        "content_hash": "f9573d8a0f06e05000481adbe7f7863cfbdc50f0079b65385c5fd6392d8ff95a",
+        "source_type": "local_markdown",
+        "title": "H2O GS Reference Provenance Record",
+        "last_ingested_at": "2026-04-15T16:25:32.059314Z"
+      },
+      "dft_tddft_authoritative_reference_cases_2026_04": {
+        "content_hash": "e2b6c2563d138c663565407eaaa67fadd3a69b68d259a468e55c3ab58861c5dd",
+        "source_type": "local_markdown",
+        "title": "DFT TDDFT Authoritative Reference Cases 2026-04",
+        "last_ingested_at": "2026-04-15T16:25:32.253465Z"
+      },
+      "pdf_primary_sources_index": {
+        "content_hash": "c4c1c2e3c6ed4d319080978077d9cd04174fbaa69dd05fa2217e02ec98a9304b",
+        "source_type": "local_markdown",
+        "title": "Primary PDF Sources Index",
+        "last_ingested_at": "2026-04-12T15:54:30.140362Z"
+      },
+      "octopus_tutorial16_official_catalog_2026_04": {
+        "content_hash": "6b2f37ba64adb54c55a686e4c7f2251a141aed3c21c9147ffa5a3c9fec26da89",
+        "source_type": "local_markdown",
+        "title": "Octopus Tutorial 16 Official Catalog 2026-04",
+        "last_ingested_at": "2026-04-15T16:25:33.127611Z"
+      },
+      "octopus_tutorial16_capability_matrix_2026_04": {
+        "content_hash": "60533613b50050a06242abb53ed39d9b80ae75ec71fd5c0c5a835f2a2868cdd4",
+        "source_type": "local_markdown",
+        "title": "Octopus Tutorial 16 Capability Matrix 2026-04",
+        "last_ingested_at": "2026-04-15T16:25:32.583918Z"
+      }
+    }
+  },
+  "execution_bus": {
+    "last_worker_seen_at": "2026-04-16T01:57:51.809334Z",
+    "last_task": {
+      "task_id": "Q-20260416T015751161-96687",
+      "dispatch_status": "unknown",
+      "reviewer_verdict": "",
+      "retryable": true,
+      "consistency_token": "",
+      "consistency_check": "legacy",
+      "mismatch_reason": "",
+      "expected_consistency_token": "",
+      "convergence_gate": {
+        "applied": false,
+        "passed": false,
+        "unmet": []
+      },
+      "workflow": {
+        "route": "L0",
+        "state": "UNKNOWN",
+        "event": "",
+        "next_route": "L0",
+        "policy_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+      },
+      "completed_at": "2026-04-16T01:57:51.806342Z"
+    }
+  }
+}

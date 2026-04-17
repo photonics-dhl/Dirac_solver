@@ -34,6 +34,7 @@ restart/
 # Keep the organized output subdirectory structure but ignore big data
 @Octopus_docs/output/gs/
 @Octopus_docs/output/td/
+@Octopus_docs/output/runs/
 # Allow .gitkeep files so directory structure is versioned
 !@Octopus_docs/output/gs/.gitkeep
 !@Octopus_docs/output/td/.gitkeep
@@ -68,3 +69,20 @@ e:/
 .traerules
 .cursorrules
 .github/copilot-instructions.md
+
+# ─── Claude Code ──────────────────────────────────────────────────
+.claudeignore
+.claude/
+session-env/
+shell-snapshots/
+telemetry/
+
+# ─── OpenClaw state (machine-local, managed by harness) ───────────
+state/dirac_solver_progress_sync.json
+state/dirac_exec_queue.json
+state/copilot_openclaw_bridge.json
+state/multi_agent_learning_state.json
+.pids/
+
+# ─── Unison sync artifacts ────────────────────────────────────────
+.unison/

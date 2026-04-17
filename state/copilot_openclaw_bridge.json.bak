@@ -1,0 +1,25 @@
+{
+  "updated_at": "2026-04-16T01:58:22.053238Z",
+  "handshake_status": "synced_with_copilot",
+  "execution_bus": {
+    "last_worker_seen_at": "2026-04-16T01:58:22.053261Z",
+    "last_task": {
+      "task_id": "Q-20260416T015751161-96687",
+      "updated_at": "2026-04-16T01:58:22.051827Z",
+      "status": "running",
+      "attempts": 2,
+      "dispatch_status": "running",
+      "failure_reason": "",
+      "dispatch_report": "",
+      "workflow": {
+        "route": "L0",
+        "state": "EXEC_L0",
+        "event": "RETRY_DUE",
+        "next_route": "L0",
+        "policy_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/execution_wake_state_machine.json"
+      },
+      "queued_depth": {},
+      "completed_at": ""
+    }
+  }
+}

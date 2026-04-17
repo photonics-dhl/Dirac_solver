@@ -12,6 +12,9 @@ import {
 import '@xyflow/react/dist/style.css';
 import axios from 'axios';
 
+const ENV_API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
+const API_BASE = ENV_API_BASE || '';
+
 // ─── Types ───────────────────────────────────────────────────────
 
 interface SubTaskGraph {
@@ -215,7 +218,7 @@ export default function DevFlowDashboard() {
 
     const fetchState = useCallback(async () => {
         try {
-            const res = await axios.get('/api/dev-state');
+            const res = await axios.get(`${API_BASE}/api/dev-state`);
             setDevState(res.data);
         } catch { /* backend offline */ }
     }, []);
@@ -228,7 +231,7 @@ export default function DevFlowDashboard() {
 
     const sendFeedback = async (instruction: string, targetNode?: string) => {
         try {
-            await axios.post('/api/dev-state/feedback', {
+            await axios.post(`${API_BASE}/api/dev-state/feedback`, {
                 instruction, targetNode: targetNode || '',
             });
             setFeedbackStatus('✓ Sent');

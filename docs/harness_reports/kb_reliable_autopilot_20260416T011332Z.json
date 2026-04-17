@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-04-16T01:13:32.568954Z",
+  "manifest": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json",
+  "attempts": 5,
+  "success": false,
+  "final_status": "repairing",
+  "human_status": "AUTO_REPAIRING_ACTIVE",
+  "attempt_log": [
+    {
+      "idx": 1,
+      "base_url": "http://127.0.0.1:8001",
+      "include_web": false,
+      "force_reingest": false,
+      "repair_action": "initial_attempt",
+      "ok": false,
+      "failed_sources": 10,
+      "exit_code": 2,
+      "note": "auto_repair_next_attempt"
+    },
+    {
+      "idx": 2,
+      "base_url": "http://127.0.0.1:8001",
+      "include_web": false,
+      "force_reingest": false,
+      "repair_action": "disable_web_ingestion",
+      "ok": false,
+      "failed_sources": 10,
+      "exit_code": 2,
+      "note": "auto_repair_next_attempt"
+    },
+    {
+      "idx": 3,
+      "base_url": "http://127.0.0.1:8101",
+      "include_web": false,
+      "force_reingest": false,
+      "repair_action": "switch_harness_endpoint",
+      "ok": false,
+      "failed_sources": 10,
+      "exit_code": 2,
+      "note": "auto_repair_next_attempt"
+    },
+    {
+      "idx": 4,
+      "base_url": "http://127.0.0.1:8101",
+      "include_web": false,
+      "force_reingest": true,
+      "repair_action": "force_reingest_on_fallback",
+      "ok": false,
+      "failed_sources": 10,
+      "exit_code": 2,
+      "note": "auto_repair_next_attempt"
+    },
+    {
+      "idx": 5,
+      "base_url": "http://127.0.0.1:8001",
+      "include_web": false,
+      "force_reingest": true,
+      "repair_action": "force_reingest_on_primary",
+      "ok": false,
+      "failed_sources": 10,
+      "exit_code": 2,
+      "note": "auto_repair_next_attempt"
+    }
+  ],
+  "last_result": {
+    "exit_code": 2,
+    "failed_sources": 10,
+    "stdout": "kb_report_json=docs/harness_reports/kb_ingestion_report_20260416T011332Z.json\nkb_report_md=docs/harness_reports/kb_ingestion_report_20260416T011332Z.md\ningested_sources=0\nunchanged_sources=0\nskipped_sources=0\nfailed_sources=10\ntotal_chunks_added=0\nlocal_chunk_evidence_count=42\nlocal_chunks_dir=/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks\nopenclaw_sync_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json\n",
+    "stderr": ""
+  }
+}

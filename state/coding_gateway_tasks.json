@@ -1,0 +1,2001 @@
+{
+  "tasks": {
+    "CG-20260403T025214Z": {
+      "task_id": "CG-20260403T025214Z",
+      "state": "failed",
+      "created_at": "2026-04-03T02:52:14.469902Z",
+      "updated_at": "2026-04-03T02:52:15.693000Z",
+      "request": {
+        "task_id": "manual-smoke-1",
+        "source": "manual-smoke",
+        "intent_type": "dirac_full_debug",
+        "user_instruction": "gateway smoke"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe scripts/coding_adapter_stub.py --task-file state/coding_gateway_work/CG-20260403T025214Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260403T025214Z\nintent_type=dirac_full_debug\nfinished_at=2026-04-03T02:52:15.685537Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T02:52:15.136936Z",
+      "finished_at": "2026-04-03T02:52:15.692989Z"
+    },
+    "CG-20260403T025316Z": {
+      "task_id": "CG-20260403T025316Z",
+      "state": "succeeded",
+      "created_at": "2026-04-03T02:53:16.004176Z",
+      "updated_at": "2026-04-03T02:53:18.631383Z",
+      "request": {
+        "user_instruction": "gateway smoke after fix",
+        "intent_type": "dirac_full_debug",
+        "task_id": "manual-smoke-2",
+        "source": "manual-smoke"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe scripts/coding_adapter_stub.py --task-file state/coding_gateway_work/CG-20260403T025316Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260403T025316Z\nintent_type=dirac_full_debug\nfinished_at=2026-04-03T02:53:18.623272Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T02:53:18.228873Z",
+      "finished_at": "2026-04-03T02:53:18.631369Z"
+    },
+    "CG-20260403T031522Z": {
+      "task_id": "CG-20260403T031522Z",
+      "state": "failed",
+      "created_at": "2026-04-03T03:15:22.720163Z",
+      "updated_at": "2026-04-03T03:16:16.576599Z",
+      "request": {
+        "source": "smoke-real-adapter",
+        "task_id": "SMOKE-REAL-ADAPTER",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "route": "L1",
+          "assignee": "openclaw-supervisor"
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5\uff1a\u6267\u884c\u4e00\u6b21\u771f\u5b9eadapter\u94fe\u8def\u9a8c\u8bc1",
+        "dispatch_report": "",
+        "workflow": {
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "smoke"
+        }
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe scripts/coding_execution_adapter.py --task-file state/coding_gateway_work/CG-20260403T031522Z.json",
+        "exit_code": 2,
+        "stdout": "adapter=real\ntask_id=CG-20260403T031522Z\nintent_type=dirac_full_debug\ndispatch_report=-\nrun_dir=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T031522Z\nsteps_executed=1\nartifacts_count=1\nadapter_result_json=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T031522Z/adapter_result.json\nfinished_at=2026-04-03T03:16:16.567173Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T03:15:22.930010Z",
+      "finished_at": "2026-04-03T03:16:16.576588Z"
+    },
+    "CG-20260403T031704Z": {
+      "task_id": "CG-20260403T031704Z",
+      "state": "succeeded",
+      "created_at": "2026-04-03T03:17:04.961743Z",
+      "updated_at": "2026-04-03T03:17:08.789079Z",
+      "request": {
+        "source": "smoke-real-adapter-2",
+        "task_id": "SMOKE-REAL-ADAPTER-2",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "route": "L1",
+          "assignee": "openclaw-supervisor"
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5\uff1a\u9ed8\u8ba4\u7a33\u5b9a\u6a21\u5f0f\u6267\u884c\u4e00\u6b21",
+        "dispatch_report": "",
+        "workflow": {
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "smoke2"
+        }
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe scripts/coding_execution_adapter.py --task-file state/coding_gateway_work/CG-20260403T031704Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=real\ntask_id=CG-20260403T031704Z\nintent_type=dirac_full_debug\ndispatch_report=-\nrun_dir=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T031704Z\nsteps_executed=1\nartifacts_count=1\nadapter_result_json=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T031704Z/adapter_result.json\nfinished_at=2026-04-03T03:17:08.778645Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T03:17:05.184062Z",
+      "finished_at": "2026-04-03T03:17:08.789067Z"
+    },
+    "CG-20260403T033321Z": {
+      "task_id": "CG-20260403T033321Z",
+      "state": "failed",
+      "created_at": "2026-04-03T03:33:21.667320Z",
+      "updated_at": "2026-04-03T03:33:26.161392Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260403T033319Z",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "matched_rule": "dirac_full_debug",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.9,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver debug regression L1 rerun",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T033319Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_FAIL",
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-03T03:33:21.655297Z"
+      },
+      "result": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/coding_execution_adapter.py --task-file /data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260403T033321Z.json",
+        "exit_code": 2,
+        "stdout": "adapter=real\ntask_id=CG-20260403T033321Z\nintent_type=dirac_full_debug\ndispatch_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T033319Z.json\nrun_dir=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T033321Z\nsteps_executed=1\nartifacts_count=2\nadapter_result_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T033321Z/adapter_result.json\nfinished_at=2026-04-03T03:33:26.143785Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T03:33:23.931417Z",
+      "finished_at": "2026-04-03T03:33:26.161352Z"
+    },
+    "CG-20260403T041523Z": {
+      "task_id": "CG-20260403T041523Z",
+      "state": "succeeded",
+      "created_at": "2026-04-03T04:15:23.304600Z",
+      "updated_at": "2026-04-03T04:15:29.008381Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260403T041520Z",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "matched_rule": "dirac_full_debug",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.9,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver debug regression L1 strict-fix",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T041521Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_FAIL",
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-03T04:15:23.290357Z"
+      },
+      "result": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/coding_execution_adapter.py --task-file /data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260403T041523Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=real\ntask_id=CG-20260403T041523Z\nintent_type=dirac_full_debug\ndispatch_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T041521Z.json\nrun_dir=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T041523Z\nsteps_executed=1\nartifacts_count=2\nadapter_result_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T041523Z/adapter_result.json\nfinished_at=2026-04-03T04:15:28.986928Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T04:15:27.079723Z",
+      "finished_at": "2026-04-03T04:15:29.008342Z"
+    },
+    "CG-20260403T052333Z": {
+      "task_id": "CG-20260403T052333Z",
+      "state": "succeeded",
+      "created_at": "2026-04-03T05:23:33.237276Z",
+      "updated_at": "2026-04-03T05:23:38.765976Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260403T052330Z",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "matched_rule": "dirac_full_debug",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.9,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5\uff1a\u6267\u884c\u4e00\u6b21\u771f\u9002\u914d\u5668\u94fe\u8def\u9a8c\u8bc1",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T052331Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_FAIL",
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-03T05:23:33.173532Z"
+      },
+      "result": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/coding_execution_adapter.py --task-file /data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260403T052333Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=real\ntask_id=CG-20260403T052333Z\nintent_type=dirac_full_debug\ndispatch_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T052331Z.json\nrun_dir=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T052333Z\nsteps_executed=1\nartifacts_count=2\nadapter_result_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T052333Z/adapter_result.json\nfinished_at=2026-04-03T05:23:38.748019Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T05:23:36.527793Z",
+      "finished_at": "2026-04-03T05:23:38.765938Z"
+    },
+    "CG-20260403T052347Z": {
+      "task_id": "CG-20260403T052347Z",
+      "state": "succeeded",
+      "created_at": "2026-04-03T05:23:47.796237Z",
+      "updated_at": "2026-04-03T05:23:50.383809Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260403T052344Z",
+        "intent_type": "dirac_full_debug",
+        "routing": {
+          "matched_rule": "dirac_full_debug",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.9,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver debug regression L1 strict-fix verify2",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T052345Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_FAIL",
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-03T05:23:47.742945Z"
+      },
+      "result": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/coding_execution_adapter.py --task-file /data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260403T052347Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=real\ntask_id=CG-20260403T052347Z\nintent_type=dirac_full_debug\ndispatch_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260403T052345Z.json\nrun_dir=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T052347Z\nsteps_executed=1\nartifacts_count=2\nadapter_result_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/coding_gateway_runs/CG-20260403T052347Z/adapter_result.json\nfinished_at=2026-04-03T05:23:50.367289Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-03T05:23:47.911824Z",
+      "finished_at": "2026-04-03T05:23:50.383771Z"
+    },
+    "CG-20260408T091845Z": {
+      "task_id": "CG-20260408T091845Z",
+      "state": "succeeded",
+      "created_at": "2026-04-08T09:18:45.333655Z",
+      "updated_at": "2026-04-08T09:20:58.450796Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260408T091644Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto run_id=TEST20260408T_asyncverify workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260408T091845Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "RETRY_WAIT",
+          "last_event": "EXEC_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 1,
+            "retry_backoff_seconds": 10,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "execution_failed",
+          "failure_reason": "orchestration_timeout_after_120s"
+        },
+        "created_at": "2026-04-08T09:18:45.258621Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260408T091845Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260408T091845Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-08T09:20:58.443567Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-08T09:20:58.167604Z",
+      "finished_at": "2026-04-08T09:20:58.450786Z"
+    },
+    "CG-20260409T054827Z": {
+      "task_id": "CG-20260409T054827Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T05:48:27.297230Z",
+      "updated_at": "2026-04-09T06:42:39.417170Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T043329Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T043329Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T054827Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T05:48:27.291771Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T054827Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T054827Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T06:42:39.409028Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T06:42:39.230322Z",
+      "finished_at": "2026-04-09T06:42:39.417157Z"
+    },
+    "CG-20260409T081432Z": {
+      "task_id": "CG-20260409T081432Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T08:14:32.671482Z",
+      "updated_at": "2026-04-09T08:19:08.651967Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T074030Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto /auto workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T074030Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T081432Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T08:14:32.667372Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T081432Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T081432Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T08:19:08.641039Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T08:19:08.473437Z",
+      "finished_at": "2026-04-09T08:19:08.651953Z"
+    },
+    "CG-20260409T081935Z": {
+      "task_id": "CG-20260409T081935Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T08:19:35.021992Z",
+      "updated_at": "2026-04-09T08:19:08.868153Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T074418Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto /auto workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T074417Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T081934Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T08:19:35.018269Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T081935Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T081935Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T08:19:08.859585Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T08:19:08.706066Z",
+      "finished_at": "2026-04-09T08:19:08.868144Z"
+    },
+    "CG-20260409T083120Z": {
+      "task_id": "CG-20260409T083120Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T08:31:20.086270Z",
+      "updated_at": "2026-04-09T09:01:52.347494Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T074347Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto /auto workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T074347Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T083119Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T08:31:20.081024Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T083120Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T083120Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T09:01:52.339479Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T09:01:52.101371Z",
+      "finished_at": "2026-04-09T09:01:52.347484Z"
+    },
+    "CG-20260409T100336Z": {
+      "task_id": "CG-20260409T100336Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T10:03:36.339304Z",
+      "updated_at": "2026-04-09T10:03:36.897232Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T092431Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T092431Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T095232Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T10:03:36.324399Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T100336Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T100336Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T10:03:36.890157Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T10:03:36.753764Z",
+      "finished_at": "2026-04-09T10:03:36.897220Z"
+    },
+    "CG-20260409T100340Z": {
+      "task_id": "CG-20260409T100340Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T10:03:40.273031Z",
+      "updated_at": "2026-04-09T10:03:41.063118Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T092418Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T092418Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T095230Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T10:03:40.270875Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T100340Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T100340Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T10:03:41.056491Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T10:03:40.923928Z",
+      "finished_at": "2026-04-09T10:03:41.063110Z"
+    },
+    "CG-20260409T100449Z": {
+      "task_id": "CG-20260409T100449Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T10:04:49.189915Z",
+      "updated_at": "2026-04-09T10:04:51.387893Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T092603Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T092603Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T095409Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T10:04:49.188211Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T100449Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T100449Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T10:04:51.377497Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T10:04:51.177004Z",
+      "finished_at": "2026-04-09T10:04:51.387881Z"
+    },
+    "CG-20260409T104142Z": {
+      "task_id": "CG-20260409T104142Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T10:41:42.986191Z",
+      "updated_at": "2026-04-09T10:41:44.215327Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T100331Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T100331Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T103032Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T10:41:42.984086Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T104142Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T104142Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T10:41:44.208432Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T10:41:44.067644Z",
+      "finished_at": "2026-04-09T10:41:44.215317Z"
+    },
+    "CG-20260409T110220Z": {
+      "task_id": "CG-20260409T110220Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T11:02:20.063276Z",
+      "updated_at": "2026-04-09T11:02:21.936103Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T102401Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T102401Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T105124Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T11:02:20.061213Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T110220Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T110220Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T11:02:21.929290Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T11:02:21.775122Z",
+      "finished_at": "2026-04-09T11:02:21.936094Z"
+    },
+    "CG-20260409T110432Z": {
+      "task_id": "CG-20260409T110432Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T11:04:32.518413Z",
+      "updated_at": "2026-04-09T11:04:34.304821Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T102417Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto Dirac_solver debug workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T102417Z",
+        "dispatch_report": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T105214Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-09T11:04:32.516351Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T110432Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T110432Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T11:04:34.295400Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T11:04:34.122693Z",
+      "finished_at": "2026-04-09T11:04:34.304810Z"
+    },
+    "CG-20260409T122525Z": {
+      "task_id": "CG-20260409T122525Z",
+      "state": "succeeded",
+      "created_at": "2026-04-09T12:25:25.917018Z",
+      "updated_at": "2026-04-09T13:04:04.060658Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260409T110705Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "validate orchestration after reviewer gate fix workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260409T110705Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260409T122525Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "RETRY_WAIT",
+          "last_event": "EXEC_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "execution_failed",
+          "failure_reason": "orchestration_timeout_after_900s"
+        },
+        "created_at": "2026-04-09T12:25:25.912592Z"
+      },
+      "result": {
+        "command": "D:/Softwares_new/Python/python.exe z:/.openclaw/workspace/projects/Dirac/scripts/coding_adapter_stub.py --task-file z:/.openclaw/workspace/projects/Dirac/state/coding_gateway_work/CG-20260409T122525Z.json",
+        "exit_code": 0,
+        "stdout": "adapter=stub\ntask_id=CG-20260409T122525Z\nintent_type=auto_default_orchestration\nfinished_at=2026-04-09T13:04:04.053084Z\n",
+        "stderr": ""
+      },
+      "started_at": "2026-04-09T13:04:03.780150Z",
+      "finished_at": "2026-04-09T13:04:04.060647Z"
+    },
+    "CG-20260410T134033Z": {
+      "task_id": "CG-20260410T134033Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:40:33.256281Z",
+      "updated_at": "2026-04-10T13:40:33.256294Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T122936Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_recover_exec_20260410T2030Z \u9a8c\u8bc1\u98de\u4e66\u4fa7\u771f\u5b9e\u89e6\u53d1 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T134032Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T13:40:33.227337Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T134715Z": {
+      "task_id": "CG-20260410T134715Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:47:15.723028Z",
+      "updated_at": "2026-04-10T13:47:15.723057Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T125501Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_recover_exec_20260410T2030Z \u9a8c\u8bc1\u98de\u4e66\u4fa7\u771f\u5b9e\u89e6\u53d1 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T134715Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T13:47:15.719491Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T134950Z": {
+      "task_id": "CG-20260410T134950Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:49:50.071081Z",
+      "updated_at": "2026-04-10T13:49:50.071094Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T134541Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_fullrun_fix_20260410T2158Z \u4fee\u590d\u540e\u5b8c\u6574\u6267\u884c\u9a8c\u8bc1 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T134949Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_convergence_gate",
+          "failure_reason": "convergence_gate_failed:reviewer_verdict_not_pass"
+        },
+        "created_at": "2026-04-10T13:49:50.067620Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T135036Z": {
+      "task_id": "CG-20260410T135036Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:50:36.922840Z",
+      "updated_at": "2026-04-10T13:50:36.922852Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T134621Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_fix460_20260410T2142Z \u5b9e\u6d4b\u4fee\u590d\u540e\u7ee7\u7eed\u6267\u884c workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T135036Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_convergence_gate",
+          "failure_reason": "convergence_gate_failed:reviewer_verdict_not_pass"
+        },
+        "created_at": "2026-04-10T13:50:36.920333Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T135218Z": {
+      "task_id": "CG-20260410T135218Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:52:18.406062Z",
+      "updated_at": "2026-04-10T13:52:18.406074Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T134541Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_next_step_20260410T2110Z \u9a8c\u8bc1\u7ee7\u7eed\u4e0b\u4e00\u6b65 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T135218Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_convergence_gate",
+          "failure_reason": "convergence_gate_failed:reviewer_verdict_not_pass"
+        },
+        "created_at": "2026-04-10T13:52:18.403313Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T135807Z": {
+      "task_id": "CG-20260410T135807Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:58:07.209494Z",
+      "updated_at": "2026-04-10T13:58:07.209518Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T132402Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver_\u8c03\u8bd5_run_id_feishu_recover_exec3_20260410T2055Z_workflow_fullchain_mode_autonomous_case_infinite_well_v1_octopus_required_ncpus_64_mpiprocs_64 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260410T132402Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T135806Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T13:58:07.204879Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T135955Z": {
+      "task_id": "CG-20260410T135955Z",
+      "state": "queued",
+      "created_at": "2026-04-10T13:59:55.815101Z",
+      "updated_at": "2026-04-10T13:59:55.815112Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T130716Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_recover_exec_20260410T2030Z \u9a8c\u8bc1\u98de\u4e66\u4fa7\u771f\u5b9e\u89e6\u53d1 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T135955Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T13:59:55.811500Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T140510Z": {
+      "task_id": "CG-20260410T140510Z",
+      "state": "queued",
+      "created_at": "2026-04-10T14:05:10.652201Z",
+      "updated_at": "2026-04-10T14:05:10.652218Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T133018Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_next_step_20260410T2110Z \u9a8c\u8bc1\u7ee7\u7eed\u4e0b\u4e00\u6b65 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T140510Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T14:05:10.647608Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T140512Z": {
+      "task_id": "CG-20260410T140512Z",
+      "state": "queued",
+      "created_at": "2026-04-10T14:05:12.361399Z",
+      "updated_at": "2026-04-10T14:05:12.361416Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T133822Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_fix460_20260410T2142Z \u5b9e\u6d4b\u4fee\u590d\u540e\u7ee7\u7eed\u6267\u884c workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T140511Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T14:05:12.357157Z"
+      },
+      "result": {}
+    },
+    "CG-20260410T143559Z": {
+      "task_id": "CG-20260410T143559Z",
+      "state": "queued",
+      "created_at": "2026-04-10T14:35:59.937658Z",
+      "updated_at": "2026-04-10T14:35:59.937676Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260410T133423Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=feishu_next_step_20260410T2110Z \u9a8c\u8bc1\u7ee7\u7eed\u4e0b\u4e00\u6b65 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260410T143559Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_reviewer_gate",
+          "failure_reason": "reviewer_verdict_fail"
+        },
+        "created_at": "2026-04-10T14:35:59.932900Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T055433Z": {
+      "task_id": "CG-20260411T055433Z",
+      "state": "queued",
+      "created_at": "2026-04-11T05:54:33.640843Z",
+      "updated_at": "2026-04-11T05:54:33.640870Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T053722Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=auto_round_20260411T133434Z workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T054553Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T05:54:33.633315Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T060519Z": {
+      "task_id": "CG-20260411T060519Z",
+      "state": "queued",
+      "created_at": "2026-04-11T06:05:19.227367Z",
+      "updated_at": "2026-04-11T06:05:19.227381Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T054851Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=api_round_20260411T134603Z workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T055723Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T06:05:19.223004Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T061455Z": {
+      "task_id": "CG-20260411T061455Z",
+      "state": "queued",
+      "created_at": "2026-04-11T06:14:55.626591Z",
+      "updated_at": "2026-04-11T06:14:55.626611Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T055710Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 run_id=next_round_20260411T135422Z workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T060609Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T06:14:55.622760Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T062625Z": {
+      "task_id": "CG-20260411T062625Z",
+      "state": "queued",
+      "created_at": "2026-04-11T06:26:25.396675Z",
+      "updated_at": "2026-04-11T06:26:25.396696Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T061033Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260411T061033Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T061839Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T06:26:25.391963Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T065641Z": {
+      "task_id": "CG-20260411T065641Z",
+      "state": "queued",
+      "created_at": "2026-04-11T06:56:41.411541Z",
+      "updated_at": "2026-04-11T06:56:41.411566Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T063501Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=api_block_test_20260411 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T064339Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T06:56:41.406602Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T065736Z": {
+      "task_id": "CG-20260411T065736Z",
+      "state": "queued",
+      "created_at": "2026-04-11T06:57:36.736099Z",
+      "updated_at": "2026-04-11T06:57:36.736111Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T064255Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "/auto run_id=policy_check_20260411 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T065736Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T06:57:36.732066Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T070633Z": {
+      "task_id": "CG-20260411T070633Z",
+      "state": "queued",
+      "created_at": "2026-04-11T07:06:33.493583Z",
+      "updated_at": "2026-04-11T07:06:33.493608Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T064008Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 /auto run_id=api_policy_check_20260411 workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T065240Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T07:06:33.488392Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T070958Z": {
+      "task_id": "CG-20260411T070958Z",
+      "state": "queued",
+      "created_at": "2026-04-11T07:09:58.507227Z",
+      "updated_at": "2026-04-11T07:09:58.507244Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T065605Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_next_20260411T1455Z workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T070958Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T07:09:58.502800Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T071411Z": {
+      "task_id": "CG-20260411T071411Z",
+      "state": "queued",
+      "created_at": "2026-04-11T07:14:11.272482Z",
+      "updated_at": "2026-04-11T07:14:11.272507Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T070013Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_next_20260411T1455Z workflow=fullchain mode=autonomous case=infinite_well_v1 octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T071410Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T07:14:11.267863Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T075216Z": {
+      "task_id": "CG-20260411T075216Z",
+      "state": "queued",
+      "created_at": "2026-04-11T07:52:16.097577Z",
+      "updated_at": "2026-04-11T07:52:16.097593Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T073115Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_absfix_20260411T1528Z workflow=fullchain mode=autonomous case=infinite_well_v1 fix=absorption_spectrum_required octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T074030Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T07:52:16.092860Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T075405Z": {
+      "task_id": "CG-20260411T075405Z",
+      "state": "queued",
+      "created_at": "2026-04-11T07:54:05.306905Z",
+      "updated_at": "2026-04-11T07:54:05.306930Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T073519Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_absfix_20260411T1528Z workflow=fullchain mode=autonomous case=infinite_well_v1 fix=absorption_spectrum_required octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T074439Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T07:54:05.301803Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T083938Z": {
+      "task_id": "CG-20260411T083938Z",
+      "state": "queued",
+      "created_at": "2026-04-11T08:39:38.697568Z",
+      "updated_at": "2026-04-11T08:39:38.697592Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T082901Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_realtime_20260411T1632Z workflow=fullchain mode=autonomous case=infinite_well_v1 fix=feishu_realtime_visibility_required octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T083421Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T08:39:38.692153Z"
+      },
+      "result": {}
+    },
+    "CG-20260411T084343Z": {
+      "task_id": "CG-20260411T084343Z",
+      "state": "queued",
+      "created_at": "2026-04-11T08:43:43.883579Z",
+      "updated_at": "2026-04-11T08:43:43.883605Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260411T083308Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "Dirac_solver \u8c03\u8bd5 Dirac_solver\u8c03\u8bd5 run_id=auto_realtime_20260411T1632Z workflow=fullchain mode=autonomous case=infinite_well_v1 fix=feishu_realtime_visibility_required octopus=required ncpus=64 mpiprocs=64",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260411T083822Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_result_missing",
+          "failure_reason": "missing_physics_result_fields:absorption_spectrum"
+        },
+        "created_at": "2026-04-11T08:43:43.878697Z"
+      },
+      "result": {}
+    },
+    "CG-20260415T172459Z": {
+      "task_id": "CG-20260415T172459Z",
+      "state": "queued",
+      "created_at": "2026-04-15T17:24:59.742343Z",
+      "updated_at": "2026-04-15T17:24:59.742365Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260415T171309Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "\u7ea0\u6b63\u4e00\u4e0b\u6c2e\u539f\u5b50\u603b\u80fd\u91cf\u5355\u4f4d\u5e94\u8be5\u662feV\uff0c\u4e0d\u662fHa\u3002\u4f60\u662f\u4e0d\u662f\u63d0\u53d6\u9875\u9762\u65f6\u591a\u6a21\u6001\u5904\u7406\u9519\u4e86\uff1f\u8bf7\u518d\u6838\u67e5\u4e00\u904d\uff0c\u5fc5\u8981\u7684\u8bdd\u8c03\u7528zchat\u6765\u6e90\u7684gpt-5\u591a\u6a21\u6001\u6a21\u578b\u590d\u67e5\u4e00\u904d octopus\u5b98\u65b9\u7f51\u9875\u9664\u4e86\u63d0\u53d6\u8ba1\u7b97\u7ed3\u679c\u5916\uff0c\u8fd8\u8981\u63d0\u53d6\u5b98\u65b9\u6559\u7a0b\u4f5c\u4e3a\u80fd\u529b\u63d0\u5347\u4ee5\u540e\u7eed\u6307\u5bfcexecutor\u6267\u884c\u8fd0\u7b97 \u5b98\u65b9\u6570\u636e\u67e5\u8be2\u5b8c\u6bd5\u540e\uff0c\u68c0\u7d22\u6587\u732e\u3001\u7f51\u9875\u6570\u636e\u63d0\u53d6\u53ef\u9760\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260415T171250Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T172441Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_mismatch",
+          "failure_reason": "physics_delta_exceeds_tolerance:relative_error=111.38452462;threshold=0.03"
+        },
+        "created_at": "2026-04-15T17:24:59.737461Z"
+      },
+      "result": {}
+    },
+    "CG-20260415T172848Z": {
+      "task_id": "CG-20260415T172848Z",
+      "state": "queued",
+      "created_at": "2026-04-15T17:28:48.794987Z",
+      "updated_at": "2026-04-15T17:28:48.795009Z",
+      "request": {
+        "source": "dispatch_dirac_task",
+        "task_id": "T-20260415T171720Z",
+        "intent_type": "auto_default_orchestration",
+        "routing": {
+          "matched_rule": "auto_default_orchestration",
+          "assignee": "openclaw-supervisor",
+          "action": "run_orchestration",
+          "intent_confidence": 0.96,
+          "requires_reviewer": true,
+          "auto_escalation_policy": "strict",
+          "stop_conditions": [
+            "reviewer_pass_and_benchmark_delta_ok",
+            "blocked_permissions",
+            "max_iterations_reached"
+          ]
+        },
+        "user_instruction": "\u7ea0\u6b63\u4e00\u4e0b\u6c2e\u539f\u5b50\u603b\u80fd\u91cf\u5355\u4f4d\u5e94\u8be5\u662feV\uff0c\u4e0d\u662fHa\u3002\u4f60\u662f\u4e0d\u662f\u63d0\u53d6\u9875\u9762\u65f6\u591a\u6a21\u6001\u5904\u7406\u9519\u4e86\uff1f\u8bf7\u518d\u6838\u67e5\u4e00\u904d\uff0c\u5fc5\u8981\u7684\u8bdd\u8c03\u7528zchat\u6765\u6e90\u7684gpt-5\u591a\u6a21\u6001\u6a21\u578b\u590d\u67e5\u4e00\u904d octopus\u5b98\u65b9\u7f51\u9875\u9664\u4e86\u63d0\u53d6\u8ba1\u7b97\u7ed3\u679c\u5916\uff0c\u8fd8\u8981\u63d0\u53d6\u5b98\u65b9\u6559\u7a0b\u4f5c\u4e3a\u80fd\u529b\u63d0\u5347\u4ee5\u540e\u7eed\u6307\u5bfcexecutor\u6267\u884c\u8fd0\u7b97 \u5b98\u65b9\u6570\u636e\u67e5\u8be2\u5b8c\u6bd5\u540e\uff0c\u68c0\u7d22\u6587\u732e\u3001\u7f51\u9875\u6570\u636e\u63d0\u53d6\u53ef\u9760\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260415T171655Z",
+        "dispatch_report": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260415T172823Z.json",
+        "workflow": {
+          "route": "L0",
+          "state": "REPLAN",
+          "last_event": "REVIEW_REPAIR",
+          "policy": {
+            "max_attempts_l0": 1,
+            "max_attempts_l1": 2,
+            "retry_backoff_seconds": 45,
+            "policy_override_for": "auto_default_orchestration"
+          },
+          "next_route": "L1"
+        },
+        "acceptance": {
+          "status": "blocked_physics_mismatch",
+          "failure_reason": "physics_delta_exceeds_tolerance:relative_error=111.38452462;threshold=0.03"
+        },
+        "created_at": "2026-04-15T17:28:48.790367Z"
+      },
+      "result": {}
+    }
+  },
+  "updated_at": "2026-04-15T17:28:48.795022Z"
+}

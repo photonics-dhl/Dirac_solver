@@ -1,0 +1,36 @@
+{
+  "attempts": [
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN=/data/home/zju321/.local/bin/openclaw; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd /data/home/zju321/.openclaw/workspace/projects/Dirac && \"$OPENCLAW_BIN\" agent --agent main --model gpt-5-thinking --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 90",
+      "exit_code": 255,
+      "stdout": "",
+      "stderr": "ssh: Could not resolve hostname dirac-key: Name or service not known\n",
+      "ok": false,
+      "execution_mode": "remote_ssh"
+    },
+    {
+      "command": "/data/home/zju321/.local/bin/openclaw agent --agent main --model gpt-5-thinking --message Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable. --json --timeout 90",
+      "exit_code": 1,
+      "stdout": "00:50:10+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:10+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:10+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:10+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:10+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:12+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:12+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:12+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:12+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:12+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:13+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:13+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:13+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:13+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:13+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:14+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:14+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:14+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:14+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:14+08:00 [plugins] feishu_bitable: Registered bitable tools\n",
+      "stderr": "error: unknown option '--model'\n",
+      "ok": false,
+      "execution_mode": "local"
+    },
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN=/data/home/zju321/.local/bin/openclaw; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd /data/home/zju321/.openclaw/workspace/projects/Dirac && \"$OPENCLAW_BIN\" agent --agent main --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 90",
+      "exit_code": 255,
+      "stdout": "",
+      "stderr": "ssh: Could not resolve hostname dirac-key: Name or service not known\n",
+      "ok": false,
+      "execution_mode": "remote_ssh"
+    },
+    {
+      "command": "/data/home/zju321/.local/bin/openclaw agent --agent main --message Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable. --json --timeout 90",
+      "exit_code": 1,
+      "stdout": "00:50:23+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:23+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:23+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:23+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:23+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:26+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:26+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:26+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:26+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:26+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:26+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:26+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:26+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:26+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:26+08:00 [plugins] feishu_bitable: Registered bitable tools\n00:50:27+08:00 [plugins] feishu_doc: Registered feishu_doc, feishu_app_scopes\n00:50:27+08:00 [plugins] feishu_chat: Registered feishu_chat tool\n00:50:27+08:00 [plugins] feishu_wiki: Registered feishu_wiki tool\n00:50:27+08:00 [plugins] feishu_drive: Registered feishu_drive tool\n00:50:27+08:00 [plugins] feishu_bitable: Registered bitable tools\n",
+      "stderr": "Gateway agent failed; falling back to embedded: Error: Unknown agent id \"main\". Use \"openclaw agents list\" to see configured agents.\nError: Unknown agent id \"main\". Use \"openclaw agents list\" to see configured agents.\n",
+      "ok": false,
+      "execution_mode": "local"
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 import sys
 # 3D electron density isosurface
-nc_path    = r"E:\PostGraduate\Dirac_solver\@Octopus_docs\output\density.y=0,z=0"
-output_png = r"E:\PostGraduate\Dirac_solver\@Octopus_docs\output\render_density_3d.png"
+nc_path    = "/data/home/zju321/.openclaw/workspace/projects/Dirac/@Octopus_docs/output/density.cube"
+output_png = "/data/home/zju321/.openclaw/workspace/projects/Dirac/@Octopus_docs/output/render_density_3d.png"
 
 OpenDatabase(nc_path)
 AddPlot("Contour", "density")
 c = ContourAttributes()
 c.contourNLevels = 1
-c.contourValue = (0.01,)
+c.contourValue = (0.05,)
 c.colorType = c.ColorBySingleColor
 c.singleColor = (0, 212, 255, 200)
 SetPlotOptions(c)

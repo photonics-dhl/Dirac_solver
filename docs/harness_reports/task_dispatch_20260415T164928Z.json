@@ -1,0 +1,234 @@
+{
+  "timestamp": "2026-04-15T16:49:28.459469Z",
+  "task_id": "T-20260415T164928Z",
+  "source": "cli-test",
+  "task": "Dirac test notify 20260416 run_id=TEST-20260416-001",
+  "task_original": "Dirac test notify 20260416 run_id=TEST-20260416-001",
+  "run_id": "TEST-20260416-001",
+  "command_contract": {
+    "normalized": true,
+    "warnings": [],
+    "metadata": {
+      "run_id": "TEST-20260416-001",
+      "workflow": "",
+      "mode": "",
+      "case": "",
+      "octopus": "",
+      "ncpus": "",
+      "mpiprocs": ""
+    }
+  },
+  "contract_validation": {
+    "is_valid": true,
+    "required_fields": [
+      "run_id"
+    ],
+    "missing_required_fields": [],
+    "blocking_reason": ""
+  },
+  "matched_rule": "default",
+  "assignee": "openclaw-supervisor",
+  "action": "prepare",
+  "intent_confidence": null,
+  "requires_reviewer": true,
+  "max_iterations": 3,
+  "auto_escalation_policy": "soft",
+  "stop_conditions": [],
+  "auto_policy_applied": false,
+  "reviewer_strict": false,
+  "auto_execute_replan": false,
+  "executed": false,
+  "execution": null,
+  "preflight": null,
+  "workflow": {
+    "route": "L0",
+    "state": "ROUTED",
+    "last_event": "TASK_VALID",
+    "next_route": "L0",
+    "policy": {
+      "max_attempts_l0": 2,
+      "max_attempts_l1": 2,
+      "retry_backoff_seconds": 30,
+      "policy_override_for": null
+    }
+  },
+  "skills_visibility_snapshot": {
+    "timestamp": "2026-04-15T16:49:28.461337Z",
+    "manifest_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json",
+    "skill_roots": [
+      {
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/.claude/skills",
+        "exists": true
+      },
+      {
+        "path": "/data/home/zju321/.openclaw/skills",
+        "exists": true
+      }
+    ],
+    "required_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "roles": {
+      "planner": {
+        "skill_id": "dirac.planner.v1",
+        "required_outputs": [
+          "selected_case",
+          "threshold",
+          "max_iterations",
+          "openclaw_planner.ok",
+          "execution_budget.retry_budget",
+          "execution_budget.timeout_seconds",
+          "workflow.stage_order",
+          "workflow.main_controls",
+          "review_plan.benchmark_delta_required"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "executor": {
+        "skill_id": "dirac.executor.v1",
+        "required_outputs": [
+          "execution_mode",
+          "simple_harness.passed",
+          "simple_harness.best_relative_error",
+          "mcp.attempted",
+          "octopus.passed",
+          "benchmark_review.final_verdict",
+          "benchmark_review.delta.relative_error",
+          "benchmark_review.next_action",
+          "blocked.is_blocked",
+          "blocked.reason_code"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "reviewer": {
+        "skill_id": "dirac.reviewer.v1",
+        "required_outputs": [
+          "checks.accuracy_ok",
+          "checks.benchmarks_aligned_ok",
+          "checks.kb_richness_ok",
+          "checks.retrieval_skill_ok",
+          "checks.web_evidence_ok",
+          "checks.mcp_attempted_ok",
+          "checks.octopus_ok",
+          "checks.ui_ok",
+          "checks.ui_rendering_ok",
+          "checks.skills_contracts_ok",
+          "checks.openclaw_flow_ok",
+          "checks.planner_executor_chain_ok",
+          "checks.deep_model_priority_ok",
+          "checks.logs_consistent",
+          "checks.execution_ok",
+          "retrieval.skill_invoked",
+          "repair_type",
+          "repair_confidence",
+          "final_verdict"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      }
+    },
+    "missing_roles": []
+  },
+  "plugin_presence_gate": {
+    "checked": true,
+    "plugin_gate_required": false,
+    "required_plugins": [],
+    "matched": {},
+    "missing_plugins": [],
+    "found_plugin_ids": [
+      "feishu",
+      "browser",
+      "acpx"
+    ],
+    "found_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "plugin_inventory": [
+      {
+        "id": "feishu",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/feishu/openclaw.plugin.json"
+      },
+      {
+        "id": "browser",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/browser/openclaw.plugin.json"
+      },
+      {
+        "id": "acpx",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/acpx/openclaw.plugin.json"
+      }
+    ],
+    "plugin_gate_passed": true,
+    "reason": "ok"
+  },
+  "status": "routed_only",
+  "failure_reason": null,
+  "failure_reason_taxonomy": "not_executed",
+  "convergence_gate": {
+    "applied": false,
+    "passed": true,
+    "reason": "status_not_success",
+    "unmet_conditions": [],
+    "evidence": {}
+  },
+  "public_status": "routed_only",
+  "public_failure_reason": "",
+  "human_status": "ROUTED_NOT_EXECUTED",
+  "phase_stream": [
+    {
+      "phase": "Trigger",
+      "state": "completed",
+      "at": "2026-04-15T16:49:28.459469Z",
+      "detail": "source=cli-test"
+    },
+    {
+      "phase": "Queue",
+      "state": "queued",
+      "at": "2026-04-15T16:49:28.466047Z",
+      "detail": "assignee=openclaw-supervisor; action=prepare"
+    },
+    {
+      "phase": "Executing",
+      "state": "skipped",
+      "at": "2026-04-15T16:49:28.466047Z",
+      "detail": "execution_skipped"
+    },
+    {
+      "phase": "Reviewing",
+      "state": "skipped",
+      "at": "2026-04-15T16:49:28.466047Z",
+      "detail": "review_not_required_or_skipped"
+    },
+    {
+      "phase": "Result",
+      "state": "completed",
+      "at": "2026-04-15T16:49:28.466047Z",
+      "detail": "status=routed_only; human_status=ROUTED_NOT_EXECUTED; reason=-"
+    }
+  ],
+  "loop_verdict_contract": {
+    "dispatch_status": "routed_only",
+    "reviewer_verdict": "",
+    "retryable": false,
+    "loop_iteration_count": 0,
+    "loop_max_attempts": 3,
+    "retry_backoff_seconds": 30,
+    "consistency_token": "b4199c7d"
+  },
+  "consistency_token": "b4199c7d",
+  "autonomous_assessment": {
+    "enabled": false,
+    "completion_state": "not_applicable",
+    "health_state": "unknown",
+    "ready_for_next_auto_task": false,
+    "blockers": [],
+    "workflow_state": "ROUTED",
+    "workflow_next_route": "L0",
+    "status": "routed_only"
+  }
+}

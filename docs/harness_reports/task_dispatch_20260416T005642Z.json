@@ -1,0 +1,547 @@
+{
+  "timestamp": "2026-04-16T00:43:42.969057Z",
+  "task_id": "T-20260416T004342Z",
+  "source": "feishu-hard-guard-queue",
+  "task": "\u4f60\u7406\u89e3\u9519\u4e86\uff0c\u53c2\u8003\u4e0d\u662f\u53c2\u8003\u8ba1\u7b97\u7ed3\u679c\uff0c\u800c\u662f\u53c2\u8003\u5b98\u65b9\u6848\u4f8b\u6216\u53ef\u6eaf\u6e90\u77e5\u8bc6\u5e93\u4e2d\u7684\u7ed3\u679c\u6765\u642d\u5efa\u77e5\u8bc6\u5e93\uff0c\u76f8\u5f53\u4e8e\u76ee\u524d\u5728\u6293\u53d6\u6570\u636e\u3002\u642d\u5efa\u5b8c\u77e5\u8bc6\u5e93\uff0c\u7136\u540e\u624d\u662f\u8ba1\u7b97\u9636\u6bb5\uff0c\u76ee\u7684\u662f\u8ba9\u8ba1\u7b97\u7ed3\u679c\u9760\u8fd1\u77e5\u8bc6\u5e93\u91cc\u5b58\u50a8\u7684\u5b98\u65b9\u6848\u4f8b\u548c\u53c2\u8003\u6587\u732e\u7684\u7ed3\u679c workflow=fullchain mode=autonomous case=hydrogen_gs_reference octopus=required ncpus=64 mpiprocs=64 run_id=RSH-20260416T004317Z",
+  "task_original": "\u4f60\u7406\u89e3\u9519\u4e86\uff0c\u53c2\u8003\u4e0d\u662f\u53c2\u8003\u8ba1\u7b97\u7ed3\u679c\uff0c\u800c\u662f\u53c2\u8003\u5b98\u65b9\u6848\u4f8b\u6216\u53ef\u6eaf\u6e90\u77e5\u8bc6\u5e93\u4e2d\u7684\u7ed3\u679c\u6765\u642d\u5efa\u77e5\u8bc6\u5e93\uff0c\u76f8\u5f53\u4e8e\u76ee\u524d\u5728\u6293\u53d6\u6570\u636e\u3002\u642d\u5efa\u5b8c\u77e5\u8bc6\u5e93\uff0c\u7136\u540e\u624d\u662f\u8ba1\u7b97\u9636\u6bb5\uff0c\u76ee\u7684\u662f\u8ba9\u8ba1\u7b97\u7ed3\u679c\u9760\u8fd1\u77e5\u8bc6\u5e93\u91cc\u5b58\u50a8\u7684\u5b98\u65b9\u6848\u4f8b\u548c\u53c2\u8003\u6587\u732e\u7684\u7ed3\u679c",
+  "run_id": "RSH-20260416T004317Z",
+  "command_contract": {
+    "normalized": true,
+    "warnings": [
+      "run_id_missing_autofilled"
+    ],
+    "metadata": {
+      "run_id": "RSH-20260416T004317Z",
+      "workflow": "fullchain",
+      "mode": "autonomous",
+      "case": "hydrogen_gs_reference",
+      "octopus": "required",
+      "ncpus": "64",
+      "mpiprocs": "64"
+    }
+  },
+  "contract_validation": {
+    "is_valid": true,
+    "required_fields": [
+      "run_id"
+    ],
+    "missing_required_fields": [],
+    "blocking_reason": ""
+  },
+  "matched_rule": "auto_kb_openclaw_planner_first",
+  "assignee": "openclaw-supervisor",
+  "action": "run_kb_collaboration",
+  "intent_confidence": 0.98,
+  "requires_reviewer": true,
+  "max_iterations": 6,
+  "auto_escalation_policy": "strict",
+  "stop_conditions": [
+    "reviewer_pass_and_web_evidence_ok_and_openclaw_flow_ok",
+    "blocked_permissions",
+    "max_iterations_reached"
+  ],
+  "auto_policy_applied": true,
+  "reviewer_strict": false,
+  "auto_execute_replan": true,
+  "executed": true,
+  "execution": {
+    "command": "/data/home/zju321/miniconda3/bin/python3 scripts/run_kb_reliable_autopilot.py --base-url http://127.0.0.1:8101 --manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json --timeout 120 --max-attempts 5 --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports && /data/home/zju321/miniconda3/bin/python3 scripts/run_multi_agent_orchestration.py --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8101 --case-id hydrogen_gs_reference --max-iterations 6 --octopus-molecule H --octopus-calc-mode gs --skills-manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json --planner-model-priority gpt-5-thinking,deepseek-r1 --reviewer-model-priority gpt-5-thinking,deepseek-r1 --planner-thinking-budget 8000 --reviewer-thinking-budget 8000 && /data/home/zju321/miniconda3/bin/python3 scripts/run_dft_tddft_agent_suite.py --api-base http://127.0.0.1:3001 --molecule H --task-ids hydrogen_gs_reference --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports --external-reference-path knowledge_base/reference_data/external_curve_references.json && /data/home/zju321/miniconda3/bin/python3 scripts/export_web_evidence_to_kb.py --report docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json --output knowledge_base/corpus/web_evidence_traceable_cases_2026_04.md",
+    "exit_code": 0,
+    "stdout": "[KB_BUILD]\nkb_autopilot_report_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/kb_reliable_autopilot_20260416T004347Z.json\nkb_autopilot_report_md=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/kb_reliable_autopilot_20260416T004347Z.md\nkb_autopilot_status=repairing\nhuman_status=AUTO_REPAIRING_ACTIVE\nkb_autopilot_attempts=5\nfailed_sources_final=10\n\n[ORCHESTRATION]\nmulti_agent_report_json=docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json\nmulti_agent_report_md=docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.md\ncase_delta_board_md=docs/harness_reports/case_delta_board_hydrogen_gs_reference_20260416T005540Z.md\nreviewer_verdict=FAIL\nopenclaw_planner_ok=False\nweb_evidence_ok=False\nopenclaw_flow_ok=False\nplanner_executor_chain_ok=False\ndeep_model_priority_ok=True\nopenclaw_planner_trace_log=docs/harness_reports/openclaw_planner_trace_20260416T004347Z.log\nopenclaw_sync_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json\n\n[DFT_TDDFT_SUITE]\nsuite_report_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T005540Z.json\nsuite_report_md=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T005540Z.md\nsuite_convergence_log=/data/home/zju321/.openclaw/workspace/projects/Dirac/parameter_convergence_log.md\nsuite_convergence_log_legacy=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/parameter_convergence_log.md\nsuite_case_result={\"scenario_id\": \"hydrogen_gs_reference\", \"status\": \"FAIL\", \"metric\": \"total_energy_hartree\", \"computed\": -68.32278612, \"reference\": -0.5, \"delta\": -67.82278612, \"relative_delta\": 135.64557224}\nsuite_verdict=FAIL\nopenclaw_sync_json=/data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json,/data/home/zju321/.openclaw/workspace/projects/OpenClaw/state/dirac_solver_progress_sync.json\n\n[WEB_EVIDENCE_EXPORT]\nweb_evidence_kb_output=/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus/web_evidence_traceable_cases_2026_04.md\nweb_evidence_source_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json\n",
+    "stderr": "\n[ORCHESTRATION]\n\n[DFT_TDDFT_SUITE]\n\n[WEB_EVIDENCE_EXPORT]\n",
+    "artifacts": {
+      "orchestration_report_json": "docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json",
+      "suite_report_json": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T005540Z.json",
+      "suite_report_md": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/dft_tddft_agent_suite_H_20260416T005540Z.md",
+      "suite_case_summary": {
+        "total_cases": 1,
+        "passed_cases": 0,
+        "cases": [
+          {
+            "scenario_id": "hydrogen_gs_reference",
+            "status": "FAIL",
+            "metric": "total_energy_hartree",
+            "computed": -68.32278612,
+            "reference": -0.5,
+            "relative_delta": 135.64557224,
+            "within_tolerance": false,
+            "provenance_verified": true,
+            "delta_diagnostics": {
+              "delta": -67.82278612,
+              "relative_delta": 135.64557224,
+              "tolerance_relative": 0.03,
+              "within_tolerance": false
+            },
+            "external_source": "",
+            "curve_files": []
+          }
+        ]
+      },
+      "web_evidence_kb_output": "knowledge_base/corpus/web_evidence_traceable_cases_2026_04.md"
+    },
+    "stages": {
+      "kb_build": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/run_kb_reliable_autopilot.py --base-url http://127.0.0.1:8101 --manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json --timeout 120 --max-attempts 5 --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports",
+        "exit_code": 0,
+        "autopilot": true
+      },
+      "orchestration": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/run_multi_agent_orchestration.py --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8101 --case-id hydrogen_gs_reference --max-iterations 6 --octopus-molecule H --octopus-calc-mode gs --skills-manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json --planner-model-priority gpt-5-thinking,deepseek-r1 --reviewer-model-priority gpt-5-thinking,deepseek-r1 --planner-thinking-budget 8000 --reviewer-thinking-budget 8000",
+        "exit_code": 0
+      },
+      "dft_tddft_suite": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/run_dft_tddft_agent_suite.py --api-base http://127.0.0.1:3001 --molecule H --task-ids hydrogen_gs_reference --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports --external-reference-path knowledge_base/reference_data/external_curve_references.json",
+        "exit_code": 0
+      },
+      "web_evidence_export": {
+        "command": "/data/home/zju321/miniconda3/bin/python3 scripts/export_web_evidence_to_kb.py --report docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json --output knowledge_base/corpus/web_evidence_traceable_cases_2026_04.md",
+        "exit_code": 0
+      }
+    }
+  },
+  "preflight": {
+    "ready": true,
+    "reason_code": "",
+    "service_gate": {
+      "timeout_seconds": 8.0,
+      "api": {
+        "name": "api",
+        "reachable": true,
+        "selected_base": "http://127.0.0.1:3001",
+        "checks": [
+          {
+            "base_url": "http://127.0.0.1:3001",
+            "ok": true,
+            "host": "127.0.0.1",
+            "port": 3001
+          }
+        ]
+      },
+      "harness": {
+        "name": "harness",
+        "reachable": true,
+        "selected_base": "http://127.0.0.1:8101",
+        "checks": [
+          {
+            "base_url": "http://127.0.0.1:8101",
+            "tcp_ok": true,
+            "tcp_error": "",
+            "route_ready": true,
+            "route_checks": [
+              {
+                "method": "GET",
+                "url": "http://127.0.0.1:8101/harness/cases",
+                "status": 404
+              },
+              {
+                "method": "GET",
+                "url": "http://127.0.0.1:8101/harness/case_registry",
+                "status": 200
+              },
+              {
+                "method": "OPTIONS",
+                "url": "http://127.0.0.1:8101/harness/run_case",
+                "status": 405
+              },
+              {
+                "method": "OPTIONS",
+                "url": "http://127.0.0.1:8101/api/harness/run_case",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "ensure": {
+      "command": "/data/home/zju321/miniconda3/bin/python3 scripts/ensure_openclaw_exec.py --openclaw-root /data/home/zju321/.openclaw --timeout-ms 60000 --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"timestamp\": \"2026-04-16T00:43:43.145042Z\",\n  \"config_path\": \"/data/home/zju321/.openclaw/openclaw.json\",\n  \"changed\": false,\n  \"backup_path\": null,\n  \"shell_env_before\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"shell_env_after\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"approved_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\",\n    \"operator.pairing\"\n  ],\n  \"required_scopes\": [\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\"\n  ],\n  \"missing_scopes\": [],\n  \"execution_ready\": true,\n  \"note\": \"If missing_scopes is not empty, use OpenClaw device approval/grant flow to authorize this device.\"\n}\n",
+      "stderr": "",
+      "json": {
+        "timestamp": "2026-04-16T00:43:43.145042Z",
+        "config_path": "/data/home/zju321/.openclaw/openclaw.json",
+        "changed": false,
+        "backup_path": null,
+        "shell_env_before": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "shell_env_after": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "approved_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals",
+          "operator.pairing"
+        ],
+        "required_scopes": [
+          "operator.read",
+          "operator.write",
+          "operator.approvals"
+        ],
+        "missing_scopes": [],
+        "execution_ready": true,
+        "note": "If missing_scopes is not empty, use OpenClaw device approval/grant flow to authorize this device."
+      }
+    },
+    "audit": {
+      "command": "/data/home/zju321/miniconda3/bin/python3 scripts/audit_openclaw_permissions.py --openclaw-root /data/home/zju321/.openclaw --policy /data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/openclaw_exec_policy.json --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"shell_env\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"approved_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\",\n    \"operator.pairing\"\n  ],\n  \"required_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\"\n  ],\n  \"missing_scopes\": [],\n  \"pending_device_count\": 0,\n  \"execution_ready\": true,\n  \"sample_classification\": [],\n  \"policy_mode\": \"full_auto\"\n}\n",
+      "stderr": "",
+      "json": {
+        "shell_env": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "approved_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals",
+          "operator.pairing"
+        ],
+        "required_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals"
+        ],
+        "missing_scopes": [],
+        "pending_device_count": 0,
+        "execution_ready": true,
+        "sample_classification": [],
+        "policy_mode": "full_auto"
+      }
+    },
+    "plugin_gate": {
+      "checked": true,
+      "plugin_gate_required": false,
+      "required_plugins": [],
+      "matched": {},
+      "missing_plugins": [],
+      "found_plugin_ids": [
+        "feishu",
+        "browser",
+        "acpx"
+      ],
+      "found_skill_ids": [
+        "dirac.planner.v1",
+        "dirac.executor.v1",
+        "dirac.reviewer.v1"
+      ],
+      "plugin_inventory": [
+        {
+          "id": "feishu",
+          "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/feishu/openclaw.plugin.json"
+        },
+        {
+          "id": "browser",
+          "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/browser/openclaw.plugin.json"
+        },
+        {
+          "id": "acpx",
+          "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/acpx/openclaw.plugin.json"
+        }
+      ],
+      "plugin_gate_passed": true,
+      "reason": "ok"
+    }
+  },
+  "workflow": {
+    "route": "L0",
+    "state": "REPLAN",
+    "last_event": "REVIEW_REPAIR",
+    "policy": {
+      "max_attempts_l0": 2,
+      "max_attempts_l1": 2,
+      "retry_backoff_seconds": 30,
+      "policy_override_for": null
+    },
+    "next_route": "L0"
+  },
+  "skills_visibility_snapshot": {
+    "timestamp": "2026-04-16T00:43:42.970621Z",
+    "manifest_source": "/data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json",
+    "skill_roots": [
+      {
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/.claude/skills",
+        "exists": true
+      },
+      {
+        "path": "/data/home/zju321/.openclaw/skills",
+        "exists": true
+      }
+    ],
+    "required_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "roles": {
+      "planner": {
+        "skill_id": "dirac.planner.v1",
+        "required_outputs": [
+          "selected_case",
+          "threshold",
+          "max_iterations",
+          "openclaw_planner.ok",
+          "execution_budget.retry_budget",
+          "execution_budget.timeout_seconds",
+          "workflow.stage_order",
+          "workflow.main_controls",
+          "review_plan.benchmark_delta_required"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "executor": {
+        "skill_id": "dirac.executor.v1",
+        "required_outputs": [
+          "execution_mode",
+          "simple_harness.passed",
+          "simple_harness.best_relative_error",
+          "mcp.attempted",
+          "octopus.passed",
+          "benchmark_review.final_verdict",
+          "benchmark_review.delta.relative_error",
+          "benchmark_review.next_action",
+          "blocked.is_blocked",
+          "blocked.reason_code"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "reviewer": {
+        "skill_id": "dirac.reviewer.v1",
+        "required_outputs": [
+          "checks.accuracy_ok",
+          "checks.benchmarks_aligned_ok",
+          "checks.kb_richness_ok",
+          "checks.retrieval_skill_ok",
+          "checks.web_evidence_ok",
+          "checks.mcp_attempted_ok",
+          "checks.octopus_ok",
+          "checks.ui_ok",
+          "checks.ui_rendering_ok",
+          "checks.skills_contracts_ok",
+          "checks.openclaw_flow_ok",
+          "checks.planner_executor_chain_ok",
+          "checks.deep_model_priority_ok",
+          "checks.logs_consistent",
+          "checks.execution_ok",
+          "retrieval.skill_invoked",
+          "repair_type",
+          "repair_confidence",
+          "final_verdict"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      }
+    },
+    "missing_roles": []
+  },
+  "plugin_presence_gate": {
+    "checked": true,
+    "plugin_gate_required": false,
+    "required_plugins": [],
+    "matched": {},
+    "missing_plugins": [],
+    "found_plugin_ids": [
+      "feishu",
+      "browser",
+      "acpx"
+    ],
+    "found_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "plugin_inventory": [
+      {
+        "id": "feishu",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/feishu/openclaw.plugin.json"
+      },
+      {
+        "id": "browser",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/browser/openclaw.plugin.json"
+      },
+      {
+        "id": "acpx",
+        "path": "/data/home/zju321/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/acpx/openclaw.plugin.json"
+      }
+    ],
+    "plugin_gate_passed": true,
+    "reason": "ok"
+  },
+  "physics_result": {
+    "calc_mode": "gs",
+    "molecule_name": "H",
+    "ground_state_energy_hartree": -56.19226231,
+    "homo_energy": -1449.9344689348,
+    "lumo_energy": 1.3623931638,
+    "absorption_spectrum_points": 0,
+    "absorption_spectrum": {
+      "energy_ev": [],
+      "cross_section": []
+    },
+    "benchmark_delta": {
+      "relative_error": 111.38452462,
+      "threshold": 0.03,
+      "within_tolerance": false,
+      "reference_energy_hartree": -0.5,
+      "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+      "fallback_applied": true
+    },
+    "requires_absorption_spectrum": false,
+    "has_required_fields": true,
+    "missing_fields": [],
+    "provenance_verified": true,
+    "available": true
+  },
+  "loop_iterations": {
+    "count": 1,
+    "max": 3,
+    "retryable_statuses": [
+      "blocked_reviewer_gate",
+      "execution_failed",
+      "blocked_permissions"
+    ],
+    "openclaw_autonomy": {
+      "enabled": true,
+      "action_switch_enabled": true,
+      "final_action": "run_orchestration"
+    },
+    "adaptive_timeout": {
+      "enabled": true,
+      "escalation_factor": 1.5,
+      "increment_seconds": 30,
+      "base_exec_timeout_seconds": 1200,
+      "max_exec_timeout_seconds": 1800,
+      "final_exec_timeout_seconds": 1200
+    },
+    "history": [
+      {
+        "iteration": 1,
+        "action": "run_kb_collaboration",
+        "status": "blocked_physics_mismatch",
+        "failure_reason": "suite_physics_mismatch:hydrogen_gs_reference",
+        "execution_exit_code": 0,
+        "exec_timeout_seconds": 1200,
+        "at": "2026-04-16T00:56:42.960641Z",
+        "openclaw_loop_decision": {
+          "continue": false,
+          "next_action": "run_orchestration",
+          "decision_source": "openclaw_reviewer_packet",
+          "reason": "non_retryable_status",
+          "status": "blocked_physics_mismatch",
+          "reviewer_packet": {
+            "report_json": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T005540Z.json",
+            "final_verdict": "FAIL",
+            "failure_type": "planner_executor_chain_break",
+            "repair_type": "planner_executor_chain_break",
+            "anti_repeat_triggered": true,
+            "next_action_packet": [
+              {
+                "owner": "planner",
+                "action": "rebuild_plan_and_handoff_with_remote_openclaw_first",
+                "why": "planner->executor continuity failed under strict gate"
+              },
+              {
+                "owner": "executor",
+                "action": "execute_via_remote_openclaw_path_only",
+                "why": "avoid local-only fallback when chain continuity is broken"
+              }
+            ]
+          },
+          "failure_type": "planner_executor_chain_break",
+          "repair_type": "planner_executor_chain_break",
+          "anti_repeat_triggered": true,
+          "action_switched": true
+        },
+        "next_action": "run_orchestration"
+      }
+    ],
+    "stopped_due_to": "status_terminal"
+  },
+  "status": "blocked_physics_mismatch",
+  "failure_reason": "suite_physics_mismatch:hydrogen_gs_reference",
+  "failure_reason_taxonomy": "physics_mismatch",
+  "convergence_gate": {
+    "applied": false,
+    "passed": true,
+    "reason": "status_not_success",
+    "unmet_conditions": [],
+    "evidence": {}
+  },
+  "public_status": "auto_repairing",
+  "public_failure_reason": "auto_repair_physics_mismatch",
+  "human_status": "AUTO_REPAIRING_PHYSICS_MISMATCH",
+  "phase_stream": [
+    {
+      "phase": "Trigger",
+      "state": "completed",
+      "at": "2026-04-16T00:43:42.969057Z",
+      "detail": "source=feishu-hard-guard-queue"
+    },
+    {
+      "phase": "Queue",
+      "state": "repairing",
+      "at": "2026-04-16T00:56:42.965782Z",
+      "detail": "assignee=openclaw-supervisor; action=run_kb_collaboration"
+    },
+    {
+      "phase": "Executing",
+      "state": "repairing",
+      "at": "2026-04-16T00:56:42.965782Z",
+      "detail": "subprocess_executed"
+    },
+    {
+      "phase": "Reviewing",
+      "state": "repairing",
+      "at": "2026-04-16T00:56:42.965782Z",
+      "detail": "auto_repair_in_progress"
+    },
+    {
+      "phase": "Result",
+      "state": "completed",
+      "at": "2026-04-16T00:56:42.965782Z",
+      "detail": "status=auto_repairing; human_status=AUTO_REPAIRING_PHYSICS_MISMATCH; reason=auto_repair_physics_mismatch"
+    }
+  ],
+  "loop_verdict_contract": {
+    "dispatch_status": "auto_repairing",
+    "reviewer_verdict": "FAIL",
+    "retryable": false,
+    "loop_iteration_count": 1,
+    "loop_max_attempts": 3,
+    "retry_backoff_seconds": 30,
+    "consistency_token": "c9986989"
+  },
+  "consistency_token": "c9986989",
+  "autonomous_assessment": {
+    "enabled": true,
+    "completion_state": "repairing",
+    "health_state": "degraded",
+    "ready_for_next_auto_task": false,
+    "blockers": [
+      "reviewer_gate_failed",
+      "auto_repair_physics_mismatch"
+    ],
+    "workflow_state": "REPLAN",
+    "workflow_next_route": "L0",
+    "status": "blocked_physics_mismatch",
+    "public_status": "auto_repairing"
+  },
+  "replan_packet": "/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T005642Z.json",
+  "replan_execution": {
+    "command": "/data/home/zju321/miniconda3/bin/python3 scripts/execute_replan_packet.py --packet /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T005642Z.json --state /data/home/zju321/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8101 --case-id hydrogen_gs_reference --octopus-molecule H --octopus-calc-mode gs --report-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports",
+    "exit_code": 2,
+    "stdout": "replan_packet=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260416T005642Z.json\nreplan_execution_report=/data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_execution_20260416T005708Z.json\nreplan_all_passed=False\n",
+    "stderr": ""
+  }
+}

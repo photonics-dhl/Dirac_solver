@@ -1,9 +1,48 @@
 import sys
 import json
 import os
+import re
 from llm_client import LLMClient
 
-def generate_explanation(result_data):
+def load_output_fields_knowledge():
+    kb_path = os.path.join(os.path.dirname(__file__), "@Octopus_docs", "Output_Fields_Explanation.md")
+    if not os.path.exists(kb_path):
+        return ""
+    try:
+        with open(kb_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception:
+        return ""
+
+
+def sanitize_explanation_text(text: str) -> str:
+    if not isinstance(text, str):
+        return ""
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
+    return cleaned.strip()
+
+
+def compact_for_prompt(obj, max_list_items=40, depth=0, max_depth=6):
+    if depth > max_depth:
+        return "<truncated-depth>"
+
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            out[k] = compact_for_prompt(v, max_list_items=max_list_items, depth=depth + 1, max_depth=max_depth)
+        return out
+
+    if isinstance(obj, list):
+        if len(obj) <= max_list_items:
+            return [compact_for_prompt(v, max_list_items=max_list_items, depth=depth + 1, max_depth=max_depth) for v in obj]
+        head = [compact_for_prompt(v, max_list_items=max_list_items, depth=depth + 1, max_depth=max_depth) for v in obj[:max_list_items]]
+        head.append(f"<... {len(obj) - max_list_items} items omitted ...>")
+        return head
+
+    return obj
+
+
+def generate_explanation(result_data, output_file="physics_explanation.md", external_knowledge="", image_paths=None, image_urls=None):
     """
     Generates a Markdown explanation of the physics computation results using ZChat.
     Supports both Local 1D solver results and Octopus 3D DFT results.
@@ -47,54 +86,70 @@ Physics evaluation checklist:
 3. If deviation is large (>10%), flag as possible grid resolution artifact.
 """
 
-        prompt = f"""You are an expert computational physicist. Analyse the following quantum physics computation results and produce a rigorous, well-structured report.
+        kb_text = external_knowledge or load_output_fields_knowledge()
+        compact_result = compact_for_prompt(result_data, max_list_items=40)
+        prompt = f"""You are an expert computational physicist. Analyse the following quantum physics computation results and produce a concise, practical report.
 
 Engine context:
 {physics_context}
 
+    Knowledge-base context for output file interpretation:
+    {kb_text[:4000] if kb_text else "(No extra knowledge base provided.)"}
+
 Full result JSON:
 ```json
-{json.dumps(result_data, indent=2, ensure_ascii=False)}
+{json.dumps(compact_result, indent=2, ensure_ascii=False)}
 ```
 
-Output the explanation in BOTH Chinese and English, separated by these exact delimiters on their own lines:
+Output requirements:
+- Prefer Chinese.
+- Keep total length within ~500 Chinese characters (or equivalent concise length).
+- Focus only on this run's key outputs, avoid generic textbook content.
+- Use Markdown headings and bullets.
 
----START_ZH---
-(中文说明)
----END_ZH---
+Must include exactly these sections:
+1. `## 本次计算概览` (system, mode, key params)
+2. `## 关键结果` (eigenvalues / HOMO-LUMO / convergence)
+3. `## 字段速读` (DOS, cross_section_vector, and important output files)
+4. `## 结果可信度与下一步` (brief validation + one actionable suggestion)
 
----START_EN---
-(English explanation)
----END_EN---
-
-Each section MUST cover:
-1. **Problem description** – what system was simulated, dimensionality, key parameters.
-2. **Methodology** – computational approach (DFT/finite-difference), grid, convergence.
-3. **Results analysis** – eigenvalues, energies, HOMO/LUMO (if DFT), convergence status.
-4. **Physical validity** – compare to known analytic/experimental references; flag concerns if results are unphysical.
-5. **Limitations** – grid resolution effects, DEV vs production accuracy.
-
-Use well-formatted Markdown with headers, bullet points, and LaTeX math (e.g. $E = mc^2$) where appropriate.
+For missing fields, say "当前输出未包含".
 """
-
-        messages = [
-            {"role": "developer", "content": "You are an expert computational physicist and a helpful AI assistant."},
-            {"role": "user", "content": prompt}
-        ]
 
         # Initialize the LLM Client
         print("Initializing LLM client...", file=sys.stderr)
-        llm = LLMClient()
+        llm_timeout = int(os.getenv("ZCHAT_MODEL_TIMEOUT_S", "60"))
+        llm = LLMClient(timeout_seconds=max(15, llm_timeout))
+
+        messages = [
+            {"role": "developer", "content": "You are an expert computational physicist and a helpful AI assistant."},
+        ]
+        messages.append(
+            llm.build_multimodal_user_message(
+                prompt,
+                image_paths=image_paths or [],
+                image_urls=image_urls or [],
+            )
+        )
         
         # Call the chat completion API
         print("Calling chat completion...", file=sys.stderr)
-        reply = llm.chat_completion(messages)
+        models_env = os.getenv("ZCHAT_MODEL_FALLBACK", "gpt-5,gpt-5-thinking,gemini-3-pro")
+        model_list = [m.strip() for m in models_env.split(",") if m.strip()]
+        if not model_list:
+            model_list = ["gpt-5"]
+        reply = llm.chat_completion(
+            messages,
+            models=model_list,
+        )
         
-        explanation = reply.choices[0].message.content
-        explanation = reply.choices[0].message.content
+        explanation = sanitize_explanation_text(reply.choices[0].message.content)
         
         # Write the explanation to the output file
-        output_file = "physics_explanation.md"
+        output_file = output_file or "physics_explanation.md"
+        output_dir = os.path.dirname(output_file)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(explanation)
             
@@ -119,7 +174,23 @@ if __name__ == "__main__":
         
     try:
         data = json.loads(input_data)
-        generate_explanation(data)
+        if isinstance(data, dict) and "result" in data:
+            result_payload = data.get("result") or {}
+            output_file = data.get("output_file", "physics_explanation.md")
+            external_knowledge = data.get("knowledge_base", "")
+            image_paths = data.get("image_paths", [])
+            image_urls = data.get("image_urls", [])
+            if isinstance(result_payload, dict) and isinstance(data.get("config"), dict):
+                result_payload.setdefault("config", data.get("config"))
+            generate_explanation(
+                result_payload,
+                output_file=output_file,
+                external_knowledge=external_knowledge,
+                image_paths=image_paths,
+                image_urls=image_urls,
+            )
+        else:
+            generate_explanation(data)
     except json.JSONDecodeError as e:
         print(json.dumps({"status": "error", "message": f"Invalid JSON input: {str(e)}"}))
         sys.exit(1)

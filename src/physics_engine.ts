@@ -8,12 +8,23 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import { httpRequest } from './http_request';
 
 const OCTOPUS_MCP_URL = process.env.OCTOPUS_MCP_URL ?? 'http://localhost:8000';
 const LOCAL_ENGINE_URL = process.env.LOCAL_ENGINE_URL ?? 'http://localhost:8001';
+const OCTOPUS_HEALTH_TIMEOUT_MS = Math.max(1000, Number(process.env.OCTOPUS_HEALTH_TIMEOUT_MS ?? 10000));
+const OCTOPUS_HEALTH_RETRIES = Math.max(1, Number(process.env.OCTOPUS_HEALTH_RETRIES ?? 3));
+const OCTOPUS_SOLVE_TIMEOUT_MS = Math.max(30000, Number(process.env.OCTOPUS_SOLVE_TIMEOUT_MS ?? 1800000));
+const OCTOPUS_FAST_SOLVE_TIMEOUT_MS = Math.max(120000, Number(process.env.OCTOPUS_FAST_SOLVE_TIMEOUT_MS ?? 300000));
+const OCTOPUS_FAST_SPACING_BOHR = Math.max(0.1, Number(process.env.OCTOPUS_FAST_SPACING_BOHR ?? 0.5));
+const OCTOPUS_FAST_RADIUS_BOHR = Math.max(1.5, Number(process.env.OCTOPUS_FAST_RADIUS_BOHR ?? 3.0));
+const OCTOPUS_FAST_BOX_PADDING_BOHR = Math.max(1.0, Number(process.env.OCTOPUS_FAST_BOX_PADDING_BOHR ?? 2.5));
+const OCTOPUS_FAST_MAX_SCF_ITERATIONS = Math.max(10, Number(process.env.OCTOPUS_FAST_MAX_SCF_ITERATIONS ?? 40));
+const OCTOPUS_ALLOW_LOCAL_FALLBACK = /^(1|true|yes)$/i.test(process.env.OCTOPUS_ALLOW_LOCAL_FALLBACK ?? 'false');
 
-const DEV_STATE_PATH = path.resolve(__dirname, '..', 'dev_state.json');
-const LOG_PATH = path.resolve(__dirname, '..', 'computation_log.md');
+const WORKSPACE_ROOT = process.env.WORKSPACE_ROOT ?? path.resolve(__dirname, '..');
+const DEV_STATE_PATH = path.join(WORKSPACE_ROOT, 'dev_state.json');
+const LOG_PATH = path.join(WORKSPACE_ROOT, 'computation_log.md');
 
 // ─── Expanded Config Interface ───────────────────────────────────
 
@@ -62,6 +73,8 @@ export interface PhysicsConfig {
     octopusPeriodic?: 'off' | 'x' | 'xy' | 'xyz';
     octopusDimensions?: string;
     octopusSpacing?: number;
+    octopusLengthUnit?: 'bohr' | 'angstrom';
+    octopusUnitsOutput?: 'eV_Angstrom' | 'Ha_Bohr' | string;
     octopusRadius?: number;
     octopusBoxShape?: string;
     octopusMolecule?: string;
@@ -69,9 +82,16 @@ export interface PhysicsConfig {
     octopusTdTimeStep?: number;
     octopusPropagator?: string;
     octopusExtraStates?: number;
+    octopusNcpus?: number;
+    octopusMpiprocs?: number;
+    speciesMode?: 'formula' | 'pseudo' | 'all_electron';
+    pseudopotentialSet?: string;
     tdSteps?: number;
     molecule?: string;
     calcMode?: 'gs' | 'td' | 'unocc';
+    caseType?: 'dft_gs_3d' | 'response_td' | 'periodic_bands' | 'hpc_scaling' | 'maxwell_em';
+    skipRunExplanation?: boolean;
+    fastPath?: boolean;
 }
 
 export interface PhysicsResult {
@@ -138,9 +158,32 @@ export interface PhysicsResult {
             dipole_y: number[];
             dipole_z: number[];
         };
+        run_explanation?: {
+            file?: string;
+            path?: string;
+            used_llm?: boolean;
+            status?: string;
+        };
         radiation_spectrum?: { frequency_ev: number[]; intensity: number[] };
         eels_spectrum?: { energy_ev: number[]; eels: number[] };
     };
+    scheduler?: {
+        strategy?: string;
+        run_dir?: string;
+        job_id?: string;
+        job_state?: string;
+        queue?: string;
+        ncpus?: number;
+        mpiprocs?: number;
+        selected_node?: string;
+        exec_vnode?: string;
+        resource_selector?: string;
+    };
+    ragContext?: {
+        query: string;
+        hits: Array<{ source: string; section: string; distance?: number }>;
+    };
+    engine?: string;
     computationTime: number;
 }
 
@@ -229,6 +272,7 @@ function initLogRun(config: PhysicsConfig): number {
     ].join('\n');
 
     if (!fs.existsSync(LOG_PATH)) {
+        fs.mkdirSync(path.dirname(LOG_PATH), { recursive: true });
         fs.writeFileSync(LOG_PATH, '# Computation Log\n\nPersistent record of all physics pipeline runs.\n\n---\n', 'utf-8');
     }
     fs.appendFileSync(LOG_PATH, header, 'utf-8');
@@ -301,6 +345,36 @@ async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function fetchKbHints(config: PhysicsConfig): Promise<{ query: string; hits: Array<{ source: string; section: string; distance?: number }> } | null> {
+    const query = [
+        `${config.equationType || 'Schrodinger'} ${config.problemType || 'boundstate'}`,
+        `${config.potentialType || 'custom'} potential`,
+        `${config.engineMode === 'octopus3D' ? 'Octopus DFT setup' : '1D quantum solver'}`,
+    ].join(' | ');
+
+    try {
+        const resp = await httpRequest(`${LOCAL_ENGINE_URL}/kb/query`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, top_k: 3 }),
+            timeoutMs: 5000,
+        });
+        if (!resp.ok) return null;
+
+        const data = await resp.json();
+        const hits = Array.isArray(data?.hits)
+            ? data.hits.map((h: any) => ({
+                source: h?.source || 'unknown',
+                section: h?.section || 'unknown',
+                distance: h?.distance,
+            }))
+            : [];
+        return { query, hits };
+    } catch {
+        return null;
+    }
+}
+
 export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type: string, data: any) => void): Promise<PhysicsResult> {
     const STEP_DELAY = 1200;
     const startTime = Date.now();
@@ -314,23 +388,23 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
     initLogRun(config);
 
     // ═══ P1: Parameter Setup ═════════════════════════════════════
-    const isOctopus = config.engineMode === 'octopus3D';
-    const displayLabel = isOctopus ? 'Octopus DFT' : eqLabel;
+    const requestedOctopus = config.engineMode === 'octopus3D';
+    const displayLabel = requestedOctopus ? 'Octopus DFT' : eqLabel;
 
     emit('log', `[System] Configuring ${displayLabel} parameters...`);
-    console.log("[DEBUG] Starting runPhysicsPipeline", { isOctopus, displayLabel, engineMode: config.engineMode });
+    console.log("[DEBUG] Starting runPhysicsPipeline", { requestedOctopus, displayLabel, engineMode: config.engineMode });
     updateDevState({
         currentNode: 'research', mode: 'PLANNING',
         taskName: `${displayLabel} Solver Pipeline`,
         taskStatus: `P1: Setting up ${displayLabel} parameters...`,
-        log: isOctopus
+        log: requestedOctopus
             ? `[OCTO-PLAN-1] P1: Octopus — molecule=${config.molecule || config.octopusMolecule}, calc=${config.calcMode}, pbc=${config.octopusPeriodic}`
             : `[SCHRO-PLAN-1] P1: ${eqLabel} — mass=${config.mass}, δx=${config.gridSpacing}, V₀=${config.potentialStrength}, dim=${config.dimensionality || '1D'}`,
         projectTaskId: 'P1', projectTaskStatus: 'in-progress', projectTaskProgress: 0,
         subTaskId: 'P1', subTaskCurrentNode: 'define_constants',
     });
 
-    if (!isOctopus) {
+    if (!requestedOctopus) {
         appendLog('P1', `Received config: ${eqLabel}, mass=${config.mass}, δx=${config.gridSpacing}`);
         await sleep(STEP_DELAY / 2);
         updateDevState({
@@ -349,7 +423,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
         subTaskId: 'P1', subTaskCurrentNode: 'validate_params',
         projectTaskId: 'P1', projectTaskStatus: 'done', projectTaskProgress: 100,
         nodeResult: {
-            nodeId: 'P1_validate', data: isOctopus ? config : {
+            nodeId: 'P1_validate', data: requestedOctopus ? config : {
                 mass: config.mass, gridSpacing: config.gridSpacing, potentialStrength: config.potentialStrength,
                 dimensionality: config.dimensionality || '1D', unitSystem: config.unitSystem || 'natural',
                 equationType: eqLabel, boundaryCondition: config.boundaryCondition || 'dirichlet',
@@ -359,19 +433,39 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
     appendLog('P1', 'Parameters validated ✓', `${((Date.now() - startTime) / 1000).toFixed(1)}s`);
     await sleep(STEP_DELAY / 2);
 
+    // ═══ P1.5: RAG Context Retrieval (best-effort) ═══════════════
+    const ragContext = await fetchKbHints(config);
+    if (ragContext && ragContext.hits.length > 0) {
+        const refs = ragContext.hits.slice(0, 2).map((h) => `${h.source}#${h.section}`).join(', ');
+        updateDevState({
+            log: `[RAG] Retrieved ${ragContext.hits.length} knowledge hints: ${refs}`,
+            nodeResult: {
+                nodeId: 'P1_5_rag',
+                data: ragContext,
+            },
+        });
+        appendLog('P1.5', `RAG hints loaded (${ragContext.hits.length})`);
+    }
+
     // ═══ Python Backend Compute ══════════════════════════════════
     let solveResult: any = null;
     let usedOctopus = false;
+    let octopusFailureReason = '';
 
     console.log("[DEBUG] Routing Check:", { engineMode: config.engineMode, potentialType: config.potentialType });
 
     // Try Docker Octopus MCP first for supported potentials or explicitly 3D molecular mode
     // Use Docker Octopus MCP for 3D molecular mode OR specific 1D boundstate potentials
-    const isOctopusSupportedPotential = (config.potentialType === 'Harmonic' || config.potentialType === 'FreeSpace' || config.potentialType === 'InfiniteWell')
-        && (config.problemType === 'boundstate' || !config.problemType);
-
     if (config.engineMode === 'octopus3D') {
         try {
+            const moleculeKey = (typeof config.molecule === 'string'
+                ? config.molecule
+                : (config.octopusMolecule || config.moleculeName || '')
+            ).toString().trim().toLowerCase();
+            const calcModeKey = (config.calcMode || 'gs').toLowerCase();
+            const isSimpleH2Gs = moleculeKey === 'h2' && calcModeKey === 'gs';
+            const useFastPath = isSimpleH2Gs || config.fastPath === true;
+
             // ─── Generate Octopus Input File ───
             const scriptPath = path.resolve(__dirname, '..', '@Octopus_docs', 'octopus_input_generator.py');
             const pythonExec = process.platform === 'win32' ? 'python' : 'python3';
@@ -396,39 +490,103 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 appendLog('P2', `Warning: Input generation execution error: ${err.message}`);
             }
 
+            const moleculeLabel = (() => {
+                if (typeof config.molecule === 'string' && config.molecule.trim()) {
+                    return config.molecule.trim();
+                }
+                if (config.molecule && typeof config.molecule === 'object' && (config.molecule as any).name) {
+                    return String((config.molecule as any).name);
+                }
+                if (config.octopusMolecule) {
+                    return String(config.octopusMolecule);
+                }
+                if (config.moleculeName) {
+                    return String(config.moleculeName);
+                }
+                return 'H2';
+            })();
+
             updateDevState({
                 log: `[EXECUTION] P2: Attempting Octopus DFT computation via Docker MCP...`,
                 subTaskId: 'P1', subTaskCurrentNode: 'call_octopus',
             });
+            const lengthUnit = String(config.octopusLengthUnit || 'angstrom').toLowerCase() === 'angstrom' ? 'Angstrom' : 'Bohr';
+            const outputUnit = String(config.octopusUnitsOutput || 'eV_Angstrom');
+            emit('log', `[Octopus][Config] mode=${config.calcMode || 'gs'} | molecule=${moleculeLabel} | spacing=${config.octopusSpacing ?? config.gridSpacing ?? '-'} ${lengthUnit} | radius=${config.octopusRadius ?? config.spatialRange ?? '-'} ${lengthUnit} | output=${outputUnit}`);
+            if ((config.calcMode || 'gs') === 'td') {
+                emit('log', `[Octopus][TD] excitation=${(config as any).tdExcitationType || 'delta'} | steps=${config.octopusTdSteps ?? (config as any).tdSteps ?? 200} | dt=${config.octopusTdTimeStep ?? (config as any).TDTimeStep ?? 0.05}`);
+            } else {
+                emit('log', `[Octopus][Note] 当前为 GS 模式，不会输出吸收谱；吸收谱请切换 Calculation Mode=TD 且 excitation=delta`);
+            }
             const healthUrls = [`${OCTOPUS_MCP_URL}/health`];
             let healthResp = null;
 
+            const healthRetries = useFastPath ? 1 : OCTOPUS_HEALTH_RETRIES;
+            const healthTimeoutMs = useFastPath ? Math.min(OCTOPUS_HEALTH_TIMEOUT_MS, 4000) : OCTOPUS_HEALTH_TIMEOUT_MS;
+
             for (const url of healthUrls) {
-                console.log(`[DEBUG] Checking Octopus health at ${url}`);
-                try {
-                    const abortController = new AbortController();
-                    const timeoutId = setTimeout(() => abortController.abort(), 3000);
-                    const resp = await fetch(url, { signal: abortController.signal });
-                    if (resp.ok) {
-                        healthResp = resp;
-                        break;
+                for (let attempt = 1; attempt <= healthRetries; attempt++) {
+                    console.log(`[DEBUG] Checking Octopus health at ${url} (attempt ${attempt}/${OCTOPUS_HEALTH_RETRIES})`);
+                    try {
+                        const resp = await httpRequest(url, { timeoutMs: healthTimeoutMs });
+                        if (resp.ok) {
+                            healthResp = resp;
+                            break;
+                        }
+                    } catch (e: any) {
+                        console.error(`[DEBUG] Health check failed at ${url} attempt ${attempt}: ${e.message}`);
+                        octopusFailureReason = `health check failed: ${e.message}`;
                     }
-                } catch (e: any) {
-                    console.error(`[DEBUG] Health check failed at ${url}: ${e.message}`);
+                    if (attempt < OCTOPUS_HEALTH_RETRIES) {
+                        await sleep(700);
+                    }
                 }
+                if (healthResp) break;
             }
 
             if (healthResp) {
                 const healthData = await healthResp.json();
                 console.log("[DEBUG] Octopus Health Data:", healthData);
                 if (healthData.status === 'ok' || healthData.engine?.includes('octopus') || healthData.TcpTestSucceeded) {
-                    usedOctopus = true;
                     appendLog('P2', `Using Octopus backend via Docker (engine: ${healthData.engine || 'unknown'})`);
-                    const octoResp = await fetch(`${OCTOPUS_MCP_URL}/solve`, {
+                    const solveTimeoutMs = useFastPath
+                        ? Math.min(OCTOPUS_SOLVE_TIMEOUT_MS, OCTOPUS_FAST_SOLVE_TIMEOUT_MS)
+                        : OCTOPUS_SOLVE_TIMEOUT_MS;
+                    const payloadSpacing = Number(config.octopusSpacing ?? config.gridSpacing ?? OCTOPUS_FAST_SPACING_BOHR);
+                    const payloadRadius = Number(config.octopusRadius ?? config.spatialRange ?? OCTOPUS_FAST_RADIUS_BOHR);
+                    const payloadMaxScf = Number((config as any).octopusMaxScfIterations ?? OCTOPUS_FAST_MAX_SCF_ITERATIONS);
+                    const octopusRequestPayload = {
+                        ...config,
+                        octopusLengthUnit: (config.octopusLengthUnit || 'angstrom'),
+                        octopusUnitsOutput: (config.octopusUnitsOutput || 'eV_Angstrom'),
+                        // Fast-path debugging should prioritize compute turnaround over extra explanation generation.
+                        skipRunExplanation: useFastPath || config.skipRunExplanation === true,
+                        ...(useFastPath ? {
+                            octopusSpacing: Math.max(payloadSpacing, OCTOPUS_FAST_SPACING_BOHR),
+                            octopusRadius: Math.min(payloadRadius, OCTOPUS_FAST_RADIUS_BOHR),
+                            octopusBoxPadding: OCTOPUS_FAST_BOX_PADDING_BOHR,
+                            octopusMaxScfIterations: Math.min(payloadMaxScf, OCTOPUS_FAST_MAX_SCF_ITERATIONS),
+                            fastPath: true,
+                        } : {}),
+                    };
+
+                    const solvePromise = httpRequest(`${OCTOPUS_MCP_URL}/solve`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(config)
+                        body: JSON.stringify(octopusRequestPayload),
+                        timeoutMs: solveTimeoutMs,
                     });
+                    let waitingSec = 0;
+                    const waitingTimer = setInterval(() => {
+                        waitingSec += 15;
+                        emit('log', `[Octopus][Wait] 求解进行中 ${waitingSec}s (timeout=${Math.round(solveTimeoutMs / 1000)}s)...`);
+                    }, 15000);
+                    let octoResp;
+                    try {
+                        octoResp = await solvePromise;
+                    } finally {
+                        clearInterval(waitingTimer);
+                    }
                     if (!octoResp.ok) {
                         throw new Error(`Octopus Engine Error: ${await octoResp.text()}`);
                     }
@@ -437,11 +595,20 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
 
                     // Surface Python-level errors as proper exceptions
                     if (solveResult.status === 'error') {
-                        const errMsg = solveResult.message || 'Unknown Octopus error';
+                        const errMsg = (solveResult.message || solveResult.stderr_tail || solveResult.stdout_tail || 'Unknown Octopus error').toString();
                         appendLog('P2', `Octopus returned error: ${errMsg}`);
                         emit('log', `✗ Octopus Engine Error: ${errMsg}`);
                         throw new Error(`Octopus Engine Error: ${errMsg}`);
                     }
+
+                    const octoEigenvalues = Array.isArray(solveResult.eigenvalues) ? solveResult.eigenvalues : [];
+                    if (!solveResult.converged && octoEigenvalues.length === 0) {
+                        const diag = (solveResult.stderr_tail || solveResult.stdout_tail || solveResult.message || '').toString();
+                        appendLog('P2', `Octopus returned no converged states. ${diag ? `Diagnostics: ${diag}` : ''}`.trim());
+                        throw new Error('Octopus returned no converged states');
+                    }
+
+                    usedOctopus = true;
 
                     if (solveResult.stdout_tail) {
                         appendLog('P2', `Octopus Output:\n${solveResult.stdout_tail}`);
@@ -451,23 +618,38 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                     }
                 }
             } else {
-                appendLog('P2', `Octopus health check failed or timed out. Falling back...`);
+                octopusFailureReason = octopusFailureReason || 'Octopus health check failed or timed out';
+                appendLog('P2', `${octopusFailureReason}.`);
             }
         } catch (e: any) {
-            appendLog('P2', `Octopus attempt failed: ${e.message}, falling back...`);
+            usedOctopus = false;
+            solveResult = null;
+            octopusFailureReason = e.message || 'Octopus attempt failed';
+            appendLog('P2', `Octopus attempt failed: ${octopusFailureReason}`);
         }
     }
 
     if (!usedOctopus) {
         try {
+            if (requestedOctopus) {
+                if (!OCTOPUS_ALLOW_LOCAL_FALLBACK) {
+                    const reason = octopusFailureReason || 'Octopus backend unavailable';
+                    emit('log', `✗ Octopus required but unavailable: ${reason}`);
+                    appendLog('P2', `Octopus required but unavailable: ${reason}`);
+                    throw new Error(`Octopus required but unavailable: ${reason}`);
+                }
+                emit('log', `⚠ Octopus unavailable (${octopusFailureReason || 'unknown reason'}), fallback to local Python backend (non-DFT approximation).`);
+                appendLog('P2', `Octopus unavailable (${octopusFailureReason || 'unknown reason'}); using local Python fallback (not true Octopus DFT)`);
+            }
             appendLog('P2', `Using local Python backend`);
             // Assuming local Python engine might be on a different port if Octopus is on 8000.
             // If they are on the same port, the above logic correctly routes to whichever is running.
             // We'll keep the port as 8000 for local Python too, assuming they aren't run together.
-            const resp = await fetch(`${LOCAL_ENGINE_URL}/solve`, {
+            const resp = await httpRequest(`${LOCAL_ENGINE_URL}/solve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
+                body: JSON.stringify(config),
+                timeoutMs: 120000,
             });
             if (!resp.ok) {
                 throw new Error(`Python Engine Error: ${await resp.text()}`);
@@ -482,7 +664,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
     // 2) Parse JSON response — handle different problem types
     let isHermitian = true;
     // For octopus3D, always treat as 'molecular' problem type for ResultsPanel routing
-    const effectiveProblemType = isOctopus ? 'molecular' : (solveResult?.problemType || config.problemType || 'boundstate');
+    const effectiveProblemType = usedOctopus ? 'molecular' : (solveResult?.problemType || config.problemType || 'boundstate');
     const problemType = effectiveProblemType;
     const matrix_info = solveResult?.matrix_info || { size: 0, non_zeros: 0, isHermitian: true };
     const x_grid = solveResult?.x_grid || [];
@@ -496,7 +678,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
         return { psi_up: Array.isArray(w) ? w : [], psi_down: [] };
     });
 
-    if (!isOctopus) {
+    if (!usedOctopus) {
         // ═══ P2: Build Hamiltonian ═══════════════════════════════════
         const p2Start = Date.now();
         updateDevState({
@@ -601,9 +783,10 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
 
     // ═══ P3: Bound State — Eigenvalue Problem ═══════════════════
     // SKIP this logic for Octopus, as it's already processed in solveResult
-    if (isOctopus) {
+    if (usedOctopus) {
         const totalTime = (Date.now() - startTime) / 1000;
         const molData = solveResult?.molecular;
+        const scheduler = solveResult?.scheduler;
         const converged: boolean = molData?.converged ?? solveResult?.converged ?? false;
         const scfIter: number = molData?.scf_iterations ?? solveResult?.scf_iterations ?? 0;
 
@@ -627,6 +810,18 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
         if (molData?.total_energy_hartree != null) {
             emit('log', `[Octopus] Total energy = ${molData.total_energy_hartree.toFixed(6)} H`);
         }
+        if ((config.calcMode || 'gs') === 'td' && molData?.td_skipped_reason) {
+            emit('log', `[Octopus][TD] ${molData.td_skipped_reason}`);
+        }
+        if (scheduler) {
+            const runId = scheduler.run_dir || '-';
+            const jobId = scheduler.job_id || '-';
+            const node = scheduler.selected_node || scheduler.exec_vnode || '-';
+            const cpu = scheduler.ncpus ?? '-';
+            const mpi = scheduler.mpiprocs ?? '-';
+            const queue = scheduler.queue || '-';
+            emit('log', `[Octopus][Scheduler] run=${runId} | job=${jobId} | node=${node} | cpu=${cpu} | mpi=${mpi} | queue=${queue}`);
+        }
 
         globalEmitter = undefined;
         return {
@@ -643,8 +838,11 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
             probabilityDensity: [],
             verified: converged,
             equationType: 'Octopus DFT',
+            engine: 'octopus-mcp',
             dimensionality: config.octopusDimensions || '3D',
             computationTime: totalTime,
+            ragContext: ragContext || undefined,
+            scheduler,
             molecular: molData ? {
                 moleculeName: molData.moleculeName,
                 calcMode: (config.calcMode as 'gs' | 'td') || 'gs',
@@ -656,6 +854,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 converged: molData.converged,
                 optical_spectrum: molData.optical_spectrum,
                 td_dipole: molData.td_dipole,
+                run_explanation: molData.run_explanation,
                 radiation_spectrum: molData.radiation_spectrum,
                 eels_spectrum: molData.eels_spectrum,
             } : undefined,
@@ -768,7 +967,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
 
     const finalRes: PhysicsResult = {
         config,
-        problemType: config.engineMode === 'octopus3D' ? 'molecular' : 'boundstate',
+        problemType: solveResult?.problemType || config.problemType || 'boundstate',
         x_grid,
         y_grid: solveResult?.y_grid,
         p_grid: p_grid || [],
@@ -780,9 +979,11 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
         wavefunctions: wavefunctions,
         probabilityDensity: prob,
         verified,
+        engine: 'local-python',
         equationType: eqLabel,
         computationTime: totalTime,
-        molecular: solveResult?.molecular,
+        ragContext: ragContext || undefined,
+        molecular: usedOctopus ? solveResult?.molecular : undefined,
     };
     globalEmitter = undefined;
     return finalRes;

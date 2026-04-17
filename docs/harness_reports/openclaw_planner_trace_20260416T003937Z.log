@@ -1,0 +1,52 @@
+{
+  "attempts": [
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN=/data/home/zju321/.local/bin/openclaw; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd /data/home/zju321/.openclaw/workspace/projects/Dirac && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 90",
+      "exit_code": 255,
+      "stdout": "",
+      "stderr": "ssh: Could not resolve hostname dirac-key: Name or service not known\n",
+      "ok": false,
+      "execution_mode": "remote_ssh"
+    },
+    {
+      "command": "/data/home/zju321/.local/bin/openclaw agent --agent dirac-planner --message Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable. --json --timeout 90",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Command '['/data/home/zju321/.local/bin/openclaw', 'agent', '--agent', 'dirac-planner', '--message', 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.', '--json', '--timeout', '90']' timed out after 105 seconds",
+      "ok": false,
+      "execution_mode": "local"
+    },
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN=/data/home/zju321/.local/bin/openclaw; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd /data/home/zju321/.openclaw/workspace/projects/Dirac && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 90",
+      "exit_code": 255,
+      "stdout": "",
+      "stderr": "ssh: Could not resolve hostname dirac-key: Name or service not known\n",
+      "ok": false,
+      "execution_mode": "remote_ssh"
+    },
+    {
+      "command": "/data/home/zju321/.local/bin/openclaw agent --agent dirac-planner --message Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable. --json --timeout 90",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Command '['/data/home/zju321/.local/bin/openclaw', 'agent', '--agent', 'dirac-planner', '--message', 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.', '--json', '--timeout', '90']' timed out after 105 seconds",
+      "ok": false,
+      "execution_mode": "local"
+    },
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN=/data/home/zju321/.local/bin/openclaw; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd /data/home/zju321/.openclaw/workspace/projects/Dirac && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 90",
+      "exit_code": 255,
+      "stdout": "",
+      "stderr": "ssh: Could not resolve hostname dirac-key: Name or service not known\n",
+      "ok": false,
+      "execution_mode": "remote_ssh"
+    },
+    {
+      "command": "/data/home/zju321/.local/bin/openclaw agent --agent dirac-planner --message Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable. --json --timeout 90",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Command '['/data/home/zju321/.local/bin/openclaw', 'agent', '--agent', 'dirac-planner', '--message', 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=hydrogen_gs_reference, molecule=H, calc=gs.\\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.', '--json', '--timeout', '90']' timed out after 105 seconds",
+      "ok": false,
+      "execution_mode": "local"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "gateway_base_url": "http://127.0.0.1:8111",
+  "submit_endpoint": "/coding/submit",
+  "status_endpoint": "/coding/status",
+  "result_endpoint": "/coding/result",
+  "submit_timeout_seconds": 15,
+  "enabled": true,
+  "notes": "Enabled by default for L1 coding submission. Run scripts/coding_gateway_server.py + a persistent scripts/coding_gateway_worker.py loop. Recommended adapter command: python scripts/coding_execution_adapter.py --task-file {task_file}."
+}

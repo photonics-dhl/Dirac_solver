@@ -1,0 +1,1415 @@
+{
+  "updated_at": "2026-04-16T04:18:25.832789Z",
+  "target_url": "http://10.72.212.33:5173",
+  "interval_seconds": 15,
+  "timeout_seconds": 5,
+  "last": {
+    "ts": "2026-04-16T04:18:25.832789Z",
+    "ok": true,
+    "status_code": 404,
+    "latency_ms": 2168,
+    "error": "HTTP Error 404: Not Found"
+  },
+  "history": [
+    {
+      "ts": "2026-04-16T03:21:41.023822Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2058,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:21:58.093836Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2046,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:22:15.161723Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2068,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:22:32.242152Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2043,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:22:49.299475Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:23:06.397771Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2204,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:23:23.623786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:23:40.707952Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:23:57.786780Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:24:14.872422Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2165,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:24:32.059848Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2073,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:24:49.156864Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2063,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:25:06.245014Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2078,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:25:23.345842Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2085,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:25:40.448794Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2066,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:25:57.524249Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:26:14.602132Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2051,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:26:31.665670Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2057,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:26:48.744843Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2077,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:27:05.844850Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2149,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:27:23.002153Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2049,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:27:40.075784Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:27:57.165875Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:28:14.266222Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2048,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:28:31.337786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2152,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:28:48.512560Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2086,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:29:05.620316Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:29:22.693271Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2074,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:29:39.781027Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:29:56.865682Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2039,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:30:13.924213Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2041,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:30:30.987872Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2070,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:30:48.071117Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2046,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:31:05.139784Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2211,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:31:22.373923Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2040,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:31:39.436793Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2075,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:31:56.532787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2073,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:32:13.627934Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2162,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:32:30.813265Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:32:47.905820Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:33:04.998133Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2152,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:33:22.172899Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2031,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:33:39.226542Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:33:56.305023Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2159,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:34:13.486734Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2057,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:34:30.563784Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2161,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:34:47.747272Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2047,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:35:04.816781Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:35:21.901165Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2157,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:35:39.080785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2058,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:35:56.158839Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2073,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:36:13.242565Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2057,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:36:30.322821Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2161,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:36:47.507477Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:37:04.599707Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:37:21.683666Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2057,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:37:38.755625Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2088,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:37:55.853623Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2162,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:38:13.039203Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:38:30.128808Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2158,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:38:47.309533Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:39:04.377791Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2060,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:39:21.461142Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2088,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:39:38.569800Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2165,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:39:55.757938Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2096,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:40:12.877237Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:40:29.954903Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:40:47.038789Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2195,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:41:04.257264Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2036,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:41:21.316021Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:41:38.392090Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2052,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:41:55.467213Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2165,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:42:12.656064Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2034,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:42:29.713786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2121,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:42:46.853806Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2242,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:43:04.113790Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2040,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:43:21.175844Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2177,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:43:38.374840Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2063,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:43:55.460663Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2182,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:44:12.664406Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2059,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:44:29.745517Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2075,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:44:46.843233Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2168,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:45:04.028687Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2044,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:45:21.094782Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2068,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:45:38.175641Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2044,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:45:55.242420Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:46:12.327781Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2092,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:46:29.442563Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2071,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:46:46.535511Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2058,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:47:03.612193Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2051,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:47:20.685785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2050,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:47:37.758543Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2059,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:47:54.838869Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:48:11.917685Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2162,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:48:29.101787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:48:46.175796Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2049,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:49:03.236862Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:49:20.314788Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2160,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:49:37.496812Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2044,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:49:54.563777Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:50:11.648631Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2074,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:50:28.745252Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2075,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:50:45.843223Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2098,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:51:02.964278Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:51:20.041735Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2068,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:51:37.132293Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2078,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:51:54.233065Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 3532,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:52:12.787788Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2064,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:52:29.872789Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2081,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:52:46.972797Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:53:04.070785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2053,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:53:21.146779Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2158,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:53:38.319790Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:53:55.392795Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2107,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:54:12.520786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:54:29.605790Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:54:46.683391Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2064,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:55:03.769785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:55:20.847209Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2051,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:55:37.920787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2059,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:55:55.002791Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:56:12.093787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:56:29.170785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2136,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:56:46.328783Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2200,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:57:03.551131Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2072,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:57:20.647782Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2078,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:57:37.748240Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:57:54.832798Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2080,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:58:11.933786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2071,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:58:29.026783Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:58:46.097151Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2158,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:59:03.276205Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2051,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:59:20.347774Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2164,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:59:37.534674Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T03:59:54.611923Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:00:11.710781Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2061,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:00:28.794980Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2070,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:00:45.887806Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2166,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:01:03.076894Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2050,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:01:20.148802Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:01:37.248023Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2035,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:01:54.305782Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2170,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:02:11.499490Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:02:28.576150Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2089,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:02:45.687775Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2060,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:03:02.758799Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2043,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:03:19.814784Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2042,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:03:36.878785Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2066,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:03:53.968554Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2047,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:04:11.038689Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:04:28.128371Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2059,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:04:45.208353Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2062,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:05:02.293838Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2039,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:05:19.355990Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2155,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:05:36.528513Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2036,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:05:53.586787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2073,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:06:10.676815Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2084,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:06:27.784787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:06:44.863405Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2048,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:07:01.918826Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2089,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:07:19.019036Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2148,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:07:36.189781Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2051,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:07:53.253789Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2070,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:08:10.346783Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2031,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:08:27.391500Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2166,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:08:44.580781Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2037,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:09:01.638783Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2050,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:09:18.709435Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2161,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:09:35.882795Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:09:52.962097Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:10:10.045787Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2059,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:10:27.116795Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2085,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:10:44.224830Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2056,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:11:01.299827Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2074,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:11:18.393255Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2057,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:11:35.473150Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2171,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:11:52.666774Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2046,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:12:09.736082Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2065,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:12:26.824292Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:12:43.916597Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2069,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:13:01.007839Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2053,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:13:18.083789Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2041,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:13:35.137790Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:13:52.226791Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2072,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:14:09.321046Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2058,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:14:26.400844Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2089,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:14:43.512520Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2079,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:15:00.614657Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2126,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:15:17.763841Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2047,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:15:34.833838Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2067,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:15:51.924254Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2116,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:16:09.062851Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:16:26.159808Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2035,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:16:43.217659Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2055,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:17:00.294783Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2070,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:17:17.386786Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2054,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:17:34.464305Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2076,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:17:51.563295Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2195,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:18:08.766808Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2043,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "ts": "2026-04-16T04:18:25.832789Z",
+      "ok": true,
+      "status_code": 404,
+      "latency_ms": 2168,
+      "error": "HTTP Error 404: Not Found"
+    }
+  ]
+}

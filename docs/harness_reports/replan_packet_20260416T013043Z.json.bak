@@ -1,0 +1,57 @@
+{
+  "replan_id": "RPL-20260416T013043Z",
+  "task_id": "T-20260416T011741Z",
+  "trigger": "blocked_physics_mismatch",
+  "convergence_unmet": [],
+  "reviewer_checks": {
+    "accuracy_ok": false,
+    "benchmarks_aligned_ok": false,
+    "provenance_verified": true,
+    "case_scope_ok": true,
+    "execution_ok": false,
+    "logs_consistent": true,
+    "kb_richness_ok": false,
+    "retrieval_skill_ok": false,
+    "web_evidence_ok": false,
+    "openclaw_flow_ok": false,
+    "planner_executor_chain_ok": false,
+    "deep_model_priority_ok": true,
+    "mcp_attempted_ok": true,
+    "octopus_ok": true,
+    "ui_ok": true,
+    "ui_rendering_ok": true,
+    "physics_result_ok": true,
+    "skills_contracts_ok": true
+  },
+  "failure_type": "planner_executor_chain_break",
+  "anti_repeat_triggered": true,
+  "delta_diagnostics": {
+    "relative_error": 111.38452462,
+    "threshold": 0.03,
+    "within_tolerance": false,
+    "reference_energy_hartree": -0.5,
+    "reference_source": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
+    "fallback_applied": true
+  },
+  "failure_reason_taxonomy": "physics_mismatch",
+  "actions": [
+    {
+      "step": 1,
+      "owner": "planner",
+      "action": "rebuild_plan_and_handoff_with_remote_openclaw_first",
+      "why": "planner->executor continuity failed under strict gate",
+      "source": "reviewer.next_action_packet",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "owner": "executor",
+      "action": "execute_via_remote_openclaw_path_only",
+      "why": "avoid local-only fallback when chain continuity is broken",
+      "source": "reviewer.next_action_packet",
+      "status": "pending"
+    }
+  ],
+  "source_report": "/data/home/zju321/miniconda3/bin/python3 scripts/run_kb_reliable_autopilot.py --base-url http://127.0.0.1:8101 --manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_manifest.json --timeout 120 --max-attempts 5 --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports && /data/home/zju321/miniconda3/bin/python3 scripts/run_multi_agent_orchestration.py --api-base http://127.0.0.1:3001 --harness-base http://127.0.0.1:8101 --case-id hydrogen_gs_reference --max-iterations 6 --octopus-molecule H --octopus-calc-mode gs --skills-manifest /data/home/zju321/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json --planner-model-priority gpt-5-thinking,deepseek-r1 --reviewer-model-priority gpt-5-thinking,deepseek-r1 --planner-thinking-budget 8000 --reviewer-thinking-budget 8000 && /data/home/zju321/miniconda3/bin/python3 scripts/run_dft_tddft_agent_suite.py --api-base http://127.0.0.1:3001 --molecule H --task-ids hydrogen_gs_reference --output-dir /data/home/zju321/.openclaw/workspace/projects/Dirac/docs/harness_reports --external-reference-path knowledge_base/reference_data/external_curve_references.json && /data/home/zju321/miniconda3/bin/python3 scripts/export_web_evidence_to_kb.py --report docs/harness_reports/multi_agent_orchestration_hydrogen_gs_reference_20260416T012940Z.json --output knowledge_base/corpus/web_evidence_traceable_cases_2026_04.md",
+  "created_at": "2026-04-16T01:30:43.241309Z"
+}

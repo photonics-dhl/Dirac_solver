@@ -1,0 +1,42 @@
+{
+  "task_id": "T-20260401-001",
+  "session_id": "S-agent-main-001",
+  "user_instruction": "自然语言原始需求",
+  "intent_type": "code_impl",
+  "owner_role": "supervisor",
+  "phase": "RECEIVED",
+  "iteration": {
+    "current": 0,
+    "max": 6,
+    "budget_seconds": 1800
+  },
+  "acceptance": {
+    "must_pass": [
+      "tests_pass",
+      "reviewer_pass",
+      "artifact_paths_present"
+    ],
+    "nice_to_have": [
+      "perf_not_regressed"
+    ]
+  },
+  "last_action": {
+    "by": "supervisor",
+    "at": "2026-04-01T00:00:00Z",
+    "summary": "task received"
+  },
+  "last_result": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": {
+    "is_blocked": false,
+    "reason_code": "none",
+    "reason_detail": ""
+  },
+  "next_action": {
+    "by": "planner",
+    "todo": "create handoff packet"
+  },
+  "updated_at": "2026-04-01T00:00:00Z"
+}

@@ -142,5 +142,5 @@ docker exec -it dirac_octopus_mcp curl -X POST http://localhost:8000/solve \
 ### 6.4 检查输出文件挂载 (Check Output Persistence)
 验证计算结果是否正确同步到了宿主机的 `@Octopus_docs/output` 文件夹：
 ```powershell
-ls "e:\PostGraduate\Dirac_solver\@Octopus_docs\output"
+ls "z:\.openclaw\workspace\projects\Dirac\@Octopus_docs\output"
 ```

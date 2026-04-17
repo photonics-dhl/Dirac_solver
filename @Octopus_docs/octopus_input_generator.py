@@ -6,8 +6,9 @@ class OctopusInputGenerator:
     Generates Octopus 'inp' files from frontend-style parameter dictionaries.
     """
     
-    def __init__(self, output_dir="e:/PostGraduate/Dirac_solver/@Octopus_docs/generated_inputs"):
-        self.output_dir = output_dir
+    def __init__(self, output_dir=None):
+        default_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "generated_inputs"))
+        self.output_dir = output_dir or default_dir
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 

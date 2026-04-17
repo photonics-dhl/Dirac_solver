@@ -1,0 +1,26 @@
+{
+  "escalation_id": "E-20260401-001",
+  "task_id": "T-20260401-001",
+  "from_role": "executor",
+  "to_role": "supervisor",
+  "blocker_type": "infra",
+  "severity": "high",
+  "attempted": [
+    {
+      "step": "run exec readiness",
+      "result": "failed"
+    }
+  ],
+  "needs_external": {
+    "provider": "openclaw_claude",
+    "ask": "provide minimal patch and recovery steps"
+  },
+  "expected_return": [
+    "root_cause",
+    "minimal_patch",
+    "verification_plan"
+  ],
+  "evidence": [
+    ".openclaw/logs/gateway-foreground.log"
+  ]
+}

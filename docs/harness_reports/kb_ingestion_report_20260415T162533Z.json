@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-04-15T16:25:33.127667Z",
+  "manifest": "knowledge_base/corpus_manifest.json",
+  "mode": "force_reingest",
+  "total_sources": 4,
+  "ingested_sources": 4,
+  "unchanged_sources": 0,
+  "skipped_sources": 0,
+  "failed_sources": 0,
+  "total_chunks_added": 160,
+  "local_chunk_evidence_count": 111,
+  "local_chunks_dir": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks",
+  "rows": [
+    {
+      "source_id": "h2o_gs_reference_provenance",
+      "type": "local_markdown",
+      "status": "ingested",
+      "chunks_added": 2,
+      "local_chunks": 2,
+      "local_chunk_file": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks/h2o_gs_reference_provenance__f9573d8a0f06.jsonl",
+      "note": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus/h2o_gs_reference_provenance.md via http://127.0.0.1:8101/kb/ingest_markdown"
+    },
+    {
+      "source_id": "dft_tddft_authoritative_reference_cases_2026_04",
+      "type": "local_markdown",
+      "status": "ingested",
+      "chunks_added": 7,
+      "local_chunks": 3,
+      "local_chunk_file": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks/dft_tddft_authoritative_reference_cases_2026_04__e2b6c2563d13.jsonl",
+      "note": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus/dft_tddft_authoritative_reference_cases_2026_04.md via http://127.0.0.1:8101/kb/ingest_markdown"
+    },
+    {
+      "source_id": "octopus_tutorial16_capability_matrix_2026_04",
+      "type": "local_markdown",
+      "status": "ingested",
+      "chunks_added": 13,
+      "local_chunks": 4,
+      "local_chunk_file": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks/octopus_tutorial16_capability_matrix_2026_04__60533613b500.jsonl",
+      "note": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus/octopus_tutorial16_capability_matrix_2026_04.md via http://127.0.0.1:8101/kb/ingest_markdown"
+    },
+    {
+      "source_id": "octopus_tutorial16_official_catalog_2026_04",
+      "type": "local_markdown",
+      "status": "ingested",
+      "chunks_added": 138,
+      "local_chunks": 102,
+      "local_chunk_file": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/chunks/octopus_tutorial16_official_catalog_2026_04__6b2f37ba64ad.jsonl",
+      "note": "/data/home/zju321/.openclaw/workspace/projects/Dirac/knowledge_base/corpus/octopus_tutorial16_official_catalog_2026_04.md via http://127.0.0.1:8101/kb/ingest_markdown"
+    }
+  ]
+}

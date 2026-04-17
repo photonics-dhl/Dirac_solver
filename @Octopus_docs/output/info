@@ -2,12 +2,12 @@
 ******************************** Grid ********************************
 Simulation Box:
   Type = minimum
-  Radius  [b] =   2.500
+  Radius  [b] =   7.000
 Main mesh:
-  Spacing [b] = ( 0.300, 0.300, 0.300)    volume/point [b^3] =      0.02700
-  # inner mesh =       3441
-  # total mesh =       8713
-  Grid Cutoff [H] =    54.831136    Grid Cutoff [Ry] =   109.662271
+  Spacing [b] = ( 0.360, 0.360, 0.360)    volume/point [b^3] =      0.04666
+  # inner mesh =      31031
+  # total mesh =      50271
+  Grid Cutoff [H] =    38.077177    Grid Cutoff [Ry] =    76.154355
 **********************************************************************
 
 
@@ -21,56 +21,57 @@ Input: [TheoryLevel = kohn_sham]
 
 Exchange-correlation:
   Exchange
-    Slater exchange (LDA)
-    [1] P. A. M. Dirac.,  Math. Proc. Cambridge Philos. Soc. 26, 376 (1930)
-    [2] F. Bloch.,  Z. Phys. 57, 545 (1929)
+    Perdew, Burke & Ernzerhof (GGA)
+    [1] J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 77, 3865 (1996)
+    [2] J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 78, 1396 (1997)
   Correlation
-    Perdew & Zunger (LDA)
-    [1] J. P. Perdew and A. Zunger.,  Phys. Rev. B 23, 5048 (1981)
+    Perdew, Burke & Ernzerhof (GGA)
+    [1] J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 77, 3865 (1996)
+    [2] J. P. Perdew, K. Burke, and M. Ernzerhof.,  Phys. Rev. Lett. 78, 1396 (1997)
 
 **********************************************************************
 
-SCF converged in   17 iterations
+SCF converged in   12 iterations
 
 Some of the states are not fully converged!
 Eigenvalues [H]
  #st  Spin   Eigenvalue      Occupation
-   1   --    -0.148626       2.000000
-   2   --     0.494544       0.000000
-   3   --     0.938143       0.000000
-   4   --     0.938143       0.000000
-   5   --     1.340733       0.000000
+   1   --   -65.823715       1.000000
+   2   --     0.101952       0.000000
+   3   --     0.200029       0.000000
+   4   --     0.200124       0.000000
+   5   --     0.200278       0.000000
 
 Energy [H]:
-      Total       =        -0.87834834
-      Free        =        -0.87834834
+      Total       =       -68.32278612
+      Free        =       -68.32278612
       -----------
-      Ion-ion     =         0.71428571
-      Eigenvalues =        -0.29725276
-      Hartree     =         1.52908460
-      Int[n*v_xc] =        -0.99604106
-      Exchange    =        -0.65964163
-      Correlation =        -0.10269611
+      Ion-ion     =         0.00000000
+      Eigenvalues =       -65.82371460
+      Hartree     =         3.17399301
+      Int[n*v_xc] =        -2.76816249
+      Exchange    =        -1.99785333
+      Correlation =        -0.09538767
       vanderWaals =         0.00000000
       Delta XC    =         0.00000000
-      Entropy     =         0.00000000
+      Entropy     =         1.38629436
       -TS         =        -0.00000000
       Photon ex.  =         0.00000000
-      Kinetic     =         1.56082855
-      External    =        -3.92020945
+      Kinetic     =        28.16858474
+      External    =       -97.57231283
       Non-local   =         0.00000000
       Int[n*v_E]  =         0.00000000
 
 Dipole:                 [b]          [Debye]
-      <x> =    1.17348E-07      2.98270E-07
-      <y> =    1.82128E-08      4.62923E-08
-      <z> =   -3.16450E-07     -8.04334E-07
+      <x> =   -5.74308E-10     -1.45974E-09
+      <y> =   -2.91283E-10     -7.40367E-10
+      <z> =    2.62855E-10      6.68111E-10
 
 Convergence:
-      abs_energy =  7.61569288E-08 ( 0.00000000E+00) [H]
-      rel_energy =  8.67047125E-08 ( 0.00000000E+00)
-      abs_dens =  4.08512857E-07 ( 0.00000000E+00)
-      rel_dens =  2.04256429E-07 ( 1.00000000E-06)
-      abs_evsum =  7.42289752E-09 ( 0.00000000E+00) [H]
-      rel_evsum =  2.49716734E-08 ( 0.00000000E+00)
+      abs_energy =  2.63161138E-04 ( 0.00000000E+00) [H]
+      rel_energy =  3.85171828E-06 ( 0.00000000E+00)
+      abs_dens =  6.53897898E-08 ( 0.00000000E+00)
+      rel_dens =  6.53897898E-08 ( 1.00000000E-06)
+      abs_evsum =  2.63070459E-04 ( 0.00000000E+00) [H]
+      rel_evsum =  3.99659090E-06 ( 0.00000000E+00)
 

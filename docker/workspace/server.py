@@ -2,18 +2,30 @@ import asyncio
 import json
 import math
 import os
+import shlex
 import re
 import shutil
 import subprocess
-import tempfile
+import time
+import sys
+import traceback
+from typing import Optional
 import uvicorn
 from starlette.applications import Starlette
 from starlette.routing import Route
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from mcp.server import Server
-from mcp.server.sse import SseServerTransport
+try:
+    from mcp.server import Server
+    from mcp.server.sse import SseServerTransport
+    import mcp.types as types
+    MCP_AVAILABLE = True
+except Exception:
+    Server = None
+    SseServerTransport = None
+    types = None
+    MCP_AVAILABLE = False
 
 
 def sanitize_floats(obj):
@@ -27,10 +39,298 @@ def sanitize_floats(obj):
     elif isinstance(obj, list):
         return [sanitize_floats(v) for v in obj]
     return obj
-import mcp.types as types
 from jinja2 import Template
 
-mcp_server = Server("octopus-physics-mcp")
+mcp_server = Server("octopus-physics-mcp") if MCP_AVAILABLE else None
+
+
+def resolve_output_dir() -> str:
+    configured = os.environ.get("OCTOPUS_OUTPUT_DIR", "").strip()
+    if configured:
+        return configured
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "@Octopus_docs", "output"))
+
+
+def resolve_repo_root() -> str:
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+def _extract_llm_output_file(stdout_text: str) -> Optional[str]:
+    for line in reversed(stdout_text.splitlines()):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+            if isinstance(obj, dict) and obj.get("status") == "success":
+                return str(obj.get("file", "")).strip() or None
+        except Exception:
+            continue
+    return None
+
+
+def _read_lines_safe(path: str, max_lines: int = 80) -> list[str]:
+    if not os.path.exists(path):
+        return []
+    lines: list[str] = []
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            for idx, line in enumerate(f):
+                if idx >= max_lines:
+                    break
+                lines.append(line.rstrip("\n"))
+    except Exception:
+        return []
+    return lines
+
+
+def _parse_cross_section_header(work_dir: str) -> dict:
+    cs_path = os.path.join(work_dir, "cross_section_vector")
+    if not os.path.exists(cs_path):
+        return {}
+
+    header: dict[str, str] = {}
+    for raw in _read_lines_safe(cs_path, max_lines=100):
+        s = raw.strip()
+        if not s.startswith("#"):
+            continue
+        content = s[1:].strip()
+        if not content:
+            continue
+        if "=" in content:
+            k, v = content.split("=", 1)
+            header[k.strip().lower()] = v.strip()
+            continue
+        parts = content.split()
+        if len(parts) >= 2:
+            key = " ".join(parts[:-1]).strip().lower()
+            val = parts[-1].strip()
+            header[key] = val
+    return header
+
+
+def _summarize_dos_file(work_dir: str) -> dict:
+    candidates = [
+        os.path.join(work_dir, "static", "total-dos.dat"),
+        os.path.join(work_dir, "static", "dos.dat"),
+        os.path.join(work_dir, "total-dos.dat"),
+    ]
+    dos_path = next((p for p in candidates if os.path.exists(p)), "")
+    if not dos_path:
+        return {}
+
+    energies: list[float] = []
+    dos_vals: list[float] = []
+    try:
+        with open(dos_path, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                s = line.strip()
+                if not s or s.startswith("#"):
+                    continue
+                cols = s.split()
+                if len(cols) < 2:
+                    continue
+                try:
+                    e = float(cols[0])
+                    d = float(cols[1])
+                except Exception:
+                    continue
+                energies.append(e)
+                dos_vals.append(d)
+    except Exception:
+        return {"path": dos_path}
+
+    out = {"path": dos_path, "points": len(energies)}
+    if energies:
+        out["energy_min"] = min(energies)
+        out["energy_max"] = max(energies)
+    if dos_vals:
+        i_peak = max(range(len(dos_vals)), key=lambda i: dos_vals[i])
+        out["peak_energy"] = energies[i_peak]
+        out["peak_dos"] = dos_vals[i_peak]
+    return out
+
+
+def _read_units_output_from_inp(work_dir: str) -> Optional[str]:
+    for name in ["inp_td", "inp_gs", "inp"]:
+        p = os.path.join(work_dir, name)
+        if not os.path.exists(p):
+            continue
+        for line in _read_lines_safe(p, max_lines=160):
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            m = re.match(r"^UnitsOutput\s*=\s*(.+)$", s, flags=re.IGNORECASE)
+            if m:
+                return m.group(1).strip()
+    return None
+
+
+def _collect_run_image_paths(work_dir: str, max_images: int = 6) -> list[str]:
+    exts = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".svg"}
+    out: list[str] = []
+    for root, _, files in os.walk(work_dir):
+        for name in files:
+            ext = os.path.splitext(name)[1].lower()
+            if ext not in exts:
+                continue
+            out.append(os.path.join(root, name))
+            if len(out) >= max_images:
+                return out
+    return out
+
+
+def _build_fallback_run_explanation(work_dir: str, config: dict, result_data: dict) -> str:
+    calc_mode = str(config.get("calcMode", "gs"))
+    molecule = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "Unknown")))
+    spacing = config.get("octopusSpacing", config.get("gridSpacing", "-"))
+    radius = config.get("octopusRadius", config.get("spatialRange", "-"))
+
+    molecular = result_data.get("molecular") or {}
+    spectrum = molecular.get("optical_spectrum") or {}
+    run_dir = (result_data.get("scheduler") or {}).get("run_dir")
+
+    lines = [
+        "# Run Quick Guide",
+        "",
+        "本说明为本地快速解读（不调用 LLM），用于帮助理解本次 run 输出中各字段的数据类型。",
+        "",
+        "## Basic Info",
+        f"- molecule: {molecule}",
+        f"- calcMode: {calc_mode}",
+        f"- spacing: {spacing}",
+        f"- radius/range: {radius}",
+        f"- run_dir: {run_dir or '(local-temp)'}",
+        "",
+        "## Field Type Guide",
+        f"- eigenvalues: list[number], count={len(result_data.get('eigenvalues') or [])}",
+        f"- total_energy: number | null, value={result_data.get('total_energy')}",
+        f"- converged: boolean, value={result_data.get('converged')}",
+        f"- scf_iterations: integer, value={result_data.get('scf_iterations')}",
+        f"- molecular.energy_levels: list[number], count={len(molecular.get('energy_levels') or [])}",
+        f"- molecular.homo_energy: number | null, value={molecular.get('homo_energy')}",
+        f"- molecular.lumo_energy: number | null, value={molecular.get('lumo_energy')}",
+        f"- molecular.optical_spectrum.energy_ev: list[number], count={len(spectrum.get('energy_ev') or [])}",
+        f"- molecular.optical_spectrum.cross_section: list[number], count={len(spectrum.get('cross_section') or [])}",
+        f"- scheduler: object | null, present={bool(result_data.get('scheduler'))}",
+        "",
+        "## Output Files",
+        "- static/info: text file, SCF summary and eigenvalue info.",
+        "- static/convergence: text table, iteration convergence history.",
+        "- td.general/*: time-series outputs in TD mode.",
+        "- cross_section_vector: tabular text spectrum (if TD spectrum generated).",
+        "- octopus.stdout / octopus.stderr: solver logs for debugging.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def write_run_explanation(work_dir: str, config: dict, result_data: dict) -> Optional[dict]:
+    enabled = os.environ.get("OCTOPUS_RUN_EXPLANATION_ENABLED", "true").strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled or not work_dir or not os.path.isdir(work_dir):
+        return None
+
+    file_name = os.environ.get("OCTOPUS_RUN_EXPLANATION_FILE", "RUN_EXPLANATION.md").strip() or "RUN_EXPLANATION.md"
+    explanation_path = os.path.join(work_dir, file_name)
+
+    fallback_md = _build_fallback_run_explanation(work_dir, config, result_data)
+    try:
+        with open(explanation_path, "w", encoding="utf-8") as f:
+            f.write(fallback_md)
+    except Exception as e:
+        print(f"[WARN] Failed to write fallback explanation: {e}")
+        return None
+
+    return {
+        "file": file_name,
+        "path": explanation_path,
+        "used_llm": False,
+        "status": "local-quick-guide",
+    }
+
+
+def cleanup_octopus_run_dirs(runs_dir: str, active_run_dir: Optional[str] = None) -> None:
+    """Cleanup old Octopus run directories with retention and age policy."""
+    enabled = os.environ.get("OCTOPUS_RUN_CLEANUP_ENABLED", "true").strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled:
+        return
+
+    try:
+        keep_latest = int(os.environ.get("OCTOPUS_RUN_RETENTION_COUNT", "20"))
+    except ValueError:
+        keep_latest = 20
+    keep_latest = max(0, keep_latest)
+
+    try:
+        max_age_hours = float(os.environ.get("OCTOPUS_RUN_MAX_AGE_HOURS", "168"))
+    except ValueError:
+        max_age_hours = 168.0
+    max_age_seconds = max(0.0, max_age_hours) * 3600.0
+
+    keep_failed = os.environ.get("OCTOPUS_RUN_KEEP_FAILED", "true").strip().lower() in {"1", "true", "yes", "on"}
+
+    if not os.path.isdir(runs_dir):
+        return
+
+    now = time.time()
+    candidates = []
+    for name in os.listdir(runs_dir):
+        if not name.startswith("octopus_"):
+            continue
+        full_path = os.path.join(runs_dir, name)
+        if not os.path.isdir(full_path):
+            continue
+        if active_run_dir and os.path.abspath(full_path) == os.path.abspath(active_run_dir):
+            continue
+        try:
+            mtime = os.path.getmtime(full_path)
+        except OSError:
+            continue
+        candidates.append((full_path, mtime))
+
+    candidates.sort(key=lambda item: item[1], reverse=True)
+
+    for index, (run_path, mtime) in enumerate(candidates):
+        age_seconds = max(0.0, now - mtime)
+        delete_by_count = index >= keep_latest
+        delete_by_age = age_seconds > max_age_seconds
+        if not (delete_by_count or delete_by_age):
+            continue
+
+        exitcode_path = os.path.join(run_path, "octopus.exitcode")
+        if keep_failed and os.path.exists(exitcode_path):
+            try:
+                rc_text = open(exitcode_path, "r", encoding="utf-8").read().strip()
+                rc_value = int(rc_text)
+                if rc_value != 0:
+                    continue
+            except Exception:
+                continue
+
+        try:
+            shutil.rmtree(run_path, ignore_errors=True)
+            print(f"[DEBUG] cleanup removed old run dir: {run_path}")
+        except Exception as e:
+            print(f"[WARN] cleanup failed for {run_path}: {e}")
+
+
+def prepare_reusable_run_dir(runs_dir: str, run_dir_name: str) -> str:
+    """Prepare a stable run directory by removing previous contents."""
+    run_dir_name = (run_dir_name or "octopus_latest").strip() or "octopus_latest"
+    work_dir = os.path.join(runs_dir, run_dir_name)
+    os.makedirs(work_dir, exist_ok=True)
+
+    for entry in os.listdir(work_dir):
+        entry_path = os.path.join(work_dir, entry)
+        try:
+            if os.path.isdir(entry_path):
+                shutil.rmtree(entry_path, ignore_errors=True)
+            else:
+                os.remove(entry_path)
+        except Exception as e:
+            print(f"[WARN] failed to clear reusable run entry {entry_path}: {e}")
+
+    return work_dir
 
 # ─── Octopus inp templates ────────────────────────────────────────
 
@@ -46,6 +346,9 @@ MOLECULES = {
     "H": [
         " 'H' | 0.0 | 0.0 | 0.0 "
     ],
+    "N_atom": [
+        " 'N' | 0.0 | 0.0 | 0.0 "
+    ],
     "He": [
         " 'He' | 0.0 | 0.0 | 0.0 "
     ],
@@ -59,10 +362,11 @@ MOLECULES = {
     ],
     "CH4": [
         " 'C' | 0.0 | 0.0 | 0.0 " ,
-        " 'H' | 1.186 | 1.186 | 1.186 " ,
-        " 'H' | -1.186 | -1.186 | 1.186 " ,
-        " 'H' | 1.186 | -1.186 | -1.186 " ,
-        " 'H' | -1.186 | 1.186 | -1.186 "
+        # CH = 1.2 A in tetrahedral geometry -> each Cartesian component is CH/sqrt(3) ~= 0.69282 A
+        " 'H' | 0.69282 | 0.69282 | 0.69282 " ,
+        " 'H' | -0.69282 | -0.69282 | 0.69282 " ,
+        " 'H' | 0.69282 | -0.69282 | -0.69282 " ,
+        " 'H' | -0.69282 | 0.69282 | -0.69282 "
     ],
     "Benzene": [
         " 'C' | 0.000000 |  1.396000 | 0.000000 ",
@@ -136,10 +440,10 @@ MOLECULES_2D = {
     ],
     "CH4": [
         " 'C' |  0.000 |  0.000 ",
-        " 'H' |  1.186 |  1.186 ",
-        " 'H' | -1.186 |  1.186 ",
-        " 'H' | -1.186 | -1.186 ",
-        " 'H' |  1.186 | -1.186 ",
+        " 'H' |  0.69282 |  0.69282 ",
+        " 'H' | -0.69282 |  0.69282 ",
+        " 'H' | -0.69282 | -0.69282 ",
+        " 'H' |  0.69282 | -0.69282 ",
     ],
     "Benzene": [
         " 'C' |  0.000000 |  1.396000 ",
@@ -203,6 +507,50 @@ OutputFormat = axis_x
 """)
 
 
+def _collect_element_symbols(coords: list) -> set:
+    """Collect unique element symbols from coordinate entries."""
+    elements_in_mol = set()
+    for line in coords:
+        if isinstance(line, dict):
+            sym = str(line.get("symbol", "")).strip()
+            if sym:
+                elements_in_mol.add(sym)
+            continue
+        m_sym = re.search(r"'([A-Za-z]{1,2})'", str(line))
+        if m_sym:
+            elements_in_mol.add(m_sym.group(1))
+    return elements_in_mol
+
+
+def _build_formula_species_block(elements_in_mol: set) -> str:
+    """Build formula-based %Species lines for all detected elements."""
+    # Hardcoded formula map: symbol -> (formula, valence)
+    formula_map = {
+        "H": ("-1/sqrt(r^2+1e-4)", 1),
+        "He": ("-2/sqrt(r^2+0.01)", 2),
+        "Li": ("-1/sqrt(r^2+0.01)", 1),
+        "C": ("-4/sqrt(r^2+0.01)", 4),
+        "N": ("-5/sqrt(r^2+0.01)", 5),
+        "O": ("-6/sqrt(r^2+0.01)", 6),
+        "Na": ("-1/sqrt(r^2+0.04)", 1),
+        "Si": ("-4/sqrt(r^2+0.01)", 4),
+        "Al": ("-3/sqrt(r^2+0.01)", 3),
+    }
+    lines = []
+    for sym in sorted(elements_in_mol):
+        if sym in formula_map:
+            formula_str, valence = formula_map[sym]
+            lines.append(
+                f"  '{sym}' | species_user_defined | potential_formula | \"{formula_str}\" | valence | {valence}"
+            )
+        else:
+            # Unknown element — use generic 1-electron approximation
+            lines.append(
+                f"  '{sym}' | species_user_defined | potential_formula | \"-1/sqrt(r^2+0.1)\" | valence | 1"
+            )
+    return "\n".join(lines)
+
+
 # ─── Helper: run Octopus and parse results ────────────────────────
 
 def generate_inp(config: dict, is_td: bool = False) -> str:
@@ -248,6 +596,16 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         else:
             radius = float(config.get("radius", 10.0))
 
+        # Length unit normalization:
+        # - default keeps backward-compatible behavior (Bohr)
+        # - when explicitly set to Angstrom, convert spacing/radius to Bohr once here
+        length_unit = str(config.get("octopusLengthUnit", config.get("octopusInputUnit", "bohr")) or "bohr").strip().lower()
+        if length_unit in {"angstrom", "ang", "a", "ev_angstrom", "ev-angstrom"}:
+            ang_to_bohr = 1.8897261328856432
+            spacing = float(spacing) * ang_to_bohr
+            radius = float(radius) * ang_to_bohr
+            print(f"[INFO] Converted octopusSpacing/octopusRadius from Angstrom to Bohr: spacing={spacing}, radius={radius}", flush=True)
+
         # Auto-expand radius so all atoms fit inside the global sphere (BoxShape=sphere is centered at origin).
         # Any atom with dist_from_origin > radius is outside the simulation box and will cause nonsensical SCF or timeout.
         import math as _math
@@ -271,7 +629,11 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                     _d = 0.0
             if _d > _max_dist:
                 _max_dist = _d
-        _min_required_radius = _max_dist + 5.0  # 5 Bohr padding so atoms are not on the boundary
+        base_padding = float(config.get("octopusBoxPadding", os.environ.get("OCTOPUS_BOX_PADDING_BOHR", "5.0")))
+        if bool(config.get("fastPath", False)):
+            fast_padding_cap = float(os.environ.get("OCTOPUS_FAST_BOX_PADDING_BOHR", "2.5"))
+            base_padding = min(base_padding, fast_padding_cap)
+        _min_required_radius = _max_dist + base_padding
         if float(radius) < _min_required_radius:
             print(f"[WARN] Box radius {radius} Bohr too small for geometry (max atom dist={_max_dist:.2f} Bohr). Auto-expanding to {_min_required_radius:.1f} Bohr.", flush=True)
             radius = round(_min_required_radius, 1)
@@ -288,43 +650,47 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         inp += f"Radius = {radius}\n"
         inp += f"Spacing = {spacing}\n\n"
         
-        inp += "%Species\n"
-        # Build species block — formula-based potentials for all present elements
-        elements_in_mol = set()
-        all_coords = custom_atoms if custom_atoms else (
-            MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
-        )
-        for line in all_coords:
-            import re as _re
-            if isinstance(line, dict):
-                # custom_atoms are dicts: {symbol, x, y, z}
-                sym = str(line.get("symbol", "")).strip()
-                if sym:
-                    elements_in_mol.add(sym)
-            else:
-                m_sym = _re.search(r"'([A-Za-z]{1,2})'", str(line))
-                if m_sym:
-                    elements_in_mol.add(m_sym.group(1))
-        # Hardcoded formula map: symbol -> (formula, valence)
-        FORMULA_MAP = {
-            "H":  ("-1/sqrt(r^2+0.01)",  1),
-            "He": ("-2/sqrt(r^2+0.01)",  2),
-            "Li": ("-1/sqrt(r^2+0.01)",  1),
-            "C":  ("-4/sqrt(r^2+0.01)",  4),
-            "N":  ("-5/sqrt(r^2+0.01)",  5),
-            "O":  ("-6/sqrt(r^2+0.01)",  6),
-            "Na": ("-1/sqrt(r^2+0.04)",  1),
-            "Si": ("-4/sqrt(r^2+0.01)",  4),
-            "Al": ("-3/sqrt(r^2+0.01)",  3),
-        }
-        for sym in sorted(elements_in_mol):
-            if sym in FORMULA_MAP:
-                formula_str, valence = FORMULA_MAP[sym]
-                inp += f"  '{sym}' | species_user_defined | potential_formula | \"{formula_str}\" | valence | {valence}\n"
-            else:
-                # Unknown element — use generic 1-electron approximation
-                inp += f"  '{sym}' | species_user_defined | potential_formula | \"-1/sqrt(r^2+0.1)\" | valence | 1\n"
-        inp += "%\n\n"
+        species_mode = str(config.get("speciesMode", "formula") or "formula").strip().lower().replace("-", "_")
+
+        if species_mode == "formula":
+            inp += "%Species\n"
+            all_coords = custom_atoms if custom_atoms else (
+                MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
+            )
+            inp += _build_formula_species_block(_collect_element_symbols(all_coords)) + "\n"
+            inp += "%\n\n"
+        elif species_mode == "pseudo":
+            if dimensions != 3:
+                raise ValueError(
+                    f"speciesMode='pseudo' requires Dimensions=3 (got {dimensions})."
+                )
+            pseudopotential_set = str(config.get("pseudopotentialSet", "standard") or "standard").strip()
+            inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
+        elif species_mode == "all_electron":
+            all_electron_type = str(config.get("allElectronType", "full_gaussian") or "full_gaussian").strip()
+            valid_ae_types = {"full_delta", "full_gaussian", "full_anc"}
+            if all_electron_type not in valid_ae_types:
+                raise ValueError(
+                    f"allElectronType='{all_electron_type}' not supported. "
+                    f"Must be one of: {', '.join(sorted(valid_ae_types))}"
+                )
+            if str(config.get("pseudopotentialSet", "")).strip():
+                raise ValueError("PseudopotentialSet is incompatible with speciesMode='all_electron'.")
+
+            # Octopus default is PseudopotentialSet=standard; force none to activate true all-electron lane.
+            inp += "PseudopotentialSet = none\n"
+            inp += f"AllElectronType = {all_electron_type}\n"
+
+            if "allElectronSigma" in config:
+                inp += f"AllElectronSigma = {float(config['allElectronSigma'])}\n"
+            if "allElectronANCParam" in config:
+                inp += f"AllElectronANCParam = {config['allElectronANCParam']}\n"
+
+            inp += "\n"
+        else:
+            raise ValueError(
+                f"Unsupported speciesMode='{species_mode}'. Must be one of: 'formula', 'pseudo', 'all_electron'."
+            )
 
         inp += "%Coordinates\n"
         inp += coords_str + "\n"
@@ -336,9 +702,14 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         # SCF convergence tuning — especially important for custom-potential multi-atom geometries
         # where LCAO initial guess is unavailable and Broyden can oscillate.
         # Smaller Mixing (0.1 vs default 0.3) + more history steps = more stable convergence.
+        max_scf = int(config.get("octopusMaxScfIterations", os.environ.get("OCTOPUS_MAX_SCF_ITERATIONS", "200")))
+        if bool(config.get("fastPath", False)):
+            fast_cap = int(os.environ.get("OCTOPUS_FAST_MAX_SCF_ITERATIONS", "80"))
+            max_scf = min(max_scf, max(10, fast_cap))
+
         inp += "Mixing = 0.1\n"
         inp += "MixNumberSteps = 8\n"
-        inp += "MaxSCFIterations = 200\n"
+        inp += f"MaxSCFIterations = {max_scf}\n"
         inp += "SCFTolerance = 5e-5\n"
 
         # Periodic system support: LatticeVectors + KPoints
@@ -348,7 +719,20 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         _CRYSTAL_DEFAULT_PD = {"Si": 3, "Al2O3": 3}
         _user_pd = config.get("periodicDimensions")
         if _user_pd is not None:
-            periodic_dims = int(_user_pd)
+            if isinstance(_user_pd, str):
+                pd_key = _user_pd.strip().lower()
+                if pd_key in {"", "none", "off", "isolated", "false", "no", "0"}:
+                    periodic_dims = 0
+                elif pd_key in {"x", "1d", "1"}:
+                    periodic_dims = 1
+                elif pd_key in {"xy", "2d", "2"}:
+                    periodic_dims = 2
+                elif pd_key in {"xyz", "3d", "3"}:
+                    periodic_dims = 3
+                else:
+                    periodic_dims = int(_user_pd)
+            else:
+                periodic_dims = int(_user_pd)
         else:
             periodic_dims = _CRYSTAL_DEFAULT_PD.get(molecule, 0)
         if periodic_dims > 0:
@@ -407,6 +791,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         xc_functional = config.get("xcFunctional", "lda_x+lda_c_pz")
         mixing_scheme = config.get("mixingScheme", "broyden")
         spin = config.get("spinComponents", "unpolarized")
+        eigensolver = str(config.get("octopusEigenSolver", config.get("eigenSolver", "")) or "").strip()
         extra_states_3d = int(config.get("octopusExtraStates", config.get("extraStates", 4)))
 
         # OEP/HF functionals use special Octopus variables (not libxc strings)
@@ -425,6 +810,8 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         inp += f"MixingScheme = {mixing_scheme}\n"
         if spin != "unpolarized":
             inp += f"SpinComponents = {spin}\n"
+        if eigensolver:
+            inp += f"EigenSolver = {eigensolver}\n"
 
         # Non-uniform / curvilinear mesh options
         deriv_order = int(config.get("derivativesOrder", 4))
@@ -534,6 +921,11 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "%\n"
         else:
             # Ground State: output BOTH axis slices (*.y=0,z=0) AND full 3D cube files
+            target_calc_mode = str(config.get("calcMode", "gs")).strip().lower()
+            if target_calc_mode == "td":
+                # TD absorption relies on a sufficiently rich unoccupied manifold from GS.
+                # Keep user override, but enforce a practical floor for stability.
+                extra_states_3d = max(extra_states_3d, 12)
             inp += f"ExtraStates = {extra_states_3d}\n"
             inp += "%Output\n"
             inp += "  wfs\n"
@@ -597,6 +989,11 @@ def parse_octopus_info(info_path: str) -> dict:
     if m:
         result["converged"] = True
         result["scf_iterations"] = int(m.group(1))
+    else:
+        m_nc = re.search(r"SCF\s+did\s+not\s+converge\s+in\s+(\d+)\s+iterations", content, re.IGNORECASE)
+        if m_nc:
+            result["converged"] = False
+            result["scf_iterations"] = int(m_nc.group(1))
 
     # Parse eigenvalues block - handle scientific notation and flexible whitespace
     # Octopus 16.3 might use different header formats
@@ -955,13 +1352,460 @@ def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
     }
 
 
+def choose_octopus_exec_strategy() -> str:
+    strategy = os.environ.get("OCTOPUS_EXEC_STRATEGY", "auto").strip().lower()
+    if strategy in {"direct", "hpc"}:
+        return strategy
+    if shutil.which("qsub") and shutil.which("qstat"):
+        return "hpc"
+    return "direct"
+
+
+async def query_free_pbs_nodes(pbsnodes_bin: str, min_ncpus: int) -> list[tuple[str, int]]:
+    proc = await asyncio.create_subprocess_exec(
+        pbsnodes_bin,
+        "-a",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    out, err = await proc.communicate()
+    text = (out + err).decode("utf-8", errors="replace")
+    if proc.returncode != 0:
+        raise RuntimeError(f"pbsnodes failed: {text.strip()}")
+
+    blocks = re.split(r"\n\s*\n", text)
+    free_nodes: list[tuple[str, int]] = []
+    for block in blocks:
+        lines = [ln.rstrip() for ln in block.splitlines() if ln.strip()]
+        if not lines:
+            continue
+
+        node = lines[0].strip()
+        if "=" in node:
+            continue
+
+        state = ""
+        avail_ncpus: Optional[int] = None
+        assigned_ncpus: Optional[int] = None
+
+        for ln in lines[1:]:
+            s = ln.strip()
+            if s.startswith("state ="):
+                state = s.split("=", 1)[1].strip().lower()
+            elif s.startswith("resources_available.ncpus ="):
+                try:
+                    avail_ncpus = int(s.split("=", 1)[1].strip())
+                except Exception:
+                    pass
+            elif s.startswith("resources_assigned.ncpus ="):
+                try:
+                    assigned_ncpus = int(s.split("=", 1)[1].strip())
+                except Exception:
+                    pass
+
+        state_tokens = {tok.strip() for tok in state.split(",") if tok.strip()}
+        if "free" not in state_tokens:
+            continue
+        # Exclude unhealthy or non-runnable nodes even if state text still contains "free".
+        if state_tokens.intersection({"down", "offline", "unknown", "state-unknown", "job-exclusive", "job-shared"}):
+            continue
+
+        if avail_ncpus is not None and assigned_ncpus is not None:
+            free_cores = max(0, avail_ncpus - assigned_ncpus)
+        elif avail_ncpus is not None:
+            free_cores = avail_ncpus
+        else:
+            free_cores = 0
+
+        if free_cores >= max(1, min_ncpus):
+            free_nodes.append((node, free_cores))
+
+    free_nodes.sort(key=lambda x: x[1], reverse=True)
+    return free_nodes
+
+
+async def run_octopus_direct(octo_cmd: list[str], work_dir: str, timeout_seconds: int = 300):
+    process = await asyncio.create_subprocess_exec(
+        *octo_cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=work_dir
+    )
+    stdout_data, stderr_data = await asyncio.wait_for(process.communicate(), timeout=timeout_seconds)
+    return process.returncode, stdout_data, stderr_data, {"strategy": "direct"}
+
+
+async def run_octopus_hpc(
+    octo_cmd: list[str],
+    work_dir: str,
+    timeout_seconds: int = 1800,
+    fast_path: bool = False,
+    config: Optional[dict] = None,
+):
+    qsub_bin = shutil.which("qsub")
+    qstat_bin = shutil.which("qstat")
+    pbsnodes_bin = shutil.which("pbsnodes")
+    if not qsub_bin or not qstat_bin:
+        raise RuntimeError("HPC strategy requested but qsub/qstat not available")
+
+    primary_queue = os.environ.get("OCTOPUS_PBS_QUEUE", "workq")
+    queue_candidates = os.environ.get("OCTOPUS_PBS_QUEUE_CANDIDATES", "workq,com")
+    queues = [q.strip() for q in queue_candidates.split(",") if q.strip()]
+    if primary_queue and primary_queue not in queues:
+        queues.insert(0, primary_queue)
+    if not queues:
+        queues = ["workq"]
+    ncpus_env = "OCTOPUS_FAST_PBS_NCPUS" if fast_path else "OCTOPUS_PBS_NCPUS"
+    mpiprocs_env = "OCTOPUS_FAST_PBS_MPIPROCS" if fast_path else "OCTOPUS_PBS_MPIPROCS"
+    cfg = config if isinstance(config, dict) else {}
+    ncpus_override = cfg.get("octopusNcpus")
+    mpiprocs_override = cfg.get("octopusMpiprocs")
+
+    if ncpus_override is not None:
+        ncpus = int(ncpus_override)
+    else:
+        ncpus = int(os.environ.get(ncpus_env, os.environ.get("OCTOPUS_PBS_NCPUS", "64")))
+
+    if mpiprocs_override is not None:
+        mpiprocs = int(mpiprocs_override)
+    else:
+        mpiprocs = int(os.environ.get(mpiprocs_env, os.environ.get("OCTOPUS_PBS_MPIPROCS", str(ncpus))))
+
+    max_payload_ncpus = int(os.environ.get("OCTOPUS_MAX_NCPUS_PAYLOAD", "256"))
+    if ncpus_override is not None and ncpus > max_payload_ncpus:
+        raise RuntimeError(
+            f"Invalid PBS resources: payload ncpus={ncpus} exceeds max {max_payload_ncpus}"
+        )
+    if ncpus <= 0 or mpiprocs <= 0:
+        raise RuntimeError(f"Invalid PBS resources: ncpus={ncpus}, mpiprocs={mpiprocs}")
+    if mpiprocs > ncpus:
+        raise RuntimeError(f"Invalid PBS resources: mpiprocs({mpiprocs}) > ncpus({ncpus})")
+    print(
+        f"[DEBUG] run_octopus_hpc fast_path={fast_path} timeout={timeout_seconds}s ncpus={ncpus} mpiprocs={mpiprocs}",
+        flush=True,
+    )
+    walltime = os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
+    job_name = os.environ.get("OCTOPUS_PBS_JOB_NAME", "dirac_octopus")
+    env_script = os.environ.get("OCTOPUS_HPC_ENV_SCRIPT", "/data/apps/intel/2018u3/env.sh")
+    poll_interval_env = "OCTOPUS_FAST_PBS_POLL_INTERVAL" if fast_path else "OCTOPUS_PBS_POLL_INTERVAL"
+    poll_interval = int(os.environ.get(poll_interval_env, os.environ.get("OCTOPUS_PBS_POLL_INTERVAL", "3")))
+    pmix_gds = os.environ.get("OCTOPUS_PMIX_GDS", "hash")
+    pmix_psec = os.environ.get("OCTOPUS_PMIX_PSEC", "native")
+    mpi_tmpdir = os.environ.get("OCTOPUS_MPI_TMPDIR", os.path.join(work_dir, ".mpi_tmp"))
+    precheck_free = os.environ.get("OCTOPUS_PBS_PRECHECK_FREE", "true").strip().lower() in {"1", "true", "yes", "on"}
+    bind_free_node = os.environ.get("OCTOPUS_PBS_BIND_FREE_NODE", "true").strip().lower() in {"1", "true", "yes", "on"}
+    pbs_cmd_timeout = max(5, int(os.environ.get("OCTOPUS_PBS_CMD_TIMEOUT_SECONDS", "60")))
+
+    async def _communicate_with_timeout(proc: asyncio.subprocess.Process, label: str) -> tuple[bytes, bytes]:
+        try:
+            return await asyncio.wait_for(proc.communicate(), timeout=pbs_cmd_timeout)
+        except asyncio.TimeoutError as exc:
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                # Process can already be gone when timeout cancellation races with process exit.
+                pass
+            try:
+                await proc.wait()
+            except ProcessLookupError:
+                pass
+            raise RuntimeError(f"{label} timed out after {pbs_cmd_timeout}s") from exc
+
+    resource_selector_base = f"select=1:ncpus={ncpus}:mpiprocs={mpiprocs}"
+    resource_selector = resource_selector_base
+    free_nodes: list[tuple[str, int]] = []
+    selected_node = ""
+    precheck_history: list[dict[str, object]] = []
+
+    async def _refresh_submission_target(attempt_label: str) -> str:
+        nonlocal free_nodes, selected_node
+        selector = resource_selector_base
+        selected_node = ""
+
+        if precheck_free and pbsnodes_bin:
+            free_nodes = await query_free_pbs_nodes(pbsnodes_bin, mpiprocs)
+            if not free_nodes:
+                raise RuntimeError(
+                    f"No free compute node currently has >= {mpiprocs} free cores before {attempt_label}. "
+                    f"Please retry later or request fewer cores."
+                )
+            selected_node = free_nodes[0][0]
+            precheck_history.append(
+                {
+                    "attempt": attempt_label,
+                    "selected_node": selected_node,
+                    "free_nodes_count": len(free_nodes),
+                    "top_free_cores": free_nodes[0][1],
+                }
+            )
+            if bind_free_node:
+                selector = f"{selector}:vnode={selected_node}"
+
+        return selector
+
+    resource_selector = await _refresh_submission_target("initial")
+
+    def selector_has_requested_resources(selector_text: str) -> bool:
+        normalized = re.sub(r"\s+", "", selector_text or "")
+        return f"ncpus={ncpus}" in normalized and f"mpiprocs={mpiprocs}" in normalized
+
+    shell_cmd = " ".join(shlex.quote(x) for x in octo_cmd)
+    launcher = os.environ.get("OCTOPUS_PBS_LAUNCHER", "auto").strip().lower()
+    cmd_has_mpirun = any(os.path.basename(str(x)).startswith("mpirun") for x in octo_cmd)
+    cmd_has_udocker = any(os.path.basename(str(x)).startswith("udocker") for x in octo_cmd)
+    cmd_runs_octopus = any(str(x) == "octopus" or str(x).endswith("/octopus") for x in octo_cmd)
+
+    chosen_launcher = launcher
+    if launcher == "auto":
+        chosen_launcher = "container-mpirun" if cmd_has_udocker else "mpirun"
+
+    if chosen_launcher == "container-mpirun" and cmd_has_udocker and cmd_runs_octopus:
+        if octo_cmd and (str(octo_cmd[-1]) == "octopus" or str(octo_cmd[-1]).endswith("/octopus")):
+            container_cmd = octo_cmd[:-1] + ["mpirun", "-np", str(mpiprocs), "octopus"]
+            shell_cmd = " ".join(shlex.quote(x) for x in container_cmd)
+    elif chosen_launcher == "mpirun" and cmd_runs_octopus and not cmd_has_mpirun:
+        shell_cmd = f"mpirun -np {mpiprocs} {shell_cmd}"
+
+    job_script = os.path.join(work_dir, "octopus_job.pbs")
+    pbs_out = os.path.join(work_dir, "pbs.out")
+    pbs_err = os.path.join(work_dir, "pbs.err")
+    selected_queue = queues[0]
+    with open(job_script, "w", encoding="utf-8") as f:
+        f.write("#!/bin/bash\n")
+        f.write(f"#PBS -N {job_name}\n")
+        f.write(f"#PBS -q {selected_queue}\n")
+        f.write(f"#PBS -l {resource_selector}\n")
+        f.write(f"#PBS -l walltime={walltime}\n")
+        f.write(f"#PBS -o {pbs_out}\n")
+        f.write(f"#PBS -e {pbs_err}\n")
+        f.write("set +e\n")
+        f.write(f"cd {shlex.quote(work_dir)}\n")
+        if env_script:
+            f.write(f"if [ -f {shlex.quote(env_script)} ]; then source {shlex.quote(env_script)}; fi\n")
+        f.write(f"mkdir -p {shlex.quote(mpi_tmpdir)}\n")
+        f.write(f"export TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+        f.write(f"export PMIX_SYSTEM_TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+        f.write(f"export PMIX_SERVER_TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+        f.write(f"export PMIX_MCA_gds={shlex.quote(pmix_gds)}\n")
+        f.write(f"export PMIX_MCA_psec={shlex.quote(pmix_psec)}\n")
+        f.write(f"{shell_cmd} > octopus.stdout 2> octopus.stderr\n")
+        f.write("rc=$?\n")
+        f.write("echo $rc > octopus.exitcode\n")
+        f.write("exit $rc\n")
+
+    submit_out = b""
+    submit_err = b""
+    submitted = False
+    for candidate_queue in queues:
+        resource_selector = await _refresh_submission_target(f"qsub:{candidate_queue}")
+        with open(job_script, "w", encoding="utf-8") as f:
+            f.write("#!/bin/bash\n")
+            f.write(f"#PBS -N {job_name}\n")
+            f.write(f"#PBS -q {candidate_queue}\n")
+            f.write(f"#PBS -l {resource_selector}\n")
+            f.write(f"#PBS -l walltime={walltime}\n")
+            f.write(f"#PBS -o {pbs_out}\n")
+            f.write(f"#PBS -e {pbs_err}\n")
+            f.write("set +e\n")
+            f.write(f"cd {shlex.quote(work_dir)}\n")
+            if env_script:
+                f.write(f"if [ -f {shlex.quote(env_script)} ]; then source {shlex.quote(env_script)}; fi\n")
+            f.write(f"mkdir -p {shlex.quote(mpi_tmpdir)}\n")
+            f.write(f"export TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+            f.write(f"export PMIX_SYSTEM_TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+            f.write(f"export PMIX_SERVER_TMPDIR={shlex.quote(mpi_tmpdir)}\n")
+            f.write(f"export PMIX_MCA_gds={shlex.quote(pmix_gds)}\n")
+            f.write(f"export PMIX_MCA_psec={shlex.quote(pmix_psec)}\n")
+            f.write(f"{shell_cmd} > octopus.stdout 2> octopus.stderr\n")
+            f.write("rc=$?\n")
+            f.write("echo $rc > octopus.exitcode\n")
+            f.write("exit $rc\n")
+
+        submit_proc = await asyncio.create_subprocess_exec(
+            qsub_bin,
+            job_script,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=work_dir,
+        )
+        submit_out, submit_err = await _communicate_with_timeout(submit_proc, "qsub")
+        if submit_proc.returncode == 0:
+            selected_queue = candidate_queue
+            submitted = True
+            break
+
+    if not submitted:
+        raise RuntimeError(f"qsub failed: {submit_err.decode('utf-8', errors='replace')}")
+
+    job_id = submit_out.decode("utf-8", errors="replace").strip().split()[0]
+
+    verify_proc = await asyncio.create_subprocess_exec(
+        qstat_bin,
+        "-f",
+        job_id,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=work_dir,
+    )
+    verify_out, verify_err = await _communicate_with_timeout(verify_proc, "qstat verify")
+    verify_text = (verify_out + verify_err).decode("utf-8", errors="replace")
+    if verify_proc.returncode != 0:
+        historical_proc = await asyncio.create_subprocess_exec(
+            qstat_bin,
+            "-x",
+            "-f",
+            job_id,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=work_dir,
+        )
+        hist_out, hist_err = await _communicate_with_timeout(historical_proc, "qstat historical verify")
+        historical_text = (hist_out + hist_err).decode("utf-8", errors="replace")
+        if historical_proc.returncode == 0:
+            verify_text = historical_text
+        elif "Job has finished" in verify_text or "Unknown Job" in verify_text or "Unknown Job Id" in verify_text:
+            # Some PBS installations require historical query for completed jobs.
+            verify_text = ""
+        else:
+            raise RuntimeError(f"qstat verify failed for {job_id}: {verify_text}")
+
+    m_sel = re.search(r"Resource_List\.select\s*=\s*(.+)", verify_text)
+    verify_selector = m_sel.group(1).strip() if m_sel else ""
+    if verify_selector and not selector_has_requested_resources(verify_selector):
+        raise RuntimeError(
+            f"PBS resource mismatch for {job_id}: requested {resource_selector}, actual {verify_selector or 'unknown'}"
+        )
+    started = time.time()
+    last_state = "Q"
+    last_exec_vnode = ""
+    exit_code_path = os.path.join(work_dir, "octopus.exitcode")
+    while True:
+        if time.time() - started > timeout_seconds:
+            raise asyncio.TimeoutError(f"PBS job {job_id} timed out after {timeout_seconds}s")
+
+        # If job wrapper has already produced an exit code, trust local artifact completion
+        # instead of waiting indefinitely for PBS metadata to settle.
+        if os.path.exists(exit_code_path):
+            try:
+                exit_text = open(exit_code_path, "r", encoding="utf-8").read().strip()
+            except Exception:
+                exit_text = ""
+            if exit_text:
+                last_state = "C"
+                break
+
+        stat_proc = await asyncio.create_subprocess_exec(
+            qstat_bin,
+            "-f",
+            job_id,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=work_dir,
+        )
+        stat_out, stat_err = await _communicate_with_timeout(stat_proc, "qstat poll")
+        stat_text = (stat_out + stat_err).decode("utf-8", errors="replace")
+        m_state = re.search(r"job_state\s*=\s*([A-Z])", stat_text)
+        m_exec = re.search(r"exec_vnode\s*=\s*(.+)", stat_text)
+        if m_exec:
+            last_exec_vnode = m_exec.group(1).strip()
+        if m_state:
+            last_state = m_state.group(1)
+            if last_state in {"C", "E", "F"}:
+                break
+        elif stat_proc.returncode != 0 and ("Unknown Job Id" in stat_text or "Unknown Job" in stat_text):
+            last_state = "C"
+            break
+
+        await asyncio.sleep(max(1, poll_interval))
+
+    rc = 1
+    if os.path.exists(exit_code_path):
+        try:
+            rc = int(open(exit_code_path, "r", encoding="utf-8").read().strip())
+        except Exception:
+            rc = 1
+
+    stdout_path = os.path.join(work_dir, "octopus.stdout")
+    stderr_path = os.path.join(work_dir, "octopus.stderr")
+    stdout_data = b""
+    stderr_data = b""
+    if os.path.exists(stdout_path):
+        stdout_data = open(stdout_path, "rb").read()
+    if os.path.exists(stderr_path):
+        stderr_data = open(stderr_path, "rb").read()
+
+    if not last_exec_vnode:
+        completed_marker = b"Calculation ended on" in stdout_data
+        if rc == 0 and completed_marker:
+            # Some PBS installs may not expose exec_vnode for very short jobs.
+            # Keep scheduler metadata as unknown but do not discard successful results.
+            last_exec_vnode = "unknown"
+        else:
+            raise RuntimeError(
+                f"PBS job {job_id} never reported exec_vnode; job may not have run on a compute node"
+            )
+
+    meta = {
+        "strategy": "hpc",
+        "run_dir": os.path.basename(work_dir),
+        "job_id": job_id,
+        "job_state": last_state,
+        "queue": selected_queue,
+        "ncpus": ncpus,
+        "mpiprocs": mpiprocs,
+        "launcher": chosen_launcher,
+        "mpi_tmpdir": mpi_tmpdir,
+        "pmix_gds": pmix_gds,
+        "precheck_free": precheck_free,
+        "bind_free_node": bind_free_node,
+        "selected_node": selected_node,
+        "free_nodes_count": len(free_nodes),
+        "precheck_history": precheck_history,
+        "exec_vnode": last_exec_vnode,
+        "resource_selector": resource_selector,
+    }
+    return rc, stdout_data, stderr_data, meta
+
+
 async def run_octopus_calculation(config: dict) -> dict:
     """Run an Octopus calculation and return parsed results."""
     print(f"[DEBUG] run_octopus_calculation starting...")
-    work_dir = tempfile.mkdtemp(prefix="octopus_")
     engine_mode = config.get("engineMode", "local1D")
     print(f"[DEBUG] engineMode from config = {repr(engine_mode)} | expected: 'octopus3D'")
-    calc_mode = config.get("calcMode", "gs")
+    calc_mode = str(config.get("calcMode", "gs")).strip().lower()
+    molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "")))
+    molecule_name = molecule_raw.get("name", "") if isinstance(molecule_raw, dict) else str(molecule_raw or "")
+    auto_fast_path = engine_mode == "octopus3D" and calc_mode == "gs" and molecule_name.strip().lower() == "h2"
+    if auto_fast_path and not bool(config.get("fastPath", False)):
+        fast_spacing = float(os.environ.get("OCTOPUS_FAST_SPACING_BOHR", "0.5"))
+        fast_radius = float(os.environ.get("OCTOPUS_FAST_RADIUS_BOHR", "3.0"))
+        fast_padding = float(os.environ.get("OCTOPUS_FAST_BOX_PADDING_BOHR", "2.5"))
+        fast_scf_cap = int(os.environ.get("OCTOPUS_FAST_MAX_SCF_ITERATIONS", "80"))
+        cfg_spacing = float(config.get("octopusSpacing", config.get("gridSpacing", fast_spacing)))
+        cfg_radius = float(config.get("octopusRadius", config.get("radius", fast_radius)))
+        cfg_scf = int(config.get("octopusMaxScfIterations", fast_scf_cap))
+        config = {
+            **config,
+            "fastPath": True,
+            "skipRunExplanation": True,
+            "octopusSpacing": max(cfg_spacing, fast_spacing),
+            "octopusRadius": min(cfg_radius, fast_radius),
+            "octopusBoxPadding": fast_padding,
+            "octopusMaxScfIterations": min(cfg_scf, fast_scf_cap),
+        }
+        print("[DEBUG] Auto-enabled fastPath for H2 GS run", flush=True)
+    skip_run_explanation = bool(config.get("skipRunExplanation", False))
+    exec_strategy = choose_octopus_exec_strategy()
+    runs_dir = os.path.join(resolve_output_dir(), "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+
+    reusable_run_name = os.environ.get("OCTOPUS_REUSABLE_RUN_DIR", "octopus_latest")
+    if exec_strategy == "local":
+        reusable_run_name = os.environ.get("OCTOPUS_REUSABLE_RUN_DIR_LOCAL", reusable_run_name)
+    else:
+        reusable_run_name = os.environ.get("OCTOPUS_REUSABLE_RUN_DIR_HPC", reusable_run_name)
+
+    work_dir = prepare_reusable_run_dir(runs_dir, reusable_run_name)
     
     try:
         # 1. ALWAYS Run Ground State First
@@ -969,28 +1813,99 @@ async def run_octopus_calculation(config: dict) -> dict:
         print(f"[DEBUG] Generated Octopus Inp (GS):\n{inp_content_gs}")
         with open(os.path.join(work_dir, "inp"), "w") as f:
             f.write(inp_content_gs)
+        with open(os.path.join(work_dir, "inp_gs"), "w") as f:
+            f.write(inp_content_gs)
+
+        def octopus_cmd_for_workdir(cwd: str):
+            if shutil.which("octopus"):
+                return ["octopus"]
+
+            udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
+            container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "dirac_octopus_udocker")
+            if os.path.exists(udocker_bin):
+                return [
+                    udocker_bin,
+                    "run",
+                    f"--volume={cwd}:/work",
+                    "--workdir=/work",
+                    container_name,
+                    "octopus",
+                ]
+
+            extra = os.environ.get("OCTOPUS_CMD", "").strip()
+            if extra:
+                return shlex.split(extra)
+
+            raise RuntimeError("No Octopus executable found (native or udocker).")
+
+        octo_cmd = octopus_cmd_for_workdir(work_dir)
 
         # Run Octopus GS
-        process_gs = await asyncio.create_subprocess_exec(
-            "octopus",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=work_dir
-        )
-        stdout_gs, stderr_gs = await asyncio.wait_for(
-            process_gs.communicate(), timeout=300
+        if exec_strategy == "hpc":
+            use_fast_path = bool(config.get("fastPath", False))
+            hpc_timeout_seconds = int(os.environ.get("OCTOPUS_FAST_HPC_TIMEOUT_SECONDS", "150")) if use_fast_path else 3600
+            print(
+                f"[DEBUG] run_octopus_calculation strategy=hpc fast_path={use_fast_path} hpc_timeout_seconds={hpc_timeout_seconds}",
+                flush=True,
+            )
+            try:
+                rc, stdout_gs, stderr_gs, run_meta = await run_octopus_hpc(
+                    octo_cmd,
+                    work_dir,
+                    timeout_seconds=hpc_timeout_seconds,
+                    fast_path=use_fast_path,
+                    config=config,
+                )
+            except Exception as hpc_exc:
+                if not use_fast_path:
+                    raise
+                fallback_timeout = int(os.environ.get("OCTOPUS_FAST_DIRECT_TIMEOUT_SECONDS", "180"))
+                print(
+                    f"[WARN] HPC fastPath failed ({hpc_exc}); falling back to direct run (timeout={fallback_timeout}s)",
+                    flush=True,
+                )
+                rc, stdout_gs, stderr_gs, run_meta = await run_octopus_direct(
+                    octo_cmd,
+                    work_dir,
+                    timeout_seconds=fallback_timeout,
+                )
+                run_meta["strategy"] = "direct_fallback"
+                run_meta["hpc_error"] = str(hpc_exc)
+        else:
+            molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
+            molecule_name = molecule_raw.get("name", "H2") if isinstance(molecule_raw, dict) else str(molecule_raw or "H2")
+            small_molecule_timeout = {
+                "H": 60,
+                "H2": 60,
+                "He": 60,
+                "Li": 90,
+            }
+            gs_timeout = small_molecule_timeout.get(molecule_name, 300)
+            rc, stdout_gs, stderr_gs, run_meta = await run_octopus_direct(octo_cmd, work_dir, timeout_seconds=gs_timeout)
+
+        print(
+            f"[DEBUG] Octopus execution meta: strategy={run_meta.get('strategy')} "
+            f"queue={run_meta.get('queue', '-') } ncpus={run_meta.get('ncpus', '-') } "
+            f"mpiprocs={run_meta.get('mpiprocs', '-') }"
         )
 
-        if process_gs.returncode != 0:
+        if rc != 0:
             err_msg = stderr_gs.decode("utf-8", errors="replace")
-            print(f"[ERROR] Octopus GS failed Code {process_gs.returncode}: {err_msg}")
+            print(f"[ERROR] Octopus GS failed Code {rc}: {err_msg}")
             # Still return partial data if info file exists, otherwise error
             info_path = os.path.join(work_dir, "static", "info")
             if not os.path.exists(info_path):
-                return {"status": "error", "message": f"Octopus GS failed: {err_msg}", "engine": "octopus-14.0"}
+                msg = f"Octopus GS failed: {err_msg}"
+                if run_meta.get("strategy") == "hpc":
+                    msg = f"{msg} (PBS job {run_meta.get('job_id', 'unknown')}, state={run_meta.get('job_state', 'unknown')})"
+                return {"status": "error", "message": msg, "engine": "octopus-14.0"}
 
         stdout_text = stdout_gs.decode("utf-8", errors="replace")
         stderr_text = stderr_gs.decode("utf-8", errors="replace")
+        if "Octopus will run in *serial*" in stdout_text:
+            print("[WARN] Octopus reported serial execution mode")
+        elif "Parallelization" in stdout_text:
+            print("[DEBUG] Octopus parallelization section detected in stdout")
         
         # Parse GS info
         info_path = os.path.join(work_dir, "static", "info")
@@ -998,7 +1913,7 @@ async def run_octopus_calculation(config: dict) -> dict:
         
         # Base JSON Response structure
         response_data = {
-            "status": "success" if (parsed_gs["converged"] or process_gs.returncode == 0) else "warning",
+            "status": "success" if (parsed_gs["converged"] or rc == 0) else "warning",
             "eigenvalues": parsed_gs["eigenvalues"],
             "total_energy": parsed_gs["total_energy"],
             "converged": parsed_gs["converged"],
@@ -1006,10 +1921,41 @@ async def run_octopus_calculation(config: dict) -> dict:
             "engine": "octopus-14.0",
             "stdout_tail": stdout_text[-1000:] if stdout_text else "",
             "stderr_tail": stderr_text[-1000:] if stderr_text else "",
-            "returncode": process_gs.returncode,
+            "returncode": rc,
         }
+        if run_meta.get("strategy") == "hpc":
+            response_data["scheduler"] = run_meta
 
         if engine_mode == "octopus3D":
+            use_fast_path = bool(config.get("fastPath", False))
+
+            if use_fast_path:
+                HARTREE_TO_EV = 27.2114
+                evals = parsed_gs.get("eigenvalues") or []
+                evals_eV = [e * HARTREE_TO_EV for e in evals]
+                negative_evals = [e for e in evals_eV if e < 0]
+                positive_evals = [e for e in evals_eV if e >= 0]
+                homo_eV = max(negative_evals) if negative_evals else None
+                lumo_eV = min(positive_evals) if positive_evals else None
+                _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
+                _mol_name = _mol_raw.get("name", "H2") if isinstance(_mol_raw, dict) else _mol_raw
+
+                response_data["molecular"] = {
+                    "moleculeName": _mol_name,
+                    "calcMode": calc_mode,
+                    "energy_levels": evals_eV,
+                    "homo_energy": homo_eV,
+                    "lumo_energy": lumo_eV,
+                    "total_energy_hartree": parsed_gs.get("total_energy"),
+                    "scf_iterations": parsed_gs.get("scf_iterations", 0),
+                    "converged": parsed_gs.get("converged", False),
+                    "fast_path_minimal": True,
+                }
+
+                response_data = sanitize_floats(response_data)
+                cleanup_octopus_run_dirs(runs_dir, active_run_dir=work_dir)
+                return response_data
+
             # Populate molecular specific fields from GS
             evals = parsed_gs["eigenvalues"]
             homo_energy = None
@@ -1028,7 +1974,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 lumo_energy = min(positive_evals) if positive_evals else None
 
             # Persist results to workspace/output for host mapping if needed
-            output_dir = "/workspace/output"
+            output_dir = resolve_output_dir()
             os.makedirs(output_dir, exist_ok=True)
             # Copy static files if they exist
             static_dir = os.path.join(work_dir, "static")
@@ -1107,7 +2053,9 @@ async def run_octopus_calculation(config: dict) -> dict:
             response_data["molecular"]["dos_data"] = parse_octopus_dos(static_dir)
 
             # 2. If TD mode is requested, run TD propagation now that GS is done
-            if calc_mode == "td" and parsed_gs["converged"]:
+            restart_dir = os.path.join(work_dir, "restart")
+            can_run_td = bool(parsed_gs["converged"]) or (rc == 0 and os.path.isdir(restart_dir))
+            if calc_mode == "td" and can_run_td:
                 print(f"[DEBUG] TD mode requested: calcMode={calc_mode}, converged={parsed_gs['converged']}")
                 
                 # **KEY FIX**: Don't delete restart. Instead, generate TD inp and let Octopus
@@ -1120,28 +2068,31 @@ async def run_octopus_calculation(config: dict) -> dict:
                 inp_path = os.path.join(work_dir, "inp")
                 with open(inp_path, "w") as f:
                     f.write(inp_content_td)
+                with open(os.path.join(work_dir, "inp_td"), "w") as f:
+                    f.write(inp_content_td)
                 print(f"[DEBUG] TD inp file written, size={len(inp_content_td)} bytes")
+
+                # Preserve GS logs before running TD stage (TD may overwrite octopus.stdout/err)
+                _gs_stdout = os.path.join(work_dir, "octopus.stdout")
+                _gs_stderr = os.path.join(work_dir, "octopus.stderr")
+                if os.path.exists(_gs_stdout):
+                    shutil.copy2(_gs_stdout, os.path.join(work_dir, "octopus_gs.stdout"))
+                if os.path.exists(_gs_stderr):
+                    shutil.copy2(_gs_stderr, os.path.join(work_dir, "octopus_gs.stderr"))
                 
-                # Run TD octopus - it will use the restart files from GS
-                print(f"[DEBUG] Starting TD octopus process in {work_dir}")
-                process_td = await asyncio.create_subprocess_exec(
-                    "octopus",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                    cwd=work_dir
-                )
-                print(f"[DEBUG] TD octopus process started, PID={process_td.pid}")
-                
-                # TD can take longer (allow 10m just in case)
-                try:
-                    stdout_td, stderr_td = await asyncio.wait_for(
-                        process_td.communicate(), timeout=3600
+                # Run TD octopus with the same strategy as GS
+                print(f"[DEBUG] Starting TD octopus stage in {work_dir} (strategy={exec_strategy})")
+                if exec_strategy == "hpc":
+                    rc_td, stdout_td, stderr_td, td_meta = await run_octopus_hpc(
+                        octo_cmd,
+                        work_dir,
+                        timeout_seconds=3600,
+                        fast_path=bool(config.get("fastPath", False)),
+                        config=config,
                     )
-                    print(f"[DEBUG] TD octopus completed, returncode={process_td.returncode}")
-                except asyncio.TimeoutError:
-                    print(f"[ERROR] TD octopus timed out after 3600s")
-                    process_td.kill()
-                    raise
+                else:
+                    rc_td, stdout_td, stderr_td, td_meta = await run_octopus_direct(octo_cmd, work_dir, timeout_seconds=3600)
+                print(f"[DEBUG] TD stage completed, returncode={rc_td}, meta={td_meta}")
                 
                 # Log TD output
                 stdout_td_str = stdout_td.decode("utf-8", errors="replace")
@@ -1152,8 +2103,8 @@ async def run_octopus_calculation(config: dict) -> dict:
                 if stderr_td_str:
                     print(f"[DEBUG] TD stderr (last 500 chars):\n{stderr_td_str[-500:]}")
                 
-                if process_td.returncode != 0:
-                    print(f"[ERROR] TD octopus failed with return code {process_td.returncode}")
+                if rc_td != 0:
+                    print(f"[ERROR] TD octopus failed with return code {rc_td}")
                     if stdout_td_str:
                         print(f"[ERROR] TD stdout (last 800):\n{stdout_td_str[-800:]}")
                 
@@ -1170,48 +2121,77 @@ async def run_octopus_calculation(config: dict) -> dict:
                 
                 stdout_text += "\n--- TD Run ---\n" + stdout_td_str[-500:]
                 response_data["stdout_tail"] = stdout_text[-1500:]
-                response_data["molecular"]["td_executed"] = process_td.returncode == 0
+                response_data["molecular"]["td_executed"] = rc_td == 0
                 
                 # Now run oct-propagation_spectrum to get the cross section
                 if os.path.exists(td_dir):
                     print(f"[DEBUG] Starting oct-propagation_spectrum in {work_dir}")
-                    process_spec = await asyncio.create_subprocess_exec(
-                        "oct-propagation_spectrum",
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE,
-                        cwd=work_dir
-                    )
-                    
+                    stderr_spec_str = ""
+                    spectrum_data = {"energy_ev": [], "cross_section": []}
+                    spectrum_warning = None
+
+                    def spectrum_cmd_for_workdir(cwd: str):
+                        if shutil.which("oct-propagation_spectrum"):
+                            return ["oct-propagation_spectrum"]
+
+                        udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
+                        container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "dirac_octopus_udocker")
+                        if os.path.exists(udocker_bin):
+                            return [
+                                udocker_bin,
+                                "run",
+                                f"--volume={cwd}:/work",
+                                "--workdir=/work",
+                                container_name,
+                                "oct-propagation_spectrum",
+                            ]
+                        raise FileNotFoundError("oct-propagation_spectrum not found in PATH and udocker is unavailable")
+
                     try:
-                        stdout_spec, stderr_spec = await asyncio.wait_for(
-                            process_spec.communicate(), timeout=600
+                        spec_cmd = spectrum_cmd_for_workdir(work_dir)
+                        process_spec = await asyncio.create_subprocess_exec(
+                            *spec_cmd,
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE,
+                            cwd=work_dir
                         )
-                        print(f"[DEBUG] oct-propagation_spectrum completed, returncode={process_spec.returncode}")
-                    except asyncio.TimeoutError:
-                        print(f"[ERROR] oct-propagation_spectrum timed out")
-                        process_spec.kill()
-                    
-                    stderr_spec_str = stderr_spec.decode("utf-8", errors="replace")
-                    if stderr_spec_str:
-                        print(f"[DEBUG] oct-propagation_spectrum stderr (last 300 chars):\n{stderr_spec_str[-300:]}")
-                    
-                    # Check for cross_section_vector (written to work_dir root, not td.general/)
-                    cs_path = os.path.join(work_dir, "cross_section_vector")
-                    print(f"[DEBUG] Checking for cross_section_vector at {cs_path}")
-                    if os.path.exists(cs_path):
-                        cs_size = os.path.getsize(cs_path)
-                        print(f"[DEBUG] ✓ cross_section_vector found, size={cs_size} bytes")
-                    else:
-                        print(f"[ERROR] ✗ cross_section_vector NOT found")
-                        # Also check td.general/ in case of version differences
-                        td_cs = os.path.join(td_dir, "cross_section_vector")
-                        if os.path.exists(td_cs):
-                            print(f"[DEBUG] Found in td.general/ instead: {td_cs}")
-                        root_files = os.listdir(work_dir)
-                        print(f"[DEBUG] Work dir files: {[f for f in root_files if 'cross' in f.lower() or 'spectrum' in f.lower()]}")
-                    
-                    spectrum_data = parse_octopus_cross_section(work_dir)
-                    print(f"[DEBUG] parse_octopus_cross_section: energy_ev={len(spectrum_data.get('energy_ev', []))} points, cs={len(spectrum_data.get('cross_section', []))} points")
+
+                        try:
+                            stdout_spec, stderr_spec = await asyncio.wait_for(
+                                process_spec.communicate(), timeout=600
+                            )
+                            print(f"[DEBUG] oct-propagation_spectrum completed, returncode={process_spec.returncode}")
+                            stderr_spec_str = stderr_spec.decode("utf-8", errors="replace")
+                        except asyncio.TimeoutError:
+                            print(f"[ERROR] oct-propagation_spectrum timed out")
+                            process_spec.kill()
+                            spectrum_warning = "oct-propagation_spectrum timed out"
+
+                        if stderr_spec_str:
+                            print(f"[DEBUG] oct-propagation_spectrum stderr (last 300 chars):\n{stderr_spec_str[-300:]}")
+
+                        # Check for cross_section_vector (written to work_dir root, not td.general/)
+                        cs_path = os.path.join(work_dir, "cross_section_vector")
+                        print(f"[DEBUG] Checking for cross_section_vector at {cs_path}")
+                        if os.path.exists(cs_path):
+                            cs_size = os.path.getsize(cs_path)
+                            print(f"[DEBUG] ✓ cross_section_vector found, size={cs_size} bytes")
+                        else:
+                            print(f"[ERROR] ✗ cross_section_vector NOT found")
+                            td_cs = os.path.join(td_dir, "cross_section_vector")
+                            if os.path.exists(td_cs):
+                                print(f"[DEBUG] Found in td.general/ instead: {td_cs}")
+                            root_files = os.listdir(work_dir)
+                            print(f"[DEBUG] Work dir files: {[f for f in root_files if 'cross' in f.lower() or 'spectrum' in f.lower()]}")
+
+                        spectrum_data = parse_octopus_cross_section(work_dir)
+                        print(f"[DEBUG] parse_octopus_cross_section: energy_ev={len(spectrum_data.get('energy_ev', []))} points, cs={len(spectrum_data.get('cross_section', []))} points")
+                    except FileNotFoundError:
+                        spectrum_warning = "oct-propagation_spectrum not found in PATH; skipping optical spectrum extraction"
+                        print(f"[WARN] {spectrum_warning}")
+
+                    if spectrum_warning:
+                        spectrum_data["warning"] = spectrum_warning
                     response_data["molecular"]["optical_spectrum"] = spectrum_data
                     # Parse dipole time series from td.general/multipoles
                     td_dipole_data = parse_td_dipole(td_dir)
@@ -1233,7 +2213,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                               f"{len(response_data['molecular']['eels_spectrum'].get('energy_ev', []))} pts")
 
                     # Persist TD output to /workspace/output for host access
-                    output_dir = "/workspace/output"
+                    output_dir = resolve_output_dir()
                     os.makedirs(output_dir, exist_ok=True)
                     # Copy td.general/ directory
                     td_out = os.path.join(output_dir, "td.general")
@@ -1249,6 +2229,21 @@ async def run_octopus_calculation(config: dict) -> dict:
                 else:
                     print(f"[DEBUG] Skipping oct-propagation_spectrum because td.general not found")
                     response_data["molecular"]["optical_spectrum"] = {"energy_ev": [], "cross_section": []}
+            elif calc_mode == "td":
+                skip_reason = (
+                    f"TD skipped because GS is not ready (converged={parsed_gs.get('converged', False)}, "
+                    f"scf_iterations={parsed_gs.get('scf_iterations', 0)}, returncode={rc}, "
+                    f"restart_exists={os.path.isdir(restart_dir)})."
+                )
+                print(f"[WARN] {skip_reason}")
+                response_data["status"] = "warning"
+                response_data["molecular"]["td_executed"] = False
+                response_data["molecular"]["td_skipped_reason"] = skip_reason
+                response_data["molecular"]["optical_spectrum"] = {
+                    "energy_ev": [],
+                    "cross_section": [],
+                    "warning": skip_reason,
+                }
 
         else:
             # 1D Local Physics mode outputs
@@ -1258,17 +2253,24 @@ async def run_octopus_calculation(config: dict) -> dict:
             response_data["potential"] = wfs_data["potential"]
             response_data["wavefunctions"] = wfs_data["wavefunctions"]
 
+        explanation_meta = None if skip_run_explanation else write_run_explanation(work_dir, config, response_data)
+        if explanation_meta:
+            response_data["run_explanation"] = explanation_meta
+            if response_data.get("molecular") is not None:
+                response_data["molecular"]["run_explanation"] = explanation_meta
+
         return response_data
 
     except asyncio.TimeoutError:
         return {"status": "error", "message": "Octopus computation timed out"}
     except Exception as e:
-        print(f"[ERROR] solve_handler: {str(e)}")
-        return {"status": "error", "message": str(e)}
+        err_text = (str(e) or repr(e) or e.__class__.__name__).strip()
+        print(f"[ERROR] solve_handler: {err_text}")
+        traceback.print_exc()
+        return {"status": "error", "message": err_text}
     finally:
-        # Keep work_dir for a bit if debugging is needed, but for now cleanup
-        # shutil.rmtree(work_dir, ignore_errors=True)
-        pass
+        if exec_strategy == "hpc" and runs_dir:
+            cleanup_octopus_run_dirs(runs_dir, active_run_dir=work_dir)
 
 
 # ─── REST endpoints ───────────────────────────────────────────────
@@ -1317,6 +2319,7 @@ async def solve_handler(request: Request):
         "converged": result.get("converged", False),
         "scf_iterations": result.get("scf_iterations", 0),
         "engine": result.get("engine", "octopus-14.0"),
+        "scheduler": result.get("scheduler"),
         "problemType": "molecular" if result.get("molecular") else config.get("problemType", "boundstate"),
         "matrix_info": {
             "size": len(x_grid) if x_grid else len(eigenvalues),
@@ -1327,96 +2330,109 @@ async def solve_handler(request: Request):
         "potential_V": potential_V,
         "wavefunctions": formatted_wfs,
         "molecular": result.get("molecular"),
+        "run_explanation": result.get("run_explanation"),
         "density_1d": result.get("density_1d", []),
         "potential_components": result.get("potential_components"),
-        "message": result.get("stderr_tail", str(result.get("message", ""))),
+        "stdout_tail": result.get("stdout_tail", ""),
+        "stderr_tail": result.get("stderr_tail", ""),
+        "returncode": result.get("returncode"),
+        "message": (
+            result.get("stderr_tail")
+            or result.get("message")
+            or result.get("stdout_tail")
+            or "Octopus engine returned an error with no diagnostic text"
+        ),
     }
     return JSONResponse(sanitize_floats(response))
 
 
 # ─── MCP tool handlers (kept for MCP SDK clients) ─────────────────
-
-@mcp_server.call_tool()
-async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
-    if name == "run_octopus":
-        result = await run_octopus_calculation(arguments)
-        return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
-    if name == "parse_results":
-        run_dir = arguments.get("run_dir", "/workspace/output")
-        static_dir = os.path.join(run_dir)  # files were copied flat to output_dir
-        info_path = os.path.join(static_dir, "info")
-        out: dict = {"run_dir": run_dir}
-        if os.path.exists(info_path):
-            out["info"] = parse_octopus_info(info_path)
-        wfs = parse_octopus_wfs_1d(static_dir)
-        out["available_states"] = len(wfs.get("wavefunctions", []))
-        out["x_grid"] = wfs.get("x_grid", [])
-        out["potential"] = wfs.get("potential", [])
-        out["wavefunctions"] = wfs.get("wavefunctions", [])
-        return [types.TextContent(type="text", text=json.dumps(out, indent=2))]
-    return [types.TextContent(type="text", text="Unknown tool.")]
-
-@mcp_server.list_tools()
-async def list_tools() -> list[types.Tool]:
-    return [
-        types.Tool(
-            name="run_octopus",
-            description="Run an Octopus DFT calculation with the given physics config.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "potentialType": {"type": "string"},
-                    "gridSpacing": {"type": "number"},
-                    "spatialRange": {"type": "number"},
-                    "dimensionality": {"type": "string"},
-                    "potentialStrength": {"type": "number"},
-                    "wellWidth": {"type": "number"},
-                    "extraStates": {"type": "integer"},
-                    "engineMode": {"type": "string"},
-                    "octopusMolecule": {"type": "string"},
-                    "octopusSpacing": {"type": "number"},
-                    "octopusRadius": {"type": "number"},
-                    "xcFunctional": {"type": "string"},
-                    "mixingScheme": {"type": "string"},
-                    "spinComponents": {"type": "string"},
-                }
-            }
-        ),
-        types.Tool(
-            name="parse_results",
-            description="Parse Octopus output files from a completed run directory. Returns eigenvalues, wavefunctions, and convergence data.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "run_dir": {"type": "string", "description": "Linux path to the output directory (e.g. /workspace/output)"},
-                },
-                "required": ["run_dir"],
-            }
-        ),
-    ]
-
-# ─── SSE transport (for MCP SDK clients) ──────────────────────────
-
 sse_transport = None
 
-async def sse_handler(request: Request):
-    global sse_transport
-    transport = SseServerTransport("/messages")
-    sse_transport = transport
-    async def run_server():
-        try:
-            await mcp_server.run(transport.async_stream(), transport.async_send)
-        except Exception as e:
-            print(f"SSE Server error: {e}")
-    asyncio.create_task(run_server())
-    return await transport.handle_sse(request)
+if MCP_AVAILABLE:
+    @mcp_server.call_tool()
+    async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
+        if name == "run_octopus":
+            result = await run_octopus_calculation(arguments)
+            return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
+        if name == "parse_results":
+            run_dir = arguments.get("run_dir", "/workspace/output")
+            static_dir = os.path.join(run_dir)
+            info_path = os.path.join(static_dir, "info")
+            out: dict = {"run_dir": run_dir}
+            if os.path.exists(info_path):
+                out["info"] = parse_octopus_info(info_path)
+            wfs = parse_octopus_wfs_1d(static_dir)
+            out["available_states"] = len(wfs.get("wavefunctions", []))
+            out["x_grid"] = wfs.get("x_grid", [])
+            out["potential"] = wfs.get("potential", [])
+            out["wavefunctions"] = wfs.get("wavefunctions", [])
+            return [types.TextContent(type="text", text=json.dumps(out, indent=2))]
+        return [types.TextContent(type="text", text="Unknown tool.")]
 
-async def messages_handler(request: Request):
-    global sse_transport
-    if sse_transport is None:
-        return JSONResponse({"error": "No SSE connection established"}, status_code=400)
-    await sse_transport.handle_post_message(request)
-    return JSONResponse({"status": "accepted"})
+    @mcp_server.list_tools()
+    async def list_tools() -> list[types.Tool]:
+        return [
+            types.Tool(
+                name="run_octopus",
+                description="Run an Octopus DFT calculation with the given physics config.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "potentialType": {"type": "string"},
+                        "gridSpacing": {"type": "number"},
+                        "spatialRange": {"type": "number"},
+                        "dimensionality": {"type": "string"},
+                        "potentialStrength": {"type": "number"},
+                        "wellWidth": {"type": "number"},
+                        "extraStates": {"type": "integer"},
+                        "engineMode": {"type": "string"},
+                        "octopusMolecule": {"type": "string"},
+                        "octopusSpacing": {"type": "number"},
+                        "octopusRadius": {"type": "number"},
+                        "xcFunctional": {"type": "string"},
+                        "mixingScheme": {"type": "string"},
+                        "spinComponents": {"type": "string"},
+                    }
+                }
+            ),
+            types.Tool(
+                name="parse_results",
+                description="Parse Octopus output files from a completed run directory. Returns eigenvalues, wavefunctions, and convergence data.",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "run_dir": {"type": "string", "description": "Linux path to the output directory (e.g. /workspace/output)"},
+                    },
+                    "required": ["run_dir"],
+                }
+            ),
+        ]
+
+    async def sse_handler(request: Request):
+        global sse_transport
+        transport = SseServerTransport("/messages")
+        sse_transport = transport
+        async def run_server():
+            try:
+                await mcp_server.run(transport.async_stream(), transport.async_send)
+            except Exception as e:
+                print(f"SSE Server error: {e}")
+        asyncio.create_task(run_server())
+        return await transport.handle_sse(request)
+
+    async def messages_handler(request: Request):
+        global sse_transport
+        if sse_transport is None:
+            return JSONResponse({"error": "No SSE connection established"}, status_code=400)
+        await sse_transport.handle_post_message(request)
+        return JSONResponse({"status": "accepted"})
+else:
+    async def sse_handler(_request: Request):
+        return JSONResponse({"error": "MCP package not installed"}, status_code=503)
+
+    async def messages_handler(_request: Request):
+        return JSONResponse({"error": "MCP package not installed"}, status_code=503)
 
 
 from starlette.middleware import Middleware
@@ -1428,12 +2444,16 @@ middleware = [
     Middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 ]
 
-starlette_app = Starlette(routes=[
+routes = [
     Route("/health", endpoint=health_handler, methods=["GET"]),
     Route("/solve", endpoint=solve_handler, methods=["POST"]),
-    Route("/sse", endpoint=sse_handler, methods=["GET"]),
-    Route("/messages", endpoint=messages_handler, methods=["POST"]),
-], middleware=middleware)
+]
+
+if MCP_AVAILABLE:
+    routes.append(Route("/sse", endpoint=sse_handler, methods=["GET"]))
+    routes.append(Route("/messages", endpoint=messages_handler, methods=["POST"]))
+
+starlette_app = Starlette(routes=routes, middleware=middleware)
 
 if __name__ == "__main__":
     print("Starting Octopus Physics MCP Server on port 8000...")

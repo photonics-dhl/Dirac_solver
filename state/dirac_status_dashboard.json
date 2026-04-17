@@ -1,0 +1,104 @@
+{
+  "updated_at": "2026-04-16T21:03:16.436845Z",
+  "version": "v1",
+  "current_task": {
+    "run_id": "RSH-20260416T202039Z",
+    "phase": "FAILED",
+    "state_machine": "L0",
+    "initiator": "agent",
+    "agent_id": "dirac-orchestration",
+    "case_id": "hydrogen_gs_reference"
+  },
+  "progress": {
+    "overall_pct": 100,
+    "planner_done": true,
+    "executor_done": true,
+    "reviewer_done": true
+  },
+  "last_transition": {
+    "from": "FAILED",
+    "to": "FAILED",
+    "timestamp": "2026-04-16T21:03:16.436845Z",
+    "trigger": "orchestration_script"
+  },
+  "verdict": {
+    "final": "FAIL",
+    "benchmark_delta": null,
+    "threshold": 0.03
+  },
+  "active_blockers": [
+    "[Debugger] State handoff broken between Planner and Executor. Reviewer output may not have been correctly serialized to executor input."
+  ],
+  "recent_events": [
+    {
+      "ts": "2026-04-16T21:03:16.436845Z",
+      "event": "FAILED",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202039Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:59:50.882884Z",
+      "event": "FAILED",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202446Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:58:14.894672Z",
+      "event": "REVIEWING",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202039Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:57:57.954814Z",
+      "event": "EXECUTING",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202039Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:57:01.424423Z",
+      "event": "REVIEWING",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202446Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:56:36.405734Z",
+      "event": "EXECUTING",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202446Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:42:38.773314Z",
+      "event": "PLANNED",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202039Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:41:11.025503Z",
+      "event": "PLANNED",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202446Z",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:28:51.603403Z",
+      "event": "FAILED",
+      "agent": "orchestration",
+      "run_id": "",
+      "case": "hydrogen_gs_reference"
+    },
+    {
+      "ts": "2026-04-16T20:27:37.140605Z",
+      "event": "PLANNED",
+      "agent": "orchestration",
+      "run_id": "RSH-20260416T202039Z",
+      "case": "hydrogen_gs_reference"
+    }
+  ]
+}

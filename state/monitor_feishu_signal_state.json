@@ -1,0 +1,1614 @@
+{
+  "updated_at": "2026-04-16T04:18:31.743789Z",
+  "interval_seconds": 8,
+  "last": {
+    "ts": "2026-04-16T04:18:31.743789Z",
+    "latest_feishu_task_id": "Q-20260416T015751161-96687",
+    "latest_feishu_status": "failed",
+    "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+    "sync_root_source": "feishu-queue",
+    "sync_last_task_source": "feishu-queue"
+  },
+  "history": [
+    {
+      "ts": "2026-04-16T03:51:55.699792Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:03.720790Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:11.749950Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:19.766953Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:27.784557Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:35.805782Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:43.826722Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:51.840798Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:52:59.862469Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:07.883783Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:15.899785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:23.919857Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:31.941128Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:39.960772Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:47.976133Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:53:55.997739Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:04.020000Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:12.041637Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:20.063441Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:28.085025Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:36.106783Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:44.128784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:54:52.145795Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:00.166784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:08.188570Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:16.210773Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:24.229263Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:32.250785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:40.272461Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:48.295863Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:55:56.316786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:04.338566Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:12.359787Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:20.381585Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:28.403898Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:36.421109Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:44.442773Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:56:52.464740Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:00.485804Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:08.499796Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:16.520775Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:24.537349Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:32.553801Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:40.573278Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:48.594559Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:57:56.616628Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:04.633857Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:12.654790Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:20.675883Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:28.695786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:36.717395Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:44.739590Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:58:52.759063Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:00.776207Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:08.798107Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:16.819800Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:24.841299Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:32.862792Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:40.883785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:48.905280Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T03:59:56.919788Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:04.941680Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:12.963784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:20.985097Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:29.006830Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:37.028458Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:45.049770Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:00:53.065799Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:01.086784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:09.108856Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:17.130899Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:25.146785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:33.167784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:41.183564Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:49.204785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:01:57.226731Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:05.248306Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:13.269789Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:21.290781Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:29.312819Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:37.333785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:45.355045Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:02:53.376267Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:01.387435Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:09.409524Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:17.426481Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:25.448802Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:33.469796Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:41.485796Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:49.506785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:03:57.527793Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:05.548178Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:13.565521Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:21.587006Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:29.608795Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:37.627791Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:45.646802Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:04:53.665784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:01.681823Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:09.703698Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:17.725799Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:25.747051Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:33.760792Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:41.781786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:49.803841Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:05:57.825787Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:05.845980Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:13.866797Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:21.887850Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:29.910279Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:37.933739Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:45.952964Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:06:53.968817Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:01.983770Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:10.003243Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:18.024791Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:26.039793Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:34.061561Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:42.082786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:50.109268Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:07:58.130817Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:06.147610Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:14.169097Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:22.189787Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:30.210790Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:38.228846Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:46.250643Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:08:54.272120Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:02.293694Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:10.313609Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:18.329785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:26.351281Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:34.372948Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:42.389400Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:50.411788Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:09:58.434731Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:06.455790Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:14.477785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:22.499327Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:30.520797Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:38.540787Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:46.560823Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:10:54.575141Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:02.597433Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:10.619736Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:18.640784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:26.662896Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:34.685132Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:42.707786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:50.730905Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:11:58.752893Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:06.774819Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:14.796806Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:22.818790Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:30.840500Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:38.854791Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:46.876511Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:12:54.897784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:02.918784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:10.938070Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:18.959785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:26.974815Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:34.995800Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:43.016783Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:51.037786Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:13:59.058789Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:07.073648Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:15.093388Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:23.114796Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:31.137359Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:39.159320Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:47.179783Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:14:55.201803Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:03.222788Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:11.245302Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:19.261173Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:27.283930Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:35.306148Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:43.326838Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:51.346129Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:15:59.367903Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:07.382871Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:15.403785Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:23.423607Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:31.445522Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:39.467505Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:47.489008Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:16:55.509784Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:03.531503Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:11.547245Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:19.562092Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:27.583606Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:35.605061Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:43.627393Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:51.648850Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:17:59.670176Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:18:07.685718Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:18:15.706983Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:18:23.723791Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    },
+    {
+      "ts": "2026-04-16T04:18:31.743789Z",
+      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "latest_feishu_status": "failed",
+      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
+      "sync_root_source": "feishu-queue",
+      "sync_last_task_source": "feishu-queue"
+    }
+  ]
+}

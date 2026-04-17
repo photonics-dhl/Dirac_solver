@@ -1,0 +1,26 @@
+{
+  "handoff_id": "H-20260401-001",
+  "task_id": "T-20260401-001",
+  "from_role": "supervisor",
+  "to_role": "executor",
+  "goal": "可执行、可审查、可回滚地完成用户需求",
+  "constraints": [
+    "Do not run destructive commands",
+    "Respect openclaw_exec_policy.json"
+  ],
+  "acceptance_criteria": [
+    "primary objective completed",
+    "reviewer receives evidence"
+  ],
+  "required_inputs": [
+    "target files",
+    "relevant logs"
+  ],
+  "required_outputs": [
+    "changed_files",
+    "verification_steps",
+    "artifact_paths"
+  ],
+  "risk_level": "medium",
+  "deadline_hint": "30m"
+}
