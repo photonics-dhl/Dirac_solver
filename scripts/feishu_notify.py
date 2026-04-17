@@ -159,6 +159,30 @@ def notify_replan(
     return notify("planner", "REPLAN", 90, detail, directive)
 
 
+def notify_debugger(
+    run_id: str,
+    case_id: str,
+    failure_signature_hash: str,
+    failure_type: str,
+    verdict: str,
+    repeat_count: int = 0,
+) -> bool:
+    """Reviewer 返回 FAIL — 通知 Debugger 进行诊断。"""
+    verdict_text = "通过" if verdict.upper() in {"PASS", "REVIEW_PASS"} else "未通过"
+    detail = (
+        f"[Dirac-Reviewer] FAIL | 需要Debugger诊断\n"
+        f"  run_id: {run_id}\n"
+        f"  案例: {case_id}\n"
+        f"  判定: {verdict_text}\n"
+        f"  失败类型: {failure_type}\n"
+        f"  失败签名: {failure_signature_hash or 'N/A'}\n"
+        f"  重复次数: {repeat_count}\n"
+        f"  下一步: Debugger 将分析错误链并返回 required_fixes"
+    )
+    directive = "请执行诊断并返回 required_fixes 列表"
+    return notify("debugger", "DIAGNOSE_REQUEST", 85, detail, directive)
+
+
 def notify_done(run_id: str, verdict: str, report_path: str = "", case: str = "") -> bool:
     """任务完成（PASS 或 FAIL）— 通知用户最终结果。"""
     is_pass = verdict.upper() in {"PASS", "REVIEW_PASS"}

@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -21,8 +22,27 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 try:
     from feishu_notify import notify_escalating
+    from run_multi_agent_orchestration import update_status_dashboard
 except ImportError:
     notify_escalating = None  # type: ignore
+    update_status_dashboard = None
+
+
+def _fire_and_forget_notify(func, timeout_seconds: float = 8.0, **kwargs):
+    """Run a notification function in a background thread with timeout.
+    Never blocks the caller. If it fails, we log but continue.
+    """
+    import threading
+
+    def _run():
+        try:
+            func(**kwargs)
+        except Exception:
+            pass
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    t.join(timeout=timeout_seconds)
 DEFAULT_STATE_PATH = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 
@@ -276,7 +296,29 @@ def execute_actions(packet: Dict[str, Any], args: argparse.Namespace) -> Dict[st
             all_passed = False
             continue
 
-        proc = subprocess.run(command, cwd=REPO_ROOT, capture_output=True, text=True)
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 min timeout per action to prevent indefinite blocking
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            action["status"] = "timeout"
+            action["exit_code"] = 124
+            updated_actions.append(action)
+            executed_count += 1
+            runs.append({
+                "action": action_text,
+                "command": " ".join(command),
+                "exit_code": 124,
+                "stdout": "",
+                "stderr": f"Action timed out after 300s",
+            })
+            all_passed = False
+            continue
         ok = proc.returncode == 0
         action["status"] = "done" if ok else "failed"
         action["exit_code"] = proc.returncode
@@ -362,11 +404,29 @@ def main() -> int:
         raise RuntimeError(f"Invalid or empty packet: {packet_path.as_posix()}")
 
     # Feishu: ESCALATING notification — replan packet execution started
+    # Use fire-and-forget to avoid blocking on slow Feishu API
     if notify_escalating is not None:
         task_id = str(packet.get("task_id") or args.case_id or "")
         failure_type = str(packet.get("failure_type") or "")
         blocker = str(packet.get("blocker") or "")
-        notify_escalating(run_id=task_id, severity="high", blocker=(blocker or failure_type or "replan_triggered"))
+        _fire_and_forget_notify(
+            notify_escalating,
+            run_id=task_id,
+            severity="high",
+            blocker=(blocker or failure_type or "replan_triggered"),
+        )
+        if update_status_dashboard is not None:
+            def _update_dashboard():
+                try:
+                    update_status_dashboard(
+                        phase="REPLAN", run_id=task_id, case_id=str(args.case_id or "unknown"),
+                        overall_pct=90, planner_done=True, executor_done=False, reviewer_done=False,
+                        failure_reason=(blocker or failure_type or "replan_triggered"),
+                        state_machine="L1",
+                    )
+                except Exception:
+                    pass
+            threading.Thread(target=_update_dashboard, daemon=True).start()
 
     exec_result = execute_actions(packet, args)
     packet["actions"] = exec_result["updated_actions"]

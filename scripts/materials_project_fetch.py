@@ -49,23 +49,26 @@ SUMMARY_FIELDS = [
     "material_id",
     "formula_pretty",
     "composition",
+    "composition_reduced",
     "band_gap",
     "formation_energy_per_atom",
-    "e_above_hull",
+    "energy_above_hull",
     "structure",
-    "spacegroup",
+    "symmetry",
     "nsites",
     "nelements",
     "density",
     "volume",
-    "energy",
     "energy_per_atom",
+    "uncorrected_energy_per_atom",
     "total_magnetization",
     "is_magnetic",
     "is_metal",
-    "is_xcFunctional",
-    "xc_functional",
+    "is_gap_direct",
     "theoretical",
+    "efermi",
+    "cbm",
+    "vbm",
     "database_IDs",
 ]
 
@@ -86,25 +89,36 @@ def now_iso() -> str:
 def format_composition(comp) -> str:
     """Convert pymatgen Composition object to human-readable string."""
     try:
-        # Get alphabetical formula like H2 O
         return comp.reduced_formula
     except Exception:
-        return str(comp)
+        try:
+            return comp.formula
+        except Exception:
+            return str(comp)
 
 
-def format_structure(structure) -> str:
-    """Convert pymatgen Structure object to POSCAR-like string."""
+def format_structure_from_doc(doc) -> str:
+    """Format structure from a SummaryDoc or StructureDoc."""
     lines = []
     try:
-        lattice = structure.lattice
-        lines.append(f"Lattice (Angstrom): {lattice.a:.4f} {lattice.b:.4f} {lattice.c:.4f} | {lattice.alpha:.2f} {lattice.beta:.2f} {lattice.gamma:.2f}")
-        lines.append(f"Space group: {structure.get_space_group_info()}")
-        lines.append("")
-        lines.append("Fractional coordinates:")
-        for site in structure:
+        struct = getattr(doc, "structure", None)
+        if struct is None:
+            return "(structure not requested)"
+        lattice = struct.lattice
+        lines.append(f"Lattice (Angstrom): a={lattice.a:.4f}, b={lattice.b:.4f}, c={lattice.c:.4f}")
+        lines.append(f"Lattice angles: alpha={lattice.alpha:.2f}, beta={lattice.beta:.2f}, gamma={lattice.gamma:.2f} deg")
+        try:
+            sg_info = struct.get_space_group_info()
+            lines.append(f"Space group: {sg_info[0]} (IT No. {sg_info[1]})")
+        except Exception:
+            pass
+        lines.append(f"Sites ({struct.num_sites}):")
+        for site in struct[:10]:  # limit to 10
             species = site.specie.symbol
             frac = site.frac_coords
             lines.append(f"  {species:>2}: [{frac[0]:.6f}, {frac[1]:.6f}, {frac[2]:.6f}]")
+        if struct.num_sites > 10:
+            lines.append(f"  ... ({struct.num_sites - 10} more sites)")
     except Exception as e:
         lines.append(f"(structure parsing error: {e})")
     return "\n".join(lines)
@@ -114,26 +128,28 @@ def build_markdown_entry(doc: dict, source_type: str = "materials_project") -> s
     """Build a markdown document from an MP summary document."""
     formula    = doc.get("formula_pretty", "unknown")
     mat_id     = doc.get("material_id", "")
-    band_gap   = doc.get("band_gap", None)
-    form_e     = doc.get("formation_energy_per_atom", None)
-    e_hull     = doc.get("e_above_hull", None)
-    energy     = doc.get("energy", None)
-    epa        = doc.get("energy_per_atom", None)
-    volume     = doc.get("volume", None)
-    density    = doc.get("density", None)
-    xc_func    = doc.get("xc_functional", "unknown")
-    theoretical = doc.get("theoretical", False)
-    is_metal   = doc.get("is_metal", None)
-    is_mag     = doc.get("is_magnetic", False)
-    mag        = doc.get("total_magnetization", None)
-    nsites     = doc.get("nsites", 0)
-    nelements  = doc.get("nelements", 0)
+    band_gap   = getattr(doc, "band_gap", None)
+    form_e     = getattr(doc, "formation_energy_per_atom", None)
+    e_hull     = getattr(doc, "energy_above_hull", None)
+    epa        = getattr(doc, "energy_per_atom", None)
+    volume     = getattr(doc, "volume", None)
+    density    = getattr(doc, "density", None)
+    theoretical = getattr(doc, "theoretical", False)
+    is_metal   = getattr(doc, "is_metal", None)
+    is_mag     = getattr(doc, "is_magnetic", False)
+    mag        = getattr(doc, "total_magnetization", None)
+    nsites     = getattr(doc, "nsites", 0)
+    nelements  = getattr(doc, "nelements", 0)
+    efermi     = getattr(doc, "efermi", None)
+    cbm        = getattr(doc, "cbm", None)
+    vbm        = getattr(doc, "vbm", None)
+    is_gap_direct = getattr(doc, "is_gap_direct", None)
 
     # Provenance
     provenance_parts = [
         f"source: Materials Project (https://materialsproject.org/materials/{mat_id})",
         f"accessed: {now_iso()}",
-        f"xc_functional: {xc_func}",
+        f"software: VASP (PAW pseudopotentials, PBE functional)",
         f"theoretical: {theoretical}",
         f"material_id: {mat_id}",
     ]
@@ -168,20 +184,25 @@ def build_markdown_entry(doc: dict, source_type: str = "materials_project") -> s
     sections.append("")
     if band_gap is not None:
         if band_gap > 0:
-            sections.append(f"- **Band gap**: {band_gap:.4f} eV")
+            gap_type = "direct" if is_gap_direct else "indirect"
+            sections.append(f"- **Band gap**: {band_gap:.4f} eV ({gap_type})")
             sections.append(f"- **Conductor type**: Semiconductor/Insulator")
         else:
             sections.append(f"- **Band gap**: 0.0 eV (metallic)")
             sections.append(f"- **Conductor type**: Metal")
     else:
         sections.append("- Band gap: N/A")
+    if efermi is not None:
+        sections.append(f"- **Fermi level**: {efermi:.4f} eV")
+    if cbm is not None and vbm is not None:
+        sections.append(f"- **CBM**: {cbm:.4f} eV | **VBM**: {vbm:.4f} eV")
     if is_metal is not None:
         sections.append(f"- **Is metal**: {is_metal}")
     if is_mag:
-        sections.append(f"- **Magnetic**: Yes (total magnetization: {mag} bohr-magneton)" if mag else "- **Magnetic**: Yes")
+        sections.append(f"- **Magnetic**: Yes (total magnetization: {mag} bohr-magneton/cell)" if mag else "- **Magnetic**: Yes")
     else:
         sections.append("- **Magnetic**: No")
-    sections.append(f"- **Functional**: {xc_func}")
+    sections.append("- **Functional**: PBE (GGA) — standard MP functional")
     sections.append("")
 
     # Thermodynamic stability
@@ -206,8 +227,6 @@ def build_markdown_entry(doc: dict, source_type: str = "materials_project") -> s
     # Total energy
     sections.append("## Total Energy")
     sections.append("")
-    if energy is not None:
-        sections.append(f"- **Total energy**: {energy:.6f} eV")
     if epa is not None:
         sections.append(f"- **Energy per atom**: {epa:.6f} eV/atom")
     if volume is not None:
@@ -217,36 +236,14 @@ def build_markdown_entry(doc: dict, source_type: str = "materials_project") -> s
     sections.append("")
 
     # Structure
-    if "structure" in doc and doc["structure"]:
-        sections.append("## Crystal Structure")
-        sections.append("")
-        struct = doc["structure"]
-        if isinstance(struct, dict):
-            # Serialized structure
-            lattice = struct.get("lattice", {})
-            if isinstance(lattice, dict):
-                a = lattice.get("a", 0)
-                b = lattice.get("b", 0)
-                c = lattice.get("c", 0)
-                alpha = lattice.get("alpha", 0)
-                beta  = lattice.get("beta", 0)
-                gamma = lattice.get("gamma", 0)
-                sections.append(f"- **Lattice**: a={a:.4f}, b={b:.4f}, c={c:.4f} Angstrom | alpha={alpha:.2f}, beta={beta:.2f}, gamma={gamma:.2f} deg")
-            sg = struct.get("spacegroup", {})
-            if isinstance(sg, dict):
-                sections.append(f"- **Space group**: {sg.get('symbol', 'N/A')} (IT number: {sg.get('number', 'N/A')})")
-            frac_coords = struct.get("frac_coords", [])
-            species = struct.get("species", [])
-            if frac_coords and species:
-                sections.append("- **Fractional coordinates**:")
-                for sp, fc in zip(species[:10], frac_coords[:10]):  # limit to 10
-                    sections.append(f"  {sp}: [{fc[0]:.6f}, {fc[1]:.6f}, {fc[2]:.6f}]")
-        sections.append("")
-    else:
-        sections.append("## Crystal Structure")
-        sections.append("")
-        sections.append("- Structure data not included in this query response")
-        sections.append("")
+    sections.append("## Crystal Structure")
+    sections.append("")
+    try:
+        struct_str = format_structure_from_doc(doc)
+        sections.append(struct_str)
+    except Exception as e:
+        sections.append(f"- Structure: N/A (error: {e})")
+    sections.append("")
 
     # Physical interpretation
     sections.append("## Physical Interpretation for Dirac/Octopus Comparison")
@@ -276,8 +273,8 @@ def build_markdown_entry(doc: dict, source_type: str = "materials_project") -> s
         sections.append(f"| Band gap (eV) | {band_gap:.4f} | TBD (your run) | MP uses PAW; Octopus uses norm-conserving PP |")
     if form_e is not None:
         sections.append(f"| Formation energy (eV/atom) | {form_e:.4f} | TBD (your run) | Cross-check thermodynamic stability |")
-    if energy is not None and epa is not None:
-        sections.append(f"| Total energy (eV) | {epa:.4f} per atom | TBD (your run) | Per-atom comparison most robust |")
+    if epa is not None:
+        sections.append(f"| Energy per atom (eV/atom) | {epa:.4f} | TBD (your run) | Per-atom comparison most robust |")
     sections.append("")
 
     # References
@@ -309,17 +306,17 @@ def fetch_mp_data(api_key: str, formulas: list, output_dir: Path, timeout: int =
             try:
                 # Search summary docs
                 docs = mpr.materials.summary.search(
-                    formulas=[formula],
+                    formula=formula,
                     fields=SUMMARY_FIELDS,
-                    limit=3,  # top 3 most stable entries per formula
+                    chunk_size=5,  # top 5 most stable entries per formula
                 )
 
                 if not docs:
                     # Try by chemsys
                     docs = mpr.materials.summary.search(
-                        chemsys=[formula],
+                        chemsys=formula,
                         fields=SUMMARY_FIELDS,
-                        limit=3,
+                        chunk_size=5,
                     )
 
                 if not docs:
@@ -331,57 +328,8 @@ def fetch_mp_data(api_key: str, formulas: list, output_dir: Path, timeout: int =
                     mat_id = doc.material_id
                     mat_id_list.append(mat_id)
 
-                    # Build markdown
-                    doc_dict = {
-                        "material_id": doc.material_id,
-                        "formula_pretty": doc.formula_pretty,
-                        "composition": str(doc.composition),
-                        "band_gap": doc.band_gap,
-                        "formation_energy_per_atom": doc.formation_energy_per_atom,
-                        "e_above_hull": doc.e_above_hull,
-                        "energy": doc.energy,
-                        "energy_per_atom": doc.energy_per_atom,
-                        "volume": doc.volume,
-                        "density": doc.density,
-                        "xc_functional": doc.xc_functional,
-                        "theoretical": doc.theoretical,
-                        "is_metal": doc.is_metal,
-                        "is_magnetic": doc.is_magnetic,
-                        "total_magnetization": doc.total_magnetization,
-                        "nsites": doc.nsites,
-                        "nelements": doc.nelements,
-                        "structure": None,
-                    }
-
-                    # Try to get structure too
-                    try:
-                        struct_docs = mpr.materials.structure.search(
-                            material_ids=[mat_id],
-                            fields=STRUCTURE_FIELDS,
-                            limit=1,
-                        )
-                        if struct_docs:
-                            s = struct_docs[0]
-                            doc_dict["structure"] = {
-                                "lattice": {
-                                    "a": s.structure.lattice.a,
-                                    "b": s.structure.lattice.b,
-                                    "c": s.structure.lattice.c,
-                                    "alpha": s.structure.lattice.alpha,
-                                    "beta":  s.structure.lattice.beta,
-                                    "gamma": s.structure.lattice.gamma,
-                                },
-                                "spacegroup": {
-                                    "symbol": s.structure.get_space_group_info()[0],
-                                    "number": s.structure.get_space_group_info()[1],
-                                },
-                                "species": [str(site.specie) for site in s.structure],
-                                "frac_coords": [site.frac_coords.tolist() for site in s.structure],
-                            }
-                    except Exception as e:
-                        print(f"[MP] Structure fetch failed for {mat_id}: {e}")
-
-                    md_text = build_markdown_entry(doc_dict)
+                    # Build markdown - pass the doc object directly (pymatgen objects)
+                    md_text = build_markdown_entry(doc)
 
                     # Write markdown file
                     safe_id = formula.replace("*", "_").replace("/", "_")
@@ -393,7 +341,7 @@ def fetch_mp_data(api_key: str, formulas: list, output_dir: Path, timeout: int =
                         "formula": formula,
                         "material_id": mat_id,
                         "band_gap": doc.band_gap,
-                        "formation_energy": doc.formation_energy_per_atom,
+                        "formation_energy_per_atom": doc.formation_energy_per_atom,
                         "output_file": out_path.as_posix(),
                     })
                     results["output_files"].append(out_path.as_posix())
@@ -415,7 +363,7 @@ def build_corpus_manifest_entries(results: dict, output_dir: Path) -> list:
         source_id = f"mp_{safe_id}_{item['material_id']}"
 
         # Determine confidence tier
-        form_e = item.get("formation_energy")
+        form_e = item.get("formation_energy_per_atom") or item.get("formation_energy")
         band_gap = item.get("band_gap")
         if form_e is not None and abs(form_e) < 0.1:
             tier = "A-ready"

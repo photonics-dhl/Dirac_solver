@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 try:
     from feishu_notify import (
         notify_planned, notify_executing, notify_reviewing,
-        notify_done, notify_replan,
+        notify_done, notify_replan, notify_debugger,
     )
 except ImportError:
     notify_planned = None  # type: ignore
@@ -38,11 +38,13 @@ except ImportError:
     notify_reviewing = None  # type: ignore
     notify_done = None  # type: ignore
     notify_replan = None  # type: ignore
+    notify_debugger = None  # type: ignore
 
 DEFAULT_SYNC_PATH = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_SKILLS_MANIFEST_PATH = REPO_ROOT / "orchestration" / "agent_skills_manifest.json"
 DEFAULT_LEARNING_STATE_PATH = REPO_ROOT / "state" / "multi_agent_learning_state.json"
 DEFAULT_WEB_SOURCES_PATH = REPO_ROOT / "knowledge_base" / "metadata" / "authoritative_web_sources.json"
+DEFAULT_DASHBOARD_PATH = REPO_ROOT / "state" / "dirac_status_dashboard.json"
 DEFAULT_DEEP_MODEL_PRIORITY = ["gpt-5-thinking", "deepseek-r1"]
 DEFAULT_REMOTE_OPENCLAW_SSH_ALIAS = "dirac-key"
 DEFAULT_REMOTE_OPENCLAW_CWD = "/data/home/zju321/.openclaw/workspace/projects/Dirac"
@@ -50,10 +52,14 @@ DEFAULT_REMOTE_OPENCLAW_BIN = "/data/home/zju321/.local/bin/openclaw"
 DEFAULT_CASE_REFERENCE_ENERGY_HARTREE: Dict[str, float] = {
     "hydrogen_gs_reference": -0.5,
     "h2o_gs_reference": -76.4389,
+    "ch4_gs_reference": -8.04027629,
+    "n_atom_gs_official": -9.75473657,
 }
 DEFAULT_CASE_PROVENANCE_SOURCE_DOC: Dict[str, str] = {
     "hydrogen_gs_reference": "knowledge_base/corpus/hydrogen_gs_reference_provenance.md",
     "h2o_gs_reference": "knowledge_base/corpus/h2o_gs_reference_provenance.md",
+    "ch4_gs_reference": "knowledge_base/corpus_new/ch4_gs_reference.md",
+    "n_atom_gs_official": "knowledge_base/corpus_new/n_atom_gs_official.md",
 }
 DEFAULT_CASE_PROVENANCE_FALLBACK: Dict[str, Dict[str, Any]] = {
     "hydrogen_gs_reference": {
@@ -73,6 +79,24 @@ DEFAULT_CASE_PROVENANCE_FALLBACK: Dict[str, Dict[str, Any]] = {
         "pseudopotential_ids": [],
         "geometry_ref": "h2o_equilibrium_geometry_neutral_singlet_literature_anchor",
     },
+    "ch4_gs_reference": {
+        "source_url": "https://www.octopus-code.org/documentation/16/tutorial/basics/total_energy_convergence/",
+        "source_type": "octopus_official_methane_total_energy_convergence",
+        "source_numeric_verified": True,
+        "software_version": "octopus-16.3-pseudopotential-lane",
+        "pseudopotential_ids": ["standard:C", "standard:H"],
+        "geometry_ref": "octopus_tutorial_methane_reference_geometry",
+        "expected_runtime_model": "octopus_pseudopotential",
+    },
+    "n_atom_gs_official": {
+        "source_url": "https://www.octopus-code.org/documentation/16/tutorial/model/total_energy_convergence/",
+        "source_type": "octopus_official_n_atom_total_energy_convergence",
+        "source_numeric_verified": True,
+        "software_version": "octopus-16.3-pseudopotential-lane",
+        "pseudopotential_ids": ["standard:N"],
+        "geometry_ref": "isolated_nitrogen_atom_origin_geometry",
+        "expected_runtime_model": "octopus_pseudopotential",
+    },
 }
 
 
@@ -82,6 +106,83 @@ def utc_now_compact() -> str:
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def update_status_dashboard(
+    phase: str,
+    run_id: str,
+    case_id: str,
+    overall_pct: int,
+    initiator: str = "agent",
+    planner_done: bool = False,
+    executor_done: bool = False,
+    reviewer_done: bool = False,
+    final_verdict: str = "",
+    benchmark_delta: float = None,
+    threshold: float = None,
+    failure_reason: str = "",
+    state_machine: str = "",
+) -> None:
+    """Update the lightweight status dashboard JSON file.
+
+    This is called at each phase transition so the user can quickly
+    see the current state without parsing complex JSON.
+    """
+    dashboard_path = DEFAULT_DASHBOARD_PATH
+    try:
+        if dashboard_path.exists():
+            try:
+                data = json.loads(dashboard_path.read_text(encoding="utf-8"))
+            except Exception:
+                data = {"version": "v1", "current_task": {}, "progress": {}, "last_transition": {}, "verdict": {}, "active_blockers": [], "recent_events": []}
+        else:
+            data = {"version": "v1", "current_task": {}, "progress": {}, "last_transition": {}, "verdict": {}, "active_blockers": [], "recent_events": []}
+    except Exception:
+        return
+
+    ts = now_iso()
+    data["updated_at"] = ts
+    data["version"] = "v1"
+    data["current_task"] = {
+        "run_id": run_id,
+        "phase": phase,
+        "state_machine": state_machine,
+        "initiator": initiator,
+        "agent_id": "dirac-orchestration",
+        "case_id": case_id,
+    }
+    data["progress"] = {
+        "overall_pct": overall_pct,
+        "planner_done": planner_done,
+        "executor_done": executor_done,
+        "reviewer_done": reviewer_done,
+    }
+    data["last_transition"] = {
+        "from": (data.get("current_task") or {}).get("phase") or None,
+        "to": phase,
+        "timestamp": ts,
+        "trigger": "orchestration_script",
+    }
+    if final_verdict:
+        data["verdict"] = {
+            "final": final_verdict,
+            "benchmark_delta": benchmark_delta,
+            "threshold": threshold,
+        }
+    if failure_reason:
+        data["active_blockers"] = [failure_reason]
+    else:
+        data["active_blockers"] = []
+
+    recent = list(data.get("recent_events", []))
+    recent.insert(0, {"ts": ts, "event": phase, "agent": "orchestration", "run_id": run_id, "case": case_id})
+    data["recent_events"] = recent[:10]
+
+    try:
+        dashboard_path.parent.mkdir(parents=True, exist_ok=True)
+        dashboard_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
 
 
 def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
@@ -581,7 +682,10 @@ def _run_openclaw_agent_command(
     model: str = "",
     prefer_remote: bool = True,
 ) -> Dict[str, Any]:
-    timeout_sec = max(60, int(timeout))
+    # NOTE: feishu plugin initialization takes ~8s on HPC, so we must use a long
+    # timeout here. The openclaw agent CLI delivers the response via feishu
+    # asynchronously — the CLI itself exits 0 before the response arrives.
+    timeout_sec = max(120, int(timeout))
     remote_alias = _remote_openclaw_ssh_alias()
     remote_cwd = _remote_openclaw_cwd()
     remote_bin = _remote_openclaw_bin()
@@ -616,13 +720,23 @@ def _run_openclaw_agent_command(
                     timeout=max(15, int(timeout_sec + 15)),
                     check=False,
                 )
+                stderr_text = (proc.stderr or "")[:4000]
+                stdout_text = (proc.stdout or "")[:10000]
+                # openclaw agent delivers via feishu asynchronously; detect embedded
+                # run timeout from stderr content written by the gateway.
+                embedded_timed_out = (
+                    "Request timed out" in stderr_text
+                    or "timeoutMs=" in stderr_text
+                    or "timed out before a response" in stderr_text
+                )
                 attempt = {
                     "command": " ".join(cmd),
                     "exit_code": int(proc.returncode),
-                    "stdout": (proc.stdout or "")[:10000],
-                    "stderr": (proc.stderr or "")[:4000],
-                    "ok": proc.returncode == 0,
+                    "stdout": stdout_text,
+                    "stderr": stderr_text,
+                    "ok": proc.returncode == 0 and not embedded_timed_out,
                     "execution_mode": "remote_ssh",
+                    "embedded_timed_out": embedded_timed_out,
                 }
                 attempts.append(attempt)
                 if attempt["ok"]:
@@ -693,13 +807,26 @@ def _run_openclaw_agent_command(
                 timeout=max(15, int(timeout_sec + 15)),
                 check=False,
             )
+            # openclaw agent is fire-and-forget: it delivers the message via feishu
+            # and exits 0 before the response arrives. stdout is always empty.
+            # We detect embedded-run timeout from stderr content.
+            stderr_text = (proc.stderr or "")[:4000]
+            stdout_text = (proc.stdout or "")[:10000]
+            # Check for embedded run timeout (gateway writes this to stderr when
+            # the embedded agent run times out before generating a response)
+            embedded_timed_out = (
+                "Request timed out" in stderr_text
+                or "timeoutMs=" in stderr_text
+                or "timed out before a response" in stderr_text
+            )
             attempt = {
                 "command": " ".join(local_cmd),
                 "exit_code": int(proc.returncode),
-                "stdout": (proc.stdout or "")[:10000],
-                "stderr": (proc.stderr or "")[:4000],
-                "ok": proc.returncode == 0,
+                "stdout": stdout_text,
+                "stderr": stderr_text,
+                "ok": proc.returncode == 0 and not embedded_timed_out,
                 "execution_mode": "local",
+                "embedded_timed_out": embedded_timed_out,
             }
             attempts.append(attempt)
             if attempt["ok"]:
@@ -2592,6 +2719,254 @@ def reviewer_stage(
     return attach_skill_contract(payload, role_spec)
 
 
+def _compute_failure_hash(failure_type: str, case_id: str, executor_error: str) -> str:
+    """Compute deterministic failure fingerprint hash."""
+    import hashlib
+    raw = f"{failure_type}|{case_id}|{executor_error}".encode("utf-8")
+    return hashlib.md5(raw).hexdigest()[:16]
+
+
+def local_debugger_diagnose(
+    run_id: str,
+    case_id: str,
+    failure_type: str,
+    failure_hash: str,
+    repeat_count: int,
+    executor_error: str,
+    harness_error: str,
+    checks_failed: List[str],
+    suggestions: List[str],
+) -> Dict[str, Any]:
+    """
+    Local diagnosis engine — replaces debugger agent subprocess call.
+
+    Analyzes failure context and returns structured diagnostic report
+    without requiring the debugger agent to be reachable.
+    """
+    import hashlib
+    diagnostic_id = f"diag-{run_id}-{int(time.time() * 1000)}"
+
+    # Build error chain from available context
+    error_chain: List[Dict[str, Any]] = []
+    step = 1
+
+    if harness_error:
+        error_chain.append({
+            "step": step,
+            "component": "harness",
+            "file": "scripts/run_harness_acceptance.py",
+            "error_message": harness_error,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+        step += 1
+
+    if executor_error:
+        error_chain.append({
+            "step": step,
+            "component": "executor",
+            "file": "docker/workspace/server.py",
+            "error_message": executor_error,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+        step += 1
+
+    if "octopus_mpi" in executor_error.lower() or "pmix" in executor_error.lower():
+        error_chain.append({
+            "step": step,
+            "component": "mpi_runtime",
+            "file": "docker/workspace/server.py:run_octopus_hpc",
+            "error_message": "PMIx process group failed — container MPI cannot reach host PMIx server",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+        step += 1
+        failure_type = "endpoint_or_service"
+
+    if not failure_hash or failure_hash == "unknown":
+        failure_hash = _compute_failure_hash(failure_type, case_id, executor_error)
+
+    # Root cause analysis based on failure type
+    root_cause_map = {
+        "endpoint_or_service": (
+            "HPC service endpoint unavailable or MPI runtime failure. "
+            "Octopus/VASP binary not in PATH, or udocker container MPI cannot reach PBS PMIx server."
+        ),
+        "planner_executor_chain_break": (
+            "State handoff broken between Planner and Executor. "
+            "Reviewer output may not have been correctly serialized to executor input."
+        ),
+        "case_scope_mismatch": (
+            "Selected benchmark case parameters do not match harness case parameters. "
+            "Verify that the reference benchmark and test case use identical physical conditions."
+        ),
+        "benchmark_provenance": (
+            "Reference benchmark data source cannot be verified. "
+            "Origin of benchmark energy values is not documented in provenance."
+        ),
+    }
+    root_cause = root_cause_map.get(failure_type) or f"Unknown failure type: {failure_type}"
+
+    # Generate fixes based on failure type and context
+    required_fixes: List[Dict[str, Any]] = []
+
+    if failure_type == "endpoint_or_service":
+        required_fixes.extend([
+            {
+                "fix_id": 1,
+                "description": "Verify Octopus/VASP binary is in PATH on HPC: ssh dirac-key 'which octopus' and ssh dirac-key 'which vasp'",
+                "confidence": "high",
+                "requires_human": False,
+            },
+            {
+                "fix_id": 2,
+                "description": "Check PBS job status: ssh dirac-key 'qstat -a' to confirm no zombie Octopus jobs",
+                "confidence": "high",
+                "requires_human": False,
+            },
+            {
+                "fix_id": 3,
+                "description": "If PMIx error in stderr, confirm --mca gds ^pmix is applied in mpirun command",
+                "confidence": "high",
+                "requires_human": False,
+            },
+        ])
+
+    if failure_type == "planner_executor_chain_break":
+        required_fixes.extend([
+            {
+                "fix_id": 1,
+                "description": "Verify state/dirac_solver_progress_sync.json last_task.last_result is valid JSON and readable",
+                "confidence": "high",
+                "requires_human": False,
+            },
+            {
+                "fix_id": 2,
+                "description": "Confirm executor input contract matches planner output contract (case_id, threshold, molecule)",
+                "confidence": "medium",
+                "requires_human": False,
+            },
+        ])
+
+    if failure_type == "case_scope_mismatch":
+        required_fixes.extend([
+            {
+                "fix_id": 1,
+                "description": f"Cross-check harness case '{case_id}' parameters against reference benchmark provenance",
+                "confidence": "high",
+                "requires_human": False,
+            },
+            {
+                "fix_id": 2,
+                "description": "Verify SelectedCase and threshold in planner output match what executor uses",
+                "confidence": "high",
+                "requires_human": False,
+            },
+        ])
+
+    if checks_failed:
+        required_fixes.append({
+            "fix_id": 99,
+            "description": f"Failed checks: {', '.join(checks_failed)}. Review individual check implementations.",
+            "confidence": "medium",
+            "requires_human": False,
+        })
+
+    if suggestions:
+        for i, sug in enumerate(suggestions[:3], start=100):
+            required_fixes.append({
+                "fix_id": i,
+                "description": f"Reviewer suggestion: {sug}",
+                "confidence": "medium",
+                "requires_human": False,
+            })
+
+    escalation_required = repeat_count >= 2 or failure_type in ("endpoint_or_service",)
+
+    return {
+        "diagnostic_id": diagnostic_id,
+        "task_id": run_id,
+        "case_id": case_id,
+        "failure_signature_hash": failure_hash,
+        "failure_type": failure_type,
+        "error_chain": error_chain,
+        "root_cause": root_cause,
+        "required_fixes": required_fixes,
+        "escalation_required": escalation_required,
+        "escalation_reason": (
+            f"Repeat count {repeat_count} >= 2" if repeat_count >= 2
+            else f"Endpoint/service failure requires human review" if failure_type == "endpoint_or_service"
+            else ""
+        ),
+    }
+
+
+def debugger_diagnose(
+    run_id: str,
+    case_id: str,
+    reviewer: Dict[str, Any],
+    executor: Dict[str, Any],
+    planner: Dict[str, Any],
+    output_dir: Path,
+) -> Dict[str, Any]:
+    """
+    Analyze a FAIL verdict and return required_fixes.
+
+    Returns a diagnosis dict with:
+      - diagnostic_id: str
+      - failure_signature_hash: str
+      - failure_type: str
+      - error_chain: list of error steps
+      - root_cause: str
+      - required_fixes: list of {"fix_id", "description", "confidence", "requires_human"}
+      - escalation_required: bool
+      - escalation_reason: str
+    """
+    failure_sig = reviewer.get("failure_signature") or {}
+    failure_hash = str(failure_sig.get("hash") or "")
+    failure_type = str(reviewer.get("failure_type") or "unknown")
+    repeat_count = int(reviewer.get("repeat_count") or 0)
+    suggestions = reviewer.get("suggestions") or []
+    checks = reviewer.get("checks") or {}
+    executor_simple = executor.get("simple_harness") or {}
+    executor_octopus = executor.get("octopus") or {}
+    executor_error = str(executor_octopus.get("error") or "") or str(executor.get("error") or "")
+    harness_error = str(executor_simple.get("error") or "")
+
+    # Notify debugger via Feishu that diagnosis is needed
+    if notify_debugger is not None:
+        notify_debugger(
+            run_id=run_id,
+            case_id=case_id,
+            failure_signature_hash=failure_hash,
+            failure_type=failure_type,
+            verdict="FAIL",
+            repeat_count=repeat_count,
+        )
+
+    # Use local diagnosis engine (replaces debugger agent subprocess which hangs)
+    checks_failed = [k for k, v in checks.items() if not bool(v)]
+    diagnosis = local_debugger_diagnose(
+        run_id=run_id,
+        case_id=case_id,
+        failure_type=failure_type,
+        failure_hash=failure_hash,
+        repeat_count=repeat_count,
+        executor_error=executor_error,
+        harness_error=harness_error,
+        checks_failed=checks_failed,
+        suggestions=suggestions,
+    )
+
+    # Write diagnostic report for manual review
+    diag_file = output_dir / f"debugger_diagnosis_{case_id}_{int(time.time() * 1000)}.json"
+    try:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        diag_file.write_text(json.dumps(diagnosis, indent=2, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
+
+    return diagnosis
+
+
 def render_markdown(summary: Dict[str, Any], command: str, report_json: Path) -> str:
     planner = summary.get("planner") or {}
     executor = summary.get("executor") or {}
@@ -2928,27 +3303,43 @@ def main() -> int:
 
     planner = planner_stage(args, role_specs.get("planner") or _default_role_specs()["planner"], learning_state)
 
-    # Feishu: PLANNED notification after planner completes
+    # Feishu + Dashboard: PLANNED notification after planner completes
     if notify_planned is not None:
         run_id = str(args.run_id or "")
         selected_case = str(planner.get("selected_case", args.case_id))
         threshold = float(planner.get("threshold", 0.03))
         notify_planned(run_id=run_id, case=selected_case, threshold=threshold,
                        plan_summary=f"iterations={planner.get('max_iterations', '?')}")
+        update_status_dashboard(
+            phase="PLANNED", run_id=run_id, case_id=selected_case,
+            overall_pct=20, initiator=str(args.run_id and "agent" or "human"),
+            planner_done=True, executor_done=False, reviewer_done=False,
+            threshold=threshold, state_machine="L0",
+        )
 
     executor = executor_stage(args, planner, role_specs.get("executor") or _default_role_specs()["executor"])
 
-    # Feishu: EXECUTING notification after executor completes
+    # Feishu + Dashboard: EXECUTING notification after executor completes
     if notify_executing is not None:
         run_id = str(args.run_id or "")
         case_id = str(planner.get("selected_case", args.case_id))
         notify_executing(run_id=run_id, stage="harness_complete", case=case_id, pct=55)
+        update_status_dashboard(
+            phase="EXECUTING", run_id=run_id, case_id=case_id,
+            overall_pct=55, planner_done=True, executor_done=True,
+            reviewer_done=False, state_machine="L0",
+        )
 
-    # Feishu: REVIEWING notification before reviewer stage
+    # Feishu + Dashboard: REVIEWING notification before reviewer stage
     if notify_reviewing is not None:
         run_id = str(args.run_id or "")
         case_id = str(planner.get("selected_case", args.case_id))
         notify_reviewing(run_id=run_id, checks_pending=0, case=case_id)
+        update_status_dashboard(
+            phase="REVIEWING", run_id=run_id, case_id=case_id,
+            overall_pct=80, planner_done=True, executor_done=True,
+            reviewer_done=False, state_machine="L0",
+        )
 
     reviewer = reviewer_stage(
         args,
@@ -2981,6 +3372,18 @@ def main() -> int:
         "primary_verdict": "PASS" if physics_equivalence else "FAIL",
     }
 
+    # Debugger diagnosis on FAIL — provides required_fixes for the replan packet
+    if not physics_equivalence:
+        diagnosis = debugger_diagnose(
+            run_id=str(args.run_id or ""),
+            case_id=str(planner.get("selected_case", args.case_id)),
+            reviewer=reviewer,
+            executor=executor,
+            planner=planner,
+            output_dir=Path(args.output_dir),
+        )
+        reviewer["debugger_diagnosis"] = diagnosis
+
     # Feishu: DONE/FAIL notification after verdict is determined
     if notify_done is not None:
         run_id = str(args.run_id or "")
@@ -2997,6 +3400,32 @@ def main() -> int:
         # report path will be written to summary after this; use summary path instead
         report_path = f"multi_agent_orchestration_{case_id}_{now_iso().replace(':', '').replace('-', '')}.json"
         notify_done(run_id=run_id, verdict=final_verdict, report_path=report_path, case=case_id)
+        delta_rows = reviewer.get("case_rows", [])
+        benchmark_delta = None
+        if delta_rows and isinstance(delta_rows, list) and delta_rows:
+            dr = delta_rows[0] or {}
+            benchmark_delta = dr.get("relative_delta")
+        # Build failure_reason from debugger diagnosis if available
+        failure_reason_str = ""
+        if not physics_equivalence:
+            diag = reviewer.get("debugger_diagnosis") or {}
+            root_cause = diag.get("root_cause", "")
+            failure_type = str(reviewer.get("failure_type") or "")
+            if root_cause and root_cause != "debugger_agent_unavailable":
+                failure_reason_str = f"[Debugger] {root_cause}"
+            elif failure_type:
+                failure_reason_str = f"[Reviewer] {failure_type}"
+        update_status_dashboard(
+            phase="DONE" if physics_equivalence else "FAILED",
+            run_id=run_id, case_id=case_id,
+            overall_pct=100,
+            planner_done=True, executor_done=True, reviewer_done=True,
+            final_verdict=final_verdict,
+            benchmark_delta=benchmark_delta,
+            threshold=float(planner.get("threshold", 0.03)),
+            failure_reason=failure_reason_str,
+            state_machine="L0",
+        )
 
     case_delta_rows = _build_case_delta_rows(planner, executor, reviewer)
 

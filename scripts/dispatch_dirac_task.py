@@ -26,8 +26,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 try:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
     from feishu_notify import notify_received
+    from run_multi_agent_orchestration import update_status_dashboard
 except ImportError:
     notify_received = None  # type: ignore
+    update_status_dashboard = None
 DEFAULT_RULES = REPO_ROOT / "orchestration" / "task_dispatch_rules.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 DEFAULT_POLICY = REPO_ROOT / "orchestration" / "openclaw_exec_policy.json"
@@ -2652,7 +2654,14 @@ def main() -> int:
         run_id = str(metadata.get("run_id") or "").strip()
         initiator = "agent" if str(args.source or "").strip() not in {"cli", ""} else "human"
         notify_received(run_id=run_id, initiator=initiator, run_id_short=(run_id.split("-")[-1] if run_id else ""))
-    if contract_case and not was_cli_flag_provided("--case-id"):
+        if update_status_dashboard is not None:
+            case_id = str(args.case_id or "hydrogen_gs_reference")
+            update_status_dashboard(
+                phase="RECEIVED", run_id=run_id, case_id=case_id,
+                overall_pct=5, initiator=initiator,
+                planner_done=False, executor_done=False, reviewer_done=False,
+                state_machine="L0",
+            )
         args.case_id = contract_case
     inferred_molecule, inferred_calc_mode = infer_octopus_defaults_for_case(args.case_id)
     if not was_cli_flag_provided("--octopus-molecule"):
