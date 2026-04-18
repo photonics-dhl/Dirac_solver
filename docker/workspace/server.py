@@ -522,11 +522,39 @@ def _collect_element_symbols(coords: list) -> set:
     return elements_in_mol
 
 
-def _build_formula_species_block(elements_in_mol: set) -> str:
-    """Build formula-based %Species lines for all detected elements."""
+def _build_pseudo_species_block(elements_in_mol: set) -> str:
+    """Build PP-mode %Species lines for all elements in the molecule.
+
+    Args:
+        elements_in_mol: set of element symbols (e.g. {'H', 'N'})
+    """
+    lines = []
+    for sym in sorted(elements_in_mol):
+        # Standard PP format: element | species_pseudo | set | standard | lmax | 1 | lloc | 0
+        lines.append(f'  "{sym}" | species_pseudo | set | standard | lmax | 1 | lloc | 0')
+    return "%Species\n" + "\n".join(lines) + "\n%"
+
+
+def _build_formula_species_block(elements_in_mol: set, alpha_overrides: dict = None) -> str:
+    """Build formula-based %Species lines for all detected elements.
+
+    Args:
+        elements_in_mol: set of element symbols (e.g. {'H', 'O'})
+        alpha_overrides: optional dict of symbol -> alpha values
+                         e.g. {'H': 0.05, 'He': 0.1}
+                         Global default alpha can be set via '_default': 0.1
+    """
+    # Per-element alpha overrides from config (softCoreAlpha param)
+    # Supports: {'H': 0.05, 'He': 0.1} or {'_default': 0.1}
+    global_default_alpha = 0.1
+    if isinstance(alpha_overrides, dict):
+        global_default_alpha = float(alpha_overrides.get("_default", global_default_alpha))
     # Hardcoded formula map: symbol -> (formula, valence)
     formula_map = {
-        "H": ("-1/sqrt(r^2+1e-4)", 1),
+        # Soft-core Coulomb: -1/sqrt(r^2+α) with larger α for better SCF convergence
+        # α=0.1 gives V(0)=-10 Ha (vs -1000 for α=1e-4), reducing the deep-well artifact
+        "H": ("-1/sqrt(r^2+0.1)", 1),
+        # Other elements
         "He": ("-2/sqrt(r^2+0.01)", 2),
         "Li": ("-1/sqrt(r^2+0.01)", 1),
         "C": ("-4/sqrt(r^2+0.01)", 4),
@@ -538,15 +566,21 @@ def _build_formula_species_block(elements_in_mol: set) -> str:
     }
     lines = []
     for sym in sorted(elements_in_mol):
+        # Resolve alpha: per-element override > global default
+        elem_alpha = global_default_alpha
+        if isinstance(alpha_overrides, dict):
+            elem_alpha = float(alpha_overrides.get(sym, alpha_overrides.get("_default", global_default_alpha)))
         if sym in formula_map:
-            formula_str, valence = formula_map[sym]
+            _, valence = formula_map[sym]
+            # Use per-element override alpha, falling back to formula_map default
+            formula_str = f"-1/sqrt(r^2+{elem_alpha})" if valence == 1 else f"-{valence}/sqrt(r^2+{elem_alpha})"
             lines.append(
                 f"  '{sym}' | species_user_defined | potential_formula | \"{formula_str}\" | valence | {valence}"
             )
         else:
             # Unknown element — use generic 1-electron approximation
             lines.append(
-                f"  '{sym}' | species_user_defined | potential_formula | \"-1/sqrt(r^2+0.1)\" | valence | 1"
+                f"  '{sym}' | species_user_defined | potential_formula | \"-1/sqrt(r^2+{elem_alpha})\" | valence | 1"
             )
     return "\n".join(lines)
 
@@ -567,6 +601,13 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         else:
             molecule = mol_raw
             custom_atoms = None
+
+        # Map bare element symbols to MOLECULES keys for single atoms
+        # e.g., 'N' -> 'N_atom', 'He' -> 'He', 'Li' -> 'Li'
+        if custom_atoms is None and molecule not in MOLECULES:
+            _element_to_molecule = {"N": "N_atom", "He": "He", "Li": "Li", "Na": "Na"}
+            if molecule in _element_to_molecule:
+                molecule = _element_to_molecule[molecule]
 
         dimensions = 2 if dim_str == "2D" else 3
 
@@ -649,15 +690,31 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         inp += f"Radius = {radius}\n"
         inp += f"Spacing = {spacing}\n\n"
+        print(f"[DEBUG] Generated Octopus input: Radius={radius} Bohr, Spacing={spacing} Bohr, "
+              f"TotalPoints={_npts_per_axis**3:.0f} ({_npts_per_axis:.1f}^3)", flush=True)
         
         species_mode = str(config.get("speciesMode", "formula") or "formula").strip().lower().replace("-", "_")
 
+        # all_coords is used by all species_mode branches
+        all_coords = custom_atoms if custom_atoms else (
+            MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
+        )
+
         if species_mode == "formula":
             inp += "%Species\n"
-            all_coords = custom_atoms if custom_atoms else (
-                MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
-            )
-            inp += _build_formula_species_block(_collect_element_symbols(all_coords)) + "\n"
+            # softCoreAlpha: can be a float (global default) or dict of {symbol: alpha}
+            # Also accept snake_case soft_core_alpha for MCP client compatibility
+            # If not explicitly provided, pass None so formula_map uses its element-specific defaults
+            _alpha_raw = config.get("softCoreAlpha", config.get("soft_core_alpha", None))
+            if _alpha_raw is not None:
+                # Normalize to dict format: float -> {"_default": float}
+                if isinstance(_alpha_raw, (int, float)):
+                    soft_core_alpha = {"_default": float(_alpha_raw)}
+                else:
+                    soft_core_alpha = _alpha_raw
+                inp += _build_formula_species_block(_collect_element_symbols(all_coords), alpha_overrides=soft_core_alpha) + "\n"
+            else:
+                inp += _build_formula_species_block(_collect_element_symbols(all_coords), alpha_overrides=None) + "\n"
             inp += "%\n\n"
         elif species_mode == "pseudo":
             if dimensions != 3:
@@ -666,6 +723,8 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
                 )
             pseudopotential_set = str(config.get("pseudopotentialSet", "standard") or "standard").strip()
             inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
+            # Generate %Species block for PP mode — must precede %Coordinates
+            inp += _build_pseudo_species_block(_collect_element_symbols(all_coords)) + "\n\n"
         elif species_mode == "all_electron":
             all_electron_type = str(config.get("allElectronType", "full_gaussian") or "full_gaussian").strip()
             valid_ae_types = {"full_delta", "full_gaussian", "full_anc"}
@@ -708,9 +767,9 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             max_scf = min(max_scf, max(10, fast_cap))
 
         inp += "Mixing = 0.1\n"
-        inp += "MixNumberSteps = 8\n"
+        inp += "MixNumberSteps = 16\n"
         inp += f"MaxSCFIterations = {max_scf}\n"
-        inp += "SCFTolerance = 5e-5\n"
+        inp += "SCFTolerance = 1e-6\n"
 
         # Periodic system support: LatticeVectors + KPoints
         # _CRYSTAL_DEFAULT_PD: fallback if the UI sends no periodicDimensions for a known crystal.
@@ -788,19 +847,27 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "\n"
 
         # Optional: XC functional, mixing, spin from config
-        xc_functional = config.get("xcFunctional", "lda_x+lda_c_pz")
-        mixing_scheme = config.get("mixingScheme", "broyden")
-        spin = config.get("spinComponents", "unpolarized")
+        # Support both camelCase (REST API) and snake_case (MCP client) parameter names
+        xc_functional = config.get("xcFunctional", config.get("xc_functional", "lda_x+lda_c_pz"))
+        mixing_scheme = config.get("mixingScheme", config.get("mixing_scheme", "broyden"))
+        spin = config.get("spinComponents", config.get("spin_components", "unpolarized"))
         eigensolver = str(config.get("octopusEigenSolver", config.get("eigenSolver", "")) or "").strip()
-        extra_states_3d = int(config.get("octopusExtraStates", config.get("extraStates", 4)))
+        extra_states_3d = int(config.get("octopusExtraStates", config.get("extra_states", config.get("extraStates", 4))))
 
         # OEP/HF functionals use special Octopus variables (not libxc strings)
+        # hartree_fock: use TheoryLevel = hartree_fock (NOT XCFunctional = hartree_fock)
+        # exx: pure Hartree-Fock exact exchange, used with TheoryLevel = hartree_fock
+        # oep_kli / oep_slater: OEP-based approximations
         _OEP_MAP = {
-            "hartree_fock": ("hf_x", ""),
-            "oep_kli":      ("lda_x", "OEPLevel = kli"),
-            "oep_slater":   ("lda_x", "OEPLevel = slater"),
+            "hartree_fock": None,  # handled via TheoryLevel below
+            "exx":         ("exx", ""),
+            "oep_kli":     ("lda_x", "OEPLevel = kli"),
+            "oep_slater":  ("lda_x", "OEPLevel = slater"),
         }
-        if xc_functional in _OEP_MAP:
+        if xc_functional == "hartree_fock":
+            # Pure Hartree-Fock: set TheoryLevel, skip XCFunctional line for this case
+            inp += "TheoryLevel = hartree_fock\n"
+        elif xc_functional in _OEP_MAP:
             _xc_mapped, _oep_line = _OEP_MAP[xc_functional]
             inp += f"XCFunctional = {_xc_mapped}\n"
             if _oep_line:
@@ -1464,7 +1531,7 @@ async def run_octopus_hpc(
     if ncpus_override is not None:
         ncpus = int(ncpus_override)
     else:
-        ncpus = int(os.environ.get(ncpus_env, os.environ.get("OCTOPUS_PBS_NCPUS", "64")))
+        ncpus = int(os.environ.get(ncpus_env, os.environ.get("OCTOPUS_PBS_NCPUS", "32")))
 
     if mpiprocs_override is not None:
         mpiprocs = int(mpiprocs_override)
@@ -1494,7 +1561,7 @@ async def run_octopus_hpc(
     mpi_tmpdir = os.environ.get("OCTOPUS_MPI_TMPDIR", os.path.join(work_dir, ".mpi_tmp"))
     precheck_free = os.environ.get("OCTOPUS_PBS_PRECHECK_FREE", "true").strip().lower() in {"1", "true", "yes", "on"}
     bind_free_node = os.environ.get("OCTOPUS_PBS_BIND_FREE_NODE", "true").strip().lower() in {"1", "true", "yes", "on"}
-    pbs_cmd_timeout = max(5, int(os.environ.get("OCTOPUS_PBS_CMD_TIMEOUT_SECONDS", "60")))
+    pbs_cmd_timeout = max(5, int(os.environ.get("OCTOPUS_PBS_CMD_TIMEOUT_SECONDS", "300")))
 
     async def _communicate_with_timeout(proc: asyncio.subprocess.Process, label: str) -> tuple[bytes, bytes]:
         try:
@@ -1770,6 +1837,12 @@ async def run_octopus_hpc(
 async def run_octopus_calculation(config: dict) -> dict:
     """Run an Octopus calculation and return parsed results."""
     print(f"[DEBUG] run_octopus_calculation starting...")
+    # Log received parameters for diagnosis
+    print(f"[DEBUG] Received config keys: {list(config.keys())}")
+    print(f"[DEBUG] octopusSpacing={config.get('octopusSpacing', 'MISSING')} | "
+          f"octopusRadius={config.get('octopusRadius', 'MISSING')} | "
+          f"spatialRange={config.get('spatialRange', 'MISSING')} | "
+          f"lengthUnit={config.get('octopusLengthUnit', config.get('octopusInputUnit', 'not_set'))}")
     engine_mode = config.get("engineMode", "local1D")
     print(f"[DEBUG] engineMode from config = {repr(engine_mode)} | expected: 'octopus3D'")
     calc_mode = str(config.get("calcMode", "gs")).strip().lower()
@@ -2393,6 +2466,7 @@ if MCP_AVAILABLE:
                         "xcFunctional": {"type": "string"},
                         "mixingScheme": {"type": "string"},
                         "spinComponents": {"type": "string"},
+                        "softCoreAlpha": {"type": "number", "description": "Soft-core alpha for formula pseudopotential (overrides default alpha=0.1 per element)"},
                     }
                 }
             ),

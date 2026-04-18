@@ -26,7 +26,7 @@ FEISHU_BINDINGS = {
     "planner":   "oc_e7930d06b52382cfbc1a8ca2e5d7b5d6",
     "executor":  "oc_73e53172795bfd5b51daac1c557861d3",
     "reviewer":  "oc_a7643f705e509872fbccb82f77055dd7",
-    "debugger":  "ou_2a1621d3f2beb1d361f426945c91218d",
+    "debugger":  "oc_5ecaf6abb8f1da222ac77faa2978ce53",
     "bot_dm":    "ou_2a1621d3f2beb1d361f426945c91218d",
     "user":      "ou_2a1621d3f2beb1d361f426945c91218d",
 }
