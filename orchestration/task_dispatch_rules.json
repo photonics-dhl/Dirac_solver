@@ -124,7 +124,6 @@
       "keywords": [
         "Dirac_solver 调试",
         "dirac_solver debug",
-        "auto",
         "自动执行",
         "TDDFT",
         "Octopus",
@@ -229,6 +228,44 @@
       "stop_conditions": [
         "execution_ready_true",
         "hard_blocked",
+        "max_iterations_reached"
+      ]
+    },
+    {
+      "name": "dirac_standard_case_orchestration",
+      "keywords": [
+        "hydrogen_gs_reference",
+        "h_atom_gs",
+        "he_atom_gs",
+        "n_atom_gs",
+        "ch4_gs_reference",
+        "h2o_gs_reference",
+        "h2o_tddft",
+        "n_atom_gs_official",
+        "h_gs",
+        "he_gs",
+        "hydrogen",
+        "helium",
+        "nitrogen_atom",
+        "ch4_gs",
+        "h2o_gs",
+        "h2_td",
+        "h2o_td",
+        "tddft",
+        "td-dft",
+        "casida",
+        "absorption spectrum",
+        "dirac_solver"
+      ],
+      "assignee": "openclaw-supervisor",
+      "action": "run_orchestration",
+      "intent_confidence": 0.7,
+      "requires_reviewer": true,
+      "max_iterations": 6,
+      "auto_escalation_policy": "strict",
+      "stop_conditions": [
+        "reviewer_pass_and_benchmark_delta_ok",
+        "blocked_permissions",
         "max_iterations_reached"
       ]
     }

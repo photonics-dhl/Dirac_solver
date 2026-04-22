@@ -40,8 +40,8 @@ DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_co
 DEFAULT_MANIFEST = REPO_ROOT / "knowledge_base" / "corpus_manifest.json"
 DEFAULT_WORKFLOW_ROUTE = "L0"
 DEFAULT_HARNESS_FALLBACK_BASE = "http://127.0.0.1:8101"
-DEFAULT_API_BASE = str(os.environ.get("DIRAC_API_BASE") or "http://127.0.0.1:3001").strip()
-DEFAULT_HARNESS_BASE = str(os.environ.get("DIRAC_HARNESS_BASE") or "http://127.0.0.1:8001").strip()
+DEFAULT_API_BASE = str(os.environ.get("DIRAC_API_BASE") or "http://127.0.0.1:3004").strip()
+DEFAULT_HARNESS_BASE = str(os.environ.get("DIRAC_HARNESS_BASE") or "http://127.0.0.1:8101").strip()
 DEFAULT_EXEC_TIMEOUT_SECONDS = max(60, int(os.environ.get("DIRAC_EXEC_TIMEOUT_SECONDS") or "900"))
 
 
@@ -110,6 +110,10 @@ def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
     calc_mode = "gs"
     if case_key.startswith("h2o"):
         molecule = "H2O"
+    elif case_key.startswith("ch4") or "methane" in case_key:
+        molecule = "CH4"
+    elif case_key.startswith("n_atom") or "nitrogen" in case_key:
+        molecule = "N"
     elif case_key.startswith("hydrogen") or case_key.startswith("h_"):
         molecule = "H"
     elif case_key.startswith("h2"):
@@ -173,6 +177,27 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
     if workflow and workflow not in {"fullchain", "orchestration", "kb", "replan", "status"}:
         warnings.append("workflow_unknown_value")
 
+    # Auto-detect case ID from task text when not explicitly given
+    # Only for non-auto tasks (auto tasks get case from auto_defaults or explicit case=)
+    detected_case = str(kv.get("case") or "").strip()
+    if not detected_case and not is_auto:
+        import re as re_module
+        known_cases = [
+            "hydrogen_gs_reference", "he_atom_gs", "n_atom_gs_official",
+            "ch4_gs_reference", "h2o_gs_reference", "h2o_tddft",
+            "h_atom_gs", "n_atom_gs", "h_gs", "he_gs",
+            "ch4_gs", "h2o_gs", "h2_td", "h2o_td",
+        ]
+        task_lower = compact_lower
+        # Use longest-match to avoid substring issues (e.g. n_atom_gs_official vs n_atom_gs)
+        matched = []
+        for case in known_cases:
+            if re_module.search(r'\b' + re_module.escape(case) + r'\b', task_lower):
+                matched.append(case)
+        if matched:
+            # Pick longest match
+            detected_case = max(matched, key=len)
+
     return {
         "original": raw,
         "normalized": compact,
@@ -180,7 +205,7 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
             "run_id": run_id,
             "workflow": workflow or "",
             "mode": str(kv.get("mode") or "").strip(),
-            "case": str(kv.get("case") or "").strip(),
+            "case": detected_case,
             "octopus": str(kv.get("octopus") or "").strip(),
             "ncpus": str(kv.get("ncpus") or "").strip(),
             "mpiprocs": str(kv.get("mpiprocs") or "").strip(),
