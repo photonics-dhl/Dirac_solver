@@ -175,7 +175,7 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
     run_id = str(kv.get("run_id") or kv.get("token") or "").strip()
     warnings: List[str] = []
 
-    if not run_id and is_auto:
+    if not run_id:
         run_id = f"RSH-{utc_stamp()}"
         compact = f"{compact} run_id={run_id}".strip()
         warnings.append("run_id_missing_autofilled")
