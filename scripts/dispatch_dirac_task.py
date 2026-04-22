@@ -474,7 +474,19 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
                 backup_path.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
             except Exception:
                 pass
-        os.replace(temp_path, path)
+        # Use direct write for network paths (Windows os.replace can't atomically
+        # replace across network shares from a local temp file). On local paths,
+        # os.replace is used for atomic semantics.
+        try:
+            os.replace(temp_path, path)
+        except OSError:
+            # Network share or cross-filesystem: write directly
+            with path.open("w", encoding="utf-8", newline="\n") as handle:
+                handle.write(serialized)
+                handle.flush()
+                os.fsync(handle.fileno())
+            if temp_path.exists():
+                temp_path.unlink(missing_ok=True)
     finally:
         if temp_path.exists():
             temp_path.unlink(missing_ok=True)
