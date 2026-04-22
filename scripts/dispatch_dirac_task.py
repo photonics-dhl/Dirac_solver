@@ -105,21 +105,28 @@ def parse_inline_kv(text: str) -> Dict[str, str]:
 
 
 def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
+    """Map case_id → (molecule, calc_mode) using atom/mode extraction."""
     case_key = str(case_id or "").strip().lower()
     molecule = "H2"
     calc_mode = "gs"
-    if case_key.startswith("h2o"):
-        molecule = "H2O"
-    elif case_key.startswith("ch4") or "methane" in case_key:
-        molecule = "CH4"
-    elif case_key.startswith("n_atom") or "nitrogen" in case_key:
-        molecule = "N"
-    elif case_key.startswith("hydrogen") or case_key.startswith("h_"):
-        molecule = "H"
-    elif case_key.startswith("h2"):
-        molecule = "H2"
-    if any(token in case_key for token in ("tddft", "absorption", "dipole", "radiation", "eels", "casida", "rt")):
+
+    # Atom extraction (handles any future atom symbol)
+    ATOM_MOLECULE = {
+        "h": "H", "he": "He", "he_pp": "He",
+        "n": "N", "na": "Na", "k": "K", "cl": "Cl",
+        "o": "O", "c": "C", "f": "F", "s": "S",
+    }
+    for atom_key, mol in ATOM_MOLECULE.items():
+        if case_key.startswith(atom_key + "_") or case_key == atom_key:
+            molecule = mol
+            break
+
+    # Calculation mode: TD if any td-related token present
+    TD_TOKENS = {"td", "tddft", "td-dft", "casida", "absorption", "radiation", "eels", "rt"}
+    calc_tokens = {tok for tok in case_key.replace("-", "_").split("_") if tok}
+    if calc_tokens & TD_TOKENS or "td" in case_key:
         calc_mode = "td"
+
     return molecule, calc_mode
 
 
@@ -178,25 +185,75 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
         warnings.append("workflow_unknown_value")
 
     # Auto-detect case ID from task text when not explicitly given
-    # Only for non-auto tasks (auto tasks get case from auto_defaults or explicit case=)
+    # Uses a pattern-first approach for extensibility: atom + calcMode + postfix
+    # New cases can be added by extending the pattern lists without code changes
     detected_case = str(kv.get("case") or "").strip()
     if not detected_case and not is_auto:
         import re as re_module
-        known_cases = [
-            "hydrogen_gs_reference", "he_atom_gs", "n_atom_gs_official",
-            "ch4_gs_reference", "h2o_gs_reference", "h2o_tddft",
-            "h_atom_gs", "n_atom_gs", "h_gs", "he_gs",
-            "ch4_gs", "h2o_gs", "h2_td", "h2o_td",
-        ]
-        task_lower = compact_lower
-        # Use longest-match to avoid substring issues (e.g. n_atom_gs_official vs n_atom_gs)
-        matched = []
-        for case in known_cases:
-            if re_module.search(r'\b' + re_module.escape(case) + r'\b', task_lower):
-                matched.append(case)
-        if matched:
-            # Pick longest match
-            detected_case = max(matched, key=len)
+
+        # ── Pattern tables (extend here to add new cases) ──────────────────
+        ATOM_MAP = {
+            r"\bh\b": "H",
+            r"\bhe\b": "He",
+            r"\bn\b": "N",
+            r"\bna\b": "Na",
+            r"\bk\b": "K",
+            r"\bcl\b": "Cl",
+            r"\bo\b": "O",
+            r"\bc\b": "C",
+            r"\bf\b": "F",
+            r"\bs\b": "S",
+        }
+        CALC_MAP = {
+            r"_gs\b": "gs",
+            r"_td\b": "td",
+            r"_pp\b": "pp",
+            r"\bgs\b": "gs",
+            r"\btd\b": "td",
+            r"\btddft\b": "td",
+            r"\btd-dft\b": "td",
+        }
+        POSTFIX_MAP = {
+            r"_reference\b": "reference",
+            r"_official\b": "official",
+            r"_nist\b": "nist",
+            r"_pbe\b": "pbe",
+            r"_lda\b": "lda",
+        }
+
+        def _best_match(text, table):
+            matches = []
+            for pat, val in table.items():
+                if re_module.search(pat, text):
+                    matches.append(val)
+            return max(matches, key=len) if matches else ""
+
+        atom = _best_match(compact_lower, ATOM_MAP)
+        calc = _best_match(compact_lower, CALC_MAP)
+        postfix = _best_match(compact_lower, POSTFIX_MAP)
+
+        if atom:
+            parts = [atom]
+            if calc:
+                parts.append(calc)
+            if postfix:
+                parts.append(postfix)
+            detected_case = "_".join(parts)
+
+        if not detected_case:
+            # Fallback: scan for any known multi-token case name
+            KNOWN_CASES = [
+                "h_gs", "h_td", "h_pp",
+                "he_gs", "he_td", "he_pp",
+                "n_gs", "n_td", "n_pp",
+                "h2_gs", "h2_td",
+                "h2o_gs", "h2o_td", "h2o_pp",
+                "ch4_gs", "ch4_td", "ch4_pp",
+            ]
+            for case in sorted(KNOWN_CASES, key=len, reverse=True):
+                if re_module.search(r'\b' + re_module.escape(case) + r'\b', compact_lower):
+                    detected_case = case
+                    break
 
     return {
         "original": raw,
