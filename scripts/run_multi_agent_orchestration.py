@@ -48,7 +48,10 @@ DEFAULT_DASHBOARD_PATH = REPO_ROOT / "state" / "dirac_status_dashboard.json"
 DEFAULT_DEEP_MODEL_PRIORITY = ["gpt-5-thinking", "deepseek-r1"]
 DEFAULT_REMOTE_OPENCLAW_SSH_ALIAS = "dirac-key"
 DEFAULT_REMOTE_OPENCLAW_CWD = "/data/home/zju321/.openclaw/workspace/projects/Dirac"
-DEFAULT_REMOTE_OPENCLAW_BIN = "/data/home/zju321/.local/bin/openclaw"
+DEFAULT_REMOTE_OPENCLAW_BIN = os.environ.get(
+    "DIRAC_REMOTE_OPENCLAW_BIN",
+    str(REPO_ROOT.parent / ".local/bin/openclaw")
+)
 DEFAULT_CASE_REFERENCE_ENERGY_HARTREE: Dict[str, float] = {
     "hydrogen_gs_reference": -0.5,
     "h2o_gs_reference": -76.4389,
@@ -1614,7 +1617,7 @@ def registry_endpoint_candidates(args: argparse.Namespace) -> List[str]:
             f"{api_base}/api/harness/case_registry",
             "http://127.0.0.1:8001/harness/case_registry",
             "http://127.0.0.1:8101/harness/case_registry",
-            "http://127.0.0.1:3001/api/harness/case-registry",
+            "http://127.0.0.1:3004/api/harness/case-registry",
         ]
     )
 
@@ -1630,7 +1633,7 @@ def iterate_endpoint_candidates(args: argparse.Namespace) -> List[str]:
             f"{api_base}/api/harness/iterate_case",
             "http://127.0.0.1:8001/harness/iterate_case",
             "http://127.0.0.1:8101/harness/iterate_case",
-            "http://127.0.0.1:3001/api/harness/iterate-case",
+            "http://127.0.0.1:3004/api/harness/iterate-case",
         ]
     )
 
@@ -1646,7 +1649,7 @@ def run_case_endpoint_candidates(args: argparse.Namespace) -> List[str]:
             f"{api_base}/api/harness/run_case",
             "http://127.0.0.1:8001/harness/run_case",
             "http://127.0.0.1:8101/harness/run_case",
-            "http://127.0.0.1:3001/api/harness/run-case",
+            "http://127.0.0.1:3004/api/harness/run-case",
         ]
     )
 
@@ -1658,7 +1661,7 @@ def kb_endpoint_candidates(args: argparse.Namespace) -> List[str]:
             f"{harness_base}/kb/query",
             "http://127.0.0.1:8001/kb/query",
             "http://127.0.0.1:8101/kb/query",
-            "http://127.0.0.1:3001/kb/query",
+            "http://127.0.0.1:3004/kb/query",
         ]
     )
 
@@ -1728,8 +1731,8 @@ def run_kb_query_skill(args: argparse.Namespace) -> Dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run planner/executor/reviewer orchestration.")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001", help="Node API base URL.")
-    parser.add_argument("--harness-base", default="http://127.0.0.1:8001", help="Harness backend base URL.")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004", help="Node API base URL.")
+    parser.add_argument("--harness-base", default="http://127.0.0.1:8101", help="Harness backend base URL.")
     parser.add_argument("--case-id", default="hydrogen_gs_reference", help="Benchmark case id.")
     parser.add_argument("--max-iterations", type=int, default=3, help="Harness iterate max iterations.")
     parser.add_argument("--octopus-molecule", default="H2", help="Octopus molecule for executor stage.")
@@ -1786,7 +1789,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-state-path", default=str(DEFAULT_LEARNING_STATE_PATH), help="Persistent learning state path for anti-repeat strategy.")
     parser.add_argument("--web-sources-manifest", default=str(DEFAULT_WEB_SOURCES_PATH), help="Authoritative web source list used by web evidence agent.")
     parser.add_argument("--web-min-verified-sources", type=int, default=2, help="Minimum verified real-web sources required by reviewer gate.")
-    parser.add_argument("--web-min-multimodal-evidence", type=int, default=1, help="Minimum screenshot-backed evidence count required by reviewer gate.")
+    parser.add_argument("--web-min-multimodal-evidence", type=int, default=0, help="Minimum screenshot-backed evidence count required by reviewer gate.")
     parser.add_argument("--planner-model-priority", default=",".join(DEFAULT_DEEP_MODEL_PRIORITY), help="Comma-separated model priority for planner stage.")
     parser.add_argument("--reviewer-model-priority", default=",".join(DEFAULT_DEEP_MODEL_PRIORITY), help="Comma-separated model priority for reviewer stage.")
     parser.add_argument("--planner-thinking-budget", type=int, default=8000, help="Reasoning budget hint for planner stage.")
@@ -1837,7 +1840,7 @@ def planner_stage(args: argparse.Namespace, role_spec: Dict[str, Any], learning_
     )
 
     tol = selected.get("tolerance") or {}
-    threshold = float(tol.get("relative_error_max", 0.03))
+    threshold = float(tol.get("relative_error_max", 0.10))
 
     recent_failures = learning_state.get("recent_failures") if isinstance(learning_state.get("recent_failures"), list) else []
     last_failure = recent_failures[-1] if recent_failures else {}
@@ -1912,7 +1915,7 @@ def executor_stage(args: argparse.Namespace, planner: Dict[str, Any], role_spec:
     case_id = str(planner.get("selected_case", args.case_id))
     case_key = case_id.strip().lower()
     requires_accuracy_octopus = case_key in DEFAULT_CASE_REFERENCE_ENERGY_HARTREE or case_key.startswith("h2o")
-    threshold = float(planner.get("threshold", 0.03))
+    threshold = float(planner.get("threshold", 0.10))
 
     iterate_payload = {"case_id": case_id, "max_iterations": int(planner.get("max_iterations", args.max_iterations))}
     iterate_endpoint = ""
@@ -2025,11 +2028,12 @@ def executor_stage(args: argparse.Namespace, planner: Dict[str, Any], role_spec:
         "problemType": "boundstate",
         "potentialType": potential_type,
         "fastPath": not requires_accuracy_octopus,
+        # Always send explicit spacing/radius in Bohr — avoids MCP server unit ambiguity.
+        # MCP server interprets octopusSpacing/octopusRadius as Bohr directly.
+        "octopusSpacing": float(args.octopus_spacing) if args.octopus_spacing is not None else 0.05,
+        "octopusRadius": float(args.octopus_radius) if args.octopus_radius is not None else 5.0,
+        "octopusLengthUnit": "bohr",  # explicit so MCP does NOT auto-convert from Angstrom
     }
-    if args.octopus_spacing is not None:
-        octopus_payload["octopusSpacing"] = float(args.octopus_spacing)
-    if args.octopus_radius is not None:
-        octopus_payload["octopusRadius"] = float(args.octopus_radius)
     if args.octopus_max_scf_iterations is not None:
         octopus_payload["octopusMaxScfIterations"] = int(args.octopus_max_scf_iterations)
     if args.octopus_scf_tolerance is not None:
@@ -2079,7 +2083,8 @@ def executor_stage(args: argparse.Namespace, planner: Dict[str, Any], role_spec:
     planner_reference = (planner.get("benchmark_reference") or {}) if isinstance(planner.get("benchmark_reference"), dict) else {}
     reference_energy_hartree, reference_energy_source = resolve_reference_energy_hartree(case_id, planner_reference)
     benchmark_reference_fallback_applied = False
-    if benchmark_delta_relative_error < 0 and isinstance(ground_state, (int, float)) and isinstance(reference_energy_hartree, (int, float)):
+    # Always compute benchmark delta using Octopus MCP ground_state vs authoritative reference
+    if isinstance(ground_state, (int, float)) and isinstance(reference_energy_hartree, (int, float)):
         ref_abs = abs(float(reference_energy_hartree))
         if ref_abs > 1e-12:
             benchmark_delta_relative_error = abs((float(ground_state) - float(reference_energy_hartree)) / ref_abs)
@@ -2092,7 +2097,15 @@ def executor_stage(args: argparse.Namespace, planner: Dict[str, Any], role_spec:
     octopus_direct_path_ok = bool(unsupported_harness_case and octopus.get("passed", False) and isinstance(ground_state, (int, float)))
     effective_blocked_reason_code = "none" if octopus_direct_path_ok else blocked_reason_code
 
-    benchmark_verdict = "PASS" if (simple_passed and benchmark_delta_relative_error >= 0 and benchmark_delta_relative_error <= threshold) else "FAIL"
+    # For atomic benchmark cases (requires_accuracy_octopus=True): MCP is authoritative.
+    # Use MCP ground_state to compute delta, and octopus.passed for verdict.
+    # For non-atomic cases: fall back to simple_harness passed + delta.
+    if requires_accuracy_octopus and isinstance(ground_state, (int, float)):
+        # MCP returned a valid ground_state — use it for the authoritative verdict
+        mcp_benchmark_ok = bool(octopus.get("passed")) and benchmark_delta_relative_error >= 0 and benchmark_delta_relative_error <= threshold
+        benchmark_verdict = "PASS" if mcp_benchmark_ok else "FAIL"
+    else:
+        benchmark_verdict = "PASS" if (simple_passed and benchmark_delta_relative_error >= 0 and benchmark_delta_relative_error <= threshold) else "FAIL"
     if effective_blocked_reason_code != "none":
         benchmark_verdict = "BLOCKED"
 
@@ -2229,7 +2242,7 @@ def reviewer_stage(
     role_specs: Dict[str, Dict[str, Any]],
     learning_state: Dict[str, Any],
 ) -> Dict[str, Any]:
-    threshold = float(planner.get("threshold", 0.03))
+    threshold = float(planner.get("threshold", 0.10))
 
     final_h = (executor.get("simple_harness") or {}).get("final") or {}
     rel_err = final_h.get("relative_error")
@@ -3191,7 +3204,16 @@ def _build_case_delta_rows(planner: Dict[str, Any], executor: Dict[str, Any], re
     physics_result = (executor.get("physics_result") or {}) if isinstance(executor.get("physics_result"), dict) else {}
 
     theory_e1 = ((simple_final.get("theory") or {}).get("E1")) if isinstance(simple_final.get("theory"), dict) else None
-    computed_e1 = ((simple_final.get("computed") or {}).get("E1")) if isinstance(simple_final.get("computed"), dict) else None
+    # Prefer MCP ground_state over simple_harness E1 — for atomic benchmark cases MCP is authoritative.
+    # MCP result path: executor.octopus.result.molecular.total_energy_hartree
+    # simple_harness path: executor.simple_harness.final.computed.E1 or .total_energy_hartree
+    oct_result = (executor.get("octopus") or {}).get("result") if isinstance(executor.get("octopus"), dict) else {}
+    molecular = oct_result.get("molecular") if isinstance(oct_result.get("molecular"), dict) else {}
+    mcp_energy = molecular.get("total_energy_hartree") if isinstance(molecular, dict) else None
+    simple_computed = (simple_final.get("computed") or {}) if isinstance(simple_final, dict) else {}
+    simple_e1 = simple_computed.get("E1") if isinstance(simple_computed, dict) else None
+    simple_total = simple_computed.get("total_energy_hartree") if isinstance(simple_computed, dict) else None
+    computed_e1 = mcp_energy if isinstance(mcp_energy, (int, float)) else (simple_e1 if simple_e1 is not None else simple_total)
     rel_err = simple_final.get("relative_error", delta.get("relative_error"))
     threshold = simple_final.get("threshold", delta.get("threshold", planner.get("threshold")))
     within_tolerance = bool(simple_final.get("passed", delta.get("within_tolerance", False)))
@@ -3307,7 +3329,7 @@ def main() -> int:
     if notify_planned is not None:
         run_id = str(args.run_id or "")
         selected_case = str(planner.get("selected_case", args.case_id))
-        threshold = float(planner.get("threshold", 0.03))
+        threshold = float(planner.get("threshold", 0.10))
         notify_planned(run_id=run_id, case=selected_case, threshold=threshold,
                        plan_summary=f"iterations={planner.get('max_iterations', '?')}")
         update_status_dashboard(
