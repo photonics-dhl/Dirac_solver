@@ -2330,9 +2330,15 @@ def probe_service_group(name: str, base_urls: List[str], timeout_seconds: float)
 
 
 def _http_status(url: str, timeout_seconds: float, method: str = "GET") -> int:
+    # Use a proxy-bypassing opener so harness route checks bypass any http_proxy env.
+    # urllib default opener follows system proxy settings which can misroute
+    # internal HTTP targets (e.g. 10.72.212.33) through an external proxy.
+    proxy_handler = __import__("urllib.request", fromlist=["ProxyHandler"]).ProxyHandler({})
+    opener = __import__("urllib.request", fromlist=["OpenerDirector"]).OpenerDirector()
+    opener.add_handler(proxy_handler)
     request = Request(url=url, method=method)
     try:
-        with urlopen(request, timeout=max(0.5, float(timeout_seconds))) as response:
+        with opener.open(request, timeout=max(0.5, float(timeout_seconds))) as response:
             return int(getattr(response, "status", 0) or 0)
     except HTTPError as exc:
         return int(getattr(exc, "code", 0) or 0)
