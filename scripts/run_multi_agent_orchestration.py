@@ -2028,11 +2028,12 @@ def executor_stage(args: argparse.Namespace, planner: Dict[str, Any], role_spec:
         "problemType": "boundstate",
         "potentialType": potential_type,
         "fastPath": not requires_accuracy_octopus,
-        # Always send explicit spacing/radius in Bohr — avoids MCP server unit ambiguity.
-        # MCP server interprets octopusSpacing/octopusRadius as Bohr directly.
-        "octopusSpacing": float(args.octopus_spacing) if args.octopus_spacing is not None else 0.05,
-        "octopusRadius": float(args.octopus_radius) if args.octopus_radius is not None else 5.0,
-        "octopusLengthUnit": "bohr",  # explicit so MCP does NOT auto-convert from Angstrom
+        # Send spacing/radius in Angstrom — matches octopus_case_convergence.md defaults.
+        # MCP server (server.py) converts to Bohr internally when octopusLengthUnit="angstrom".
+        # 0.18 Å / 0.529 Å/Bohr = 0.34 bohr;  10.0 Å / 0.529 Å/Bohr = 18.9 bohr
+        "octopusSpacing": float(args.octopus_spacing) if args.octopus_spacing is not None else 0.18,
+        "octopusRadius": float(args.octopus_radius) if args.octopus_radius is not None else 10.0,
+        "octopusLengthUnit": "angstrom",  # MCP converts to Bohr internally
     }
     if args.octopus_max_scf_iterations is not None:
         octopus_payload["octopusMaxScfIterations"] = int(args.octopus_max_scf_iterations)
