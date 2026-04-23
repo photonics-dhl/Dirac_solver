@@ -33,7 +33,10 @@ except ImportError:
 DEFAULT_RULES = REPO_ROOT / "orchestration" / "task_dispatch_rules.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 DEFAULT_POLICY = REPO_ROOT / "orchestration" / "openclaw_exec_policy.json"
-DEFAULT_OPENCLAW_ROOT = str(Path.home() / ".openclaw")
+# IMPORTANT: OpenClaw is deployed on the remote HPC server (CentOS 7).
+# On Windows, access via RaiDrive CIFS mount: Z:\.openclaw = \\RaiDrive-Mac\SFTP\.openclaw
+# DO NOT use local Windows path C:\Users\Mac\.openclaw (that doesn't exist on server).
+DEFAULT_OPENCLAW_ROOT = r"\\RaiDrive-Mac\SFTP\.openclaw"
 DEFAULT_SYNC_STATE = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_WORKFLOW_SPEC = REPO_ROOT / "orchestration" / "execution_wake_state_machine.json"
 DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_config.json"
