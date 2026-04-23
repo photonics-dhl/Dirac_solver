@@ -39,9 +39,9 @@ DEFAULT_WORKFLOW_SPEC = REPO_ROOT / "orchestration" / "execution_wake_state_mach
 DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_config.json"
 DEFAULT_MANIFEST = REPO_ROOT / "knowledge_base" / "corpus_manifest.json"
 DEFAULT_WORKFLOW_ROUTE = "L0"
-DEFAULT_HARNESS_FALLBACK_BASE = "http://127.0.0.1:8101"
-DEFAULT_API_BASE = str(os.environ.get("DIRAC_API_BASE") or "http://127.0.0.1:3004").strip()
-DEFAULT_HARNESS_BASE = str(os.environ.get("DIRAC_HARNESS_BASE") or "http://127.0.0.1:8101").strip()
+DEFAULT_HARNESS_FALLBACK_BASE = "http://10.72.212.33:8101"
+DEFAULT_API_BASE = str(os.environ.get("DIRAC_API_BASE") or "http://10.72.212.33:3004").strip()
+DEFAULT_HARNESS_BASE = str(os.environ.get("DIRAC_HARNESS_BASE") or "http://10.72.212.33:8101").strip()
 DEFAULT_EXEC_TIMEOUT_SECONDS = max(60, int(os.environ.get("DIRAC_EXEC_TIMEOUT_SECONDS") or "900"))
 
 
