@@ -249,12 +249,16 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
                 "h_gs", "h_td", "h_pp",
                 "he_gs", "he_td", "he_pp",
                 "n_gs", "n_td", "n_pp",
+                "n_atom_gs_official", "n_atom_gs_reference",
+                "hydrogen_gs_reference", "hydrogen_gs_nist",
                 "h2_gs", "h2_td",
                 "h2o_gs", "h2o_td", "h2o_pp",
-                "ch4_gs", "ch4_td", "ch4_pp",
+                "ch4_gs", "ch4_gs_reference", "ch4_td", "ch4_pp",
             ]
             for case in sorted(KNOWN_CASES, key=len, reverse=True):
-                if re_module.search(r'\b' + re_module.escape(case) + r'\b', compact_lower):
+                # Use word boundary at start, allow non-boundary at end to handle
+                # cases like "n_atom_gs_official" where case ends mid-word
+                if re_module.search(r'\b' + re_module.escape(case) + r'(?![a-z])', compact_lower):
                     detected_case = case
                     break
 
