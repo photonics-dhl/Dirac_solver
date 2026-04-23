@@ -33,7 +33,7 @@ except ImportError:
 DEFAULT_RULES = REPO_ROOT / "orchestration" / "task_dispatch_rules.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 DEFAULT_POLICY = REPO_ROOT / "orchestration" / "openclaw_exec_policy.json"
-DEFAULT_OPENCLAW_ROOT = REPO_ROOT.parents[2]
+DEFAULT_OPENCLAW_ROOT = str(Path.home() / ".openclaw")
 DEFAULT_SYNC_STATE = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_WORKFLOW_SPEC = REPO_ROOT / "orchestration" / "execution_wake_state_machine.json"
 DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_config.json"
@@ -2393,13 +2393,6 @@ def probe_harness_group(base_urls: List[str], timeout_seconds: float) -> Dict[st
 
 
 def run_preflight(args: argparse.Namespace) -> Dict[str, Any]:
-    # When skipping bootstrap, local REPO_ROOT differs from server-side openclaw root.
-    # Scripts like audit_openclaw_permissions.py and ensure_openclaw_exec.py use
-    # --openclaw-root args.openclaw_root. Override it to the server-side default so
-    # they read the correct openclaw.json with approved scopes.
-    _orig_openclaw_root = args.openclaw_root
-    if _orig_openclaw_root != str(DEFAULT_OPENCLAW_ROOT):
-        args.openclaw_root = str(DEFAULT_OPENCLAW_ROOT)
     ensure_cmd = [
         sys.executable,
         "scripts/ensure_openclaw_exec.py",
