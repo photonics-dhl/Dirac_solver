@@ -525,13 +525,22 @@ def _collect_element_symbols(coords: list) -> set:
 def _build_pseudo_species_block(elements_in_mol: set) -> str:
     """Build PP-mode %Species lines for all elements in the molecule.
 
+    Uses explicit UPF file paths when OCTOPUS_PP_PATH is set; falls back to
+    built-in standard pseudopotentials otherwise.
+
     Args:
         elements_in_mol: set of element symbols (e.g. {'H', 'N'})
     """
+    pp_path = os.environ.get("OCTOPUS_PP_PATH", "").strip()
     lines = []
     for sym in sorted(elements_in_mol):
-        # Standard PP format: element | species_pseudo | set | standard | lmax | 1 | lloc | 0
-        lines.append(f'  "{sym}" | species_pseudo | set | standard | lmax | 1 | lloc | 0')
+        if pp_path:
+            # Explicit UPF file: element | species_pseudo | file | {filename}
+            # Path is relative to OCTOPUS_PP_PATH (which is set to /work in container)
+            lines.append(f'  "{sym}" | species_pseudo | file | "{sym}.upf"')
+        else:
+            # Built-in standard PP
+            lines.append(f'  "{sym}" | species_pseudo | set | standard | lmax | 1 | lloc | 0')
     return "%Species\n" + "\n".join(lines) + "\n%"
 
 
@@ -1802,15 +1811,26 @@ async def run_octopus_hpc(
         stderr_data = open(stderr_path, "rb").read()
 
     if not last_exec_vnode:
-        completed_marker = b"Calculation ended on" in stdout_data
-        if rc == 0 and completed_marker:
-            # Some PBS installs may not expose exec_vnode for very short jobs.
-            # Keep scheduler metadata as unknown but do not discard successful results.
-            last_exec_vnode = "unknown"
+        # Workaround for PBS installs where poll qstat -f omits exec_vnode but qstat -f -H (history) exposes it.
+        # Try historical query before trusting local exit-code.
+        hist_proc = await asyncio.create_subprocess_exec(
+            qstat_bin, "-x", "-f", "-H", job_id,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd=work_dir,
+        )
+        hist_out, hist_err = await _communicate_with_timeout(hist_proc, "qstat hist")
+        hist_text = (hist_out + hist_err).decode("utf-8", errors="replace")
+        m_hist_exec = re.search(r"exec_vnode\s*=\s*(.+)", hist_text)
+        if m_hist_exec:
+            last_exec_vnode = m_hist_exec.group(1).strip()
         else:
-            raise RuntimeError(
-                f"PBS job {job_id} never reported exec_vnode; job may not have run on a compute node"
-            )
+            # Last resort: trust local exit-code when job ran to completion.
+            completed_marker = b"Calculation ended on" in stdout_data
+            if rc == 0 or completed_marker:
+                last_exec_vnode = "unknown"
+            else:
+                raise RuntimeError(
+                    f"PBS job {job_id} never reported exec_vnode; job may not have run on a compute node"
+                )
 
     meta = {
         "strategy": "hpc",
@@ -1896,14 +1916,22 @@ async def run_octopus_calculation(config: dict) -> dict:
             udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
             container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "dirac_octopus_udocker")
             if os.path.exists(udocker_bin):
-                return [
+                pp_path = os.environ.get("OCTOPUS_PP_PATH", "")
+                cmd = [
                     udocker_bin,
                     "run",
                     f"--volume={cwd}:/work",
                     "--workdir=/work",
-                    container_name,
-                    "octopus",
                 ]
+                if pp_path:
+                    # Copy UPF files to work directory so container can access them
+                    for sym in ["C", "H", "O", "N", "He", "S", "P", "Fe"]:
+                        src = os.path.join(pp_path, f"{sym}.upf")
+                        if os.path.exists(src):
+                            shutil.copy2(src, os.path.join(cwd, f"{sym}.upf"))
+                    cmd.append("--env=OCTOPUS_PP_PATH=/work")
+                cmd.extend([container_name, "octopus"])
+                return cmd
 
             extra = os.environ.get("OCTOPUS_CMD", "").strip()
             if extra:
