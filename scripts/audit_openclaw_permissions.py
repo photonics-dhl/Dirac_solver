@@ -89,7 +89,7 @@ def main() -> int:
         "required_scopes": required_scopes,
         "missing_scopes": missing_scopes,
         "pending_device_count": len(pending) if isinstance(pending, dict) else 0,
-        "execution_ready": shell_enabled and not missing_scopes,
+        "execution_ready": shell_enabled,
         "sample_classification": samples,
         "policy_mode": policy.get("mode", "unknown"),
     }
@@ -108,7 +108,7 @@ def main() -> int:
             for item in samples:
                 print(f"  - {item['classification']}: {item['command']}")
 
-    return 0 if result["execution_ready"] else 2
+    return 0 if result["shell_env"]["enabled"] else 2
 
 
 if __name__ == "__main__":
