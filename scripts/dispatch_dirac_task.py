@@ -34,9 +34,10 @@ DEFAULT_RULES = REPO_ROOT / "orchestration" / "task_dispatch_rules.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 DEFAULT_POLICY = REPO_ROOT / "orchestration" / "openclaw_exec_policy.json"
 # IMPORTANT: OpenClaw is deployed on the remote HPC server (CentOS 7).
+# On the SERVER, OpenClaw root is ~/.openclaw = /data/home/zju321/.openclaw
 # On Windows, access via RaiDrive CIFS mount: Z:\.openclaw = \\RaiDrive-Mac\SFTP\.openclaw
-# DO NOT use local Windows path C:\Users\Mac\.openclaw (that doesn't exist on server).
-DEFAULT_OPENCLAW_ROOT = r"\\RaiDrive-Mac\SFTP\.openclaw"
+# Subprocess calls (run_preflight etc.) run on the SERVER so they need SERVER paths.
+DEFAULT_OPENCLAW_ROOT = "~/.openclaw"
 DEFAULT_SYNC_STATE = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_WORKFLOW_SPEC = REPO_ROOT / "orchestration" / "execution_wake_state_machine.json"
 DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_config.json"
@@ -116,6 +117,7 @@ def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
     # Atom extraction (handles any future atom symbol)
     ATOM_MOLECULE = {
         "h": "H", "he": "He", "he_pp": "He",
+        "ch4": "CH4", "ch4_gs": "CH4", "ch4_td": "CH4",
         "n": "N", "na": "Na", "k": "K", "cl": "Cl",
         "o": "O", "c": "C", "f": "F", "s": "S",
     }
@@ -2435,9 +2437,9 @@ def run_preflight(args: argparse.Namespace) -> Dict[str, Any]:
 
     service_timeout_seconds = max(1.0, min(8.0, float(max(1000, int(args.exec_timeout_ms))) / 1000.0))
     harness_fallback_base = str(os.environ.get("DIRAC_HARNESS_FALLBACK_BASE") or DEFAULT_HARNESS_FALLBACK_BASE).strip()
-    api_probe = probe_service_group("api", [str(args.api_base or "")], timeout_seconds=service_timeout_seconds)
+    api_probe = probe_service_group("api", [str(args.api_base or DEFAULT_API_BASE)], timeout_seconds=service_timeout_seconds)
     harness_probe = probe_harness_group(
-        [str(args.harness_base or ""), harness_fallback_base],
+        [str(args.harness_base or DEFAULT_HARNESS_BASE), harness_fallback_base],
         timeout_seconds=service_timeout_seconds,
     )
 
