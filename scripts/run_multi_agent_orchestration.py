@@ -58,7 +58,7 @@ DEFAULT_CASE_REFERENCE_ENERGY_HARTREE: Dict[str, float] = {
     # h2o_gs_reference: EXCLUDED — KB ref is CCSD(T)，用 HGH PP LDA/DFT 结果完全不可比（77% 误差）
     # ch4_gs_reference: EXCLUDED — KB ref 用 standard PP，我们用 HGH PP，赝势体系差 ~15%
     "ch4_gs":             -8.0216,   # Tutorial 16 standard PP LDA (NOT PSF)
-    "ch4_gs_official":     -8.2,     # PP GGA PBE (ONCV PSP UPF files)
+    "ch4_gs_official":     -8.0216,   # Tutorial 16 PP LDA standard
     "n_atom_gs_official":   -9.64,
 }
 DEFAULT_CASE_PROVENANCE_SOURCE_DOC: Dict[str, str] = {
@@ -246,8 +246,8 @@ PP_MODE_PARAMS: Dict[str, Dict[str, Any]] = {
     # H2O: PP LDA, spacing=0.18A, radius=12.0A (unit via octopusLengthUnit=angstrom)
     # Note: KB ref is CCSD(T) - methodologically incompatible with DFT; seek DFT reference
     "h2o_gs_reference":     dict(molecule="H2O", spacing=0.18, radius=12.0, xc="lda_x+lda_c_pz",   species="pseudo", octopusLengthUnit="angstrom"),
-    # CH4: PP GGA PBE - matches ONCV PSP UPF files (C.upf/H.upf generated with gga_x_pbe+gga_c_pbe)
-    "ch4_gs_official":      dict(molecule="CH4", spacing=0.18, radius=3.5, xc="gga_x_pbe+gga_c_pbe", species="pseudo", octopusLengthUnit="angstrom"),
+    # CH4: PP LDA - matches Octopus Tutorial 16 standard PP LDA, spacing=0.18A, radius=3.5A
+    "ch4_gs_official":      dict(molecule="CH4", spacing=0.18, radius=3.5, xc="lda_x+lda_c_pz",    species="pseudo", octopusLengthUnit="angstrom"),
 }
 
 def infer_octopus_defaults_for_case(case_id: str) -> Dict[str, Any]:
