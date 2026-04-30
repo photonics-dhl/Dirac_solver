@@ -205,7 +205,9 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
             r"\bk\b": "K",
             r"\bcl\b": "Cl",
             r"\bo\b": "O",
+            r"\bch4\b": "CH4",
             r"\bc\b": "C",
+            r"\bch4\b": "CH4",
             r"\bf\b": "F",
             r"\bs\b": "S",
         }
@@ -255,7 +257,7 @@ def normalize_task_contract(task: str, source: str) -> Dict[str, Any]:
                 "hydrogen_gs_reference", "hydrogen_gs_nist",
                 "h2_gs", "h2_td",
                 "h2o_gs", "h2o_td", "h2o_pp",
-                "ch4_gs", "ch4_gs_reference", "ch4_td", "ch4_pp",
+                "ch4_gs", "ch4_gs_reference", "ch4_gs_official", "ch4_td", "ch4_pp",
             ]
             for case in sorted(KNOWN_CASES, key=len, reverse=True):
                 # Use word boundary at start, allow non-boundary at end to handle
