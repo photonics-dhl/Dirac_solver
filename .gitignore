@@ -64,6 +64,14 @@ logs/
 # ─── Windows path artifacts (created by git on Linux) ──────────────
 e:/
 
+# ─── Benchmark run artifacts ────────────────────────────────────────
+benchmarks/*.log
+benchmarks/*.err
+benchmarks/*.out
+benchmarks/*.stdout
+benchmarks/*.stderr
+benchmarks/direct_test*/
+
 # ─── AI / editor metadata ──────────────────────────────────────────
 .cobridge
 .traerules
@@ -73,6 +81,7 @@ e:/
 # ─── Claude Code ──────────────────────────────────────────────────
 .claudeignore
 .claude/
+.mcp.json
 session-env/
 shell-snapshots/
 telemetry/
