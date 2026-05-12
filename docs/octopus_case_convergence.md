@@ -796,6 +796,72 @@ H₂O: ΔE = Etot(H₂O) − [Etot(O) + 2×Etot(H)]
 | `h2_oct_pp_oncv` | H₂ | PP ONCV PBE | -31.780 | 6.79 | +52% | ⚠️ spacing coarse | 2026-05-12 |
 | `n2_oct_pp_oncv` | N₂ | PP ONCV PBE | -565.10 | 9.98 | +2.3% | ✅ PASS | 2026-05-12 |
 | `o2_oct_pp_oncv` | O₂ | PP ONCV PBE | -896.22 | 6.84 | +31% | ⚠️ GGA limit | 2026-05-12 |
+| `n2_oct_tddft_kick` | N₂ | PP ONCV PBE, TD | — | — | — | ✅ stable | 2026-05-12 |
+
+---
+
+## TDDFT 激发态 (Octopus real-time propagation)
+
+> **验证日期**：2026-05-12 | **方法**：delta-kick 实时含时传播
+> **状态**：稳定性已验证 ✅，光谱分辨率不足（需更长传播时间）
+
+### 方法
+
+Delta-kick 线性响应 TDDFT：瞬时电场激发所有频率，通过偶极矩傅里叶变换得到吸收光谱。
+
+### N₂ 稳定参数
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| `TDTimeStep` | 0.02 a.u. (0.48 as) | 稳定传播所需，dt≥0.05 会数值 blowup |
+| `TDDeltaStrength` | 0.005 a.u. | 弱 kick，保持线性响应区 |
+| `TDPolarizationDirection` | 1 | x 轴方向 |
+| `ExtraStates` | 8 | 未占据轨道数（用于吸收） |
+| `TDMaxSteps` | 500 | 总时间 T=10 a.u.（~0.24 fs） |
+| Walltime | ~30 min | 单核串行 |
+
+### Kohn-Sham 激发能（GS 特征值差）
+
+> 从 GS 计算（见上方 N₂/Octopus PP）直接得到。KS 特征值差不等于真实激发能，但提供零阶估计。
+
+| 跃迁 | ΔE (Ha) | ΔE (eV) | 简并 |
+|------|---------|---------|------|
+| HOMO→LUMO | 0.3038 | 8.27 | 2 (π* degenerate) |
+| HOMO→LUMO+1 | 0.3770 | 10.26 | — |
+| HOMO-1→LUMO | 0.3557 | 9.68 | 2 (π degenerate) |
+| HOMO-2→LUMO | 0.4196 | 11.42 | — |
+
+> N₂ 第一激发态（³Πg ← ¹Σg⁺）实验值：~8.0 eV。KS gap 8.27 eV 合理吻合。
+> 真实 TDDFT 激发能需要 Casida 方程或长时传播（T≥100 a.u.）。
+
+### 已知问题
+
+1. **网格太粗**：0.18 Å spacing 导致数值色散，影响高频响应
+2. **传播时间太短**：T=10 a.u. → ΔE=17 eV 分辨率。T≥200 a.u. 才有 1 eV 分辨率
+3. **单核串行**：500 步 × 30 min → 5000 步需 ~5 小时
+4. **Delta kick 信噪比**：弱 kick 下高阶激发信号被噪声淹没
+
+### 后续优化方向
+
+- 网格细化到 0.12 Å（带宽 x3，计算量 x3.4）
+- 传播时间延长到 T=200 a.u.（10000 步，约 10 小时）
+- 使用 Casida 线性响应代替实时传播（更高效的单点激发能计算）
+- GPU 加速或 MPI 并行减少 walltime
+
+### 运行方法
+
+```bash
+# 服务器上 udocker 运行
+ssh dirac-key
+cd /data/home/zju321/diatomic_bench/oct_N2_td2
+# 先跑 GS（已提供 restart/gs）
+/data/home/zju321/.local/bin/udocker run \
+  -v $(pwd):/workdir \
+  registry.gitlab.com/octopus-code/octopus:16.0 \
+  /bin/bash -c 'cd /workdir && /app/bin/octopus'
+# 吸收光谱后处理
+python3 spectrum.py
+```
 
 ---
 
