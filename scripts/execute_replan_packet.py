@@ -229,7 +229,7 @@ def map_action_to_command(action_text: str, args: argparse.Namespace) -> List[st
             "--manifest",
             "knowledge_base/corpus_manifest.json",
         ]
-    if "octopus" in text:
+    if "octopus" in text or "ground_state_energy" in text or "physics_result" in text or "missing_physics" in text:
         return [
             sys.executable,
             "scripts/run_octopus_first_principles_case.py",
@@ -381,7 +381,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--packet", default="", help="Path to replan packet json. If empty, read from state.")
     parser.add_argument("--state", default=str(DEFAULT_STATE_PATH), help="Progress sync state path.")
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR), help="Output directory for replan execution report.")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004")
     parser.add_argument("--harness-base", default="http://127.0.0.1:8001")
     parser.add_argument("--case-id", default="hydrogen_gs_reference")
     parser.add_argument("--octopus-molecule", default="H2")

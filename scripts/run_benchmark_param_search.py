@@ -217,7 +217,7 @@ def _load_historical_rows(case_id: str, limit: int = 60) -> List[Dict[str, Any]]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Search benchmark parameter combinations via orchestration runs.")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004")
     parser.add_argument("--harness-base", default="http://127.0.0.1:8101")
     parser.add_argument("--max-iterations", type=int, default=1)
     parser.add_argument("--timeout", type=int, default=180)

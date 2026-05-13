@@ -330,7 +330,7 @@ def main() -> int:
         f"{base}/kb/ingest-markdown",
         f"{base}/api/kb/ingest-markdown",
         f"{base}/api/kb/ingest_markdown",
-        "http://127.0.0.1:3001/api/kb/ingest-markdown",
+        "http://127.0.0.1:3004/api/kb/ingest-markdown",
         "http://127.0.0.1:8011/kb/ingest_markdown",
         "http://127.0.0.1:8011/kb/ingest-markdown",
         "http://127.0.0.1:8001/kb/ingest_markdown",

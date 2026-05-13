@@ -109,7 +109,33 @@ state/dirac_solver_progress_sync.json
 state/dirac_exec_queue.json
 state/copilot_openclaw_bridge.json
 state/multi_agent_learning_state.json
+state/monitor_*.json
 .pids/
+
+# ─── Claude Code local memory ──────────────────────────────────────
+memory/
+
+# ─── Octopus output data files (regeneratable) ──────────────────────
+@Octopus_docs/output/convergence
+@Octopus_docs/output/cross_section_vector
+@Octopus_docs/output/density.*
+@Octopus_docs/output/dos-*
+@Octopus_docs/output/elf_rs.*
+@Octopus_docs/output/forces
+@Octopus_docs/output/info
+@Octopus_docs/output/total-dos*
+@Octopus_docs/output/v0.*
+@Octopus_docs/output/vh.*
+@Octopus_docs/output/vks.*
+@Octopus_docs/output/vxc.*
+@Octopus_docs/output/wf-st*
+
+# ─── Knowledge base runtime artifacts ───────────────────────────────
+knowledge_base/vector_store/
+knowledge_base/dirac_ref.db
+
+# ─── Orphan / deprecated source files ───────────────────────────────
+src/server.ts
 
 # ─── Unison sync artifacts ────────────────────────────────────────
 .unison/

@@ -11,7 +11,7 @@ from urllib.error import URLError, HTTPError
 HARTREE_TO_EV = 27.211386245988
 SPACINGS = [0.22, 0.20, 0.18, 0.16, 0.14, 0.12, 0.10]
 REF_SPACING = 0.16
-DEFAULT_API_BASE = "http://127.0.0.1:3001"
+DEFAULT_API_BASE = "http://127.0.0.1:3004"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOC_PATH = REPO_ROOT / "docs" / "harness_reports" / "octopus_case_optimal_parameters_20260413.md"
 

@@ -20,8 +20,10 @@
 - **Valence electrons**: 10 (under pseudopotential for C and H)
 - **Calculation Mode**: `gs`
 - **Geometry**: C at origin; H at tetrahedral positions with bond length CH = 1.2 Å
-- **Pseudopotential**: Default (no explicit `%Species` block; Octopus uses built-in standard pseudopotentials)
+- **Pseudopotential**: `standard` (PSF format, Troullier-Martins, N.psf/C.psf/H.psf)
 - **XC Functional**: LDA
+
+> ⚠️ **Critical**: Tutorial 16 uses `species_pseudo | set | standard`, which loads **PSF pseudopotentials** from `share/octopus/pseudopotentials/PSF/`. This is NOT `builtin_standard`. For C and H, the energy difference between PSF and `builtin_standard` appears small (~0.001 Ha based on our tests), but they are technically different pseudopotential families.
 
 ## Grid Convergence Data (Spacing Scan)
 
@@ -115,3 +117,13 @@ ExtraStates = 4
 ## Changelog
 
 - 2026-04-16: Re-extracted from raw HTML (PRE 9 table). Corrected units — energies are in **eV**, not Ha. Updated reference value and conversion to Ha.
+
+
+## Measured Results
+
+> Auto-synced from orchestrator 2026-04-29
+
+| Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
+|------|-----------|----------|-------|------------|
+| | 2026-04-29 | -6.933129 Ha | — Ha | 0.23% | sp=0.18Å R=3.5Å lda_x+lda_c_pz |
+

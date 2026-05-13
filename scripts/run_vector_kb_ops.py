@@ -125,7 +125,7 @@ def run_query(base_url: str, query: str, top_k: int, timeout: int) -> Dict[str, 
     endpoints = [
         f"{base}/kb/query",
         f"{base}/api/kb/query",
-        "http://127.0.0.1:3001/api/kb/query",
+        "http://127.0.0.1:3004/api/kb/query",
         "http://127.0.0.1:8011/kb/query",
         "http://127.0.0.1:8001/kb/query",
         "http://127.0.0.1:8101/kb/query",

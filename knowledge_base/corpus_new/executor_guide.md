@@ -56,18 +56,22 @@ done
 
 ### Verified Results at spacing = 0.18 Å
 
-| Quantity | Ha | eV |
+> **Unit confirmed via NIST SRD 141 cross-validation**: values from Octopus tutorial are in **eV**, not Ha.
+> s eigenvalue -18.283 eV matches NIST LDA 2s (-0.676 Ha = -18.40 eV) to 0.6%.
+> Total energy -262.24 eV ≈ -9.64 Ha, consistent with 5-valence-electron PP.
+
+| Quantity | eV | Ha |
 |----------|-----:|-----:|
-| Total Energy | -262.24120934 | -7135.95 |
-| s eigenvalue | -18.282871 | -497.50 |
-| p eigenvalue | -7.302321 | -198.71 |
+| Total Energy | -262.24120934 | -9.64 |
+| s eigenvalue | -18.282871 | -0.672 |
+| p eigenvalue | -7.302321 | -0.268 |
 
 ### Executor Checklist
 - [ ] Generate inp file with `Spacing = 0.18*angstrom`
 - [ ] Run Octopus ground state
 - [ ] Extract `Total Energy` from `static/info`
 - [ ] Extract `1 --` (s eigenvalue) and `2 --` (p eigenvalue) from eigenvalues block
-- [ ] Compare with reference: E = -262.24 Ha ± 1%
+- [ ] Compare with reference: E = -262.24 eV ± 1% (≈ -9.64 Ha)
 - [ ] Report job_id, spacing, ncpus in artifact
 
 ---

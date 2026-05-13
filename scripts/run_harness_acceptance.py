@@ -147,7 +147,7 @@ def main() -> int:
         "http://127.0.0.1:8101/harness/run-case",
         "http://127.0.0.1:8101/api/harness/run_case",
         "http://127.0.0.1:8101/api/harness/run-case",
-        "http://127.0.0.1:3001/api/harness/run-case",
+        "http://127.0.0.1:3004/api/harness/run-case",
     ]
     command_text = (
         f"python scripts/run_harness_acceptance.py --base-url {args.base_url} "

@@ -111,7 +111,7 @@ def main() -> int:
     args = parser.parse_args()
 
     exec_args = SimpleNamespace(
-        api_base="http://127.0.0.1:3001",
+        api_base="http://127.0.0.1:3004",
         harness_base="http://127.0.0.1:8001",
         case_id="infinite_well_v1",
         octopus_molecule="H2",

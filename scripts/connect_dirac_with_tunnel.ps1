@@ -1,12 +1,16 @@
 param(
     [string]$HostAlias = "dirac-key",
-    [string]$RemoteWorkDir = "/data/home/zju321/.openclaw/workspace/projects/Dirac",
+    [string]$RemoteWorkDir = "",
     [int]$LocalProxyPort = 7890,
     [int]$RemoteProxyPort = 7890,
     [int]$PortTryCount = 1,
     [switch]$AutoTunnel,
     [switch]$NoShell
 )
+# Auto-detect remote work dir from script location if not provided
+if ([string]::IsNullOrEmpty($RemoteWorkDir)) {
+    $RemoteWorkDir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+}
 
 $ErrorActionPreference = "Stop"
 

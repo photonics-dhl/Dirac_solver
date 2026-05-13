@@ -24,13 +24,25 @@
 | CIPSI-DMC (cc-pCV5Z) | -76.43744(18) Ha | Fixed-node DMC |
 | FCI/CBS extrapolations | -76.4386(9) Ha | cc-pCVnZ, n→∞ |
 
-## Important Caveats
+## ⚠️ Important Caveats
+
+### Methodology Compatibility
+
+**This reference is for WAVEFUNCTION METHODS only.** It is fundamentally incompatible with DFT-LDA pseudopotential calculations:
+
+- **CCSD(T)-R12/CBS** (this reference): all-electron, correlated wavefunction, −76.4389 Ha
+- **DFT-LDA + PP** (Octopus builtin_standard): valence-only pseudopotential, ~−17.17 Ha
+- The ~58.5 Ha gap is **physical** (core electron removal), not a convergence error
+
+For DFT-LDA pseudopotential benchmarks, see `h2o_gs_pseudopotential_reference.md`.
+
+### General Limitations
 
 1. **NOT a measured experimental value** — computationally extrapolated best estimate
 2. **Nonrelativistic only** — relativistic corrections (spin-orbit, Darwin, mass-velocity) are ~-0.003 to -0.005 Ha and are NOT included
 3. **Static nuclei** — zero-point energy is NOT included
 4. **Geometry-sensitive** — different equilibrium geometries introduce ~0.0001–0.001 Ha variation
-5. **This is the TARGET for the calculation phase** — the KB stores this authoritative benchmark; the Dirac/Octopus calculation phase aims to reproduce this value within achievable basis-set and relativistic limits
+5. **This is the TARGET for wavefunction methods** — high-level quantum chemistry calculations aim to reproduce this value
 
 ## Full Provenance Record
 

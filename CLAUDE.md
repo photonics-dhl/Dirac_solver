@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Dirac_solver
 
 > Web solver for relativistic quantum mechanics (Dirac equation) and strong-field physics (TDDFT), powered by Octopus DFT engine (16.0) + VASP PAW-PBE, orchestrated by OpenClaw multi-agent automation.
@@ -12,7 +16,7 @@
 | **核心** | 3D 相对论量子力学求解器（Dirac）+ 时变密度泛函（TDDFT）|
 | **计算引擎** | Octopus 16.0 (DFT/TDDFT, Fortran/C++) + VASP 6.x (DFT, PAW-PBE) |
 | **前端** | React 19 + Vite 4 + TypeScript + Tailwind CSS 3 |
-| **后端** | Python MCP server (Starlette + uvicorn) on port 8000 |
+| **后端** | Dual-server: MCP DFT server (Starlette, port 8000) + Harness/local1D server (FastAPI, port 8001) |
 | **自动化** | OpenClaw（Planner→Executor→Reviewer 三层）|
 | **飞书集成** | 双 Bot 架构（Scholar/feishu-bot）|
 | **运行平台** | 远端 HPC CentOS 7（10.72.212.33，SSH: `dirac-key`）|
@@ -49,13 +53,13 @@ ssh dirac-key
 
 **服务端口（远端）**：
 
-| 端口 | 服务 |
-|------|------|
-| 3004 | Node API (LangGraph orchestration) |
-| 5173 | Vite 前端 dev server |
-| 8000 | Python MCP server (Octopus + VASP backend, SSE transport) |
-| 8001 | Harness 主入口 |
-| 8101 | Harness 兜底入口 |
+| 端口 | 服务 | 文件 |
+|------|------|------|
+| 3004 | Node API (LangGraph orchestration，前端中转) | — |
+| 5173 | Vite 前端 dev server | `frontend/` |
+| 8000 | DFT 计算后端：Octopus/VASP MCP (Starlette + SSE transport) | `docker/workspace/server.py` |
+| 8001 | local1D 求解器 + KB RAG + Harness 基准 (FastAPI) | `backend_engine/main.py` |
+| 8101 | 备用入口 | — |
 
 ---
 
@@ -83,7 +87,7 @@ Dirac/
 │       ├── Mol3DViewer.tsx             # 3D 分子可视化（Three.js）
 │       ├── GeometryEditor.tsx          # 自定义原子坐标编辑器
 │       └── DevFlowDashboard.tsx        # 开发流程监控面板
-├── backend_engine/                    # Python MCP 适配器
+├── backend_engine/                    # Harness + local1D solver + KB RAG (FastAPI, port 8001)
 │   ├── main.py
 │   └── kb_rag.py                      # KB RAG 服务
 ├── knowledge_base/                    # 知识库
@@ -100,29 +104,84 @@ Dirac/
 │   └── harness_reports/               # OpenClaw 执行报告（48h内）
 ├── benchmarks/                        # HPC Octopus benchmark
 ├── rules/                             # 故障排查 + 开发规范
-├── tests/                             # 测试目录
+├── tests/                             # 测试目录（当前为空，无测试套件）
 └── logs/                              # 运维日志
 ```
 
 ---
 
+## 编排调度流程（OpenClaw）
+
+```
+User/CLI 任务 → dispatch_dirac_task.py
+  → 关键词匹配 task_dispatch_rules.json（9 条规则）
+  → 分配 Agent 角色: supervisor | planner | executor | reviewer
+  → run_multi_agent_orchestration.py（三层循环）
+     Planner: 分析任务、搜索知识库、生成执行计划
+     Executor: 调用 MCP 工具（run_octopus/run_vasp）、监控 PBS
+     Reviewer: 对比 benchmark 参考值、判定 PASS/FAIL
+  → 结果写入 state/ + 报告写入 docs/harness_reports/
+```
+
+**关键词路由示例**：
+- `n_atom_gs_official`, `ch4_gs` → `dirac_standard_case_orchestration` (supervisor)
+- `/auto`, `自动调试` → `auto_default_orchestration`
+- `refactor`, `fix bug` → `code_implementation` (copilot-executor)
+- `review`, `质量门禁` → `quality_review` (reviewer)
+
+## 知识库结构
+
+```
+knowledge_base/
+├── corpus_new/          # 参考值文档（人工编写，核心真值）
+├── corpus_mp/           # Materials Project 自动抓取（H2O/Si/CH4/H2）
+├── vector_store/        # ChromaDB 持久化（5 collection UUID）+ chroma.sqlite3
+├── metadata/            # PDF 源索引 + 摄入日志
+└── corpus_manifest.json
+```
+
+**KB RAG** (`backend_engine/kb_rag.py`): ChromaDB 默认嵌入，`/kb/query` 支持 top_k + topic_tag 过滤。
+
+## 客户端 MCP 配置
+
+`.mcp.json` 配置 Claude Code 可用 MCP 服务器：`semantic-scholar`, `paper-search`, `github`, `mermaid`, `puppeteer`, `fetch`, `memory`, `tavily-search`（经本地代理 `http://127.0.0.1:7890`）。
+
+---
+
 ## 前后端架构
 
-### 后端（Python MCP Server, port 8000）
+### 后端（双服务器）
 
-`docker/workspace/server.py` 是中央后端，运行在 HPC 服务器上：
+**Port 8000 — DFT 计算后端** (`docker/workspace/server.py`, 3061 行):
+Starlette + MCP SSE transport。唯一能提交 Octopus/VASP 作业的服务。
 
 - **REST endpoints**: `/health` (GET), `/solve` (POST, Octopus), `/solve_vasp` (POST, VASP)
-- **MCP tools** (SSE transport): `run_octopus`, `run_vasp`, `parse_results`
-- **PBS 调度**: 通过 `qsub` 提交作业到 HPC 队列，通过 `qstat -f JOBID` 追踪
-- **Octopus 执行**: 通过 udocker 容器运行 `registry.gitlab.com/octopus-code/octopus:16.0`
-- **VASP 执行**: 直接二进制 `/data/software/AMD/vasp_std` 或通过 PBS
+- **MCP tools** (SSE `/sse` + `/messages`): `run_octopus`, `run_vasp`, `parse_results`
+- **PBS 调度**: 通过 `qsub` 提交作业到 HPC 队列
+- **Octopus 执行**: udocker 容器 `registry.gitlab.com/octopus-code/octopus:16.0`
+- **VASP 执行**: 直接二进制 `/data/software/AMD/vasp_std` 或 PBS
+- 辅助模块: `vasp_backend.py` (INCAR/POSCAR/KPOINTS/POTCAR 生成，424 行)
+
+**Port 8001 — Harness + local1D 后端** (`backend_engine/main.py`, 1899 行):
+FastAPI。提供轻量级 Dirac/Schrödinger 数值求解（非 DFT）、知识库 RAG、基准测试框架。
+
+- **REST endpoints**: `/solve` (local1D Dirac), `/kb/ingest_markdown`, `/kb/query`, `/harness/case_registry`, `/harness/capability_matrix`, `/harness/run_case`, `/harness/iterate_case`
+- **KB RAG**: `backend_engine/kb_rag.py` — ChromaDB 向量存储 + 语料库检索
+- **Harness**: 控制回路（desired_state → controller → solver → quality_feedback），自动网格细化
+- **Case 类型**: `boundstate_1d`, `dft_gs_3d`, `response_td`, `periodic_bands`, `hpc_scaling`
 
 ### 前端（React + Vite, port 5173）
 
 三引擎模式：`local1D` | `octopus3D` | `vasp`
-- **Octopus 流程**: 前端 → `/api/physics/stream` (SSE) → Node API → MCP `run_octopus`
-- **VASP 流程**: 前端 → `POST /solve_vasp` → Python server 直接处理
+
+**Vite 代理路由** (`frontend/vite.config.ts`):
+- `/api/*` → port 8000 (DFT 后端)
+- `/solve_vasp` → port 8000 (VASP 直接调用)
+
+**数据流**：
+- **local1D 流程**: 前端 → Node API (3004) → 本地数值求解 → 直接返回
+- **Octopus 流程**: 前端 → `/api/physics/stream` (SSE) → Node API (3004) → MCP `run_octopus` (8000)
+- **VASP 流程**: 前端 → `POST /solve_vasp` → 直接到 port 8000
 
 ### 前端开发
 
@@ -130,7 +189,10 @@ Dirac/
 cd frontend
 npm run dev          # 启动 Vite dev server（远端 5173）
 npm run build        # TypeScript 编译 + Vite 构建
+npm run preview      # 预览生产构建
 ```
+
+无测试套件。`tests/` 目录为空。
 
 ---
 

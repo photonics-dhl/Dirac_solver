@@ -535,7 +535,7 @@ def build_md(report: Dict[str, Any]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run multi-agent Octopus campaign")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004")
     parser.add_argument("--harness-base", default="http://127.0.0.1:8001")
     parser.add_argument("--skills-manifest", default="orchestration/agent_skills_manifest.json")
     parser.add_argument("--report-dir", default="docs/harness_reports")

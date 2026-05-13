@@ -1,0 +1,3594 @@
+{
+  "version": "2026-04-27T03:01:07.487364Z",
+  "sources": [
+    {
+      "source_id": "mp_H2O_mp-684678",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-684678)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-684678.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-684678",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-684678.md",
+        "mp_material_id": "mp-684678"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0539,
+        "formation_energy_per_atom_eV": -0.832501211071428,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484112Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-32959",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-32959)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-32959.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-32959",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-32959.md",
+        "mp_material_id": "mp-32959"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.275399999999999,
+        "formation_energy_per_atom_eV": -1.254777948333333,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484138Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-697085",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-697085)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-697085.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-697085",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-697085.md",
+        "mp_material_id": "mp-697085"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.2923,
+        "formation_energy_per_atom_eV": -1.259543708333333,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484152Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-24043",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-24043)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-24043.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-24043",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-24043.md",
+        "mp_material_id": "mp-24043"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.4391,
+        "formation_energy_per_atom_eV": -1.2744305002777772,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484163Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-703459",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-703459)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-703459.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-703459",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-703459.md",
+        "mp_material_id": "mp-703459"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.5287,
+        "formation_energy_per_atom_eV": -1.278919780277777,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484175Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-558226",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-558226)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-558226.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-558226",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-558226.md",
+        "mp_material_id": "mp-558226"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.776,
+        "formation_energy_per_atom_eV": -1.268944512777777,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484186Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-558958",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-558958)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-558958.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-558958",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-558958.md",
+        "mp_material_id": "mp-558958"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.668,
+        "formation_energy_per_atom_eV": -1.2676467697222211,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484196Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-1181087",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-1181087)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1181087.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1181087",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1181087.md",
+        "mp_material_id": "mp-1181087"
+      },
+      "reference_values": {
+        "band_gap_eV": 4.3309,
+        "formation_energy_per_atom_eV": -0.9698256597222221,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484206Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-1182019",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-1182019)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1182019.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1182019",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1182019.md",
+        "mp_material_id": "mp-1182019"
+      },
+      "reference_values": {
+        "band_gap_eV": 4.549499999999999,
+        "formation_energy_per_atom_eV": -1.195102487222222,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484216Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-2739191",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-2739191)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-2739191.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-2739191",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-2739191.md",
+        "mp_material_id": "mp-2739191"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.3583,
+        "formation_energy_per_atom_eV": -1.230554994166667,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484225Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-634812",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-634812)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-634812.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-634812",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-634812.md",
+        "mp_material_id": "mp-634812"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.3276,
+        "formation_energy_per_atom_eV": -1.212042164166667,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484235Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-673658",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-673658)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-673658.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-673658",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-673658.md",
+        "mp_material_id": "mp-673658"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.0695,
+        "formation_energy_per_atom_eV": -1.1775513,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484244Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-697111",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-697111)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-697111.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-697111",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-697111.md",
+        "mp_material_id": "mp-697111"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.520200000000001,
+        "formation_energy_per_atom_eV": -1.280002993333333,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484254Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-557082",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-557082)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-557082.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-557082",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-557082.md",
+        "mp_material_id": "mp-557082"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.458,
+        "formation_energy_per_atom_eV": -1.267975343888887,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484264Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-990441",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-990441)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-990441.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-990441",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-990441.md",
+        "mp_material_id": "mp-990441"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": -0.33214351541666604,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484273Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-1974803",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-1974803)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1974803.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1974803",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-1974803.md",
+        "mp_material_id": "mp-1974803"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.5882000000000005,
+        "formation_energy_per_atom_eV": -1.279622607499999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484282Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-684704",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-684704)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-684704.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-684704",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-684704.md",
+        "mp_material_id": "mp-684704"
+      },
+      "reference_values": {
+        "band_gap_eV": 4.7589,
+        "formation_energy_per_atom_eV": -1.196362153333333,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484291Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2O_mp-696735",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2O (mp-696735)",
+      "case_id": "h2o_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2o"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-696735.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-696735",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2O_mp-696735.md",
+        "mp_material_id": "mp-696735"
+      },
+      "reference_values": {
+        "band_gap_eV": 5.4898,
+        "formation_energy_per_atom_eV": -1.273337965833333,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484299Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_CH4_mp-1021328",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 CH4 (mp-1021328)",
+      "case_id": "ch4_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "ch4"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_CH4_mp-1021328.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1021328",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_CH4_mp-1021328.md",
+        "mp_material_id": "mp-1021328"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.6375,
+        "formation_energy_per_atom_eV": -0.255563410999999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484308Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1120447",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1120447)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1120447.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1120447",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1120447.md",
+        "mp_material_id": "mp-1120447"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.37250966749999903,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484317Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1244933",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1244933)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244933.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1244933",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244933.md",
+        "mp_material_id": "mp-1244933"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.34929145859999905,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484326Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1244971",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1244971)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244971.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1244971",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244971.md",
+        "mp_material_id": "mp-1244971"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0030999999999990003,
+        "formation_energy_per_atom_eV": 0.31675151759999903,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484335Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1244990",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1244990)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244990.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1244990",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1244990.md",
+        "mp_material_id": "mp-1244990"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.36627406769999904,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484343Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1245041",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1245041)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1245041.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1245041",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1245041.md",
+        "mp_material_id": "mp-1245041"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.027599999999999004,
+        "formation_energy_per_atom_eV": 0.310314400899999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484352Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-571520",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-571520)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-571520.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-571520",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-571520.md",
+        "mp_material_id": "mp-571520"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.19694103500000001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484360Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1199894",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1199894)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1199894.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1199894",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1199894.md",
+        "mp_material_id": "mp-1199894"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.998499999999999,
+        "formation_energy_per_atom_eV": 0.128874325731708,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484368Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1202745",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1202745)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1202745.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1202745",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1202745.md",
+        "mp_material_id": "mp-1202745"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.8932000000000001,
+        "formation_energy_per_atom_eV": 0.144239747241379,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484376Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1094057",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1094057)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1094057.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1094057",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1094057.md",
+        "mp_material_id": "mp-1094057"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.517749729999999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484385Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1268191",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1268191)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1268191.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1268191",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1268191.md",
+        "mp_material_id": "mp-1268191"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.36004447499999903,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484395Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1245242",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1245242)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1245242.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1245242",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1245242.md",
+        "mp_material_id": "mp-1245242"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.31691021609999803,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484402Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1403870",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1403870)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1403870.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1403870",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1403870.md",
+        "mp_material_id": "mp-1403870"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 1.250752009999999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484410Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-644693",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-644693)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-644693.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-644693",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-644693.md",
+        "mp_material_id": "mp-644693"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.41511927999999904,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484419Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-676011",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-676011)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-676011.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-676011",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-676011.md",
+        "mp_material_id": "mp-676011"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.44703532249999905,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484426Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-988210",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-988210)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-988210.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-988210",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-988210.md",
+        "mp_material_id": "mp-988210"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 1.9596229937499992,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484435Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1079297",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1079297)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1079297.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1079297",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1079297.md",
+        "mp_material_id": "mp-1079297"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.2735,
+        "formation_energy_per_atom_eV": 0.08220610625000001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484443Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1204046",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1204046)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1204046.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1204046",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1204046.md",
+        "mp_material_id": "mp-1204046"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.15080000000000002,
+        "formation_energy_per_atom_eV": 0.178885465377357,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484450Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1056579",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1056579)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1056579.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1056579",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1056579.md",
+        "mp_material_id": "mp-1056579"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.48407213000000104,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484458Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-999200",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-999200)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-999200.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-999200",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-999200.md",
+        "mp_material_id": "mp-999200"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.439799999999999,
+        "formation_energy_per_atom_eV": 0.11663319999999901,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484466Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-92",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-92)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-92.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-92",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-92.md",
+        "mp_material_id": "mp-92"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.28873980000000005,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484475Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-165",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-165)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-165.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-165",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-165.md",
+        "mp_material_id": "mp-165"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.438899999999999,
+        "formation_energy_per_atom_eV": 0.013606870000000002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484483Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1201492",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1201492)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1201492.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1201492",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1201492.md",
+        "mp_material_id": "mp-1201492"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.010699999999999,
+        "formation_energy_per_atom_eV": 0.121153145431034,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484502Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-168",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-168)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-168.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-168",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-168.md",
+        "mp_material_id": "mp-168"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.160020518749998,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484514Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1200830",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1200830)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1200830.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1200830",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1200830.md",
+        "mp_material_id": "mp-1200830"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.073499999999999,
+        "formation_energy_per_atom_eV": 0.14326103524390202,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484523Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-971661",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-971661)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-971661.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-971661",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-971661.md",
+        "mp_material_id": "mp-971661"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.372199999999999,
+        "formation_energy_per_atom_eV": 0.10747738456521701,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484534Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-971662",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-971662)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-971662.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-971662",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-971662.md",
+        "mp_material_id": "mp-971662"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.4428,
+        "formation_energy_per_atom_eV": 0.09184994826086901,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484543Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-27",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-27)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-27.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-27",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-27.md",
+        "mp_material_id": "mp-27"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.53156601,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484553Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-149",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-149)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-149.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-149",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-149.md",
+        "mp_material_id": "mp-149"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.6105,
+        "formation_energy_per_atom_eV": null,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484565Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-16220",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-16220)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-16220.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-16220",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-16220.md",
+        "mp_material_id": "mp-16220"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.5334000000000001,
+        "formation_energy_per_atom_eV": 0.393193089411763,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484575Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1014212",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1014212)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1014212.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1014212",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1014212.md",
+        "mp_material_id": "mp-1014212"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.525495500000001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484584Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1079649",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1079649)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1079649.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1079649",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1079649.md",
+        "mp_material_id": "mp-1079649"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.42791178374999905,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484594Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-109",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-109)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-109.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-109",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-109.md",
+        "mp_material_id": "mp-109"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.29561939749999905,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484602Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1524805",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1524805)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1524805.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1524805",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1524805.md",
+        "mp_material_id": "mp-1524805"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.6645676274999981,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484611Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1072544",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1072544)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1072544.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1072544",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1072544.md",
+        "mp_material_id": "mp-1072544"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.1444,
+        "formation_energy_per_atom_eV": 0.22239860833333203,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484620Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1001113",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1001113)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1001113.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1001113",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1001113.md",
+        "mp_material_id": "mp-1001113"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.48982796249999905,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484630Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1095269",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1095269)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1095269.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1095269",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1095269.md",
+        "mp_material_id": "mp-1095269"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.5013000000000001,
+        "formation_energy_per_atom_eV": 0.11054831833333201,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484639Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1204627",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1204627)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1204627.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1204627",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1204627.md",
+        "mp_material_id": "mp-1204627"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.521599999999999,
+        "formation_energy_per_atom_eV": 0.12913409456521602,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484649Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-2351841",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-2351841)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-2351841.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-2351841",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-2351841.md",
+        "mp_material_id": "mp-2351841"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.44883388250000006,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484657Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1196961",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1196961)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1196961.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1196961",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1196961.md",
+        "mp_material_id": "mp-1196961"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.1285,
+        "formation_energy_per_atom_eV": 0.11045900649999901,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484665Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-34",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-34)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-34.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-34",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-34.md",
+        "mp_material_id": "mp-34"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.30530073,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484675Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-10649",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-10649)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-10649.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-10649",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-10649.md",
+        "mp_material_id": "mp-10649"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.512949795,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484683Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1120747",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1120747)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1120747.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1120747",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1120747.md",
+        "mp_material_id": "mp-1120747"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.453742336666665,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484694Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_Si_mp-1203790",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 Si (mp-1203790)",
+      "case_id": "si_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "si"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1203790.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1203790",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_Si_mp-1203790.md",
+        "mp_material_id": "mp-1203790"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.359999999999999,
+        "formation_energy_per_atom_eV": 0.08439319661764601,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484705Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-1096977",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-1096977)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1096977.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1096977",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1096977.md",
+        "mp_material_id": "mp-1096977"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.40012652125000003,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484713Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-2739136",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-2739136)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-2739136.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-2739136",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-2739136.md",
+        "mp_material_id": "mp-2739136"
+      },
+      "reference_values": {
+        "band_gap_eV": 10.5108,
+        "formation_energy_per_atom_eV": 0.0018788512499990002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484721Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-632172",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-632172)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632172.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-632172",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632172.md",
+        "mp_material_id": "mp-632172"
+      },
+      "reference_values": {
+        "band_gap_eV": 9.328899999999999,
+        "formation_energy_per_atom_eV": 0.0006432450000000001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484729Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-632291",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-632291)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632291.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-632291",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632291.md",
+        "mp_material_id": "mp-632291"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.8499,
+        "formation_energy_per_atom_eV": 0.002950801249999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484740Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-850274",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-850274)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-850274.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-850274",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-850274.md",
+        "mp_material_id": "mp-850274"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.5338,
+        "formation_energy_per_atom_eV": 0.0017543562500000002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484749Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-730101",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-730101)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-730101.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-730101",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-730101.md",
+        "mp_material_id": "mp-730101"
+      },
+      "reference_values": {
+        "band_gap_eV": 9.7197,
+        "formation_energy_per_atom_eV": null,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484759Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-754417",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-754417)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-754417.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-754417",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-754417.md",
+        "mp_material_id": "mp-754417"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.37902499500000003,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484767Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-23907",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-23907)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-23907.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-23907",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-23907.md",
+        "mp_material_id": "mp-23907"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.4848,
+        "formation_energy_per_atom_eV": 2.33081424625,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484776Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-24504",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-24504)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-24504.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-24504",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-24504.md",
+        "mp_material_id": "mp-24504"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.0699,
+        "formation_energy_per_atom_eV": 0.0024403937500000004,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484784Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-570752",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-570752)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-570752.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-570752",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-570752.md",
+        "mp_material_id": "mp-570752"
+      },
+      "reference_values": {
+        "band_gap_eV": 6.6358999999999995,
+        "formation_energy_per_atom_eV": 2.33490076125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484792Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-634659",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-634659)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-634659.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-634659",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-634659.md",
+        "mp_material_id": "mp-634659"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.5517,
+        "formation_energy_per_atom_eV": 2.33094435125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484799Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-632250",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-632250)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632250.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-632250",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-632250.md",
+        "mp_material_id": "mp-632250"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.4222,
+        "formation_energy_per_atom_eV": 2.33223158125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484808Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-738409",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-738409)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-738409.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-738409",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-738409.md",
+        "mp_material_id": "mp-738409"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.1865,
+        "formation_energy_per_atom_eV": 0.0027149890625,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484816Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-1181265",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-1181265)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1181265.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1181265",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1181265.md",
+        "mp_material_id": "mp-1181265"
+      },
+      "reference_values": {
+        "band_gap_eV": 1.517799999999999,
+        "formation_energy_per_atom_eV": 1.188433449375,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484824Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-1188177",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-1188177)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1188177.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1188177",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1188177.md",
+        "mp_material_id": "mp-1188177"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.3865,
+        "formation_energy_per_atom_eV": 0.003537998749999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484832Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-731827",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-731827)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-731827.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-731827",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-731827.md",
+        "mp_material_id": "mp-731827"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.3343,
+        "formation_energy_per_atom_eV": 0.002278983125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484840Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-973783",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-973783)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-973783.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-973783",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-973783.md",
+        "mp_material_id": "mp-973783"
+      },
+      "reference_values": {
+        "band_gap_eV": 8.802200000000001,
+        "formation_energy_per_atom_eV": 0.001528826249999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484848Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-1066989",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-1066989)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1066989.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1066989",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1066989.md",
+        "mp_material_id": "mp-1066989"
+      },
+      "reference_values": {
+        "band_gap_eV": 6.2332,
+        "formation_energy_per_atom_eV": 0.05246598,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484855Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_H2_mp-1525492",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 H2 (mp-1525492)",
+      "case_id": "h2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "h2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1525492.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1525492",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_H2_mp-1525492.md",
+        "mp_material_id": "mp-1525492"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 0.39538021125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484863Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-570747",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-570747)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-570747.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-570747",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-570747.md",
+        "mp_material_id": "mp-570747"
+      },
+      "reference_values": {
+        "band_gap_eV": 6.739,
+        "formation_energy_per_atom_eV": 0.002401956249999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484872Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1524991",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1524991)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1524991.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1524991",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1524991.md",
+        "mp_material_id": "mp-1524991"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 3.098628081249999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484880Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-568584",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-568584)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-568584.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-568584",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-568584.md",
+        "mp_material_id": "mp-568584"
+      },
+      "reference_values": {
+        "band_gap_eV": 6.9553,
+        "formation_energy_per_atom_eV": 0.0016779218750000002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484889Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1061298",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1061298)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1061298.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1061298",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1061298.md",
+        "mp_material_id": "mp-1061298"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 3.6303175850000002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484897Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-12103",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-12103)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-12103.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-12103",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-12103.md",
+        "mp_material_id": "mp-12103"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.963499999999999,
+        "formation_energy_per_atom_eV": 4.68725978125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484904Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1080711",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1080711)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1080711.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1080711",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1080711.md",
+        "mp_material_id": "mp-1080711"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 1.91422121425,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484912Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-721759",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-721759)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-721759.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-721759",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-721759.md",
+        "mp_material_id": "mp-721759"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 4.506578815000001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484920Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1189505",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1189505)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1189505.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1189505",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1189505.md",
+        "mp_material_id": "mp-1189505"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.27180000000000004,
+        "formation_energy_per_atom_eV": 2.17741108875,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484928Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1545661",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1545661)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1545661.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1545661",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1545661.md",
+        "mp_material_id": "mp-1545661"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.46340000000000003,
+        "formation_energy_per_atom_eV": 2.004468542499999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484937Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-1176403",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-1176403)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1176403.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-1176403",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-1176403.md",
+        "mp_material_id": "mp-1176403"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 1.08825211125,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484945Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-672233",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-672233)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-672233.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-672233",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-672233.md",
+        "mp_material_id": "mp-672233"
+      },
+      "reference_values": {
+        "band_gap_eV": 6.5645,
+        "formation_energy_per_atom_eV": 0.011450806249999002,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484953Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-154",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-154)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-154.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-154",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-154.md",
+        "mp_material_id": "mp-154"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.340999999999999,
+        "formation_energy_per_atom_eV": null,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484962Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-672234",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-672234)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-672234.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-672234",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-672234.md",
+        "mp_material_id": "mp-672234"
+      },
+      "reference_values": {
+        "band_gap_eV": 2.9912,
+        "formation_energy_per_atom_eV": 4.68820494375,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484971Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-999498",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-999498)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-999498.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-999498",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-999498.md",
+        "mp_material_id": "mp-999498"
+      },
+      "reference_values": {
+        "band_gap_eV": 3.959399999999999,
+        "formation_energy_per_atom_eV": 1.468056788749999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484979Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-25",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-25)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-25.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-25",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "A-ready",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-25.md",
+        "mp_material_id": "mp-25"
+      },
+      "reference_values": {
+        "band_gap_eV": 7.3685,
+        "formation_energy_per_atom_eV": 0.0017828199999980001,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484987Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    },
+    {
+      "source_id": "mp_N2_mp-754514",
+      "type": "local_markdown",
+      "title": "Materials Project DFT Reference \u2014 N2 (mp-754514)",
+      "case_id": "n2_mp_reference",
+      "topic_tags": [
+        "dft",
+        "materials_project",
+        "bandgap",
+        "formation_energy",
+        "xc_functional",
+        "periodic",
+        "molecule",
+        "n2"
+      ],
+      "local_markdown": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-754514.md",
+      "provenance": {
+        "primary_url": "https://materialsproject.org/materials/mp-754514",
+        "source_type": "materials_project_database",
+        "software_version": "VASP (PAW PBE)",
+        "xc_functional": "PBE (GGA)",
+        "confidence_tier": "B-needs-comparison",
+        "verified": true,
+        "provenance_file": "Z:/.openclaw/workspace/projects/Dirac/knowledge_base/corpus_mp/mp_N2_mp-754514.md",
+        "mp_material_id": "mp-754514"
+      },
+      "reference_values": {
+        "band_gap_eV": 0.0,
+        "formation_energy_per_atom_eV": 1.037821919999999,
+        "unit": "eV"
+      },
+      "qa_notes": [
+        "Fetched from Materials Project via mp-api at 2026-04-27T03:01:07.484996Z",
+        "Values are from VASP PAW calculations (PBE functional)",
+        "For Octopus comparison: use same functional (LDA/GGA) and similar PSF family"
+      ]
+    }
+  ]
+}

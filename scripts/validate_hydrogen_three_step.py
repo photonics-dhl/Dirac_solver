@@ -142,7 +142,7 @@ def append_doc(api_base: str, step2: dict, step3: dict) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Hydrogen 3-step validation flow")
-    parser.add_argument("--api-base", default="http://10.72.212.33:3001")
+    parser.add_argument("--api-base", default="http://10.72.212.33:3004")
     parser.add_argument("--timeout", type=int, default=180)
     args = parser.parse_args()
     api_base = str(args.api_base).rstrip("/")

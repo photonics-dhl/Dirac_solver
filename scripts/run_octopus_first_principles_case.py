@@ -167,7 +167,7 @@ def render_markdown(summary: Dict[str, Any], command: str, report_json: Path) ->
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Octopus first-principles case after simple harness validation.")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001", help="Node API base URL.")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004", help="Node API base URL.")
     parser.add_argument("--harness-base", default="", help="Optional direct Harness API base URL (e.g. http://127.0.0.1:8001).")
     parser.add_argument("--simple-case", default="infinite_well_v1", help="Harness simple model case ID.")
     parser.add_argument("--molecule", default="H2", help="Octopus molecule key, e.g. H2, N2, CH4, Benzene.")

@@ -20,7 +20,7 @@
 
 - **Element**: Nitrogen (N)
 - **Z (nuclear charge)**: 7
-- **Valence electrons**: 5 (pseudopotential in Octopus); 7 total electrons in NIST all-electron
+- **Valence electrons**: 5 (`standard` PSF pseudopotential in Octopus); 7 total electrons in NIST all-electron
 - **Calculation Mode**: `gs`
 - **Geometry**: Single atom at origin; no periodicity (`PeriodicDimensions = 0`)
 
@@ -132,3 +132,59 @@ ExtraStates = 1
 - 2026-04-16: **RESOLVED via NIST independent verification** — Cross-referenced Octopus spacing.dat eigenvalues against NIST LDA all-electron benchmarks. 2s and 2p eigenvalues agree to < 1%, confirming values are in eV. Total energy -262 eV ≈ -9.6 Ha consistent with 5-valence-electron PP picture. Knowledge base upgraded to A-ready.
 - 2026-04-16: **Major revision** — Added explicit unit uncertainty analysis. Both Ha and eV interpretations tracked. Ha interpretation flagged as physically unlikely (magnitude 10× too large for pseudopotential).
 - 2026-04-16: Re-extracted from raw HTML (PRE 4 table). Corrected spacing list order and verified all values.
+
+---
+
+## Appendix: MCP Formula Mode vs. Octopus Pseudopotential
+
+The MCP server (port 8000) uses **soft-core formula pseudo-potential** mode:
+```
+V(r) = -Z / sqrt(r² + α)
+```
+where α is a soft-core regularization parameter. This is **different** from the Octopus Tutorial 16 which uses standard Troullier-Martins pseudopotentials via the `%Species` block with `set = standard`.
+
+**Key differences:**
+
+| Aspect | MCP Formula Mode | Octopus Tutorial 16 PP |
+|--------|-----------------|------------------------|
+| Total energy | ~-1.1 Ha (formula N) | -262 eV ≈ -9.64 Ha (PP, 5 valence e⁻) |
+| 1s core | Regularized (soft) | Replaced by PP |
+| Species block | `species_user_defined` | `species_pseudo / set = standard` |
+| XC functional | Configurable (LDA/PBE/HF) | LDA only in tutorial |
+
+**Therefore:**
+- `DEFAULT_CASE_REFERENCE_ENERGY_HARTREE["n_atom_gs_official"] = -9.75473657 Ha` refers to the **Octopus pseudopotential** result, NOT the MCP formula mode
+- When running via MCP in formula mode, the ground-state energy will differ significantly (~-1.1 Ha vs ~-9.75 Ha)
+- This is expected and does **not** indicate a bug — they are different physical models
+- To compare with the Octopus tutorial reference, use `speciesMode = pseudo` (not yet implemented in MCP server; requires UPF pseudopotential files)
+
+## Provenance URLs
+
+| Purpose | URL |
+|---------|-----|
+| Octopus Tutorial 16 (primary reference) | https://www.octopus-code.org/documentation/16/tutorial/basics/total_energy_convergence/ |
+| NIST SRD 141 Nitrogen LDA eigenvalues | https://www.nist.gov/pml/atomic-reference-data-electronic-structure-calculations-nitrogen-0 |
+| NIST DOI (Kotochigova et al. 1997) | 10.18434/T4ZP4F |
+| Octopus XCFunctional documentation | https://www.octopus-code.org/doc/latest/Manual/Manual.html#XCFunctional |
+| Octopus Species block (UPF pseudopotentials) | https://www.octopus-code.org/doc/latest/Manual/Manual.html#Species
+
+
+## Measured Results
+
+> Auto-synced from orchestrator 2026-04-26
+
+| Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
+|------|-----------|----------|-------|------------|
+| | 2026-04-26 | -9.645787 Ha | — Ha | 0.06% | sp=0.18Å R=10.0Å lda_x+lda_c_pz |
+
+
+
+## Measured Results
+
+> Auto-synced from orchestrator
+
+| Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
+|------|-----------|----------|-------|------------|
+| 2026-04-26 | -9.645787 | -9.64 | 0.06% | sp=0.18Å R=10.0Å lda_x+lda_c_pz |
+| 2026-05-04 | -9.637134 | -9.64 | 0.03% | sp=0.18Å R=10.0Å lda_x+lda_c_pz |
+

@@ -34,10 +34,10 @@ DEFAULT_RULES = REPO_ROOT / "orchestration" / "task_dispatch_rules.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "harness_reports"
 DEFAULT_POLICY = REPO_ROOT / "orchestration" / "openclaw_exec_policy.json"
 # IMPORTANT: OpenClaw is deployed on the remote HPC server (CentOS 7).
-# On the SERVER, OpenClaw root is ~/.openclaw = /data/home/zju321/.openclaw
-# On Windows, access via RaiDrive CIFS mount: Z:\.openclaw = \\RaiDrive-Mac\SFTP\.openclaw
-# Subprocess calls (run_preflight etc.) run on the SERVER so they need SERVER paths.
-DEFAULT_OPENCLAW_ROOT = "~/.openclaw"
+# On Windows, preflight scripts run LOCALLY but must access server files via RaiDrive.
+# Z:\.openclaw = \\RaiDrive-Mac\SFTP\.openclaw (server /data/home/zju321/.openclaw)
+# C:\Users\Mac\.openclaw does NOT exist locally — do NOT use ~ expansion.
+DEFAULT_OPENCLAW_ROOT = r"Z:\.openclaw"
 DEFAULT_SYNC_STATE = REPO_ROOT / "state" / "dirac_solver_progress_sync.json"
 DEFAULT_WORKFLOW_SPEC = REPO_ROOT / "orchestration" / "execution_wake_state_machine.json"
 DEFAULT_CODING_GATEWAY_CONFIG = REPO_ROOT / "orchestration" / "coding_gateway_config.json"
@@ -120,6 +120,7 @@ def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
         "ch4": "CH4", "ch4_gs": "CH4", "ch4_td": "CH4",
         "n": "N", "na": "Na", "k": "K", "cl": "Cl",
         "o": "O", "c": "C", "f": "F", "s": "S",
+        "h2o": "H2O", "h2o_gs": "H2O", "h2o_td": "H2O",
     }
     for atom_key, mol in ATOM_MOLECULE.items():
         if case_key.startswith(atom_key + "_") or case_key == atom_key:
@@ -1193,6 +1194,8 @@ def run_orchestration(args: argparse.Namespace) -> Dict[str, Any]:
         cmd.extend(["--run-id", run_id])
 
     timeout_seconds = max(30, int(getattr(args, "orchestration_timeout_seconds", 0) or args.exec_timeout_seconds))
+    # Pass HTTP timeout to orchestrator so MCP calls (especially PBS Octopus jobs) don't time out early.
+    cmd.extend(["--timeout", str(max(180, timeout_seconds))])
     try:
         proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, timeout=timeout_seconds)
     except subprocess.TimeoutExpired as exc:

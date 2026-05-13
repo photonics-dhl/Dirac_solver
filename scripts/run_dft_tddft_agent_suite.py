@@ -42,7 +42,7 @@ VALID_TASK_IDS = {
 CLASSIC_CASE_REFERENCES: Dict[str, Dict[str, Any]] = {
     "ch4_gs_reference": {
         "metric": "total_energy_hartree",
-        "reference": -8.04027629,
+        "reference": -8.0216,
         "unit": "Ha",
         "tolerance_relative": 0.03,
         "provenance": {
@@ -58,7 +58,7 @@ CLASSIC_CASE_REFERENCES: Dict[str, Dict[str, Any]] = {
     },
     "n_atom_gs_official": {
         "metric": "total_energy_hartree",
-        "reference": -9.75473657,
+        "reference": -9.64,
         "unit": "Ha",
         "tolerance_relative": 0.03,
         "provenance": {
@@ -90,10 +90,10 @@ CLASSIC_CASE_REFERENCES: Dict[str, Dict[str, Any]] = {
             "source_type": "nist_codata",
             "source_numeric_verified": True,
             "doi": "",
-            "software_version": "octopus-docs-16",
-            "pseudopotential_ids": ["H.pbe-kjpaw.UPF"],
+            "software_version": "theoretical_exact",
+            "pseudopotential_ids": [],
             "geometry_ref": "isolated_hydrogen_atom",
-            "expected_runtime_model": "octopus_formula_pseudopotential",
+            "expected_runtime_model": "exact_nonrelativistic_hydrogen_atom",
         },
     },
     "h2o_gs_reference": {
@@ -105,11 +105,17 @@ CLASSIC_CASE_REFERENCES: Dict[str, Dict[str, Any]] = {
             "source_url": "https://www.octopus-code.org/documentation/16/variables/system/species/pseudopotentialset/",
             "source_type": "octopus_official_pseudopotentialset_anchor",
             "source_numeric_verified": True,
-            "doi": "10.1063/1.445869",
+            "doi": "10.1063/1.474518",
             "software_version": "octopus-16.3-pseudopotential-lane",
             "pseudopotential_ids": ["standard:O", "standard:H"],
             "geometry_ref": "h2o_equilibrium_geometry_neutral_singlet_literature_anchor",
-            "expected_runtime_model": "octopus_pseudopotential",
+            "expected_runtime_model": "wavefunction_cbs_limit",
+            "compatibility_notes": [
+                "METHODLOGY_MISMATCH: CCSD(T)-R12/CBS wavefunction method is INCOMPATIBLE with DFT-LDA pseudopotential calculations.",
+                "All-electron energy (-76.44 Ha) vs pseudopotential energy (~-17.17 Ha) differ by ~58.5 Ha due to core electron removal.",
+                "For DFT-LDA PP benchmarks, use h2o_gs_official with working reference -17.17 Ha (see h2o_gs_pseudopotential_reference.md).",
+                "This reference should only be used for wavefunction-method (e.g. FCI, CCSD(T), DMC) benchmark comparisons.",
+            ],
         },
     },
     "h2o_tddft_absorption": {
@@ -1737,7 +1743,7 @@ def write_sync_to_paths(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run DFT/TDDFT agent suite for production-ready validation.")
-    parser.add_argument("--api-base", default="http://127.0.0.1:3001", help="Node API base URL.")
+    parser.add_argument("--api-base", default="http://127.0.0.1:3004", help="Node API base URL.")
     parser.add_argument("--molecule", default="CH4", help="Molecule for DFT/TDDFT suite.")
     parser.add_argument("--td-steps", type=int, default=260, help="TDDFT propagation steps.")
     parser.add_argument("--td-time-step", type=float, default=0.04, help="TDDFT time step in a.u.")

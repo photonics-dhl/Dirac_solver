@@ -1,0 +1,53 @@
+{
+  "version": "1.1.0",
+  "updated_at": "2026-05-05T10:00:00+08:00",
+  "cases": [
+    {
+      "case_id": "n_atom_gs_official",
+      "aliases": ["n_atom", "nitrogen_gs", "nitrogen_ground_state"],
+      "case_type": "dft_gs_3d",
+      "description": "Nitrogen atom ground-state (Octopus Tutorial 16 PP Mode, LDA, spacing=0.18 Å)",
+      "tolerance": {
+        "relative_error_max": 0.03
+      },
+      "theory": {
+        "total_energy_hartree": -9.64,
+        "s_eigenvalue_ev": -18.28,
+        "p_eigenvalue_ev": -7.30,
+        "units": "Ha",
+        "source": "octopus_tutorial16_spacing_0.18A"
+      },
+      "enabled": true
+    },
+    {
+      "case_id": "he_gs",
+      "aliases": ["he_atom", "helium_gs", "helium_ground_state"],
+      "case_type": "dft_gs_3d",
+      "description": "Helium atom ground-state (HGH PP LDA, spacing=0.15 Å)",
+      "tolerance": {
+        "relative_error_max": 0.03
+      },
+      "theory": {
+        "total_energy_hartree": -2.8348,
+        "units": "Ha",
+        "source": "nist_srd_lda_all_electron"
+      },
+      "enabled": true
+    },
+    {
+      "case_id": "ch4_gs_official",
+      "aliases": ["ch4_gs", "methane_gs", "ch4_ground_state"],
+      "case_type": "dft_gs_3d",
+      "description": "Methane ground-state (Octopus Tutorial 16 builtin_standard PP LDA, spacing=0.18 Å)",
+      "tolerance": {
+        "relative_error_max": 0.003
+      },
+      "theory": {
+        "total_energy_hartree": -8.0216,
+        "units": "Ha",
+        "source": "octopus_tutorial16_builtin_standard_pp"
+      },
+      "enabled": true
+    }
+  ]
+}

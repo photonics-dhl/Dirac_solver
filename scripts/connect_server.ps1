@@ -1,6 +1,6 @@
 param(
     [string]$HostAlias = "dirac-key",
-    [string]$RemoteWorkDir = "/data/home/zju321/.openclaw/workspace/projects/Dirac",
+    [string]$RemoteWorkDir = "",
     [string]$DiracApiBase = "http://127.0.0.1:3001",
     [string]$DiracHarnessBase = "",
     [string]$DiracHarnessFallbackBase = "http://127.0.0.1:8101",
@@ -16,6 +16,10 @@ param(
     [switch]$RequireComputeSubmit,
     [switch]$NoShell
 )
+# Auto-detect remote work dir from script location if not provided
+if ([string]::IsNullOrEmpty($RemoteWorkDir)) {
+    $RemoteWorkDir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+}
 
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $false

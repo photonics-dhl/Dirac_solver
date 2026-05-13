@@ -126,7 +126,7 @@ def infer_octopus_defaults_for_case(case_id: str) -> Tuple[str, str]:
 
 def build_context(dispatch_report: Dict[str, Any]) -> Dict[str, str]:
     ctx: Dict[str, str] = {
-        "api_base": os.environ.get("DIRAC_API_BASE", "http://127.0.0.1:3001"),
+        "api_base": os.environ.get("DIRAC_API_BASE", "http://127.0.0.1:3004"),
         "harness_base": os.environ.get("DIRAC_HARNESS_BASE", "http://127.0.0.1:8001"),
         "case_id": "hydrogen_gs_reference",
         "octopus_molecule": "H",
