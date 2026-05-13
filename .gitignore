@@ -58,6 +58,12 @@ docker/workspace/test_out.txt
 docker/workspace/__pycache__/
 docker/workspace/*.log
 docker/workspace/*.bak
+# Docker temp fix/debug scripts
+docker/workspace/fix_*.py
+docker/workspace/apply_fixes.py
+docker/workspace/pbs_debug.py
+docker/workspace/poll_debug.py
+docker/workspace/start_server.sh
 
 # ─── Development state / logs (machine-local, not useful in git) ───
 *.bak
@@ -66,9 +72,13 @@ computation_log.md
 dev_state.json
 latest_api_output.json
 debug_output_dirac.json
+debug_*.py
 logs/
 harness_logs/
 run/
+# One-off migration/util scripts
+*_wasm.js
+physics_mcp_server.py
 # ─── Windows path artifacts (created by git on Linux) ──────────────
 e:/
 
@@ -103,3 +113,7 @@ state/multi_agent_learning_state.json
 
 # ─── Unison sync artifacts ────────────────────────────────────────
 .unison/
+
+# ─── Scripts artifacts (not core infrastructure) ──────────────────
+scripts/*.patch
+scripts/visitlog.py
