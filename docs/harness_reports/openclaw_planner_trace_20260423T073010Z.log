@@ -1,0 +1,55 @@
+{
+  "attempts": [
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN='\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\.local\\bin\\openclaw'; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd '\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac' && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=, molecule=H2, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 120",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nbash: line 0: cd: \\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac: No such file or directory\n",
+      "ok": false,
+      "execution_mode": "remote_ssh",
+      "embedded_timed_out": false
+    },
+    {
+      "command": "openclaw agent --agent dirac-planner --message <task> --json --timeout <sec>",
+      "exit_code": 127,
+      "stdout": "",
+      "stderr": "openclaw_command_not_found",
+      "ok": false,
+      "execution_mode": "local"
+    },
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN='\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\.local\\bin\\openclaw'; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd '\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac' && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=, molecule=H2, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 120",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nbash: line 0: cd: \\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac: No such file or directory\n",
+      "ok": false,
+      "execution_mode": "remote_ssh",
+      "embedded_timed_out": false
+    },
+    {
+      "command": "openclaw agent --agent dirac-planner --message <task> --json --timeout <sec>",
+      "exit_code": 127,
+      "stdout": "",
+      "stderr": "openclaw_command_not_found",
+      "ok": false,
+      "execution_mode": "local"
+    },
+    {
+      "command": "ssh dirac-key OPENCLAW_BIN='\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\.local\\bin\\openclaw'; if [ ! -x \"$OPENCLAW_BIN\" ]; then OPENCLAW_BIN=\"$(command -v openclaw 2>/dev/null || true)\"; fi; if [ -z \"$OPENCLAW_BIN\" ]; then echo remote_openclaw_not_found >&2; exit 127; fi; cd '\\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac' && \"$OPENCLAW_BIN\" agent --agent dirac-planner --message 'Dirac_solver /auto planner: build a physically-grounded, traceable, reusable KB plan for case=, molecule=H2, calc=gs.\nModel priority (strict): gpt-5-thinking, deepseek-r1. Prefer deep-thinking reasoning and keep plans auditable.' --json --timeout 120",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nbash: line 0: cd: \\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac: No such file or directory\n",
+      "ok": false,
+      "execution_mode": "remote_ssh",
+      "embedded_timed_out": false
+    },
+    {
+      "command": "openclaw agent --agent dirac-planner --message <task> --json --timeout <sec>",
+      "exit_code": 127,
+      "stdout": "",
+      "stderr": "openclaw_command_not_found",
+      "ok": false,
+      "execution_mode": "local"
+    }
+  ]
+}

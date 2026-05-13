@@ -1,0 +1,8 @@
+config_name,par_states,par_domains,par_kpoints,omp_threads,mpirun_np,walltime_sec,total_energy,converged,exit_code
+ParStates=64,Dom=1,KP=1,OMP=1,64,1,1,1,64,4,-5.38542468E+03,**   Some of the states are not fully converged!,0
+ParStates=32,Dom=1,KP=1,OMP=2,32,1,1,2,32,3,-2.95400167E+03,**   Some of the states are not fully converged!,0
+ParStates=16,Dom=1,KP=1,OMP=4,16,1,1,4,16,2,-2.81120401E+03,**   Some of the states are not fully converged!,0
+ParStates=32,Dom=2,KP=1,OMP=2,32,2,1,2,32,4,-2.19319695E+03,**   Some of the states are not fully converged!,0
+ParStates=16,Dom=4,KP=1,OMP=1,16,4,1,1,64,3,-2.62018671E+03,**   Some of the states are not fully converged!,0
+ParStates=2,Dom=1,KP=32,OMP=1,2,1,32,1,64,5,-1.02240768E+03,**   Some of the states are not fully converged!,0
+ParStates=4,Dom=1,KP=16,OMP=1,4,1,16,1,64,3,-1.30887167E+03,**   Some of the states are not fully converged!,0

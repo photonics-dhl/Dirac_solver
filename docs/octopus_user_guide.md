@@ -343,7 +343,114 @@ print(d.get("converged"))   # True / False
 
 ---
 
-## 七、Hartree-Fock 如何正确使用？
+## 七、TDDFT 激发态计算
+
+> **引擎**：Octopus（Casida + 实时 TDDFT）
+> **验证基准**：CH₄ Casida 第一激发态 9.17 eV vs Tutorial 16 参考 9.278 eV（误差 1.1%）
+> **并行策略**：ParDomains 分解实空间网格，详见 benchmark 结果
+
+### 7.1 两种 TDDFT 方法对比
+
+| 方法 | 何时用 | 耗时 | 输出 |
+|------|--------|------|------|
+| **Casida** | 前几个激发态能量 + 振子强度 | 秒~分钟（单次对角化）| 激发能、振子强度 |
+| **实时 TDDFT** | 宽带吸收谱、强场动力学 | 分钟~小时（时间传播）| `cross_section_vector` 吸收谱 |
+
+### 7.2 Casida 方法（线性响应）
+
+**原理**：在 GS 波函数基础上对角化 Casida 方程（电子-空穴对耦合矩阵），一次对角化给出所有激发态。
+
+**请求示例**（先跑 GS，再跑 Casida）：
+```python
+# Step 1: Ground State
+payload = json.dumps({
+    "case_id": "ch4_gs",
+    "engineMode": "octopus3D",
+    "speciesMode": "pseudo",
+    "molecule": "CH4",
+    "xc_functional": "lda_x+lda_c_pz",
+    "spacing": 0.18, "radius": 10.0,
+    "octopus_length_unit": "angstrom",
+    "calculation_type": "ground_state",
+    "extraStates": 8
+}).encode()
+
+# Step 2: Casida (uses restart/gs from Step 1)
+payload = json.dumps({
+    "case_id": "ch4_casida",
+    "engineMode": "octopus3D",
+    "speciesMode": "pseudo",
+    "molecule": "CH4",
+    "xc_functional": "lda_x+lda_c_pz",
+    "spacing": 0.18, "radius": 10.0,
+    "octopus_length_unit": "angstrom",
+    "calculation_type": "casida",
+    "extraStates": 8
+}).encode()
+```
+
+**CH₄ 验证结果（LDA，2026-05-12）**：
+| 激发态 | 能量 (eV) | 振子强度 | 特征 |
+|--------|----------|---------|------|
+| 1st | 9.17 | 0.0865 | HOMO(t₂)→LUMO(a₁*) |
+| 2nd | 9.89 | 0.0018 | HOMO→virtual t₂* |
+| 3rd | 10.34 | 0.0312 | deeper→LUMO |
+
+> **Petersilka 近似**：对角核近似（9.18 eV）与完整 Casida（9.17 eV）几乎一致，简单体系可加速。
+
+### 7.3 实时 TDDFT（Delta-Kick）
+
+**原理**：施加瞬时电场脉冲（delta-kick），实时传播 KS 轨道，傅里叶变换诱导偶极矩得吸收谱。
+
+**关键参数**：
+| 参数 | 推荐值 | 说明 |
+|------|--------|------|
+| `TDTimeStep` | 0.02 a.u. (~0.48 as) | 时间步长 |
+| `TDMaxSteps` | 10000 | 总步数（200 a.u. ≈ 4.84 fs）|
+| `TDDeltaStrength` | 0.005 a.u. | 脉冲强度（弱场线性响应）|
+| `TDPolarizationDirection` | 1 | 偏振方向（1=x, 2=y, 3=z）|
+| `TDPropagator` | `aetrs` | 近似强制时间反演对称（推荐）|
+| `TaylorExpansionOrder` | 4 | AETRS 展开阶数 |
+
+**并行配置（64核节点，已验证）**：
+```
+mpirun -np 4 + OMP_NUM_THREADS=16 + ParDomains=4 + ScaLAPACKCompatible=yes
+→ 42.9 TD steps/sec（N₂，~1M 格点），1.43x vs 纯 OMP
+```
+
+| 体系规模 | 格点数 | 推荐配置 |
+|----------|--------|---------|
+| 双原子 (N₂) | ~1M | np=4, omp=16 |
+| 小分子 (CH₄, H₂O) | ~0.5-1M | np=4, omp=16 |
+| 较大分子 | >2M | np=8, omp=8 |
+| 超大体系 | >5M | np=16, omp=4 |
+
+> ⚠️ np ≥ 16 时 MPI 通信开销超过收益。np=64（纯 MPI）比纯 OMP 还慢（20 vs 30 steps/sec）。
+
+### 7.4 Udocker 容器复用（关键）
+
+```bash
+# ❌ 错误 — 每次创建新容器（~40s tar 解压开销）
+udocker run registry.gitlab.com/octopus-code/octopus:16.0 /app/bin/octopus
+
+# ✅ 正确 — 复用已有容器（零开销）
+CONTAINER=$(udocker ps | grep octopus | head -1 | awk '{print $1}')
+udocker run --volume=/data/home/zju321:/data/home/zju321 \
+  --env="OMP_NUM_THREADS=16" $CONTAINER \
+  bash -c "cd /workdir && mpirun -np 4 --bind-to core /app/bin/octopus"
+```
+
+### 7.5 运行时间估算（10000 步）
+
+| 体系 | 纯 OMP (64核) | 最优 (np=4) |
+|------|-------------|------------|
+| N₂ (~1M 格点) | ~5.6 min | ~3.9 min |
+| CH₄ (~0.8M) | ~4.5 min | ~3.1 min |
+| H₂O (~0.5M) | ~3 min | ~2 min |
+
+---
+
+## 八、Hartree-Fock 如何正确使用？
 
 **不能**用 `XCFunctional = hartree_fock`（会报 `hf_x undefined` 错误）
 
@@ -363,7 +470,7 @@ payload = json.dumps({
 
 ---
 
-## 八、常见错误排查
+## 九、常见错误排查
 
 | 错误 | 原因 | 解决方案 |
 |------|------|---------|
@@ -378,10 +485,16 @@ payload = json.dumps({
 | VASP SCF 不收敛 | ENCUT 过低或初始电荷密度差 | 提高 ENCUT 到 520 eV，确保 ISTART=0/ICHARG=2 |
 | VASP 磁矩错误 | ISPIN 设置不对 | 原子用 `polarized`，闭壳层分子用 `unpolarized` |
 | VASP 前端 404 | Vite proxy 配置缺少 `/solve_vasp` | 确认 `vite.config.ts` 包含 `/solve_vasp` 代理到 port 8000 |
+| Casida 报 "Previous gs calculation is required" | Casida 需要 GS 重启文件 | 先跑 GS（`FromScratch=yes`），再跑 Casida（`FromScratch=no`）|
+| TDDFT 并行性能不升反降 | `ParDomains` ≠ `mpirun -np` 或 np 过大 | np ≤ 8（双原子体系），确保 ParDomains=np |
+| 第一次 udocker run 快，后续变慢 | 每次 `udocker run <image>` 创建新容器（~40s tar 开销）| 用 `udocker run <container_id>` 复用已有容器 |
+| `ScaLAPACKCompatible = yes` 报 Fatal Error | ScaLAPACKCompatible 是实验性功能 | 必须同时设置 `ExperimentalFeatures = yes` |
+| `TDOutput = cross_section_vector` 报 parser error | 该变量不存在，cross_section_vector 自动生成 | 删除 `TDOutput` 行，吸收谱文件会自动输出到 `td.general/cross_section_vector` |
+| TDDFT 达不到 64 核线性加速 | 小体系（<2M 格点）轨道数少，并行度受限 | 纯 OMP 比 MPI+OMP 混合更稳定，实际利用率 ~22-45 核 |
 
 ---
 
-## 九、相关文档
+## 十、相关文档
 
 | 文档 | 位置 |
 |------|------|

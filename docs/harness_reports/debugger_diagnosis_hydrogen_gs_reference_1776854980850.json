@@ -1,0 +1,39 @@
+{
+  "diagnostic_id": "diag-TEST-H-007-1776854980850",
+  "task_id": "TEST-H-007",
+  "case_id": "hydrogen_gs_reference",
+  "failure_signature_hash": "447d25ead37d",
+  "failure_type": "octopus_runtime",
+  "error_chain": [
+    {
+      "step": 1,
+      "component": "executor",
+      "file": "docker/workspace/server.py",
+      "error_message": "HTTP 500 calling http://127.0.0.1:3004/api/physics/run: {\"error\":\"Octopus required but unavailable: Octopus Engine Error: PBS job 143026.mu01 never reported exec_vnode; job may not have run on a compute node\"}",
+      "timestamp": "2026-04-22T10:49:40.850439+00:00"
+    }
+  ],
+  "root_cause": "Unknown failure type: octopus_runtime",
+  "required_fixes": [
+    {
+      "fix_id": 99,
+      "description": "Failed checks: octopus_ok, physics_result_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: Octopus execution failed; verify remote MCP health and compute queue status.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: physics result is incomplete; missing required fields: ground_state_energy_hartree.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

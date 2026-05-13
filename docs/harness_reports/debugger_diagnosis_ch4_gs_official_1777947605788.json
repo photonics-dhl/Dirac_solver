@@ -1,0 +1,37 @@
+{
+  "diagnostic_id": "diag--1777947605788",
+  "task_id": "",
+  "case_id": "ch4_gs_official",
+  "failure_signature_hash": "7ca9b425781f",
+  "failure_type": "numerical_accuracy",
+  "error_chain": [],
+  "root_cause": "Unknown failure type: numerical_accuracy",
+  "required_fixes": [
+    {
+      "fix_id": 99,
+      "description": "Failed checks: benchmarks_aligned_ok, ui_ok, ui_rendering_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: benchmark delta is not aligned with threshold; check comparator mapping and expected tolerance.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: UI readiness check failed; verify frontend service and review harness visualization controls.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: UI rendering proof is incomplete; fix browser probe dependencies or strengthen HTTP/UI evidence path.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

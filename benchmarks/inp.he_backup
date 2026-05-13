@@ -1,0 +1,9 @@
+CalculationMode = gs
+
+%Coordinates
+  "He" | 0 | 0 | 0
+%
+
+Radius = 5.0*angstrom
+Spacing = 0.5*angstrom
+XCFunctional = LDA

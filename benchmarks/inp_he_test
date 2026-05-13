@@ -1,0 +1,13 @@
+CalculationMode = gs
+UnitsOutput = eV_Angstrom
+
+%Species
+  "He" | species_herman_gilmore
+%
+%Coordinates
+  "He" | 0 | 0 | 0
+%
+Radius = 10.0*angstrom
+Spacing = 0.18*angstrom
+XCFunctional = gga_x_pbe+gga_c_pbe
+BoxShape = sphere

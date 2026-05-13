@@ -55,10 +55,16 @@ interface PhysicsResult {
     molecular?: {
         calcMode: 'gs' | 'td';
         moleculeName: string;
+        backend?: string;
         energy_levels?: number[];
         homo_energy?: number;
         lumo_energy?: number;
         total_energy_hartree?: number;
+        fermi_energy_ev?: number;
+        magnetization?: number;
+        occupations?: number[];
+        nelect?: number;
+        nbands?: number;
         scf_iterations?: number;
         converged?: boolean;
         optical_spectrum?: {
@@ -1385,8 +1391,86 @@ function MolecularView({ result, resultHistory = {} }: {
     const levelsMin = levels.length ? Math.min(...levels, homoEV ?? 0) - 2 : -20;
     const levelsMax = levels.length ? Math.max(...levels, lumoEV ?? 0) + 2 : 2;
 
+    // ── Octopus vs VASP comparison (same molecule) ──
+    const octoResult = resultHistory['gs'] as PhysicsResult | undefined;
+    const vaspHistoryResult = resultHistory['vasp'] as PhysicsResult | undefined;
+    const octoMol = octoResult?.molecular;
+    const vaspMol = vaspHistoryResult?.molecular;
+    const canCompare = octoMol && vaspMol
+        && String(octoMol.moleculeName || '').trim().toUpperCase() === String(vaspMol.moleculeName || '').trim().toUpperCase()
+        && octoMol.backend !== 'vasp' && vaspMol.backend === 'vasp';
+
+    const compareRows: Array<{ label: string; octoVal: string; vaspVal: string; delta: string; deltaColor: string }> = [];
+    if (canCompare) {
+        const octoEtotHa = octoMol!.total_energy_hartree;
+        const vaspEtotHa = vaspMol!.total_energy_hartree;
+        if (octoEtotHa != null && vaspEtotHa != null) {
+            const octoEV = octoEtotHa * HARTREE_TO_EV;
+            const vaspEV = vaspEtotHa * HARTREE_TO_EV;
+            const dEtot = Math.abs(vaspEV - octoEV);
+            const dColor = dEtot < 0.5 ? '#22c55e' : dEtot < 2 ? '#f59e0b' : '#ef4444';
+            compareRows.push({ label: 'Total Energy (eV)', octoVal: octoEV.toFixed(3), vaspVal: vaspEV.toFixed(3), delta: (vaspEV - octoEV).toFixed(3), deltaColor: dColor });
+        }
+        const octoHomo = octoMol!.homo_energy;
+        const vaspHomo = vaspMol!.homo_energy;
+        if (octoHomo != null && vaspHomo != null) {
+            const dHomo = Math.abs(vaspHomo - octoHomo);
+            const dColor = dHomo < 0.5 ? '#22c55e' : dHomo < 2 ? '#f59e0b' : '#ef4444';
+            compareRows.push({ label: 'HOMO (eV)', octoVal: octoHomo.toFixed(3), vaspVal: vaspHomo.toFixed(3), delta: (vaspHomo - octoHomo).toFixed(3), deltaColor: dColor });
+        }
+        const octoLumo = octoMol!.lumo_energy;
+        const vaspLumo = vaspMol!.lumo_energy;
+        if (octoLumo != null && vaspLumo != null) {
+            const dLumo = Math.abs(vaspLumo - octoLumo);
+            const dColor = dLumo < 0.5 ? '#22c55e' : dLumo < 2 ? '#f59e0b' : '#ef4444';
+            compareRows.push({ label: 'LUMO (eV)', octoVal: octoLumo.toFixed(3), vaspVal: vaspLumo.toFixed(3), delta: (vaspLumo - octoLumo).toFixed(3), deltaColor: dColor });
+        }
+        const octoGap = octoHomo != null && octoLumo != null ? octoLumo - octoHomo : null;
+        const vaspGap = vaspHomo != null && vaspLumo != null ? vaspLumo - vaspHomo : null;
+        if (octoGap != null && vaspGap != null) {
+            const dGap = Math.abs(vaspGap - octoGap);
+            const dColor = dGap < 0.5 ? '#22c55e' : dGap < 2 ? '#f59e0b' : '#ef4444';
+            compareRows.push({ label: 'Gap (eV)', octoVal: octoGap.toFixed(3), vaspVal: vaspGap.toFixed(3), delta: (vaspGap - octoGap).toFixed(3), deltaColor: dColor });
+        }
+    }
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+            {/* Octopus vs VASP Comparison Card */}
+            {canCompare && compareRows.length > 0 && (
+                <div style={{
+                    background: 'rgba(168,85,247,0.04)', border: '1px solid rgba(168,85,247,0.2)',
+                    borderRadius: 8, overflow: 'hidden',
+                }}>
+                    <div style={{
+                        fontSize: 10, color: '#a855f7', padding: '6px 12px',
+                        borderBottom: '1px solid rgba(168,85,247,0.1)', fontWeight: 600,
+                    }}>
+                        Engine Comparison: Octopus vs VASP — {octoMol!.moleculeName}
+                    </div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, fontFamily: 'monospace' }}>
+                        <thead>
+                            <tr style={{ color: '#4b5563' }}>
+                                <th style={{ padding: '4px 12px', textAlign: 'left', fontWeight: 400 }}>Quantity</th>
+                                <th style={{ padding: '4px 12px', textAlign: 'right', fontWeight: 400 }}>Octopus</th>
+                                <th style={{ padding: '4px 12px', textAlign: 'right', fontWeight: 400 }}>VASP</th>
+                                <th style={{ padding: '4px 12px', textAlign: 'right', fontWeight: 400 }}>Δ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {compareRows.map((r, i) => (
+                                <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.03)', color: '#8892a4' }}>
+                                    <td style={{ padding: '3px 12px' }}>{r.label}</td>
+                                    <td style={{ padding: '3px 12px', textAlign: 'right' }}>{r.octoVal}</td>
+                                    <td style={{ padding: '3px 12px', textAlign: 'right' }}>{r.vaspVal}</td>
+                                    <td style={{ padding: '3px 12px', textAlign: 'right', color: r.deltaColor }}>{r.delta}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {/* Convergence & energy summary banner */}
             <div style={{
@@ -1408,7 +1492,30 @@ function MolecularView({ result, resultHistory = {} }: {
                 {homoEV != null && <MetricCell label="HOMO" value={`${homoEV.toFixed(3)} eV`} accent="#22c55e" />}
                 {lumoEV != null && <MetricCell label="LUMO" value={`${lumoEV.toFixed(3)} eV`} accent="#ef4444" />}
                 {gapEV != null && <MetricCell label="Gap (HOMO-LUMO)" value={`${gapEV.toFixed(3)} eV`} accent="#00d4ff" />}
+                {mol.backend === 'vasp' && mol.fermi_energy_ev != null && (
+                    <MetricCell label="Fermi Energy" value={`${mol.fermi_energy_ev.toFixed(3)} eV`} accent="#a855f7" />
+                )}
+                {mol.backend === 'vasp' && mol.magnetization != null && (
+                    <MetricCell label="Magnetization" value={mol.magnetization.toFixed(4)} accent="#a855f7" />
+                )}
+                {mol.backend === 'vasp' && mol.nelect != null && (
+                    <MetricCell label="NELECT" value={String(mol.nelect)} accent="#a855f7" />
+                )}
+                {mol.backend === 'vasp' && mol.nbands != null && (
+                    <MetricCell label="NBANDS" value={String(mol.nbands)} accent="#a855f7" />
+                )}
             </div>
+
+            {/* VASP-specific info banner */}
+            {mol.backend === 'vasp' && (
+                <div style={{
+                    padding: '6px 12px', background: 'rgba(168,85,247,0.06)',
+                    border: '1px solid rgba(168,85,247,0.18)', borderRadius: 6,
+                    fontSize: 10, color: '#c4b5fd',
+                }}>
+                    VASP PAW-PBE calculation. Absolute energies are pseudopotential-dependent — use energy differences for physical quantities.
+                </div>
+            )}
 
             {unitContractWarning && (
                 <div style={{ color: '#f59e0b', fontSize: 12, padding: '0 2px' }}>{unitContractWarning}</div>

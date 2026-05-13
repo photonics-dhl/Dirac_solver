@@ -65,7 +65,11 @@
       "promotion_rule": "three_consecutive_passes_with_provenance_and_variance_bound",
       "pending_order": [
         "hydrogen_gs_reference",
+        "h_atom_gs_official",
+        "he_atom_gs_official",
+        "co_gs_official",
         "h2o_gs_reference",
+        "h2o_gs_official",
         "h2o_tddft_dipole_response",
         "h2o_tddft_absorption"
       ]

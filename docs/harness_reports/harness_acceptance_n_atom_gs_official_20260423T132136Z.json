@@ -1,0 +1,282 @@
+{
+  "case_id": "n_atom_gs_official",
+  "case_type": "dft_gs_3d",
+  "evaluator": "dft_gs_3d",
+  "diagnostics": {
+    "fallback_to_comparator": false,
+    "energy_source": "eigenvalue0_proxy"
+  },
+  "config_hash": "sha256:19527662e24c7525357835c33ea61e6d8c125df1be5eb84429073b2c1f4d38b0",
+  "config": {
+    "mass": 1.0,
+    "gridSpacing": 0.05,
+    "potentialStrength": 0.0,
+    "dimensionality": "3D",
+    "unitSystem": "natural",
+    "spatialRange": 10.0,
+    "gridPoints": 100,
+    "boundaryCondition": "dirichlet",
+    "potentialType": "Coulomb",
+    "wellWidth": 1.0,
+    "customExpression": null,
+    "equationType": "Dirac",
+    "problemType": "boundstate",
+    "picture": "schrodinger",
+    "numTimeSteps": 50,
+    "totalTime": 5.0,
+    "initialState": "gaussian",
+    "gaussianCenter": 0.0,
+    "gaussianWidth": 0.3,
+    "gaussianMomentum": 5.0,
+    "scatteringEnergyMin": 0.0,
+    "scatteringEnergyMax": 10.0,
+    "scatteringEnergySteps": 200,
+    "caseType": "dft_gs_3d"
+  },
+  "theory": {
+    "observable": "total_energy_hartree",
+    "units": "Ha",
+    "source": "case_definition_missing_numeric_reference"
+  },
+  "computed": {
+    "total_energy_hartree": -119.52096969250265
+  },
+  "relative_error": 0.0,
+  "threshold": 0.03,
+  "passed": true,
+  "harness_constraints": {
+    "max_retries": 2,
+    "base_timeout_seconds": 60.0,
+    "estimated_timeout_seconds": 84.0,
+    "timeout_seconds": 84.0,
+    "attempts_used": 1
+  },
+  "control_loop": {
+    "desired_state": {
+      "relative_error_max": 0.03
+    },
+    "final_observed_state": {
+      "relative_error": 0.0,
+      "passed": true
+    },
+    "quality": {
+      "score": 1.0
+    },
+    "iterations": [
+      {
+        "attempt": 1,
+        "desired_state": {
+          "relative_error_max": 0.03
+        },
+        "controller_action": {
+          "actions": [
+            "evaluate_current_config"
+          ],
+          "overrides": {}
+        },
+        "observed_state": {
+          "relative_error": 0.0,
+          "passed": true
+        },
+        "quality": {
+          "score": 1.0,
+          "threshold": 0.03
+        }
+      }
+    ]
+  },
+  "solver_summary": {
+    "eigenvalue_count": 5,
+    "matrix_info": {
+      "size": 125,
+      "non_zeros": 875,
+      "isHermitian": true
+    },
+    "elapsed_seconds": 0.0022610146552324295
+  },
+  "escalation": {
+    "required": false,
+    "reason": null
+  },
+  "event_chain": [
+    {
+      "phase": "harness_start",
+      "timestamp": "2026-04-23T13:21:36.875558Z",
+      "case_id": "n_atom_gs_official",
+      "config_hash": "sha256:19527662e24c7525357835c33ea61e6d8c125df1be5eb84429073b2c1f4d38b0",
+      "framework": "desired_state -> controller -> solver -> quality_feedback",
+      "constraints": {
+        "max_retries": 2,
+        "base_timeout_seconds": 60.0,
+        "estimated_timeout_seconds": 84.0,
+        "timeout_seconds": 84.0,
+        "error_threshold": 0.03
+      }
+    },
+    {
+      "phase": "solver_attempt_start",
+      "timestamp": "2026-04-23T13:21:36.875656Z",
+      "attempt": 1,
+      "config": {
+        "mass": 1.0,
+        "gridSpacing": 0.05,
+        "potentialStrength": 0.0,
+        "dimensionality": "3D",
+        "unitSystem": "natural",
+        "spatialRange": 10.0,
+        "gridPoints": 100,
+        "boundaryCondition": "dirichlet",
+        "potentialType": "Coulomb",
+        "wellWidth": 1.0,
+        "customExpression": null,
+        "equationType": "Dirac",
+        "problemType": "boundstate",
+        "picture": "schrodinger",
+        "numTimeSteps": 50,
+        "totalTime": 5.0,
+        "initialState": "gaussian",
+        "gaussianCenter": 0.0,
+        "gaussianWidth": 0.3,
+        "gaussianMomentum": 5.0,
+        "scatteringEnergyMin": 0.0,
+        "scatteringEnergyMax": 10.0,
+        "scatteringEnergySteps": 200,
+        "caseType": "dft_gs_3d"
+      }
+    },
+    {
+      "phase": "solver_attempt_success",
+      "timestamp": "2026-04-23T13:21:36.877827Z",
+      "attempt": 1,
+      "relative_error": 0.0,
+      "passed": true,
+      "quality_score": 1.0
+    },
+    {
+      "phase": "harness_evaluate",
+      "timestamp": "2026-04-23T13:21:36.877867Z",
+      "relative_error": 0.0,
+      "threshold": 0.03,
+      "passed": true,
+      "quality_score": 1.0,
+      "elapsed_seconds": 0.0022610146552324295
+    }
+  ],
+  "solver_result": {
+    "problemType": "boundstate",
+    "equationType": "Dirac",
+    "dimensionality": "3D",
+    "eigenvalues": [
+      -119.52096969250265,
+      -0.8041332108116641,
+      -0.8032692862663954,
+      -0.03579929382857368,
+      -0.035693525871260186
+    ],
+    "wavefunctions": [
+      {
+        "psi_up": [
+          2.5681736411216964e-06,
+          0.0012776768431235384,
+          0.6324529508746656,
+          0.0012776768431235178,
+          2.568173641110957e-06
+        ],
+        "psi_down": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "psi_up": [
+          -0.14803981028583546,
+          -0.42200025423565724,
+          1.999020567884127e-14,
+          0.422000254225787,
+          0.1480398102823686
+        ],
+        "psi_down": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "psi_up": [
+          0.1482059047870527,
+          0.4219402262823322,
+          -0.0017060047678221183,
+          0.42194022629220373,
+          0.1482059047905157
+        ],
+        "psi_down": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "psi_up": [
+          0.42200025422696524,
+          -0.14803981028278246,
+          -5.301047902948302e-15,
+          0.1480398102854216,
+          -0.4220002542344789
+        ],
+        "psi_down": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "psi_up": [
+          0.42194195072552343,
+          -0.1482053068640638,
+          0.0005953798401928304,
+          -0.14820530686142766,
+          0.4219419507180088
+        ],
+        "psi_down": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "x_grid": [
+      -5.0,
+      -2.5,
+      0.0,
+      2.5,
+      5.0
+    ],
+    "potential_V": [
+      -0.19999750004687405,
+      -0.399980001499875,
+      -40.0,
+      -0.399980001499875,
+      -0.19999750004687405
+    ],
+    "matrix_info": {
+      "size": 125,
+      "non_zeros": 875,
+      "isHermitian": true
+    }
+  },
+  "log_refs": {
+    "event_log": "harness_logs/n_atom_gs_official/19527662e24c7525357835c33ea61e6d8c125df1be5eb84429073b2c1f4d38b0/event_log.json",
+    "result_json": "harness_logs/n_atom_gs_official/19527662e24c7525357835c33ea61e6d8c125df1be5eb84429073b2c1f4d38b0/result.json"
+  }
+}

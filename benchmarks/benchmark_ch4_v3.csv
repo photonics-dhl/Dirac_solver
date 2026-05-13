@@ -1,0 +1,8 @@
+config_name,par_states,par_domains,par_kpoints,omp_threads,mpirun_np,walltime_sec,total_energy,converged,exit_code
+PS=64,D=1,K=1,O=1,64,1,1,1,64,9,NA,**   Some of the states are not fully converged!,?
+PS=32,D=1,K=1,O=2,32,1,1,2,32,7,NA,**   Some of the states are not fully converged!,?
+PS=16,D=1,K=1,O=4,16,1,1,4,16,6,NA,**   Some of the states are not fully converged!,?
+PS=8,D=1,K=1,O=8,8,1,1,8,8,7,NA,**   Some of the states are not fully converged!,?
+PS=32,D=2,K=1,O=1,32,2,1,1,32,7,NA,Info: SCF converged in    2 iterations,?
+PS=16,D=4,K=1,O=1,16,4,1,1,16,6,NA,Info: SCF converged in    2 iterations,?
+PS=1,D=1,K=1,O=64,1,1,1,64,1,18,NA,Info: SCF converged in    2 iterations,?

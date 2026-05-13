@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-05-06T10:08:17.689169Z",
+  "packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260506T100817Z.json",
+  "task_id": "T-20260506T100553Z",
+  "all_passed": false,
+  "stats": {
+    "total_actions": 2,
+    "executed_actions": 0,
+    "unmapped_actions": 2
+  },
+  "runs": []
+}

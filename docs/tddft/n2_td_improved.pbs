@@ -1,0 +1,82 @@
+#!/bin/bash
+#PBS -N n2_td_10k
+#PBS -l nodes=1:ppn=64
+#PBS -l walltime=02:00:00
+#PBS -q workq
+#PBS -o /data/home/zju321/diatomic_bench/oct_N2_bench/pbs_out.log
+#PBS -e /data/home/zju321/diatomic_bench/oct_N2_bench/pbs_err.log
+
+cd /data/home/zju321/diatomic_bench/oct_N2_bench
+
+BASE=/data/home/zju321/diatomic_bench/oct_N2_bench
+CONTAINER=$(udocker ps | grep octopus | head -1 | awk '{print $1}')
+NP=4
+OMP=16
+
+# Clean state
+rm -rf $BASE/exec $BASE/td.general $BASE/restart/td $BASE/static
+
+echo "=== N2 Production TDDFT ==="
+echo "Container: $CONTAINER"
+echo "Config: np=$NP omp=$OMP ParDomains=4"
+echo "Steps: 10000"
+echo "Start: $(date)"
+
+cat > $BASE/inp << 'EOF'
+CalculationMode = td
+FromScratch = yes
+
+%Species
+'N' | species_pseudo | file | '/data/home/zju321/diatomic_bench/oct_N2_td/N.upf'
+%
+
+%Coordinates
+'N' | 0.0 | 0.0 | 0.0
+'N' | 1.098*angstrom | 0.0 | 0.0
+%
+
+Spacing = 0.18*angstrom
+Radius = 10.0*angstrom
+XCfunctional = gga_x_pbe+gga_c_pbe
+ExtraStates = 8
+
+TDMaxSteps = 10000
+TDTimeStep = 0.02
+TDDeltaStrength = 0.005
+TDPolarizationDirection = 1
+TDPropagator = aetrs
+TaylorExpansionOrder = 4
+ParDomains = 4
+EOF
+
+# Trap to save output even on PBS kill
+cleanup() {
+  echo "Cleanup: saving outputs..."
+  if [ -f $BASE/td.general/cross_section_vector ]; then
+    cp $BASE/td.general/cross_section_vector $BASE/cross_section_vector_10k
+    echo "cross_section_vector saved: $(wc -l < $BASE/cross_section_vector_10k) lines"
+  fi
+  echo "Cleanup done at $(date)"
+}
+trap cleanup EXIT
+
+START=$(date +%s)
+
+udocker run \
+  --volume=/data/home/zju321:/data/home/zju321 \
+  --env="OMP_NUM_THREADS=$OMP" \
+  --env="OMP_PROC_BIND=spread" \
+  --env="OMP_PLACES=cores" \
+  $CONTAINER \
+  bash -c "export OMP_NUM_THREADS=$OMP && cd $BASE && mpirun -np $NP --map-by numa --bind-to numa --report-bindings /app/bin/octopus" 2>&1 | tail -50
+
+RC=$?
+END=$(date +%s)
+WALLTIME=$((END - START))
+
+echo ""
+echo "=== DONE ==="
+echo "Exit code: $RC"
+echo "Walltime: ${WALLTIME}s"
+echo "End: $(date)"
+echo "Steps in energy file: $(wc -l < $BASE/td.general/energy 2>/dev/null || echo 0)"

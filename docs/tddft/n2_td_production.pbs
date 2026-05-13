@@ -1,0 +1,77 @@
+#!/bin/bash
+#PBS -N n2_td_10k
+#PBS -l nodes=1:ppn=64
+#PBS -l walltime=00:30:00
+#PBS -q workq
+#PBS -o /data/home/zju321/diatomic_bench/oct_N2_bench/prod_out.log
+#PBS -e /data/home/zju321/diatomic_bench/oct_N2_bench/prod_err.log
+
+cd /data/home/zju321/diatomic_bench/oct_N2_bench
+
+BASE=/data/home/zju321/diatomic_bench/oct_N2_bench
+CONTAINER=$(udocker ps | grep octopus | head -1 | awk '{print $1}')
+NP=4
+OMP=16
+PD=4
+
+echo "=== N2 Production TDDFT ==="
+echo "Container: $CONTAINER"
+echo "Config: np=$NP omp=$OMP ParDomains=$PD"
+echo "Steps: 10000"
+echo "Start: $(date)"
+
+# Build TD input (reuse GS restart)
+cat > $BASE/inp << 'EOF'
+CalculationMode = td
+FromScratch = no
+
+%Species
+'N' | species_pseudo | file | '/data/home/zju321/diatomic_bench/oct_N2_td/N.upf'
+%
+
+%Coordinates
+'N' | 0.0 | 0.0 | 0.0
+'N' | 1.098*angstrom | 0.0 | 0.0
+%
+
+Spacing = 0.18*angstrom
+Radius = 10.0*angstrom
+XCfunctional = gga_x_pbe+gga_c_pbe
+ExtraStates = 8
+
+TDMaxSteps = 10000
+TDTimeStep = 0.02
+TDDeltaStrength = 0.005
+TDPolarizationDirection = 1
+TDPropagator = aetrs
+TaylorExpansionOrder = 4
+ExperimentalFeatures = yes
+ParDomains = 4
+ScaLAPACKCompatible = yes
+EOF
+
+START=$(date +%s)
+
+udocker run \
+  --volume=/data/home/zju321:/data/home/zju321 \
+  --env="OMP_NUM_THREADS=$OMP" \
+  --env="OMP_PROC_BIND=spread" \
+  --env="OMP_PLACES=cores" \
+  $CONTAINER \
+  bash -c "export OMP_NUM_THREADS=$OMP && cd $BASE && mpirun -np $NP --map-by socket --bind-to socket --report-bindings /app/bin/octopus" 2>&1 | tail -40
+
+RC=$?
+END=$(date +%s)
+WALLTIME=$((END - START))
+
+echo ""
+echo "=== DONE ==="
+echo "Exit code: $RC"
+echo "Walltime: ${WALLTIME}s"
+echo "End: $(date)"
+
+# Save key outputs
+if [ -f $BASE/td.general/cross_section_vector ]; then
+  cp $BASE/td.general/cross_section_vector $BASE/cross_section_vector_10k
+  echo "cross_section_vector saved: $(wc -l < $BASE/cross_section_vector_10k) lines"
+fi

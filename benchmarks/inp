@@ -1,0 +1,11 @@
+CalculationMode = gs
+UnitsOutput = eV_Angstrom
+%Species
+  "He" | species_pseudo | set | /app/share/octopus/pseudopotentials/HGH/lda/He.hgh | hgh | lmax | 1 | lloc | 0
+%
+%Coordinates
+  "He" | 0 | 0 | 0
+%
+Radius = 10.0*angstrom
+Spacing = 0.18*angstrom
+XCFunctional = LDA

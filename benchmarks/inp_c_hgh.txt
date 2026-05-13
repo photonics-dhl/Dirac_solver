@@ -1,0 +1,10 @@
+CalculationMode = gs
+%Species
+  "C" | species_pseudo | set | /app/share/octopus/pseudopotentials/HGH/lda/C.hgh | hgh
+%
+%Coordinates
+  "C" | 0 | 0 | 0
+%
+Radius = 5.0*angstrom
+Spacing = 0.5*angstrom
+XCFunctional = LDA

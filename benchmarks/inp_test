@@ -1,0 +1,22 @@
+CalculationMode = gs
+UnitsOutput = eV_Angstrom
+
+%Species
+  'C' | spec | '/data/home/zju321/.udocker/containers/580a2f75-3048-3052-8412-1b29c7bc2ada/ROOT/app/share/octopus/pseudopotentials/pseudo-dojo.org/nc-fr-04_pbe_standard/C.upf' | pot | from_pspfile
+  'H' | spec | '/data/home/zju321/.udocker/containers/580a2f75-3048-3052-8412-1b29c7bc2ada/ROOT/app/share/octopus/pseudopotentials/pseudo-dojo.org/nc-fr-04_pbe_standard/H.upf' | pot | from_pspfile
+%
+
+%Coordinates
+  'C'  |  0.000000  |  0.000000  |  0.000000
+  'H'  |  0.629118  |  0.629118  |  0.629118
+  'H'  | -0.629118  | -0.629118  |  0.629118
+  'H'  | -0.629118  |  0.629118  | -0.629118
+  'H'  |  0.629118  | -0.629118  | -0.629118
+%
+
+Radius = 10.0*angstrom
+Spacing = 0.18*angstrom
+XCFunctional = gga_x_pbe+gga_c_pbe
+BoxShape = sphere
+MaxSCFIterations = 500
+SCFTolerance = 1e-6

@@ -1,24 +1,23 @@
 {
-  "updated_at": "2026-04-16T21:03:16.436845Z",
   "version": "v1",
   "current_task": {
-    "run_id": "RSH-20260416T202039Z",
-    "phase": "FAILED",
-    "state_machine": "L0",
+    "run_id": "T-20260506T100553Z",
+    "phase": "REPLAN",
+    "state_machine": "L1",
     "initiator": "agent",
     "agent_id": "dirac-orchestration",
-    "case_id": "hydrogen_gs_reference"
+    "case_id": "h2o_gs"
   },
   "progress": {
-    "overall_pct": 100,
+    "overall_pct": 90,
     "planner_done": true,
-    "executor_done": true,
-    "reviewer_done": true
+    "executor_done": false,
+    "reviewer_done": false
   },
   "last_transition": {
-    "from": "FAILED",
-    "to": "FAILED",
-    "timestamp": "2026-04-16T21:03:16.436845Z",
+    "from": "REPLAN",
+    "to": "REPLAN",
+    "timestamp": "2026-05-06T10:08:17.579787Z",
     "trigger": "orchestration_script"
   },
   "verdict": {
@@ -27,78 +26,79 @@
     "threshold": 0.03
   },
   "active_blockers": [
-    "[Debugger] State handoff broken between Planner and Executor. Reviewer output may not have been correctly serialized to executor input."
+    "planner_executor_chain_break"
   ],
   "recent_events": [
     {
-      "ts": "2026-04-16T21:03:16.436845Z",
-      "event": "FAILED",
+      "ts": "2026-05-06T10:08:17.579787Z",
+      "event": "REPLAN",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202039Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "T-20260506T100553Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:59:50.882884Z",
+      "ts": "2026-05-06T10:08:16.820003Z",
       "event": "FAILED",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202446Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100553Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:58:14.894672Z",
+      "ts": "2026-05-06T10:06:22.576606Z",
       "event": "REVIEWING",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202039Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100553Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:57:57.954814Z",
+      "ts": "2026-05-06T10:06:22.494205Z",
       "event": "EXECUTING",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202039Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100553Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:57:01.424423Z",
-      "event": "REVIEWING",
-      "agent": "orchestration",
-      "run_id": "RSH-20260416T202446Z",
-      "case": "hydrogen_gs_reference"
-    },
-    {
-      "ts": "2026-04-16T20:56:36.405734Z",
-      "event": "EXECUTING",
-      "agent": "orchestration",
-      "run_id": "RSH-20260416T202446Z",
-      "case": "hydrogen_gs_reference"
-    },
-    {
-      "ts": "2026-04-16T20:42:38.773314Z",
+      "ts": "2026-05-06T10:06:20.434469Z",
       "event": "PLANNED",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202039Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100553Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:41:11.025503Z",
-      "event": "PLANNED",
+      "ts": "2026-05-06T10:05:53.499341Z",
+      "event": "RECEIVED",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202446Z",
+      "run_id": "RSH-20260506T100553Z",
       "case": "hydrogen_gs_reference"
     },
     {
-      "ts": "2026-04-16T20:28:51.603403Z",
+      "ts": "2026-05-06T10:04:03.567986Z",
+      "event": "REPLAN",
+      "agent": "orchestration",
+      "run_id": "T-20260506T100138Z",
+      "case": "h2o_gs"
+    },
+    {
+      "ts": "2026-05-06T10:04:02.729690Z",
       "event": "FAILED",
       "agent": "orchestration",
-      "run_id": "",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100138Z",
+      "case": "h2o_gs"
     },
     {
-      "ts": "2026-04-16T20:27:37.140605Z",
-      "event": "PLANNED",
+      "ts": "2026-05-06T10:02:09.374117Z",
+      "event": "REVIEWING",
       "agent": "orchestration",
-      "run_id": "RSH-20260416T202039Z",
-      "case": "hydrogen_gs_reference"
+      "run_id": "RSH-20260506T100138Z",
+      "case": "h2o_gs"
+    },
+    {
+      "ts": "2026-05-06T10:02:09.297690Z",
+      "event": "EXECUTING",
+      "agent": "orchestration",
+      "run_id": "RSH-20260506T100138Z",
+      "case": "h2o_gs"
     }
-  ]
+  ],
+  "updated_at": "2026-05-06T10:08:17.579787Z"
 }

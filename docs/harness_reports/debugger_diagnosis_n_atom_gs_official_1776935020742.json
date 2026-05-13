@@ -1,0 +1,39 @@
+{
+  "diagnostic_id": "diag-RSH-20260423T085751Z-1776935020742",
+  "task_id": "RSH-20260423T085751Z",
+  "case_id": "n_atom_gs_official",
+  "failure_signature_hash": "447d25ead37d",
+  "failure_type": "octopus_runtime",
+  "error_chain": [
+    {
+      "step": 1,
+      "component": "executor",
+      "file": "docker/workspace/server.py",
+      "error_message": "timed out",
+      "timestamp": "2026-04-23T09:03:40.742941+00:00"
+    }
+  ],
+  "root_cause": "Unknown failure type: octopus_runtime",
+  "required_fixes": [
+    {
+      "fix_id": 99,
+      "description": "Failed checks: octopus_ok, physics_result_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: Octopus execution failed; verify remote MCP health and compute queue status.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: physics result is incomplete; missing required fields: ground_state_energy_hartree.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

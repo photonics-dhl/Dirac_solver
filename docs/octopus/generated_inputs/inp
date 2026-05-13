@@ -1,0 +1,15 @@
+CalculationMode = gs
+Dimensions = 3
+Spacing = 0.05
+Radius = 5
+BoxShape = sphere
+
+%Coordinates
+%
+
+%Output
+  wfs
+  potential
+%
+OutputFormat = axis_x
+ExtraStates = 4

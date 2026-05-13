@@ -1,1614 +1,1614 @@
 {
-  "updated_at": "2026-04-16T04:18:31.743789Z",
+  "updated_at": "2026-05-13T05:35:14.422792Z",
   "interval_seconds": 8,
   "last": {
-    "ts": "2026-04-16T04:18:31.743789Z",
-    "latest_feishu_task_id": "Q-20260416T015751161-96687",
+    "ts": "2026-05-13T05:35:14.422792Z",
+    "latest_feishu_task_id": "Q-20260416T202038690-56938",
     "latest_feishu_status": "failed",
-    "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-    "sync_root_source": "feishu-queue",
-    "sync_last_task_source": "feishu-queue"
+    "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+    "sync_root_source": "cli",
+    "sync_last_task_source": "cli"
   },
   "history": [
     {
-      "ts": "2026-04-16T03:51:55.699792Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:08:36.218255Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:03.720790Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:08:44.253209Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:11.749950Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:08:52.287843Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:19.766953Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:00.313820Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:27.784557Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:08.340486Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:35.805782Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:16.369787Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:43.826722Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:24.401049Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:51.840798Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:32.431686Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:52:59.862469Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:40.462846Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:07.883783Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:48.493491Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:15.899785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:09:56.524196Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:23.919857Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:04.549815Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:31.941128Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:12.580838Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:39.960772Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:20.614787Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:47.976133Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:28.645791Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:53:55.997739Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:36.676817Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:04.020000Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:44.707793Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:12.041637Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:10:52.739845Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:20.063441Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:00.771582Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:28.085025Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:08.802273Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:36.106783Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:16.831804Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:44.128784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:24.863421Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:54:52.145795Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:32.896804Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:00.166784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:40.929794Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:08.188570Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:48.961804Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:16.210773Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:11:56.991897Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:24.229263Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:05.022871Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:32.250785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:13.055823Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:40.272461Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:21.089865Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:48.295863Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:29.121695Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:55:56.316786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:37.153449Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:04.338566Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:45.188585Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:12.359787Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:12:53.222785Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:20.381585Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:01.246806Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:28.403898Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:09.278844Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:36.421109Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:17.310308Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:44.442773Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:25.341329Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:56:52.464740Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:33.372792Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:00.485804Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:41.403792Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:08.499796Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:49.435504Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:16.520775Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:13:57.468564Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:24.537349Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:05.500541Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:32.553801Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:13.528813Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:40.573278Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:21.560860Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:48.594559Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:29.589795Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:57:56.616628Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:37.621165Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:04.633857Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:45.651087Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:12.654790Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:14:53.677911Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:20.675883Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:01.709828Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:28.695786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:09.738810Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:36.717395Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:17.769782Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:44.739590Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:25.801798Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:58:52.759063Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:33.832148Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:00.776207Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:41.868802Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:08.798107Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:49.898482Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:16.819800Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:15:57.929793Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:24.841299Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:05.960687Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:32.862792Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:13.991263Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:40.883785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:22.020158Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:48.905280Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:30.050218Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T03:59:56.919788Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:38.077953Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:04.941680Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:46.109617Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:12.963784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:16:54.140588Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:20.985097Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:02.172268Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:29.006830Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:10.202612Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:37.028458Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:18.236787Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:45.049770Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:26.268309Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:00:53.065799Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:34.299788Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:01.086784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:42.324722Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:09.108856Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:50.355795Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:17.130899Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:17:58.387488Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:25.146785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:06.412824Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:33.167784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:14.441603Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:41.183564Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:22.466343Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:49.204785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:30.496092Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:01:57.226731Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:38.526232Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:05.248306Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:46.553814Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:13.269789Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:18:54.583801Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:21.290781Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:02.615205Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:29.312819Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:10.648796Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:37.333785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:18.679991Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:45.355045Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:26.710789Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:02:53.376267Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:34.742286Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:01.387435Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:42.773823Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:09.409524Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:50.805335Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:17.426481Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:19:58.829391Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:25.448802Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:06.860895Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:33.469796Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:14.892981Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:41.485796Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:22.929804Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:49.506785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:30.959778Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:03:57.527793Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:38.980283Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:05.548178Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:47.006807Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:13.565521Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:20:55.038357Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:21.587006Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:03.070852Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:29.608795Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:11.104258Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:37.627791Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:19.136986Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:45.646802Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:27.168726Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:04:53.665784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:35.205090Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:01.681823Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:43.239182Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:09.703698Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:51.272811Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:17.725799Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:21:59.306445Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:25.747051Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:07.340810Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:33.760792Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:15.372460Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:41.781786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:23.405818Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:49.803841Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:31.441649Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:05:57.825787Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:39.472786Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:05.845980Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:47.504424Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:13.866797Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:22:55.536054Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:21.887850Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:03.567269Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:29.910279Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:11.601716Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:37.933739Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:19.636280Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:45.952964Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:27.666721Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:06:53.968817Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:35.699078Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:01.983770Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:43.731058Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:10.003243Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:51.763066Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:18.024791Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:23:59.794393Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:26.039793Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:07.822841Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:34.061561Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:15.858034Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:42.082786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:23.891257Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:50.109268Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:31.918802Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:07:58.130817Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:39.949807Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:06.147610Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:47.980707Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:14.169097Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:24:56.012651Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:22.189787Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:04.044582Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:30.210790Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:12.073945Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:38.228846Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:20.105851Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:46.250643Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:28.135189Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:08:54.272120Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:36.166844Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:02.293694Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:44.197871Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:10.313609Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:25:52.226045Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:18.329785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:00.260840Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:26.351281Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:08.291786Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:34.372948Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:16.316790Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:42.389400Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:24.348136Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:50.411788Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:32.380169Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:09:58.434731Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:40.404801Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:06.455790Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:48.435796Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:14.477785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:26:56.466804Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:22.499327Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:04.498340Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:30.520797Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:12.532805Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:38.540787Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:20.566872Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:46.560823Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:28.601814Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:10:54.575141Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:36.627789Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:02.597433Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:44.659962Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:10.619736Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:27:52.694220Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:18.640784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:00.728202Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:26.662896Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:08.756976Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:34.685132Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:16.787784Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:42.707786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:24.819125Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:50.730905Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:32.850134Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:11:58.752893Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:40.881737Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:06.774819Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:48.907772Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:14.796806Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:28:56.938817Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:22.818790Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:04.965801Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:30.840500Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:12.997787Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:38.854791Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:21.033004Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:46.876511Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:29.064017Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:12:54.897784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:37.098282Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:02.918784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:45.129499Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:10.938070Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:29:53.160637Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:18.959785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:01.189638Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:26.974815Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:09.217881Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:34.995800Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:17.241746Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:43.016783Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:25.271791Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:51.037786Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:33.303799Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:13:59.058789Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:41.335841Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:07.073648Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:49.366789Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:15.093388Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:30:57.397974Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:23.114796Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:05.424888Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:31.137359Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:13.456822Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:39.159320Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:21.490797Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:47.179783Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:29.524536Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:14:55.201803Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:37.560212Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:03.222788Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:45.597268Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:11.245302Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:31:53.627946Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:19.261173Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:01.658821Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:27.283930Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:09.693071Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:35.306148Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:17.726062Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:43.326838Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:25.755151Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:51.346129Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:33.785793Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:15:59.367903Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:41.817980Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:07.382871Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:49.849924Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:15.403785Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:32:57.877938Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:23.423607Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:05.910842Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:31.445522Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:13.942926Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:39.467505Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:21.974880Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:47.489008Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:30.008666Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:16:55.509784Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:38.042792Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:03.531503Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:46.072689Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:11.547245Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:33:54.103805Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:19.562092Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:02.136205Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:27.583606Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:10.167863Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:35.605061Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:18.202794Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:43.627393Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:26.235994Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:51.648850Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:34.267802Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:17:59.670176Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:42.299421Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:18:07.685718Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:50.328592Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:18:15.706983Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:34:58.360042Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:18:23.723791Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:35:06.391522Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     },
     {
-      "ts": "2026-04-16T04:18:31.743789Z",
-      "latest_feishu_task_id": "Q-20260416T015751161-96687",
+      "ts": "2026-05-13T05:35:14.422792Z",
+      "latest_feishu_task_id": "Q-20260416T202038690-56938",
       "latest_feishu_status": "failed",
-      "latest_feishu_updated_at": "2026-04-16T01:58:22.485005Z",
-      "sync_root_source": "feishu-queue",
-      "sync_last_task_source": "feishu-queue"
+      "latest_feishu_updated_at": "2026-04-16T20:54:46.199454Z",
+      "sync_root_source": "cli",
+      "sync_last_task_source": "cli"
     }
   ]
 }

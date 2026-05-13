@@ -1,0 +1,87 @@
+#!/bin/bash
+#PBS -N n2_td_bench
+#PBS -l nodes=1:ppn=64
+#PBS -l walltime=01:00:00
+#PBS -q workq
+#PBS -o /data/home/zju321/diatomic_bench/oct_N2_bench/pbs_out.log
+#PBS -e /data/home/zju321/diatomic_bench/oct_N2_bench/pbs_err.log
+
+cd /data/home/zju321/diatomic_bench/oct_N2_bench
+
+BASE=/data/home/zju321/diatomic_bench/oct_N2_bench
+CONTAINER=f6e9113b-3a5c-3a0c-a841-917bdaf94276
+RESULTS=$BASE/bench_results.csv
+TD_STEPS=300
+
+echo "config,np,omp,par_domains,walltime_s,steps,steps_per_sec" > $RESULTS
+
+CONFIGS=(
+  "1 64 1"
+  "2 32 2"
+  "4 16 4"
+  "8 8 8"
+  "16 4 16"
+  "32 2 32"
+  "64 1 64"
+)
+
+TD_INP=$BASE/inp_td
+cat > $TD_INP << 'TDEOF'
+CalculationMode = td
+FromScratch = yes
+
+%Species
+'N' | species_pseudo | file | '/data/home/zju321/diatomic_bench/oct_N2_td/N.upf'
+%
+
+%Coordinates
+'N' | 0.0 | 0.0 | 0.0
+'N' | 1.098*angstrom | 0.0 | 0.0
+%
+
+Spacing = 0.18*angstrom
+Radius = 10.0*angstrom
+XCfunctional = gga_x_pbe+gga_c_pbe
+ExtraStates = 8
+
+TDTimeStep = 0.02
+TDDeltaStrength = 0.005
+TDPolarizationDirection = 1
+TDEOF
+
+echo "=== N2 TD Parallel Benchmark ==="
+echo "Container: $CONTAINER"
+echo "Configs: ${CONFIGS[@]}"
+echo ""
+
+for CONFIG in "${CONFIGS[@]}"; do
+  read NP OMP PD <<< "$CONFIG"
+  CFGNAME="np${NP}_omp${OMP}_pd${PD}"
+  echo "=== Config: $CFGNAME (np=$NP omp=$OMP pd=$PD) ==="
+
+  rm -rf $BASE/restart/td
+
+  cat $TD_INP > $BASE/inp
+  echo "" >> $BASE/inp
+  echo "TDMaxSteps = $TD_STEPS" >> $BASE/inp
+  echo "ParDomains = $PD" >> $BASE/inp
+  echo "ScaLAPACKCompatible = yes" >> $BASE/inp
+
+  START=$(date +%s)
+  udocker run \
+    --volume=/data/home/zju321:/data/home/zju321 \
+    --env="OMP_NUM_THREADS=$OMP" \
+    $CONTAINER \
+    bash -c "cd $BASE && mpirun -np $NP --bind-to core /app/bin/octopus" 2>&1 | tail -5
+
+  END=$(date +%s)
+  WALLTIME=$((END - START))
+  STEPS_PER_SEC=$(echo "scale=4; $TD_STEPS / $WALLTIME" | bc 2>/dev/null || echo "0")
+  echo "$CFGNAME,$NP,$OMP,$PD,$WALLTIME,$TD_STEPS,$STEPS_PER_SEC" >> $RESULTS
+  echo "  Walltime: ${WALLTIME}s, Steps/sec: $STEPS_PER_SEC"
+  echo ""
+done
+
+echo ""
+echo "=== BENCHMARK COMPLETE ==="
+cat $RESULTS

@@ -1,0 +1,473 @@
+{
+  "timestamp": "2026-05-06T09:27:46.589250Z",
+  "task_id": "T-20260506T092746Z",
+  "source": "cli",
+  "task": "h2o_gs_official run_id=RSH-20260506T092746Z",
+  "task_original": "h2o_gs_official",
+  "run_id": "RSH-20260506T092746Z",
+  "command_contract": {
+    "normalized": true,
+    "warnings": [
+      "run_id_missing_autofilled"
+    ],
+    "metadata": {
+      "run_id": "RSH-20260506T092746Z",
+      "workflow": "",
+      "mode": "",
+      "case": "h2o_gs",
+      "octopus": "",
+      "ncpus": "",
+      "mpiprocs": ""
+    }
+  },
+  "contract_validation": {
+    "is_valid": true,
+    "required_fields": [
+      "run_id"
+    ],
+    "missing_required_fields": [],
+    "blocking_reason": ""
+  },
+  "matched_rule": "dirac_standard_case_orchestration",
+  "assignee": "openclaw-supervisor",
+  "action": "run_orchestration",
+  "intent_confidence": 0.7,
+  "requires_reviewer": true,
+  "max_iterations": 6,
+  "auto_escalation_policy": "strict",
+  "stop_conditions": [
+    "reviewer_pass_and_benchmark_delta_ok",
+    "blocked_permissions",
+    "max_iterations_reached"
+  ],
+  "auto_policy_applied": false,
+  "reviewer_strict": false,
+  "auto_execute_replan": true,
+  "executed": true,
+  "execution": {
+    "command": "D:\\Softwares_new\\Python\\python.exe scripts/run_multi_agent_orchestration.py --api-base http://10.72.212.33:3004 --harness-base http://10.72.212.33:8101 --case-id h2o_gs --max-iterations 6 --octopus-molecule H2 --octopus-calc-mode gs --skills-manifest //RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json --planner-model-priority gpt-5-thinking,deepseek-r1 --reviewer-model-priority gpt-5-thinking,deepseek-r1 --planner-thinking-budget 8000 --reviewer-thinking-budget 8000 --run-id RSH-20260506T092746Z --timeout 900",
+    "exit_code": 0,
+    "stdout": "multi_agent_report_json=docs/harness_reports/multi_agent_orchestration_h2o_gs_20260506T093112Z.json\nmulti_agent_report_md=docs/harness_reports/multi_agent_orchestration_h2o_gs_20260506T093112Z.md\ncase_delta_board_md=docs/harness_reports/case_delta_board_h2o_gs_20260506T093112Z.md\nreviewer_verdict=FAIL\nopenclaw_planner_ok=True\nweb_evidence_ok=True\nopenclaw_flow_ok=True\nplanner_executor_chain_ok=False\ndeep_model_priority_ok=True\nopenclaw_planner_trace_log=docs/harness_reports/openclaw_planner_trace_20260506T092748Z.log\nopenclaw_sync_json=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/state/dirac_solver_progress_sync.json\n",
+    "stderr": ""
+  },
+  "preflight": {
+    "ready": true,
+    "reason_code": "",
+    "service_gate": {
+      "timeout_seconds": 8.0,
+      "api": {
+        "name": "api",
+        "reachable": true,
+        "selected_base": "http://10.72.212.33:3004",
+        "checks": [
+          {
+            "base_url": "http://10.72.212.33:3004",
+            "ok": true,
+            "host": "10.72.212.33",
+            "port": 3004
+          }
+        ]
+      },
+      "harness": {
+        "name": "harness",
+        "reachable": true,
+        "selected_base": "http://10.72.212.33:8101",
+        "checks": [
+          {
+            "base_url": "http://10.72.212.33:8101",
+            "tcp_ok": true,
+            "tcp_error": "",
+            "route_ready": true,
+            "route_checks": [
+              {
+                "method": "GET",
+                "url": "http://10.72.212.33:8101/harness/cases",
+                "status": 404
+              },
+              {
+                "method": "GET",
+                "url": "http://10.72.212.33:8101/harness/case_registry",
+                "status": 200
+              },
+              {
+                "method": "OPTIONS",
+                "url": "http://10.72.212.33:8101/harness/run_case",
+                "status": 405
+              },
+              {
+                "method": "OPTIONS",
+                "url": "http://10.72.212.33:8101/api/harness/run_case",
+                "status": 404
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "ensure": {
+      "command": "D:\\Softwares_new\\Python\\python.exe scripts/ensure_openclaw_exec.py --openclaw-root Z:\\.openclaw --timeout-ms 60000 --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"timestamp\": \"2026-05-06T09:27:47.009699Z\",\n  \"config_path\": \"Z:/.openclaw/openclaw.json\",\n  \"changed\": false,\n  \"backup_path\": null,\n  \"shell_env_before\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"shell_env_after\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"approved_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\",\n    \"operator.pairing\"\n  ],\n  \"required_scopes\": [\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\"\n  ],\n  \"missing_scopes\": [],\n  \"execution_ready\": true,\n  \"note\": \"If missing_scopes is not empty, use OpenClaw device approval/grant flow to authorize this device.\"\n}\n",
+      "stderr": "",
+      "json": {
+        "timestamp": "2026-05-06T09:27:47.009699Z",
+        "config_path": "Z:/.openclaw/openclaw.json",
+        "changed": false,
+        "backup_path": null,
+        "shell_env_before": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "shell_env_after": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "approved_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals",
+          "operator.pairing"
+        ],
+        "required_scopes": [
+          "operator.read",
+          "operator.write",
+          "operator.approvals"
+        ],
+        "missing_scopes": [],
+        "execution_ready": true,
+        "note": "If missing_scopes is not empty, use OpenClaw device approval/grant flow to authorize this device."
+      }
+    },
+    "audit": {
+      "command": "D:\\Softwares_new\\Python\\python.exe scripts/audit_openclaw_permissions.py --openclaw-root Z:\\.openclaw --policy \\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac\\orchestration\\openclaw_exec_policy.json --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"shell_env\": {\n    \"enabled\": true,\n    \"timeoutMs\": 60000\n  },\n  \"approved_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\",\n    \"operator.pairing\"\n  ],\n  \"required_scopes\": [\n    \"operator.admin\",\n    \"operator.read\",\n    \"operator.write\",\n    \"operator.approvals\"\n  ],\n  \"missing_scopes\": [],\n  \"pending_device_count\": 0,\n  \"execution_ready\": true,\n  \"sample_classification\": [],\n  \"policy_mode\": \"full_auto\"\n}\n",
+      "stderr": "",
+      "json": {
+        "shell_env": {
+          "enabled": true,
+          "timeoutMs": 60000
+        },
+        "approved_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals",
+          "operator.pairing"
+        ],
+        "required_scopes": [
+          "operator.admin",
+          "operator.read",
+          "operator.write",
+          "operator.approvals"
+        ],
+        "missing_scopes": [],
+        "pending_device_count": 0,
+        "execution_ready": true,
+        "sample_classification": [],
+        "policy_mode": "full_auto"
+      }
+    },
+    "plugin_gate": {
+      "checked": true,
+      "plugin_gate_required": false,
+      "required_plugins": [],
+      "matched": {},
+      "missing_plugins": [],
+      "found_plugin_ids": [
+        "acpx",
+        "browser",
+        "feishu"
+      ],
+      "found_skill_ids": [
+        "dirac.planner.v1",
+        "dirac.executor.v1",
+        "dirac.reviewer.v1"
+      ],
+      "plugin_inventory": [
+        {
+          "id": "acpx",
+          "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/acpx/openclaw.plugin.json"
+        },
+        {
+          "id": "browser",
+          "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/browser/openclaw.plugin.json"
+        },
+        {
+          "id": "feishu",
+          "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/feishu/openclaw.plugin.json"
+        }
+      ],
+      "plugin_gate_passed": true,
+      "reason": "ok"
+    }
+  },
+  "workflow": {
+    "route": "L0",
+    "state": "REPLAN",
+    "last_event": "REVIEW_FAIL",
+    "policy": {
+      "max_attempts_l0": 2,
+      "max_attempts_l1": 2,
+      "retry_backoff_seconds": 30,
+      "policy_override_for": null
+    },
+    "next_route": "L0"
+  },
+  "skills_visibility_snapshot": {
+    "timestamp": "2026-05-06T09:27:46.618887Z",
+    "manifest_source": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/orchestration/agent_skills_manifest.json",
+    "skill_roots": [
+      {
+        "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/.claude/skills",
+        "exists": true
+      },
+      {
+        "path": "Z:/.openclaw/skills",
+        "exists": true
+      }
+    ],
+    "required_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "roles": {
+      "planner": {
+        "skill_id": "dirac.planner.v1",
+        "required_outputs": [
+          "selected_case",
+          "threshold",
+          "max_iterations",
+          "openclaw_planner.ok",
+          "execution_budget.retry_budget",
+          "execution_budget.timeout_seconds",
+          "workflow.stage_order",
+          "workflow.main_controls",
+          "review_plan.benchmark_delta_required"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "executor": {
+        "skill_id": "dirac.executor.v1",
+        "required_outputs": [
+          "execution_mode",
+          "simple_harness.passed",
+          "simple_harness.best_relative_error",
+          "mcp.attempted",
+          "octopus.passed",
+          "benchmark_review.final_verdict",
+          "benchmark_review.delta.relative_error",
+          "benchmark_review.next_action",
+          "blocked.is_blocked",
+          "blocked.reason_code"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      },
+      "reviewer": {
+        "skill_id": "dirac.reviewer.v1",
+        "required_outputs": [
+          "checks.accuracy_ok",
+          "checks.benchmarks_aligned_ok",
+          "checks.kb_richness_ok",
+          "checks.retrieval_skill_ok",
+          "checks.web_evidence_ok",
+          "checks.mcp_attempted_ok",
+          "checks.octopus_ok",
+          "checks.ui_ok",
+          "checks.ui_rendering_ok",
+          "checks.skills_contracts_ok",
+          "checks.openclaw_flow_ok",
+          "checks.planner_executor_chain_ok",
+          "checks.deep_model_priority_ok",
+          "checks.logs_consistent",
+          "checks.execution_ok",
+          "retrieval.skill_invoked",
+          "repair_type",
+          "repair_confidence",
+          "final_verdict"
+        ],
+        "visible": true,
+        "source": "agent_skills_manifest"
+      }
+    },
+    "missing_roles": []
+  },
+  "plugin_presence_gate": {
+    "checked": true,
+    "plugin_gate_required": false,
+    "required_plugins": [],
+    "matched": {},
+    "missing_plugins": [],
+    "found_plugin_ids": [
+      "acpx",
+      "browser",
+      "feishu"
+    ],
+    "found_skill_ids": [
+      "dirac.planner.v1",
+      "dirac.executor.v1",
+      "dirac.reviewer.v1"
+    ],
+    "plugin_inventory": [
+      {
+        "id": "acpx",
+        "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/acpx/openclaw.plugin.json"
+      },
+      {
+        "id": "browser",
+        "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/browser/openclaw.plugin.json"
+      },
+      {
+        "id": "feishu",
+        "path": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/external/openclaw_selected/extensions/feishu/openclaw.plugin.json"
+      }
+    ],
+    "plugin_gate_passed": true,
+    "reason": "ok"
+  },
+  "physics_result": {
+    "calc_mode": "gs",
+    "molecule_name": "H2",
+    "ground_state_energy_hartree": null,
+    "homo_energy": null,
+    "lumo_energy": null,
+    "absorption_spectrum_points": 0,
+    "absorption_spectrum": {
+      "energy_ev": [],
+      "cross_section": []
+    },
+    "benchmark_delta": {
+      "relative_error": -1.0,
+      "threshold": 0.03,
+      "within_tolerance": false,
+      "reference_energy_hartree": null,
+      "reference_source": "",
+      "fallback_applied": false
+    },
+    "requires_absorption_spectrum": false,
+    "has_required_fields": false,
+    "missing_fields": [
+      "ground_state_energy_hartree",
+      "benchmark_delta.relative_error"
+    ],
+    "provenance_verified": false,
+    "available": true
+  },
+  "loop_iterations": {
+    "count": 1,
+    "max": 3,
+    "retryable_statuses": [
+      "blocked_reviewer_gate",
+      "execution_failed",
+      "blocked_permissions"
+    ],
+    "openclaw_autonomy": {
+      "enabled": true,
+      "action_switch_enabled": true,
+      "final_action": "run_orchestration"
+    },
+    "adaptive_timeout": {
+      "enabled": true,
+      "escalation_factor": 1.5,
+      "increment_seconds": 30,
+      "base_exec_timeout_seconds": 900,
+      "max_exec_timeout_seconds": 1800,
+      "final_exec_timeout_seconds": 900
+    },
+    "history": [
+      {
+        "iteration": 1,
+        "action": "run_orchestration",
+        "status": "blocked_physics_result_missing",
+        "failure_reason": "missing_physics_result_fields:ground_state_energy_hartree,benchmark_delta.relative_error",
+        "execution_exit_code": 0,
+        "exec_timeout_seconds": 900,
+        "at": "2026-05-06T09:31:12.947281Z",
+        "openclaw_loop_decision": {
+          "continue": false,
+          "next_action": "run_orchestration",
+          "decision_source": "policy_retryable",
+          "reason": "auto_mode_disabled",
+          "status": "blocked_physics_result_missing"
+        }
+      }
+    ],
+    "stopped_due_to": "status_terminal"
+  },
+  "status": "blocked_physics_result_missing",
+  "failure_reason": "missing_physics_result_fields:ground_state_energy_hartree,benchmark_delta.relative_error",
+  "failure_reason_taxonomy": "missing_required_physics_fields",
+  "convergence_gate": {
+    "applied": false,
+    "passed": true,
+    "reason": "status_not_success",
+    "unmet_conditions": [],
+    "evidence": {}
+  },
+  "public_status": "blocked_physics_result_missing",
+  "public_failure_reason": "missing_physics_result_fields:ground_state_energy_hartree,benchmark_delta.relative_error",
+  "human_status": "EXECUTED_AND_BLOCKED_BY_PHYSICS_RESULT",
+  "phase_stream": [
+    {
+      "phase": "Trigger",
+      "state": "completed",
+      "at": "2026-05-06T09:27:46.589250Z",
+      "detail": "source=cli"
+    },
+    {
+      "phase": "Queue",
+      "state": "dispatched",
+      "at": "2026-05-06T09:31:12.948297Z",
+      "detail": "assignee=openclaw-supervisor; action=run_orchestration"
+    },
+    {
+      "phase": "Executing",
+      "state": "completed",
+      "at": "2026-05-06T09:31:12.948297Z",
+      "detail": "subprocess_executed"
+    },
+    {
+      "phase": "Reviewing",
+      "state": "failed",
+      "at": "2026-05-06T09:31:12.948297Z",
+      "detail": "physics_result_missing"
+    },
+    {
+      "phase": "Result",
+      "state": "completed",
+      "at": "2026-05-06T09:31:12.948297Z",
+      "detail": "status=blocked_physics_result_missing; human_status=EXECUTED_AND_BLOCKED_BY_PHYSICS_RESULT; reason=missing_physics_result_fields:ground_state_energy_hartree,benchmark_delta.relative_error"
+    }
+  ],
+  "loop_verdict_contract": {
+    "dispatch_status": "blocked_physics_result_missing",
+    "reviewer_verdict": "FAIL",
+    "retryable": false,
+    "loop_iteration_count": 1,
+    "loop_max_attempts": 3,
+    "retry_backoff_seconds": 30,
+    "consistency_token": "293d2ecd"
+  },
+  "consistency_token": "293d2ecd",
+  "autonomous_assessment": {
+    "enabled": false,
+    "completion_state": "not_applicable",
+    "health_state": "unknown",
+    "ready_for_next_auto_task": false,
+    "blockers": [],
+    "workflow_state": "REPLAN",
+    "workflow_next_route": "L0",
+    "status": "blocked_physics_result_missing"
+  },
+  "replan_packet": "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260506T093112Z.json",
+  "replan_execution": {
+    "command": "D:\\Softwares_new\\Python\\python.exe scripts/execute_replan_packet.py --packet //RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260506T093112Z.json --state \\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac\\state\\dirac_solver_progress_sync.json --api-base http://10.72.212.33:3004 --harness-base http://10.72.212.33:8101 --case-id h2o_gs --octopus-molecule H2 --octopus-calc-mode gs --report-dir \\\\RaiDrive-Mac\\SFTP\\.openclaw\\workspace\\projects\\Dirac\\docs\\harness_reports",
+    "exit_code": 2,
+    "stdout": "replan_packet=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_packet_20260506T093112Z.json\nreplan_execution_report=//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/replan_execution_20260506T093113Z.json\nreplan_all_passed=False\n",
+    "stderr": ""
+  }
+}

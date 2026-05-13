@@ -1,0 +1,796 @@
+    <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+                                ___
+                             .-'   `'.
+                            /         \
+                            |         ;
+                            |         |           ___.--,
+                   _.._     |0) ~ (0) |    _.---'`__.-( (_.
+            __.--'`_.. '.__.\    '--. \_.-' ,.--'`     `""`
+           ( ,.--'`   ',__ /./;   ;, '.__.'`    __
+           _`) )  .---.__.' / |   |\   \__..--""  """--.,_
+          `---' .'.''-._.-'`_./  /\ '.  \ _.-~~~````~~~-._`-.__.'
+                | |  .' _.-' |  |  \  \  '.               `~---`
+                 \ \/ .'     \  \   '. '-._)
+                  \/ /        \  \    `=.__`~-.
+             jgs  / /\         `) )    / / `"".`\
+            , _.-'.'\ \        / /    ( (     / /
+             `--~`   ) )    .-'.'      '.'.  | (
+                    (/`    ( (`          ) )  '-;
+                     `      '-;         (-'
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+
+    <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                           Running octopus
+
+Version                : 16.0
+Commit                 : 7e864b450a
+Configuration time     : 2025-04-04T14:25:06
+Configuration options  :  openmp mpi libxc_fxc libxc_kxc
+Optional libraries     : cgal etsf_io metis netcdf scalapack nlopt
+Architecture           : x86_64
+C compiler             : /usr/bin/cc
+C compiler flags       :
+C++ compiler           : /usr/bin/c++
+C++ compiler flags     :
+Fortran compiler       : /usr/bin/gfortran (GCC version 12.2.0)
+Fortran compiler flags :  -ffree-line-length-none
+
+               The octopus is swimming in cn01 (Linux)
+
+
+            Calculation started on 2026/04/21 at 23:29:04
+
+
+************************** Calculation Mode **************************
+Input: [CalculationMode = gs]
+**********************************************************************
+
+Input: [SpinComponents = unpolarized]
+
+******************************* Space ********************************
+Octopus will run in 3 dimension(s).
+Octopus will treat the system as periodic in 0 dimension(s).
+**********************************************************************
+
+Input: [AllElectronType = no]
+Input: [PseudopotentialSet = standard]
+Reading Coordinates from Coordinates block
+
+**************************** FATAL ERROR *****************************
+*** Fatal Error (description follows)
+*--------------------------------------------------------------------
+* From node =    0
+*--------------------------------------------------------------------
+* Species He not found in default pseudopotential set.
+* ( /app/share/octopus/pseudopotentials/PSF )
+**********************************************************************
+
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+with errorcode 999.
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 15: Terminated
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn01:59811] PMIX ERROR: NO-PERMISSIONS in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 247
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn01:59811] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+ 
+ ############################################################################## 
+ #                                                                            # 
+ #               STARTING fd86ed7e-7b9d-3ee1-add5-7eb4d742b6b4                # 
+ #                                                                            # 
+ ############################################################################## 
+ executing: mpirun

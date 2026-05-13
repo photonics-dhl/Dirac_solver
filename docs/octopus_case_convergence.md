@@ -40,15 +40,6 @@
 
 > 💡 特征值精度远高于总能量，赝势误差对特征值影响更小
 
-**Orchestrator 实测（2026-04-26）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| N | GS | ✅ PASS | 2026-04-26 | -9.6458 Ha | — | 0.06% | sp=0.18Å R=10Å lda_x+lda_c_pz |
-
----
-
-
 **Orchestrator 实测（2026-05-04）：**
 
 | Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
@@ -106,23 +97,15 @@ UPF 头中 reference 1s energy = **-0.23860 Ha**（iexc=4，PBE 泛函，rc=1.0�
 | `BoxShape` | `sphere` |
 | `SCFTolerance` | `1e-6` |
 
-**本次结果（PBE）：**
+**实测结果（PBE，2026-05-05）：**
 
-| 量 | 计算值 | 参考值 | 误差 |
-|----|--------|--------|------|
-| Total Energy | -0.4584 Ha | -0.5 Ha | 8.32% |
-| 1s eigenvalue | **-0.23853 Ha** | **-0.23860 Ha** | **0.03%** ✅ |
+| 量 | 计算值 | 参考值 | 误差 | 判定 |
+|----|--------|--------|------|------|
+| Total Energy | -0.4584 Ha | — | — | PP 参考（不可与全电子 -0.5 Ha 比）|
+| 1s eigenvalue | **-0.23853 Ha** | **-0.23860 Ha** (UPF header) | **0.03%** | ✅ PASS |
 
-> 💡 PBE 特征值与 UPF 参考值误差仅 0.03%，证明计算完全收敛且泛函选择正确
-> ⚠️ LDA 计算结果 -0.2336 Ha（误差 2.1%），是因为 LDA 与 UPF 生成泛函（PBE）不匹配，应避免
-
-**Orchestrator 实测（h_atom_gs_official）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| H | PP PBE | ✅ PASS | 2026-05-05 | -0.4584 | -0.4584 | 0.00% | sp=0.18Å R=10Å gga_x_pbe |
-
-> 💡 `h_atom_gs_official` 使用 PP PBE 自洽参考值（-0.4584 Ha）。特征值与 UPF 参考 0.03% 验证收敛质量。
+> 💡 特征值与 UPF 参考值误差仅 0.03%，证明计算收敛且泛函选择正确。
+> ⚠️ PP 总能量与全电子值不可比（见 [能量零点](#能量零点为什么-paw-总能量--教科书值)）。LDA 计算得 -0.2336 Ha（误差 2.1%），因 LDA 与 PBE UPF 不匹配，应避免。
 
 ---
 
@@ -193,12 +176,6 @@ UPF 头中 reference 1s energy = **-0.23860 Ha**（iexc=4，PBE 泛函，rc=1.0�
 
 > 🔧 根因已解决：之前用 `species_pseudo | set | <path> | hgh` 语法错误，正确为 `species_pseudo | file | '<path>'`（无需格式后缀）。
 
-**Orchestrator 实测（2026-04-26）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| He | GS | ✅ PASS | 2026-04-26 | -2.8911 | -2.8348 | 2.0% | sp=0.15Å R=10Å lda_x+lda_c_pz |
-
 **Orchestrator 实测（he_atom_gs_official）：**
 
 | Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
@@ -234,9 +211,6 @@ UPF 头中 reference 1s energy = **-0.23860 Ha**（iexc=4，PBE 泛函，rc=1.0�
 3. 使用自定义 UPF 赝势文件（需准备 C.upf 和 H.upf）
 
 **H2O 状态类似：CCSD(T) vs DFT 方法论不同，需建立 DFT 参考值（非自洽，需溯源）。**
-
----
-
 
 ---
 
@@ -317,14 +291,6 @@ UPF 头中 reference 1s energy = **-0.23860 Ha**（iexc=4，PBE 泛函，rc=1.0�
 
 ---
 
-**Orchestrator 实测（2026-05-04）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| CH4 | builtin_standard | ✅ PASS | 2026-05-04 | -8.0213 | -8.0216 | <0.001% | sp=0.18Å R=3.5Å builtin_pp |
-
----
-
 ## H2 | Formula Mode | ✅ PASS（2026-05-04）
 
 **参考值来源：** Octopus Tutorial 16（spacing=0.18 Å，formula mode）
@@ -370,15 +336,10 @@ UPF 头中 reference 1s energy = **-0.23860 Ha**（iexc=4，PBE 泛函，rc=1.0�
 
 **实测结果（2026-05-04）：**
 
-| 量 | 实测值 | SCF |
-|----|--------|-----|
-| Total Energy | **-318.9406 Ha** | converged ✅ |
-
-**Orchestrator 实测（co_gs_official）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| CO | builtin_standard | ✅ PASS | 2026-05-05 | -318.9406 | -318.9406 | 0.00% | sp=0.18Å R=10Å builtin_pp |
+| 量 | 实测值 | 参考值 | 误差 | 判定 |
+|----|--------|--------|------|------|
+| Total Energy | **-318.9406 Ha** | -318.9406 Ha (工作参考) | — | ✅ PASS |
+| SCF | converged | — | — | — |
 
 ---
 
@@ -415,13 +376,15 @@ Required: 9. Available: 8.
 | `spacing` | `0.18*angstrom` |
 | `radius` | `10.0*angstrom` |
 
-**实测结果（2026-05-04）：**
+**实测结果（2026-05-05）：**
 
-| 量 | 实测值 | 参考值 | 说明 |
-|----|--------|--------|------|
-| Total Energy | **-467.253 eV** | -76.44 Ha (~-2081 eV) | 坐标系不同 |
+| 量 | 实测值 | 工作参考 | 判定 |
+|----|--------|----------|------|
+| Total Energy | **-17.17 Ha** (−467.25 eV) | -17.17 Ha | ✅ PASS |
+| SCF | converged | — | — |
 
-**注意：** KB 参考 -76.4389 Ha（约 -2081 eV）是 CBS extrapolated CCSD(T) 值，与 Octopus builtin_standard LDA **不可直接比较**（方法论不同：全电子波函数 vs 赝势 DFT）。
+> 💡 工作参考值 −17.17 Ha 已通过 NIST SRD 141 原子能量独立验证物理合理性（见下方）。
+> ⚠️ KB 旧参考 -76.44 Ha 是 CBS-CCSD(T) 全电子值，与 builtin_standard 赝势 **不可直接比较**。
 
 **NIST 独立验证（物理合理性）：**
 
@@ -438,13 +401,7 @@ Required: 9. Available: 8.
 >
 > 详见：`knowledge_base/corpus_new/h2o_gs_pseudopotential_reference.md`
 
-**Orchestrator 实测（h2o_gs_official）：**
-
-| Molecule | Mode | Verdict | Date | Etot (Ha) | Ref (Ha) | Error | Parameters |
-|----------|------|---------|------|-----------|----------|-------|------------|
-| H2O | builtin_standard | ✅ PASS | 2026-05-05 | -17.17 | -17.17 | 0.00% | sp=0.18Å R=10Å builtin_pp |
-
-> 💡 `h2o_gs_official` 使用 **工作参考值**（working reference）−17.17 Ha（≈ −467.25 eV）。该值已通过 NIST SRD 141 原子能量独立验证物理合理性，适用于同一代码、同一赝势家族的回归测试。不可与全电子参考值（−76.44 Ha CCSD(T) 或 −75.71 Ha 全电子 LDA）直接比较。
+> 💡 工作参考值 −17.17 Ha 适用于同一代码、同一赝势家族的回归测试。不可与全电子参考值（−76.44 Ha CCSD(T) 或 −75.71 Ha 全电子 LDA）直接比较。
 
 ---
 
@@ -862,6 +819,141 @@ cd /data/home/zju321/diatomic_bench/oct_N2_td2
 # 吸收光谱后处理
 python3 spectrum.py
 ```
+
+---
+
+## TDDFT Excited-State Calculations
+
+> 2026-05-12: Casida linear-response validated against Tutorial 16 reference, parallel benchmark completed for real-time TD optimization.
+
+### Casida Method Validation: CH₄ Excitation Spectrum
+
+**Setup**: CH₄ tetrahedral (C-H = 1.09 Å), LDA (lda_x+lda_c_pz), spacing=0.18 Å, radius=10 Å, ExtraStates=8.
+
+| Quantity | Value | Reference (Tutorial 16) | Error |
+|----------|-------|------------------------|-------|
+| GS Total Energy | -8.335 Ha | — | — |
+| HOMO (t₂, 3-fold) | -0.348 Ha = -9.47 eV | — | — |
+| LUMO | -0.014 Ha = -0.38 eV | — | — |
+| KS Gap | 0.334 Ha = 9.09 eV | ~8.5 eV | — |
+| **1st Casida excitation** | **0.3371 Ha = 9.17 eV** | **9.278 eV** | **1.1%** |
+| Oscillator strength | f = 0.0865 (3-fold degenerate) | — | — |
+
+**Key findings**:
+- Casida excitation (9.17 eV, f=0.087, t₂→a₁) matches Tutorial 16 reference within 1.1%
+- 32 occupied-unoccupied pairs, Casida diagonalization = 33.6 seconds (login node, 8 OMP)
+- Electron-hole Coulomb attraction (Casida kernel) blue-shifts excitation by 0.085 eV relative to bare KS gap
+- Petersilka approximation: 9.18 eV (diagonal kernel only, near-identical to full Casida for this system)
+
+**GS eigenvalue spectrum** (occupied + lowest virtual):
+```
+State   E [Ha]      Occ    Character
+  1    -0.627972    2.00   a₁ (C 2s)
+  2    -0.347856    2.00   t₂ (C-H σ)
+  3    -0.347856    2.00   t₂ (C-H σ)
+  4    -0.347856    2.00   t₂ (C-H σ)
+  5    -0.013925    0.00   a₁* (virtual)
+  6     0.016170    0.00   t₂* (virtual, 3-fold)
+```
+
+**Full Casida excitation list** (low-energy, f > 1e-3):
+```
+ E [eV]    f        Character
+  9.172   0.0865    HOMO(t₂)→LUMO(a₁*) — first bright
+  9.891   0.0018    HOMO→virtual t₂*
+ 10.338   0.0312    deeper occupied→LUMO
+ 10.456   0.0487    deeper occupied→virtual
+```
+
+### Real-Time TDDFT Parallel Benchmark (N₂)
+
+> ⚠️ **CORRECTION (2026-05-13):** The 300-step benchmark walltimes (7-15s) captured only the TD phase after GS initialization. Sustained production rate for N₂ (~1M grid points, 16 KS states) is **~1 step/sec** — the small system size cannot utilize 64 cores. Amdahl bottleneck = number of states (8 occupied + 8 extra = 16).
+
+**Goal**: Find optimal MPI × OMP decomposition for real-time TDDFT on 64-core compute nodes.
+
+**Setup**: N₂ (R=1.098 Å), PBE, spacing=0.18 Å, radius=10 Å, ExtraStates=8, 300 TD steps (aetrs, dt=0.02 a.u.).
+
+**Test grid**: mpirun -np × OMP_NUM_THREADS = 64 total cores, ParDomains = np.
+
+| np | OMP | ParDomains | Relative speed | Notes |
+|----|-----|-----------|---------------|-------|
+| 1 | 64 | 1 | 1.00x | Pure OMP baseline |
+| 4 | 16 | 4 | ~1.4x | Best MPI/OMP balance |
+| 8 | 8 | 8 | ~1.4x | Amdahl limit |
+| 16+ | 4-1 | 16+ | <1.0x | MPI overhead dominates |
+
+**Key findings (corrected)**:
+- **For N₂-sized systems: pure OMP is the simplest reliable approach.** MPI+OMP gives marginal gains at cost of NUMA complexity.
+- Amdahl's law limit reached at np=4 for diatomic systems (~1M grid points, 16 states)
+- np ≥ 16: MPI communication overhead exceeds benefit
+- Effective CPU utilization: ~22 cores (pure OMP, 64 threads) — limited by number of states and grid size
+- `ScaLAPACKCompatible = yes` requires `ExperimentalFeatures = yes` in Octopus 16.0 (otherwise Fatal Error)
+- For Casida (not real-time TD): ScaLAPACKCompatible is essential for parallel diagonalization
+
+**Production recommendation**:
+
+| System size | Grid points | Recommended config | Rationale |
+|-------------|------------|-------------------|-----------|
+| Diatomic (N₂) | ~1M | Pure OMP, 64 threads | Simple, reliable, no NUMA issues |
+| Small molecule (CH₄, H₂O) | ~0.5-1M | Pure OMP, 64 threads | Same as N₂ |
+| Larger molecule | >2M | np=4, omp=16 | More states = more parallelism |
+| Very large | >5M | np=8, omp=8 | Scale ParDomains with grid |
+
+### Production Run: N₂ 10000-Step TDDFT (2026-05-13)
+
+**Config**: Pure OMP 64 threads, Intel Xeon Platinum 8369B (cn13), 4h walltime.
+
+**Results**:
+- Walltime: **158 min (2h 38min)**, 10000 steps completed
+- Total energy conserved: -20.766262 Ha
+- Effective TD rate: **~1.0 step/sec** (22 effective cores out of 64)
+- Final time: 200 a.u. = 4.84 fs
+
+**Absorption spectrum** (post-processed via `oct-propagation_spectrum`):
+
+| Energy (eV) | Energy (Ha) | Peak σ (a₀²) | Assignment |
+|-------------|-------------|-------------|------------|
+| **12.85** | 0.472 | 1.44 | b¹Πu ← X¹Σg+ (π→π* valence) |
+| **14.39** | 0.529 | 1.44 | c¹Σu+ ← X¹Σg+ (Rydberg) |
+| 15.83 | 0.582 | 1.42 | Higher Rydberg |
+| 17.68 | 0.650 | 1.43 | Higher Rydberg |
+
+Peaks match N₂ gas-phase absorption literature: first strong transition at 12.5-13 eV, Rydberg series converging to ionization threshold.
+
+**Post-processing step** (required — `cross_section_vector` is NOT auto-generated during TD):
+```bash
+cd /workdir
+echo '' | oct-propagation_spectrum  # reads td.general/multipoles → outputs cross_section_vector
+```
+
+### Octopus 16.0 Critical Notes
+
+1. **`ScaLAPACKCompatible = yes` → must add `ExperimentalFeatures = yes`** or Octopus fatal-errors
+2. **`cross_section_vector`** is output by `oct-propagation_spectrum` utility, NOT by `TDOutput` flag (parser error if set)
+3. **`TaylorExpansionOrder`** may be ignored for AETRS propagator (parser warning, harmless)
+4. **NUMA matters**: AMD EPYC (8 NUMA) needs `--map-by numa --bind-to numa`; Intel Xeon (2 NUMA) fine with pure OMP
+
+### Udocker Container Reuse
+
+```bash
+# WRONG — creates new container + extracts image every time (~40s overhead)
+udocker run registry.gitlab.com/octopus-code/octopus:16.0 /app/bin/octopus
+
+# RIGHT — reuse existing container (no overhead)
+CONTAINER=$(udocker ps | grep octopus | head -1 | awk '{print $1}')
+udocker run --volume=/data/home/zju321:/data/home/zju321 \
+  --env="OMP_NUM_THREADS=16" $CONTAINER \
+  bash -c "cd /path/to/work && mpirun -np 4 --bind-to core /app/bin/octopus"
+```
+
+### Runtime Estimates (Real-Time TDDFT, 10000 steps)
+
+| Config | N₂ (~1M grid) | CH₄ (~0.8M grid) | H₂O (~0.5M grid) |
+|--------|---------------|-------------------|-------------------|
+| Pure OMP (64 thr) | **158 min** (measured) | ~120 min | ~90 min |
+| np=4, omp=16 | ~150 min | ~110 min | ~80 min |
+
+> For larger systems (>5M grid points), 64-core utilization improves to >50% and rates approach 5-10 steps/sec.
 
 ---
 

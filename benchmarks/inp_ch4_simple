@@ -1,0 +1,17 @@
+CalculationMode = gs
+UnitsOutput = eV_Angstrom
+
+%Coordinates
+  "C"  |  0.000000  |  0.000000  |  0.000000
+  "H"  |  0.629118  |  0.629118  |  0.629118
+  "H"  | -0.629118  | -0.629118  |  0.629118
+  "H"  | -0.629118  |  0.629118  | -0.629118
+  "H"  |  0.629118  | -0.629118  | -0.629118
+%
+
+Radius = 10.0*angstrom
+Spacing = 0.18*angstrom
+XCFunctional = gga_x_pbe+gga_c_pbe
+PseudopotentialSet = upf
+BoxShape = sphere
+MaxSCFIterations = 500

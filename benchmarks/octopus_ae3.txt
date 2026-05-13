@@ -1,0 +1,89 @@
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+Parser error: symbol 'oncv' used before being defined.
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[29526,1],10]
+  Exit code:    1
+--------------------------------------------------------------------------
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21584] PMIX ERROR: NO-PERMISSIONS in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 247
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21584] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+ 
+ ############################################################################## 
+ #                                                                            # 
+ #               STARTING fd86ed7e-7b9d-3ee1-add5-7eb4d742b6b4                # 
+ #                                                                            # 
+ ############################################################################## 
+ executing: mpirun

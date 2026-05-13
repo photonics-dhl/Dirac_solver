@@ -1,0 +1,57 @@
+{
+  "diagnostic_id": "diag-RSH-20260504T144515Z-1777906697381",
+  "task_id": "RSH-20260504T144515Z",
+  "case_id": "n_atom_gs_official",
+  "failure_signature_hash": "a6da77cf3b53",
+  "failure_type": "planner_executor_chain_break",
+  "error_chain": [
+    {
+      "step": 1,
+      "component": "executor",
+      "file": "docker/workspace/server.py",
+      "error_message": "\n** Warning:\n**   The XCFunctional that you selected does not match the one used\n**   to generate the pseudopotentials.\n\n\n** Warning:\n**   The radius of the atomic orbitals given by your pseudopotential seems\n**   unusually large; check that your pseudopotential is correct.\n\n\n** Warning:\n**   Unable to read wavefunctions.\n**   Starting from scratch!\n\n\n** Warning:\n**   Info: 12 of 16 orbitals cannot be used for the LCAO calculation,\n**         their radii exceeds LCAOMaximumOrbitalRadius (  20.0 b).\n\n\n** Warning:\n**   Cannot do LCAO for all states because there are not enough atomic orbitals.\n**   Required: 7. Available: 4. 3 orbitals will be randomized.\n\n\n** Warning:\n**   Some of the states are not fully converged!\n\n\n** Warning:\n**   SCF *not* converged after  200 iterations.\n\n\nParser warning: possible mistakes in input file.\nList of variable assignments not used by parser:\nscftolerance = 0.000001\nmaxscfiterations = 200.000000\nlcaoreadweights = 0.000000\n\n",
+      "timestamp": "2026-05-04T14:58:17.381596+00:00"
+    }
+  ],
+  "root_cause": "State handoff broken between Planner and Executor. Reviewer output may not have been correctly serialized to executor input.",
+  "required_fixes": [
+    {
+      "fix_id": 1,
+      "description": "Verify state/dirac_solver_progress_sync.json last_task.last_result is valid JSON and readable",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 2,
+      "description": "Confirm executor input contract matches planner output contract (case_id, threshold, molecule)",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 99,
+      "description": "Failed checks: accuracy_ok, execution_ok, planner_executor_chain_ok, octopus_ok, ui_ok, ui_rendering_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: accuracy gate failed; rerun harness with finer discretization and inspect comparator mapping.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: planner->executor continuity gate failed; force remote OpenClaw-first remediation and rerun strict workflow.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: Octopus execution failed; verify remote MCP health and compute queue status.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

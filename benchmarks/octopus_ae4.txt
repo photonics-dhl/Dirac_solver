@@ -1,0 +1,924 @@
+    <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+                                ___
+                             .-'   `'.
+                            /         \
+                            |         ;
+                            |         |           ___.--,
+                   _.._     |0) ~ (0) |    _.---'`__.-( (_.
+            __.--'`_.. '.__.\    '--. \_.-' ,.--'`     `""`
+           ( ,.--'`   ',__ /./;   ;, '.__.'`    __
+           _`) )  .---.__.' / |   |\   \__..--""  """--.,_
+          `---' .'.''-._.-'`_./  /\ '.  \ _.-~~~````~~~-._`-.__.'
+                | |  .' _.-' |  |  \  \  '.               `~---`
+                 \ \/ .'     \  \   '. '-._)
+                  \/ /        \  \    `=.__`~-.
+             jgs  / /\         `) )    / / `"".`\
+            , _.-'.'\ \        / /    ( (     / /
+             `--~`   ) )    .-'.'      '.'.  | (
+                    (/`    ( (`          ) )  '-;
+                     `      '-;         (-'
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+
+    <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+                           Running octopus
+
+Version                : 16.0
+Commit                 : 7e864b450a
+Configuration time     : 2025-04-04T14:25:06
+Configuration options  :  openmp mpi libxc_fxc libxc_kxc
+Optional libraries     : cgal etsf_io metis netcdf scalapack nlopt
+Architecture           : x86_64
+C compiler             : /usr/bin/cc
+C compiler flags       :
+C++ compiler           : /usr/bin/c++
+C++ compiler flags     :
+Fortran compiler       : /usr/bin/gfortran (GCC version 12.2.0)
+Fortran compiler flags :  -ffree-line-length-none
+
+               The octopus is swimming in cn06 (Linux)
+
+
+            Calculation started on 2026/04/21 at 23:39:15
+
+
+************************** Calculation Mode **************************
+Input: [CalculationMode = gs]
+**********************************************************************
+
+Input: [SpinComponents = unpolarized]
+
+******************************* Space ********************************
+Octopus will run in 3 dimension(s).
+Octopus will treat the system as periodic in 0 dimension(s).
+**********************************************************************
+
+Input: [AllElectronType = no]
+Input: [PseudopotentialSet = standard]
+Reading Coordinates from Coordinates block
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+Internal warning: cannot open file element_map.dat for the pseudopotential set.
+This will be regenerated in the installation folder.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  Octopus was killed by signal 11: Segmentation fault
+
+  Note: Octopus is currently trapping signals. This might prevent the
+  use of debuggers or the generation of core dumps. To change this
+  behavior, use the DebugTrapSignals input option.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Octopus debug trace not available. You can enable it with 'Debug = trace'.
+--------------------------------------------------------------------------
+mpirun noticed that process rank 39 with PID 0 on node cn06 exited on signal 11 (Segmentation fault).
+--------------------------------------------------------------------------
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21959] PMIX ERROR: NO-PERMISSIONS in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 247
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+[cn06:21959] PMIX ERROR: NOT-FOUND in file ../../../../../../src/mca/common/dstore/dstore_base.c at line 218
+ 
+ ############################################################################## 
+ #                                                                            # 
+ #               STARTING fd86ed7e-7b9d-3ee1-add5-7eb4d742b6b4                # 
+ #                                                                            # 
+ ############################################################################## 
+ executing: mpirun

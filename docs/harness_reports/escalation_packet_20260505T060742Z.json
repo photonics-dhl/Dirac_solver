@@ -1,0 +1,27 @@
+{
+  "escalation_id": "E-20260505T060742Z",
+  "task_id": "T-20260505T060741Z",
+  "from_role": "supervisor",
+  "to_role": "openclaw-external-assist",
+  "blocker_type": "permission",
+  "severity": "high",
+  "attempted": [
+    {
+      "step": "dispatch_dirac_task --execute",
+      "result": "blocked_permissions"
+    }
+  ],
+  "needs_external": {
+    "provider": "openclaw_claude",
+    "ask": "Return minimal patch + verification plan to clear the current blocker"
+  },
+  "expected_return": [
+    "root_cause",
+    "minimal_patch",
+    "verification_plan"
+  ],
+  "evidence": [
+    "//RaiDrive-Mac/SFTP/.openclaw/workspace/projects/Dirac/docs/harness_reports/task_dispatch_20260505T060742Z.json"
+  ],
+  "created_at": "2026-05-05T06:07:42.646548Z"
+}

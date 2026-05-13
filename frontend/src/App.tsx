@@ -174,6 +174,60 @@ function parseScanSpec(spec: string): number[] {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// VASP Result Adapter — maps /solve_vasp JSON to PhysicsResult
+// ═══════════════════════════════════════════════════════════════════
+function adaptVaspResult(vaspData: any, config: any) {
+    const eigenvalues = vaspData.eigenvalues_ev || [];
+    const occupations = vaspData.occupations || [];
+    // Determine HOMO/LUMO from occupations (VASP reports band energies + occupations)
+    let homoEV: number | undefined;
+    let lumoEV: number | undefined;
+    if (occupations.length > 0 && eigenvalues.length > 0) {
+        for (let i = eigenvalues.length - 1; i >= 0; i--) {
+            if (occupations[i] > 0.1) {
+                homoEV = eigenvalues[i];
+                if (i + 1 < eigenvalues.length) lumoEV = eigenvalues[i + 1];
+                break;
+            }
+        }
+    }
+    const totalEnergyHa = vaspData.total_energy_ev != null
+        ? vaspData.total_energy_ev / HARTREE_TO_EV
+        : undefined;
+    return {
+        config,
+        problemType: 'molecular',
+        equationType: 'VASP DFT (PAW-PBE)',
+        dimensionality: '3D',
+        hamiltonian: [],
+        eigenvalues,
+        wavefunctions: [],
+        probabilityDensity: [],
+        verified: vaspData.status === 'success',
+        computationTime: 0,
+        molecular: {
+            calcMode: 'gs' as const,
+            moleculeName: vaspData.molecule || config.octopusMolecule || 'unknown',
+            backend: 'vasp',
+            energy_levels: eigenvalues,
+            homo_energy: homoEV,
+            lumo_energy: lumoEV,
+            total_energy_hartree: totalEnergyHa,
+            fermi_energy_ev: vaspData.fermi_energy_ev,
+            magnetization: vaspData.magnetization,
+            occupations: vaspData.occupations,
+            nelect: vaspData.nelect,
+            nbands: vaspData.nbands,
+            scf_iterations: vaspData.scf_iterations || 0,
+            converged: vaspData.status === 'success',
+        },
+        scheduler: {
+            strategy: vaspData.execution_strategy,
+        },
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // Dirac Solver View — COMSOL-style multi-panel physics config
 // ═══════════════════════════════════════════════════════════════════
 function DiracSolverView() {
@@ -381,7 +435,7 @@ function DiracSolverView() {
     const [boundaryCondition, setBoundaryCondition] = useState('dirichlet');
 
     // ── Engine Mode ──
-    const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D'>('octopus3D');
+    const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D' | 'vasp'>('octopus3D');
     const [caseType, setCaseType] = useState<'boundstate_1d' | 'dft_gs_3d' | 'response_td' | 'periodic_bands' | 'hpc_scaling'>('dft_gs_3d');
 
     // ── Octopus Parameters ──
@@ -397,6 +451,17 @@ function DiracSolverView() {
     const [octopusEigenSolver, setOctopusEigenSolver] = useState('');
     const [octopusNcpus, setOctopusNcpus] = useState('64');
     const [octopusMpiprocs, setOctopusMpiprocs] = useState('64');
+    // ── VASP Parameters ──
+    const [vaspEncuit, setVaspEncuit] = useState('400');
+    const [vaspEdiff, setVaspEdiff] = useState('1e-6');
+    const [vaspNelmin, setVaspNelmin] = useState('5');
+    const [vaspIsmear, setVaspIsmear] = useState('0');
+    const [vaspSigma, setVaspSigma] = useState('0.01');
+    const [vaspNelect, setVaspNelect] = useState('');
+    const [vaspNbands, setVaspNbands] = useState('');
+    const [vaspKpointsType, setVaspKpointsType] = useState('gamma');
+    const [vaspBox, setVaspBox] = useState('10.0');
+    const [vaspPrec, setVaspPrec] = useState('Normal');
     const [gsConvergenceProfile, setGsConvergenceProfile] = useState<'general' | 'n_atom_official' | 'ch4_tutorial'>('general');
     const [gsEnableScan, setGsEnableScan] = useState(false);
     const [gsScanSpec, setGsScanSpec] = useState('0.26,0.24,0.22,0.20,0.18,0.16,0.14');
@@ -733,7 +798,7 @@ function DiracSolverView() {
 
     const gridSpacing = parseFloat(spatialRange) / parseInt(gridPoints);
 
-    const handleRun = () => {
+    const handleRun = async () => {
         // GS convergence now uses the same primary run entry/button as generic computation.
         if (engineMode === 'octopus3D' && octopusCalcMode === 'gs' && gsEnableScan) {
             void runDftTddftAgentSuite();
@@ -753,9 +818,65 @@ function DiracSolverView() {
         setElapsedSeconds(0);
         setLastRunSeconds(null);
         setDockerStatus('checking');
-        const currentLabel = engineMode === 'octopus3D' ? 'Octopus' : equationType;
+        const currentLabel = engineMode === 'octopus3D' ? 'Octopus' : engineMode === 'vasp' ? 'VASP' : equationType;
         const dimLabel = engineMode === 'octopus3D' ? '' : `(${dimensionality}, ${effectivePicture} picture)`;
         setLogs([`[System] Starting ${currentLabel} solver${dimLabel}...`]);
+
+        // ── VASP compute path (REST POST, no streaming) ──
+        if (engineMode === 'vasp') {
+            const vaspConfig: any = {
+                octopusMolecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
+                    ? (confirmedLabel || 'Custom')
+                    : octopusMolecule,
+                molecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
+                    ? { name: confirmedLabel || 'Custom', atoms: confirmedAtoms }
+                    : octopusMolecule,
+                ...(geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0 ? { customAtoms: confirmedAtoms } : {}),
+                xcFunctional: xcOverride.trim() || xcPreset,
+                spinComponents,
+                encut: parseInt(vaspEncuit, 10) || 400,
+                ediff: parseFloat(vaspEdiff) || 1e-6,
+                nelmin: parseInt(vaspNelmin, 10) || 5,
+                ismear: parseInt(vaspIsmear, 10) || 0,
+                sigma: parseFloat(vaspSigma) || 0.01,
+                kpointsType: vaspKpointsType,
+                vaspBox: parseFloat(vaspBox) || 10.0,
+                prec: vaspPrec,
+            };
+            if (vaspNelect.trim()) vaspConfig.nelect = parseFloat(vaspNelect);
+            if (vaspNbands.trim()) vaspConfig.nbands = parseInt(vaspNbands, 10);
+
+            setLogs(prev => [...prev, `[VASP] POST /solve_vasp → molecule=${vaspConfig.octopusMolecule}, encut=${vaspConfig.encut}`]);
+            try {
+                const resp = await fetch(`${API_BASE}/solve_vasp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vaspConfig),
+                });
+                const vaspData = await resp.json();
+                if (vaspData.status === 'error') {
+                    throw new Error(vaspData.message || 'VASP calculation failed');
+                }
+                const adapted = adaptVaspResult(vaspData, vaspConfig);
+                setStatus('SUCCESS');
+                setResult(adapted);
+                setResultHistory(prev => ({ ...prev, vasp: adapted }));
+                setLogs(prev => [
+                    ...prev,
+                    `✓ VASP complete — E_tot = ${vaspData.total_energy_ev?.toFixed(4) ?? 'N/A'} eV`,
+                    `  SCF iterations: ${vaspData.scf_iterations ?? 'N/A'}, converged: ${vaspData.status === 'success'}`,
+                ]);
+            } catch (err: any) {
+                setStatus('ERROR');
+                setLogs(prev => [...prev, `✗ VASP Error: ${err.message || err}`]);
+            } finally {
+                setIsComputing(false);
+                setWorkflowStage('review');
+                setLastRunSeconds((Date.now() - runStartTs) / 1000);
+                localRunInProgressRef.current = false;
+            }
+            return;
+        }
 
         try {
             const requestedNcpus = Math.max(1, parseInt(octopusNcpus, 10) || 64);
@@ -1871,28 +1992,132 @@ function DiracSolverView() {
                     </div>
                 </div>
 
-                {/* Engine Mode Toggle — Local 1D hidden, reserved for future use */}
-                {/* To re-enable: remove the display:none wrapper and reset default engineMode to 'local1D' */}
-                <div style={{ display: 'none' }}>
-                    <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
-                        <button onClick={() => setEngineMode('local1D')}
-                            className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                            style={engineMode === 'local1D'
-                                ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
-                                : { color: '#4b5563' }}>
-                            Local 1D
-                        </button>
-                        <button onClick={() => setEngineMode('octopus3D')}
-                            className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                            style={engineMode === 'octopus3D'
-                                ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.35)' }
-                                : { color: '#8892a4' }}>
-                            Octopus3D ◈
-                        </button>
-                    </div>
+                {/* Engine Mode Toggle */}
+                <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
+                    <button onClick={() => setEngineMode('local1D')}
+                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+                        style={engineMode === 'local1D'
+                            ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
+                            : { color: '#4b5563' }}>
+                        Local 1D
+                    </button>
+                    <button onClick={() => setEngineMode('octopus3D')}
+                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+                        style={engineMode === 'octopus3D'
+                            ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.35)' }
+                            : { color: '#8892a4' }}>
+                        Octopus3D
+                    </button>
+                    <button onClick={() => setEngineMode('vasp')}
+                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
+                        style={engineMode === 'vasp'
+                            ? { background: 'rgba(168,85,247,0.12)', color: '#a855f7', outline: '1px solid rgba(168,85,247,0.35)' }
+                            : { color: '#8892a4' }}>
+                        VASP
+                    </button>
                 </div>
 
-                {engineMode === 'local1D' ? (
+                {engineMode === 'vasp' ? (
+                    <>
+                        {/* ── VASP System Configuration ── */}
+                        <Section title="VASP System Configuration" icon={<Grid3x3 className="w-4 h-4 text-purple-400" />}>
+                            <Field label="Molecule / Atom">
+                                <select value={octopusMolecule} onChange={e => {
+                                    setOctopusMolecule(e.target.value);
+                                    setGeomMode('preset');
+                                    setConfirmedAtoms(null);
+                                    setConfirmedLabel('');
+                                }} className={selectClass}>
+                                    <optgroup label="Atoms">
+                                        <option value="H">H — Hydrogen</option>
+                                        <option value="O">O — Oxygen</option>
+                                    </optgroup>
+                                    <optgroup label="Molecules">
+                                        <option value="H2O">H₂O — Water</option>
+                                        <option value="CH4">CH₄ — Methane</option>
+                                    </optgroup>
+                                </select>
+                            </Field>
+                            <Field label="Box Size (Å)" hint="Simulation cell edge length">
+                                <input type="number" value={vaspBox} onChange={e => setVaspBox(e.target.value)} step="1.0" min="4.0" className={inputClass} />
+                            </Field>
+                        </Section>
+
+                        {/* ── VASP SCF Control ── */}
+                        <Section title="VASP SCF Control" icon={<Settings2 className="w-4 h-4 text-purple-400" />}>
+                            <Field label="ENCUT (eV)" hint="Plane-wave cutoff energy. Default 400 eV.">
+                                <input type="number" value={vaspEncuit} onChange={e => setVaspEncuit(e.target.value)} step="50" min="100" className={inputClass} />
+                            </Field>
+                            <Field label="EDIFF" hint="SCF convergence criterion. Default 1e-6.">
+                                <input type="text" value={vaspEdiff} onChange={e => setVaspEdiff(e.target.value)} className={inputClass} />
+                            </Field>
+                            <Field label="NELMIN" hint="Minimum SCF iterations. Default 5.">
+                                <input type="number" value={vaspNelmin} onChange={e => setVaspNelmin(e.target.value)} step="1" min="1" className={inputClass} />
+                            </Field>
+                            <Field label="ISMEAR" hint="Smearing method: 0=Gaussian, 1=Methfessel-Paxton, -1=Fermi">
+                                <select value={vaspIsmear} onChange={e => setVaspIsmear(e.target.value)} className={selectClass}>
+                                    <option value="0">0 — Gaussian</option>
+                                    <option value="1">1 — Methfessel-Paxton</option>
+                                    <option value="-1">-1 — Fermi</option>
+                                </select>
+                            </Field>
+                            <Field label="SIGMA (eV)" hint="Smearing width. Default 0.01 eV.">
+                                <input type="text" value={vaspSigma} onChange={e => setVaspSigma(e.target.value)} className={inputClass} />
+                            </Field>
+                        </Section>
+
+                        {/* ── VASP Electronic Control ── */}
+                        <Section title="VASP Electronic Control" icon={<Zap className="w-4 h-4 text-purple-400" />}>
+                            <Field label="NELECT" hint="Total electron count. Leave empty for neutral. Set N-1 for ΔSCF cation.">
+                                <input type="text" value={vaspNelect} onChange={e => setVaspNelect(e.target.value)} placeholder="auto (neutral)" className={inputClass} />
+                            </Field>
+                            <Field label="NBANDS" hint="Number of bands. Leave empty for VASP default.">
+                                <input type="text" value={vaspNbands} onChange={e => setVaspNbands(e.target.value)} placeholder="auto" className={inputClass} />
+                            </Field>
+                            <Field label="K-Points">
+                                <select value={vaspKpointsType} onChange={e => setVaspKpointsType(e.target.value)} className={selectClass}>
+                                    <option value="gamma">Gamma-only (molecules)</option>
+                                    <option value="monkhorst">Monkhorst-Pack (periodic)</option>
+                                </select>
+                            </Field>
+                            <Field label="Precision">
+                                <select value={vaspPrec} onChange={e => setVaspPrec(e.target.value)} className={selectClass}>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Accurate">Accurate</option>
+                                </select>
+                            </Field>
+                        </Section>
+
+                        {/* ── Exchange-Correlation ── */}
+                        <Section title="Exchange-Correlation" icon={<Atom className="w-4 h-4 text-purple-400" />}>
+                            <Field label="XC Functional">
+                                <select value={xcOverride || xcPreset} onChange={e => { setXcOverride(e.target.value); setXcPreset(e.target.value); }} className={selectClass}>
+                                    <option value="gga_x_pbe+gga_c_pbe">PBE (GGA)</option>
+                                    <option value="lda_x+lda_c_pz">LDA (Ceperley-Alder)</option>
+                                    <option value="hartree_fock">Hartree-Fock (Exact Exchange)</option>
+                                </select>
+                            </Field>
+                            <Field label="Spin">
+                                <select value={spinComponents} onChange={e => setSpinComponents(e.target.value)} className={selectClass}>
+                                    <option value="unpolarized">Unpolarized</option>
+                                    <option value="polarized">Spin-Polarized</option>
+                                </select>
+                            </Field>
+                        </Section>
+
+                        {/* ── Molecule Preview ── */}
+                        {octopusMolecule && MOLECULE_ATOMS[octopusMolecule] && (
+                            <div className="rounded-lg p-3" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
+                                <div className="text-xs font-medium mb-2" style={{ color: '#8892a4' }}>Molecule Preview</div>
+                                <Mol3DViewer
+                                    boxRadius={parseFloat(vaspBox) || 10}
+                                    atoms={MOLECULE_ATOMS[octopusMolecule]}
+                                    title={octopusMolecule}
+                                />
+                            </div>
+                        )}
+                    </>
+                ) : engineMode === 'local1D' ? (
                     <>
                         {/* A. Physical Constants */}
                         <Section title="Physical Constants" icon={<Atom className="w-4 h-4 text-purple-400" />}>
@@ -2748,7 +2973,7 @@ function DiracSolverView() {
                 {/* Main Controls */}
                 <div className="mt-4 pt-3 flex flex-col gap-2" style={{ borderTop: '1px solid #1a2035' }}>
                     <div className="flex justify-between items-center px-1">
-                        <span className="text-xs font-mono" style={{ color: '#8892a4' }}>{engineMode === 'octopus3D' ? 'Octopus-v16 MCP' : 'Local Python Engine'}</span>
+                        <span className="text-xs font-mono" style={{ color: '#8892a4' }}>{engineMode === 'octopus3D' ? 'Octopus-v16 MCP' : engineMode === 'vasp' ? 'VASP PAW-PBE' : 'Local Python Engine'}</span>
                         <div className="flex items-center gap-1.5">
                             {dockerStatus === 'checking' && <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#8892a4' }} />}
                             <div className="w-2 h-2 rounded-full" style={{ background: dockerStatus === 'online' ? '#22c55e' : dockerStatus === 'offline' ? '#ef4444' : '#6b7280' }} />
@@ -2762,9 +2987,11 @@ function DiracSolverView() {
                         style={{
                             background: engineMode === 'octopus3D'
                                 ? (isComputing ? 'rgba(0,212,255,0.08)' : 'rgba(0,212,255,0.12)')
+                                : engineMode === 'vasp'
+                                ? (isComputing ? 'rgba(168,85,247,0.08)' : 'rgba(168,85,247,0.12)')
                                 : 'rgba(255,255,255,0.05)',
-                            color: engineMode === 'octopus3D' ? '#00d4ff' : '#8892a4',
-                            border: engineMode === 'octopus3D' ? '1px solid rgba(0,212,255,0.35)' : '1px solid #1e2d45',
+                            color: engineMode === 'octopus3D' ? '#00d4ff' : engineMode === 'vasp' ? '#a855f7' : '#8892a4',
+                            border: engineMode === 'octopus3D' ? '1px solid rgba(0,212,255,0.35)' : engineMode === 'vasp' ? '1px solid rgba(168,85,247,0.35)' : '1px solid #1e2d45',
                         }}>
                         {isComputing ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}
                         {isComputing ? 'Computing...' : 'Initiate Computation'}

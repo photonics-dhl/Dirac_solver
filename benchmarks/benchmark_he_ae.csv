@@ -1,0 +1,4 @@
+config_name,par_states,par_domains,par_kpoints,omp_threads,mpirun_np,walltime_sec,total_energy,converged,exit_code
+NP=1,OMP=64,PS=1,D=1,K=1,1,1,1,64,1,4,,,231
+NP=2,OMP=32,PS=1,D=2,K=1,1,2,1,32,2,4,,,231
+NP=4,OMP=16,PS=1,D=4,K=1,1,4,1,16,4,4,,,231

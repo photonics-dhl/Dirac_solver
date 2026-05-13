@@ -1,0 +1,57 @@
+{
+  "diagnostic_id": "diag--1777947499258",
+  "task_id": "",
+  "case_id": "he_gs",
+  "failure_signature_hash": "1c386fc33590",
+  "failure_type": "planner_executor_chain_break",
+  "error_chain": [
+    {
+      "step": 1,
+      "component": "executor",
+      "file": "docker/workspace/server.py",
+      "error_message": "Octopus GS failed: \n**************************** FATAL ERROR *****************************\n*** Fatal Error (description follows)\n*--------------------------------------------------------------------\n* From node =    0\n*--------------------------------------------------------------------\n* Species He is not defined in the requested pseudopotential set.\n* ( /app/share/octopus/pseudopotentials/PSF )\n**********************************************************************\n\n--------------------------------------------------------------------------\nMPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD\nwith errorcode 999.\n\nNOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.\nYou may or may not see output from other processes, depending on\nexactly when Open MPI kills them.\n--------------------------------------------------------------------------\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n\n  Octopus was killed by signal 15: Terminated\n\n  Note: Octopus is currently trapping signals. This might prevent the\n  use of debuggers or the generation of core dumps. To change this\n  behavior, use the DebugTrapSignals input option.\n\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n Octopus debug trace not available. You can enable it with 'Debug = trace'.\n (PBS job 147447.mu01, state=C)",
+      "timestamp": "2026-05-05T02:18:19.258327+00:00"
+    }
+  ],
+  "root_cause": "State handoff broken between Planner and Executor. Reviewer output may not have been correctly serialized to executor input.",
+  "required_fixes": [
+    {
+      "fix_id": 1,
+      "description": "Verify state/dirac_solver_progress_sync.json last_task.last_result is valid JSON and readable",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 2,
+      "description": "Confirm executor input contract matches planner output contract (case_id, threshold, molecule)",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 99,
+      "description": "Failed checks: accuracy_ok, benchmarks_aligned_ok, execution_ok, planner_executor_chain_ok, octopus_ok, ui_ok, ui_rendering_ok, physics_result_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: accuracy gate failed; rerun harness with finer discretization and inspect comparator mapping.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: benchmark delta is not aligned with threshold; check comparator mapping and expected tolerance.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: planner->executor continuity gate failed; force remote OpenClaw-first remediation and rerun strict workflow.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

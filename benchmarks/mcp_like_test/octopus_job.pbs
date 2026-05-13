@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N dirac_octopus_direct
+#PBS -q workq
+#PBS -l select=1:ncpus=32:mpiprocs=16:vnode=fat03
+#PBS -l walltime=01:00:00
+#PBS -o /data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/pbs.out
+#PBS -e /data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/pbs.err
+set +e
+cd /data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test
+if [ -f /data/apps/intel/2018u3/env.sh ]; then source /data/apps/intel/2018u3/env.sh; fi
+mkdir -p /data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/.mpi_tmp
+export TMPDIR=/data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/.mpi_tmp
+export PMIX_SYSTEM_TMPDIR=/data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/.mpi_tmp
+export PMIX_SERVER_TMPDIR=/data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test/.mpi_tmp
+export PMIX_MCA_gds=hash
+export PMIX_MCA_psec=native
+/data/home/zju321/.local/bin/udocker run --volume=/data/home/zju321/.openclaw/workspace/projects/Dirac/benchmarks/mcp_like_test:/work --workdir=/work dirac_octopus_udocker mpirun -np 16 octopus > octopus.stdout 2> octopus.stderr
+rc=$?
+echo $rc > octopus.exitcode
+exit $rc

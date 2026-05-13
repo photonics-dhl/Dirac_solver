@@ -1,0 +1,55 @@
+{
+  "diagnostic_id": "diag-RSH-20260426T090553Z-1777194687570",
+  "task_id": "RSH-20260426T090553Z",
+  "case_id": "ch4_gs_reference",
+  "failure_signature_hash": "f9ca5ea8998c",
+  "failure_type": "endpoint_or_service",
+  "error_chain": [],
+  "root_cause": "HPC service endpoint unavailable or MPI runtime failure. Octopus/VASP binary not in PATH, or udocker container MPI cannot reach PBS PMIx server.",
+  "required_fixes": [
+    {
+      "fix_id": 1,
+      "description": "Verify Octopus/VASP binary is in PATH on HPC: ssh dirac-key 'which octopus' and ssh dirac-key 'which vasp'",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 2,
+      "description": "Check PBS job status: ssh dirac-key 'qstat -a' to confirm no zombie Octopus jobs",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 3,
+      "description": "If PMIx error in stderr, confirm --mca gds ^pmix is applied in mpirun command",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 99,
+      "description": "Failed checks: accuracy_ok, benchmarks_aligned_ok, execution_ok, physics_result_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: accuracy gate failed; rerun harness with finer discretization and inspect comparator mapping.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: benchmark delta is not aligned with threshold; check comparator mapping and expected tolerance.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: physics result is incomplete; missing required fields: benchmark_delta.relative_error.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": true,
+  "escalation_reason": "Endpoint/service failure requires human review"
+}

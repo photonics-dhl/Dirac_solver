@@ -1,0 +1,45 @@
+{
+  "diagnostic_id": "diag-RSH-20260423T131610Z-1776950825085",
+  "task_id": "RSH-20260423T131610Z",
+  "case_id": "n_atom_gs_official",
+  "failure_signature_hash": "3387f110fe83",
+  "failure_type": "web_evidence",
+  "error_chain": [
+    {
+      "step": 1,
+      "component": "executor",
+      "file": "docker/workspace/server.py",
+      "error_message": "timed out",
+      "timestamp": "2026-04-23T13:27:05.085230+00:00"
+    }
+  ],
+  "root_cause": "Unknown failure type: web_evidence",
+  "required_fixes": [
+    {
+      "fix_id": 99,
+      "description": "Failed checks: web_evidence_ok, octopus_ok, physics_result_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: real-web evidence gate failed; run OpenClaw web-automation plus Playwright screenshot collection on authoritative URLs before pass.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: Octopus execution failed; verify remote MCP health and compute queue status.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: physics result is incomplete; missing required fields: ground_state_energy_hartree.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": true,
+  "escalation_reason": "Repeat count 2 >= 2"
+}

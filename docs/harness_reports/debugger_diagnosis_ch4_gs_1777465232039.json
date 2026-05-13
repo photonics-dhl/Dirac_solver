@@ -1,0 +1,55 @@
+{
+  "diagnostic_id": "diag-RSH-20260429T121516Z-1777465232039",
+  "task_id": "RSH-20260429T121516Z",
+  "case_id": "ch4_gs",
+  "failure_signature_hash": "78789d8f3eb1",
+  "failure_type": "endpoint_or_service",
+  "error_chain": [],
+  "root_cause": "HPC service endpoint unavailable or MPI runtime failure. Octopus/VASP binary not in PATH, or udocker container MPI cannot reach PBS PMIx server.",
+  "required_fixes": [
+    {
+      "fix_id": 1,
+      "description": "Verify Octopus/VASP binary is in PATH on HPC: ssh dirac-key 'which octopus' and ssh dirac-key 'which vasp'",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 2,
+      "description": "Check PBS job status: ssh dirac-key 'qstat -a' to confirm no zombie Octopus jobs",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 3,
+      "description": "If PMIx error in stderr, confirm --mca gds ^pmix is applied in mpirun command",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 99,
+      "description": "Failed checks: provenance_verified, execution_ok, ui_ok, ui_rendering_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: benchmark provenance is unverified; missing required evidence fields: source_numeric_verified,source_url,software_version,pseudopotential_ids,geometry_ref.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: UI readiness check failed; verify frontend service and review harness visualization controls.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: UI rendering proof is incomplete; fix browser probe dependencies or strengthen HTTP/UI evidence path.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": true,
+  "escalation_reason": "Repeat count 2 >= 2"
+}

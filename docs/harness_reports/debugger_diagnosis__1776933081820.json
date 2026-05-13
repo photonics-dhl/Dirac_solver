@@ -1,0 +1,49 @@
+{
+  "diagnostic_id": "diag-RSH-20260423T082358Z-1776933081820",
+  "task_id": "RSH-20260423T082358Z",
+  "case_id": "",
+  "failure_signature_hash": "948d30a27603",
+  "failure_type": "planner_executor_chain_break",
+  "error_chain": [],
+  "root_cause": "State handoff broken between Planner and Executor. Reviewer output may not have been correctly serialized to executor input.",
+  "required_fixes": [
+    {
+      "fix_id": 1,
+      "description": "Verify state/dirac_solver_progress_sync.json last_task.last_result is valid JSON and readable",
+      "confidence": "high",
+      "requires_human": false
+    },
+    {
+      "fix_id": 2,
+      "description": "Confirm executor input contract matches planner output contract (case_id, threshold, molecule)",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 99,
+      "description": "Failed checks: accuracy_ok, benchmarks_aligned_ok, provenance_verified, execution_ok, planner_executor_chain_ok, physics_result_ok, skills_contracts_ok. Review individual check implementations.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 100,
+      "description": "Reviewer suggestion: Reviewer: accuracy gate failed; rerun harness with finer discretization and inspect comparator mapping.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 101,
+      "description": "Reviewer suggestion: Reviewer: benchmark delta is not aligned with threshold; check comparator mapping and expected tolerance.",
+      "confidence": "medium",
+      "requires_human": false
+    },
+    {
+      "fix_id": 102,
+      "description": "Reviewer suggestion: Reviewer: no model-axis tuning detected (XC/pseudopotential/propagator/TD knobs); run model-axis scan before further grid-only retries.",
+      "confidence": "medium",
+      "requires_human": false
+    }
+  ],
+  "escalation_required": false,
+  "escalation_reason": ""
+}

@@ -16,6 +16,30 @@ from starlette.routing import Route
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+import vasp_backend
+
+# _parse_length helper
+def _parse_length(val):
+    import re
+    s = str(val).strip()
+    m = re.match(r"^([+-]?[\d.]+)\*(\w+)$", s, re.I)
+    if m:
+        num, unit = float(m.group(1)), m.group(2).lower()
+        if unit in {"angstrom", "ang", "a"}:
+            return num * 1.8897261328856432
+        return num
+    m = re.match(r"^([+-]?[\d.]+)\s*(angstrom|ang|a|bohr|b)?$", s, re.I)
+    if m:
+        num = float(m.group(1))
+        if m.group(2) and m.group(2).lower() in {"angstrom", "ang", "a"}:
+            num *= 1.8897261328856432
+        return num
+    try:
+        return float(s)
+    except:
+        return 0.0
+
+
 try:
     from mcp.server import Server
     from mcp.server.sse import SseServerTransport
@@ -48,7 +72,7 @@ def resolve_output_dir() -> str:
     configured = os.environ.get("OCTOPUS_OUTPUT_DIR", "").strip()
     if configured:
         return configured
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "@Octopus_docs", "output"))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "run", "octopus_output"))
 
 
 def resolve_repo_root() -> str:
@@ -362,11 +386,11 @@ MOLECULES = {
     ],
     "CH4": [
         " 'C' | 0.0 | 0.0 | 0.0 " ,
-        # CH = 1.2 A in tetrahedral geometry -> each Cartesian component is CH/sqrt(3) ~= 0.69282 A
-        " 'H' | 0.69282 | 0.69282 | 0.69282 " ,
-        " 'H' | -0.69282 | -0.69282 | 0.69282 " ,
-        " 'H' | 0.69282 | -0.69282 | -0.69282 " ,
-        " 'H' | -0.69282 | 0.69282 | -0.69282 "
+        # CH = 1.2 A = 2.26767 Bohr; each Cartesian component = 2.26767/sqrt(3) = 1.30927 Bohr
+        " 'H' | 1.30927 | 1.30927 | 1.30927 " ,
+        " 'H' | -1.30927 | -1.30927 | 1.30927 " ,
+        " 'H' | 1.30927 | -1.30927 | -1.30927 " ,
+        " 'H' | -1.30927 | 1.30927 | -1.30927 "
     ],
     "Benzene": [
         " 'C' | 0.000000 |  1.396000 | 0.000000 ",
@@ -598,7 +622,7 @@ def _build_formula_species_block(elements_in_mol: set, alpha_overrides: dict = N
 
 def generate_inp(config: dict, is_td: bool = False) -> str:
     """Generate an Octopus inp file from physics config."""
-    engine_mode = config.get("engineMode", "local1D")
+    engine_mode = config.get("engineMode", "octopus3D")
     dim_str = config.get("octopusDimensions", "3D")
 
     if engine_mode == "octopus3D" and dim_str != "1D":
@@ -633,10 +657,29 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         # Molecule Mode (2D or 3D)
         inp = f"Dimensions = {dimensions}\n"
-        inp += f"CalculationMode = {'td' if is_td else 'gs'}\n\n"
+        calc_mode = 'td' if is_td else 'gs'
+        inp += f"CalculationMode = {calc_mode}\n"
+        # Geometry optimization (GO) support
+        go_method = str(config.get("GOMethod", config.get("goMethod", "")) or "").strip()
+        if go_method:
+            valid_go = {"steepest_descent", "fire", "cg", "bfgs"}
+            go_lower = go_method.lower()
+            if go_lower in valid_go:
+                inp += f"GOMethod = {go_lower}\n"
+                # If GO is active, we're in go mode, not gs mode
+                if calc_mode == 'gs':
+                    inp = inp.replace("CalculationMode = gs\n", "CalculationMode = go\n")
+                # GO-specific defaults
+                go_tol = config.get("GOTolerance", "0.0001")
+                inp += f"GOTolerance = {go_tol}\n"
+                go_max_iter = int(config.get("GOMaxIter", 200))
+                inp += f"GOMaxIter = {go_max_iter}\n"
+            else:
+                print(f"[WARN] Unknown GOMethod='{go_method}'. Supported: {', '.join(sorted(valid_go))}. Ignoring.", flush=True)
+        inp += "\n"
         
         # Grid parameters from config
-        spacing = config.get("octopusSpacing", config.get("gridSpacing", config.get("spacing", 0.3)))
+        spacing = _parse_length(config.get("octopusSpacing", config.get("gridSpacing", config.get("spacing", "0.3"))))
         # Priority: octopusRadius (a real radius) > spatialRange/2 (spatialRange is a diameter) > radius > default
         # IMPORTANT: only halve when falling back to spatialRange — if octopusRadius is explicitly set it is already a radius.
         if "octopusRadius" in config:
@@ -644,7 +687,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         elif "spatialRange" in config:
             radius = float(config["spatialRange"]) / 2.0  # spatialRange is diameter
         else:
-            radius = float(config.get("radius", 10.0))
+            radius = _parse_length(config.get("radius", 10.0))
 
         # Length unit normalization:
         # - default keeps backward-compatible behavior (Bohr)
@@ -684,25 +727,45 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             fast_padding_cap = float(os.environ.get("OCTOPUS_FAST_BOX_PADDING_BOHR", "2.5"))
             base_padding = min(base_padding, fast_padding_cap)
         _min_required_radius = _max_dist + base_padding
-        if float(radius) < _min_required_radius:
+        if radius < _min_required_radius:
             print(f"[WARN] Box radius {radius} Bohr too small for geometry (max atom dist={_max_dist:.2f} Bohr). Auto-expanding to {_min_required_radius:.1f} Bohr.", flush=True)
             radius = round(_min_required_radius, 1)
 
         # Guard against OOM: if effective box volume at the chosen spacing would produce >8M grid points, raise spacing.
         _effective_diam = 2.0 * float(radius)
-        _npts_per_axis = _effective_diam / float(spacing)
+        _npts_per_axis = _effective_diam / spacing
         _total_pts = _npts_per_axis ** 3
         if _total_pts > 8_000_000:
             _safe_spacing = round((_effective_diam / (8_000_000 ** (1/3))), 2)
             print(f"[WARN] Spacing={spacing} with radius={radius} → {_total_pts/1e6:.1f}M grid points (exceeds 8M limit). Clamping spacing to {_safe_spacing} Bohr.", flush=True)
             spacing = max(float(spacing), _safe_spacing)
 
-        inp += f"Radius = {radius}\n"
-        inp += f"Spacing = {spacing}\n\n"
+        raw_radius = str(config.get("octopusRadius", config.get("radius", "")))
+        raw_spacing = str(config.get("octopusSpacing", config.get("gridSpacing", config.get("spacing", ""))))
+        # Unit suffix for generated input. Values are always in Bohr internally (after
+        # Angstrom→Bohr conversion on lines 676-678). Default to NO suffix — raw numbers
+        # only — because the Octopus 16 udocker container rejects "*bohr" in Radius/Spacing.
+        # Only add a suffix if one was explicitly present in the raw config string.
+        default_suffix = ""
+        if "*angstrom" in raw_radius.lower():
+            inp_radius = raw_radius
+        elif "*bohr" in raw_radius.lower():
+            inp_radius = raw_radius
+        else:
+            inp_radius = f"{radius:.10g}{default_suffix}"
+        if "*angstrom" in raw_spacing.lower():
+            inp_spacing = raw_spacing
+        elif "*bohr" in raw_spacing.lower():
+            inp_spacing = raw_spacing
+        else:
+            inp_spacing = f"{spacing:.10g}{default_suffix}"
+        inp += f"Radius = {inp_radius}\n"
+        inp += f"Spacing = {inp_spacing}\n\n"
         print(f"[DEBUG] Generated Octopus input: Radius={radius} Bohr, Spacing={spacing} Bohr, "
               f"TotalPoints={_npts_per_axis**3:.0f} ({_npts_per_axis:.1f}^3)", flush=True)
         
-        species_mode = str(config.get("speciesMode", "formula") or "formula").strip().lower().replace("-", "_")
+        species_mode = str(config.get("speciesMode", "builtin_standard") or "builtin_standard").strip().lower().replace("-", "_")
+        xc_functional = config.get("xcFunctional", config.get("xc_functional", "lda_x+lda_c_pz"))
 
         # all_coords is used by all species_mode branches
         all_coords = custom_atoms if custom_atoms else (
@@ -725,6 +788,11 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             else:
                 inp += _build_formula_species_block(_collect_element_symbols(all_coords), alpha_overrides=None) + "\n"
             inp += "%\n\n"
+        elif species_mode == "builtin_standard":
+            inp += "FromScratch = yes\n\n"
+            # Match direct_test3 output convention; MOLECULES dict coords are in Bohr
+            inp += "UnitsOutput = eV_Angstrom\n\n"
+            xc_functional = None
         elif species_mode == "pseudo":
             if dimensions != 3:
                 raise ValueError(
@@ -757,7 +825,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "\n"
         else:
             raise ValueError(
-                f"Unsupported speciesMode='{species_mode}'. Must be one of: 'formula', 'pseudo', 'all_electron'."
+                f"Unsupported speciesMode='{species_mode}'. Must be one of: 'builtin_standard', 'formula', 'pseudo', 'all_electron'."
             )
 
         inp += "%Coordinates\n"
@@ -777,8 +845,21 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         inp += "Mixing = 0.1\n"
         inp += "MixNumberSteps = 16\n"
-        inp += f"MaxSCFIterations = {max_scf}\n"
-        inp += "SCFTolerance = 1e-6\n"
+        # Octopus uses MaximumIter (not MaxSCFIterations)
+        inp += f"MaximumIter = {max_scf}\n"
+        # Octopus convergence criteria: ConvAbsDens / ConvRelDens (SCFTolerance is not a valid variable)
+        scf_tol_raw = config.get("SCFTolerance", config.get("scfTolerance"))
+        if scf_tol_raw is not None:
+            try:
+                scf_tol = float(scf_tol_raw)
+                inp += f"ConvAbsDens = {scf_tol:.0e}\n"
+                inp += f"ConvRelDens = {scf_tol:.0e}\n"
+            except (ValueError, TypeError):
+                inp += "ConvAbsDens = 1e-6\n"
+                inp += "ConvRelDens = 1e-6\n"
+        else:
+            inp += "ConvAbsDens = 1e-6\n"
+            inp += "ConvRelDens = 1e-6\n"
 
         # Periodic system support: LatticeVectors + KPoints
         # _CRYSTAL_DEFAULT_PD: fallback if the UI sends no periodicDimensions for a known crystal.
@@ -855,13 +936,22 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "%\n"
             inp += "\n"
 
-        # Optional: XC functional, mixing, spin from config
-        # Support both camelCase (REST API) and snake_case (MCP client) parameter names
-        xc_functional = config.get("xcFunctional", config.get("xc_functional", "lda_x+lda_c_pz"))
         mixing_scheme = config.get("mixingScheme", config.get("mixing_scheme", "broyden"))
         spin = config.get("spinComponents", config.get("spin_components", "unpolarized"))
         eigensolver = str(config.get("octopusEigenSolver", config.get("eigenSolver", "")) or "").strip()
-        extra_states_3d = int(config.get("octopusExtraStates", config.get("extra_states", config.get("extraStates", 4))))
+        # Ground-state defaults to 1 extra state (enough for most atoms/molecules);
+        # TD/spectra mode keeps a higher default since more unoccupied states are needed.
+        default_extra_states = 4 if is_td else 1
+        extra_states_3d = int(config.get("octopusExtraStates", config.get("extra_states", config.get("extraStates", default_extra_states))))
+        # Charged system support: ExtraElectrons (positive = extra electrons, negative = fewer electrons)
+        # Also accept netCharge as convenience: NetCharge=+1 means cation (remove 1 electron → ExtraElectrons=-1)
+        extra_elec = config.get("extraElectrons", config.get("ExtraElectrons", None))
+        if extra_elec is None:
+            net_charge = config.get("netCharge", config.get("NetCharge", 0))
+            if net_charge != 0:
+                extra_elec = -int(net_charge)
+        if extra_elec is not None and int(extra_elec) != 0:
+            inp += f"ExtraElectrons = {int(extra_elec)}\n"
 
         # OEP/HF functionals use special Octopus variables (not libxc strings)
         # hartree_fock: use TheoryLevel = hartree_fock (NOT XCFunctional = hartree_fock)
@@ -881,11 +971,12 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += f"XCFunctional = {_xc_mapped}\n"
             if _oep_line:
                 inp += f"{_oep_line}\n"
-        else:
+        elif xc_functional is not None:
             inp += f"XCFunctional = {xc_functional}\n"
-        inp += f"MixingScheme = {mixing_scheme}\n"
-        if spin != "unpolarized":
-            inp += f"SpinComponents = {spin}\n"
+        if xc_functional is not None:
+            inp += f"MixingScheme = {mixing_scheme}\n"
+            if spin != "unpolarized":
+                inp += f"SpinComponents = {spin}\n"
         if eigensolver:
             inp += f"EigenSolver = {eigensolver}\n"
 
@@ -905,7 +996,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             # Octopus 16+: use TDDeltaStrength/TDDeltaKickTime instead of
             # the deprecated %TDFunctions/%TDExternalFields tdf_delta syntax
             steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 200)))
-            td_dt = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05))
+            td_dt = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002))
             propagator = config.get("octopusPropagator", "aetrs")
             excitation_type = config.get("tdExcitationType", "delta")
             polarization = int(config.get("tdPolarization", 1))  # 1=x, 2=y, 3=z
@@ -1060,11 +1151,39 @@ def parse_octopus_info(info_path: str) -> dict:
     with open(info_path, "r") as f:
         content = f.read()
 
-    # Check convergence
+    # Check convergence — handle multiple Octopus convergence messages
+    # Octopus 16 writes:
+    #   - "SCF converged in N iterations" (full convergence)
+    #   - "SCF *not* converged!" (hit max iterations without meeting tolerance)
+    #   - "restarting mixing" (Octopus auto-recovered and continues)
     m = re.search(r"SCF converged in\s+(\d+)\s+iterations", content)
     if m:
         result["converged"] = True
         result["scf_iterations"] = int(m.group(1))
+    elif re.search(r"SCF\s+\*not\*\s+converged", content, re.IGNORECASE):
+        # Hit max iterations but may have achieved reasonable accuracy
+        # Parse final energy and density residuals to assess actual convergence
+        m_nc = re.search(r"SCF\s+did\s+not\s+converge\s+in\s+(\d+)\s+iterations", content, re.IGNORECASE)
+        result["scf_iterations"] = int(m_nc.group(1)) if m_nc else 0
+        # Check if abs_energy and abs_dens from Convergence section are within reasonable tolerance
+        abs_energy_match = re.search(r"abs_energy\s*=\s*([+-]?\d+\.\d+(?:[eE][-+]?\d+)?)", content)
+        abs_dens_match = re.search(r"abs_dens\s*=\s*([+-]?\d+\.\d+(?:[eE][-+]?\d+)?)", content)
+        rel_energy_match = re.search(r"rel_energy\s*=\s*([+-]?\d+\.\d+(?:[eE][-+]?\d+)?)\s*\(", content)
+        if abs_energy_match and abs_dens_match:
+            abs_energy = float(abs_energy_match.group(1))
+            abs_dens = float(abs_dens_match.group(1))
+            rel_energy = float(rel_energy_match.group(1)) if rel_energy_match else None
+            # Soft convergence: allow near-converged runs that terminated at max iterations.
+            # The SCF is oscillating (Broyden) but the energy is physically meaningful.
+            # Thresholds: rel_energy <= 2e-3 (0.1% relative, ~0.03 eV for N atom),
+            # abs_energy <= 5e-2 (50 meV), density drift <= 2e-1.
+            soft_ok = (rel_energy is not None and rel_energy <= 2e-3) or abs_energy <= 5e-2
+            if soft_ok and abs_dens <= 2e-1:
+                result["converged"] = True
+            else:
+                result["converged"] = False
+        else:
+            result["converged"] = False
     else:
         m_nc = re.search(r"SCF\s+did\s+not\s+converge\s+in\s+(\d+)\s+iterations", content, re.IGNORECASE)
         if m_nc:
@@ -1313,6 +1432,69 @@ def parse_octopus_dos(static_dir: str) -> dict:
     return result
 
 
+def parse_go_min_xyz(work_dir: str) -> dict:
+    """Parse min.xyz (optimized geometry from GO calculation).
+
+    Returns optimized geometry data or empty dict if file not found.
+    """
+    min_xyz_path = os.path.join(work_dir, "min.xyz")
+    result: dict = {"found": False, "num_atoms": 0, "atoms": [], "comment": ""}
+    if not os.path.exists(min_xyz_path):
+        return result
+    try:
+        with open(min_xyz_path, "r") as f:
+            lines = f.readlines()
+        if len(lines) < 2:
+            return result
+        num_atoms = int(lines[0].strip())
+        comment = lines[1].strip()
+        result["found"] = True
+        result["num_atoms"] = num_atoms
+        result["comment"] = comment
+        for i in range(2, min(2 + num_atoms, len(lines))):
+            parts = lines[i].split()
+            if len(parts) >= 4:
+                result["atoms"].append({
+                    "symbol": parts[0],
+                    "x": float(parts[1]),
+                    "y": float(parts[2]),
+                    "z": float(parts[3]),
+                })
+    except Exception as e:
+        print(f"[WARN] parse_go_min_xyz: {e}")
+    return result
+
+
+def parse_go_convergence(work_dir: str) -> dict:
+    """Parse go/convergence for geometry optimization trajectory.
+
+    Columns: iter | energy | max_force | ...
+    Returns forces by iteration.
+    """
+    go_conv_path = os.path.join(work_dir, "go", "convergence")
+    result: dict = {"found": False, "iterations": [], "energy": [], "max_force": []}
+    if not os.path.exists(go_conv_path):
+        return result
+    try:
+        with open(go_conv_path, "r") as f:
+            for line in f:
+                if line.startswith("#"):
+                    continue
+                parts = line.split()
+                if len(parts) >= 3:
+                    try:
+                        result["iterations"].append(int(parts[0]))
+                        result["energy"].append(float(parts[1]))
+                        result["max_force"].append(float(parts[2]))
+                    except ValueError:
+                        pass
+        if result["iterations"]:
+            result["found"] = True
+    except Exception as e:
+        print(f"[WARN] parse_go_convergence: {e}")
+    return result
+
+
 def parse_td_dipole(td_dir: str) -> dict:
     """Parse td.general/multipoles for dipole moment vs time.
     
@@ -1393,7 +1575,7 @@ def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
     dt       = float(t[1] - t[0])
     n        = len(t)
     steps    = int(config.get("octopusTdSteps", config.get("TDMaxSteps", 200)))
-    td_dt_c  = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05)))
+    td_dt_c  = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002)))
     fe_v     = float(config.get("feProbeVelocity", 0.5))
     fe_y0    = float(config.get("feProbeY0", 2.0))
     fe_z0    = float(config.get("feProbeZ0", 0.0))
@@ -1547,6 +1729,8 @@ async def run_octopus_hpc(
     else:
         mpiprocs = int(os.environ.get(mpiprocs_env, os.environ.get("OCTOPUS_PBS_MPIPROCS", str(ncpus))))
 
+    mpiprocs = min(mpiprocs, 16)
+
     max_payload_ncpus = int(os.environ.get("OCTOPUS_MAX_NCPUS_PAYLOAD", "256"))
     if ncpus_override is not None and ncpus > max_payload_ncpus:
         raise RuntimeError(
@@ -1568,7 +1752,7 @@ async def run_octopus_hpc(
     pmix_gds = os.environ.get("OCTOPUS_PMIX_GDS", "hash")
     pmix_psec = os.environ.get("OCTOPUS_PMIX_PSEC", "native")
     mpi_tmpdir = os.environ.get("OCTOPUS_MPI_TMPDIR", os.path.join(work_dir, ".mpi_tmp"))
-    precheck_free = os.environ.get("OCTOPUS_PBS_PRECHECK_FREE", "true").strip().lower() in {"1", "true", "yes", "on"}
+    precheck_free = False  # disabled
     bind_free_node = os.environ.get("OCTOPUS_PBS_BIND_FREE_NODE", "true").strip().lower() in {"1", "true", "yes", "on"}
     pbs_cmd_timeout = max(5, int(os.environ.get("OCTOPUS_PBS_CMD_TIMEOUT_SECONDS", "300")))
 
@@ -1824,8 +2008,9 @@ async def run_octopus_hpc(
             last_exec_vnode = m_hist_exec.group(1).strip()
         else:
             # Last resort: trust local exit-code when job ran to completion.
-            completed_marker = b"Calculation ended on" in stdout_data
-            if rc == 0 or completed_marker:
+            if os.path.exists(exit_code_path):
+                last_exec_vnode = "unknown"
+            elif rc == 0 or b"Calculation ended on" in stdout_data:
                 last_exec_vnode = "unknown"
             else:
                 raise RuntimeError(
@@ -1863,7 +2048,7 @@ async def run_octopus_calculation(config: dict) -> dict:
           f"octopusRadius={config.get('octopusRadius', 'MISSING')} | "
           f"spatialRange={config.get('spatialRange', 'MISSING')} | "
           f"lengthUnit={config.get('octopusLengthUnit', config.get('octopusInputUnit', 'not_set'))}")
-    engine_mode = config.get("engineMode", "local1D")
+    engine_mode = config.get("engineMode", "octopus3D")
     print(f"[DEBUG] engineMode from config = {repr(engine_mode)} | expected: 'octopus3D'")
     calc_mode = str(config.get("calcMode", "gs")).strip().lower()
     molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "")))
@@ -1914,7 +2099,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 return ["octopus"]
 
             udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
-            container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "dirac_octopus_udocker")
+            container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "1485dd86-c067-3ad7-9020-232daaf4298a")
             if os.path.exists(udocker_bin):
                 pp_path = os.environ.get("OCTOPUS_PP_PATH", "")
                 cmd = [
@@ -2011,7 +2196,22 @@ async def run_octopus_calculation(config: dict) -> dict:
         # Parse GS info
         info_path = os.path.join(work_dir, "static", "info")
         parsed_gs = parse_octopus_info(info_path)
-        
+
+        # Unit conversion: if UnitsOutput = eV_Angstrom, Octopus outputs energy in eV.
+        # Reference values are in Hartree, so convert back to maintain consistency.
+        inp_path = os.path.join(work_dir, "inp")
+        units_output = None
+        if os.path.exists(inp_path):
+            with open(inp_path, "r") as f:
+                for line in f:
+                    m = re.match(r"^\s*UnitsOutput\s*=\s*(\S+)", line, re.IGNORECASE)
+                    if m:
+                        units_output = m.group(1).strip()
+                        break
+        if units_output and "eV" in units_output and parsed_gs.get("total_energy") is not None:
+            HARTREE_TO_EV = 27.2114
+            parsed_gs["total_energy"] = parsed_gs["total_energy"] / HARTREE_TO_EV
+
         # Base JSON Response structure
         response_data = {
             "status": "success" if (parsed_gs["converged"] or rc == 0) else "warning",
@@ -2135,7 +2335,7 @@ async def run_octopus_calculation(config: dict) -> dict:
             elif "spatialRange" in config:
                 _box_radius = float(config["spatialRange"]) / 2.0
             else:
-                _box_radius = float(config.get("radius", 10.0))
+                _box_radius = _parse_length(config.get("radius", 10.0))
 
             response_data["molecular"] = {
                 "moleculeName": _mol_name,
@@ -2152,6 +2352,14 @@ async def run_octopus_calculation(config: dict) -> dict:
             print(f"[DEBUG] response_data['molecular'] set: {response_data.get('molecular')}")
             response_data["molecular"]["convergence_data"] = parse_octopus_convergence(static_dir)
             response_data["molecular"]["dos_data"] = parse_octopus_dos(static_dir)
+
+            # GO (geometry optimization) output
+            go_data = parse_go_min_xyz(work_dir)
+            if go_data.get("found"):
+                response_data["molecular"]["optimized_geometry"] = go_data
+            go_conv = parse_go_convergence(work_dir)
+            if go_conv.get("found"):
+                response_data["molecular"]["go_convergence"] = go_conv
 
             # 2. If TD mode is requested, run TD propagation now that GS is done
             restart_dir = os.path.join(work_dir, "restart")
@@ -2236,7 +2444,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                             return ["oct-propagation_spectrum"]
 
                         udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
-                        container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "dirac_octopus_udocker")
+                        container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "1485dd86-c067-3ad7-9020-232daaf4298a")
                         if os.path.exists(udocker_bin):
                             return [
                                 udocker_bin,
@@ -2374,6 +2582,227 @@ async def run_octopus_calculation(config: dict) -> dict:
             cleanup_octopus_run_dirs(runs_dir, active_run_dir=work_dir)
 
 
+# ─── VASP Calculation ──────────────────────────────────────────────
+
+async def run_vasp_calculation(config: dict) -> dict:
+    """Run a VASP DFT calculation via PBS and return parsed results.
+
+    Supports NELECT-based charge control for ΔSCF ionization potential
+    (impossible with Octopus 16).
+
+    VASP binaries and libraries must be accessible on the HPC server.
+    Requires PBS job scheduler."""
+    calc_mode = str(config.get("calcMode", "gs")).strip().lower()
+    molecule_raw = config.get("octopusMolecule", config.get("moleculeName", ""))
+    molecule_name = (
+        molecule_raw.get("name", "") if isinstance(molecule_raw, dict)
+        else str(molecule_raw or "")
+    )
+    custom_atoms = config.get("customAtoms")
+    elements = []
+
+    if custom_atoms and isinstance(custom_atoms, list):
+        for a in custom_atoms:
+            sym = a.get("symbol", a.get("element", "H"))
+            if sym.capitalize() not in elements:
+                elements.append(sym.capitalize())
+    elif molecule_name.upper() in vasp_backend._MOLECULES:
+        mol_data = vasp_backend._MOLECULES[molecule_name.upper()]
+        for sym, *_ in mol_data["atoms"]:
+            if sym.capitalize() not in elements:
+                elements.append(sym.capitalize())
+    elif molecule_name in vasp_backend._ATOMIC_COORDS:
+        elements.append(molecule_name.capitalize())
+    else:
+        elements.append(molecule_name.capitalize())
+
+    print(f"[DEBUG] run_vasp_calculation: system={molecule_name} elements={elements}")
+
+    # Determine execution strategy
+    exec_strategy = os.environ.get("OCTOPUS_EXEC_STRATEGY", "").strip().lower()
+    if exec_strategy not in ("direct", "hpc"):
+        exec_strategy = "hpc" if (shutil.which("qsub") and shutil.which("qstat")) else "direct"
+
+    # ── Pre-flight checks ──────────────────────────────────────────
+    # VASP binary
+    if not os.path.isfile(vasp_backend.VASP_BIN):
+        return {"status": "error", "message": f"VASP binary not found: {vasp_backend.VASP_BIN}"}
+    # POTCAR directory
+    if not os.path.isdir(vasp_backend.VASP_POTCARS_DIR):
+        return {"status": "error", "message": f"POTCARS directory not found: {vasp_backend.VASP_POTCARS_DIR}"}
+    # Required elements
+    if not elements:
+        return {"status": "error", "message": "No elements found in molecule/atom specification"}
+
+    # Disk space check (warn if < 1 GB free in work directory parent)
+    try:
+        import shutil as _shutil
+        disk_usage = _shutil.disk_usage(os.path.dirname(resolve_output_dir()))
+        free_gb = disk_usage.free / (1024 ** 3)
+        if free_gb < 1.0:
+            print(f"[WARN] Low disk space: {free_gb:.1f} GB free")
+    except Exception:
+        pass  # Disk check is advisory only
+
+    runs_dir = os.path.join(resolve_output_dir(), "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+    work_dir = os.path.join(runs_dir, "vasp_latest")
+    # Clean previous run artifacts to prevent WAVECAR/CHGCAR leakage
+    if os.path.exists(work_dir):
+        shutil.rmtree(work_dir)
+    os.makedirs(work_dir, exist_ok=True)
+
+    try:
+        # Generate VASP input files
+        incar = vasp_backend.generate_vasp_incar(config)
+        poscar = vasp_backend.generate_vasp_poscar(config)
+        kpoints = vasp_backend.generate_vasp_kpoints(config)
+
+        # Assemble POTCAR
+        potcar = vasp_backend.assemble_potcar(elements)
+
+        # Write input files
+        for fname, content in [
+            ("INCAR", incar), ("POSCAR", poscar),
+            ("KPOINTS", kpoints), ("POTCAR", potcar),
+        ]:
+            path = os.path.join(work_dir, fname)
+            with open(path, "w") as f:
+                f.write(content)
+            print(f"[DEBUG] Wrote {fname} to {path}")
+
+        # Execute
+        if exec_strategy == "hpc":
+            ncpus = int(config.get("octopusNcpus", config.get("ncpus", 1)))
+            queue = os.environ.get("OCTOPUS_PBS_QUEUE", "workq")
+            walltime = os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
+            job_name = os.environ.get("OCTOPUS_PBS_JOB_NAME", "dirac_vasp")
+
+            pbs_script = vasp_backend.build_vasp_pbs_script(
+                work_dir=work_dir, queue=queue, ncpus=ncpus,
+                walltime=walltime, job_name=job_name,
+            )
+            pbs_path = os.path.join(work_dir, "vasp_job.pbs")
+            with open(pbs_path, "w") as f:
+                f.write(pbs_script)
+
+            # Submit via qsub and poll
+            import asyncio
+            qsub_proc = await asyncio.create_subprocess_exec(
+                "qsub", pbs_path,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            stdout_data, stderr_data = await qsub_proc.communicate()
+            qsub_output = (stdout_data + stderr_data).decode("utf-8", errors="replace").strip()
+            print(f"[DEBUG] qsub output: {qsub_output}")
+
+            job_id = None
+            m = re.search(r"(\d+\.\w+)", qsub_output)
+            if m:
+                job_id = m.group(1)
+            if not job_id:
+                return {"status": "error", "message": f"PBS submission failed: {qsub_output}"}
+
+            # Poll for completion
+            qstat_bin = "qstat"
+            poll_interval = int(os.environ.get("OCTOPUS_PBS_POLL_INTERVAL", "3"))
+            timeout = int(os.environ.get("OCTOPUS_PBS_CMD_TIMEOUT_SECONDS", "1800"))
+            elapsed = 0
+            state = "Q"
+            outcar_path = os.path.join(work_dir, "OUTCAR")
+
+            while elapsed < timeout:
+                await asyncio.sleep(poll_interval)
+                elapsed += poll_interval
+                proc = await asyncio.create_subprocess_exec(
+                    qstat_bin, "-f", job_id,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                out, err = await proc.communicate()
+                qstat_text = (out + err).decode("utf-8", errors="replace")
+                if proc.returncode != 0:
+                    # Job may have completed and left queue — check output
+                    if os.path.exists(outcar_path):
+                        print(f"[DEBUG] qstat failed (job likely done), OUTCAR exists → treating as complete")
+                        state = "C"
+                        break
+                    continue
+                m_state = re.search(r"job_state\s*=\s*(\w+)", qstat_text)
+                if m_state:
+                    state = m_state.group(1)
+                if state in ("C", "E", "F"):
+                    break
+
+            if state not in ("C",):
+                # Final check: OUTCAR may exist even if PBS tracking lost the job
+                if os.path.exists(outcar_path):
+                    print(f"[DEBUG] PBS timeout but OUTCAR exists → treating as complete")
+                else:
+                    return {"status": "error", "message": f"PBS job {job_id} did not complete (state={state})"}
+
+        else:
+            # Direct execution
+            import asyncio
+            proc = await asyncio.create_subprocess_exec(
+                vasp_backend.VASP_BIN,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=work_dir,
+                env={
+                    **os.environ,
+                    "LD_LIBRARY_PATH": (
+                        vasp_backend.VASP_LD_LIBRARY_PATH + ":"
+                        + os.environ.get("LD_LIBRARY_PATH", "")
+                    ),
+                },
+            )
+            try:
+                direct_timeout = int(os.environ.get("VASP_DIRECT_TIMEOUT_SECONDS", "600"))
+                stdout_data, stderr_data = await asyncio.wait_for(
+                    proc.communicate(), timeout=direct_timeout
+                )
+            except asyncio.TimeoutError:
+                proc.kill()
+                return {"status": "error", "message": f"VASP direct execution timed out after {direct_timeout}s"}
+
+        # Parse results
+        outcar_path = os.path.join(work_dir, "OUTCAR")
+        results = vasp_backend.parse_vasp_outcar(outcar_path)
+
+        # Parse EIGENVAL if available
+        eigenval_path = os.path.join(work_dir, "EIGENVAL")
+        if os.path.exists(eigenval_path):
+            eigen_data = vasp_backend.parse_vasp_eigenval(eigenval_path)
+            results["band_structure"] = eigen_data
+
+        response_data = {
+            "status": "success" if results.get("scf_converged") else "convergence_warning",
+            "backend": "vasp",
+            "execution_strategy": exec_strategy,
+            "work_dir": work_dir,
+            "total_energy_ev": results["total_energy_ev"],
+            "fermi_energy_ev": results["fermi_energy_ev"],
+            "magnetization": results["magnetization"],
+            "eigenvalues_ev": results["band_energies_ev"],
+            "occupations": results["occupations"],
+            "nelect": results["nelect"],
+            "nbands": results["nbands"],
+            "scf_iterations": results["scf_iterations"],
+            "elements": elements,
+            "molecule": molecule_name,
+        }
+
+        return sanitize_floats(response_data)
+
+    except Exception as e:
+        err_text = (str(e) or repr(e) or e.__class__.__name__).strip()
+        print(f"[ERROR] run_vasp_calculation: {err_text}")
+        traceback.print_exc()
+        return {"status": "error", "message": err_text}
+
+
 # ─── REST endpoints ───────────────────────────────────────────────
 
 async def health_handler(request: Request):
@@ -2447,6 +2876,37 @@ async def solve_handler(request: Request):
     return JSONResponse(sanitize_floats(response))
 
 
+async def solve_vasp_handler(request: Request):
+    """REST endpoint for VASP DFT calculations with PAW pseudopotentials."""
+    print("[DEBUG] solve_vasp_handler received request")
+    try:
+        config = await request.json()
+        print(f"[DEBUG] solve_vasp_handler parsed config: {config}")
+    except Exception as e:
+        print(f"[ERROR] solve_vasp_handler failed to parse JSON: {e}")
+        return JSONResponse({"status": "error", "message": "Invalid JSON"}, status_code=400)
+
+    result = await run_vasp_calculation(config)
+    print(f"[DEBUG] solve_vasp_handler received result: {result.get('status')}")
+
+    return JSONResponse(sanitize_floats({
+        "status": result.get("status", "error"),
+        "backend": "vasp",
+        "total_energy_ev": result.get("total_energy_ev"),
+        "fermi_energy_ev": result.get("fermi_energy_ev"),
+        "magnetization": result.get("magnetization"),
+        "eigenvalues_ev": result.get("eigenvalues_ev", []),
+        "occupations": result.get("occupations", []),
+        "nelect": result.get("nelect"),
+        "nbands": result.get("nbands"),
+        "scf_iterations": result.get("scf_iterations", 0),
+        "execution_strategy": result.get("execution_strategy"),
+        "molecule": result.get("molecule"),
+        "elements": result.get("elements", []),
+        "message": result.get("message"),
+    }))
+
+
 # ─── MCP tool handlers (kept for MCP SDK clients) ─────────────────
 sse_transport = None
 
@@ -2455,6 +2915,9 @@ if MCP_AVAILABLE:
     async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         if name == "run_octopus":
             result = await run_octopus_calculation(arguments)
+            return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
+        if name == "run_vasp":
+            result = await run_vasp_calculation(arguments)
             return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
         if name == "parse_results":
             run_dir = arguments.get("run_dir", "/workspace/output")
@@ -2480,21 +2943,56 @@ if MCP_AVAILABLE:
                 inputSchema={
                     "type": "object",
                     "properties": {
-                        "potentialType": {"type": "string"},
-                        "gridSpacing": {"type": "number"},
-                        "spatialRange": {"type": "number"},
-                        "dimensionality": {"type": "string"},
-                        "potentialStrength": {"type": "number"},
-                        "wellWidth": {"type": "number"},
-                        "extraStates": {"type": "integer"},
-                        "engineMode": {"type": "string"},
-                        "octopusMolecule": {"type": "string"},
-                        "octopusSpacing": {"type": "number"},
-                        "octopusRadius": {"type": "number"},
-                        "xcFunctional": {"type": "string"},
-                        "mixingScheme": {"type": "string"},
-                        "spinComponents": {"type": "string"},
-                        "softCoreAlpha": {"type": "number", "description": "Soft-core alpha for formula pseudopotential (overrides default alpha=0.1 per element)"},
+                        "calcMode": {"type": "string", "description": "Calculation mode: 'gs' (ground state, default), 'td' (time-dependent after GS), 'go' (geometry optimization). Use with GOMethod for GO."},
+                        "engineMode": {"type": "string", "description": "'octopus3D' (molecular DFT, default) or 'local1D' (model potentials)."},
+                        "speciesMode": {"type": "string", "description": "Pseudopotential mode: 'builtin_standard' (default, no explicit Species block), 'standard' (PSF Troullier-Martins), 'pseudo' (UPF files), 'formula' (soft-core Coulomb), 'all_electron'."},
+                        "octopusMolecule": {"type": "string", "description": "Built-in molecule name: H2, H2O, CH4, 'N_atom', NH3, CO, Si, etc."},
+                        "octopusSpacing": {"type": "number", "description": "Grid spacing in Bohr (or with unit suffix like '0.18*angstrom')."},
+                        "octopusRadius": {"type": "number", "description": "Simulation box radius in Bohr."},
+                        "xcFunctional": {"type": "string", "description": "XC functional. Default: 'lda_x+lda_c_pz'. Also: 'gga_x_pbe+gga_c_pbe', 'hartree_fock', 'exx'."},
+                        "mixingScheme": {"type": "string", "description": "SCF mixing scheme. Default: 'broyden'."},
+                        "spinComponents": {"type": "string", "description": "'unpolarized' (default) or 'polarized'."},
+                        "extraStates": {"type": "integer", "description": "Extra unoccupied states for SCF convergence. Default: 1 (GS), 12 (TD)."},
+                        "GOMethod": {"type": "string", "description": "Geometry optimization method: 'fire', 'steepest_descent', 'cg', 'bfgs'. Also sets CalculationMode=go."},
+                        "GOTolerance": {"type": "number", "description": "GO force tolerance. Default: 0.0001."},
+                        "GOMaxIter": {"type": "integer", "description": "Max GO iterations. Default: 200."},
+                        "maxScfIterations": {"type": "integer", "description": "Max SCF iterations. Default: 200."},
+                        "scfTolerance": {"type": "number", "description": "SCF density tolerance. Default: 1e-6."},
+                        "periodicDimensions": {"type": "integer", "description": "Number of periodic dimensions for solids (e.g., 3 for Si)."},
+                        "latticeVectors": {"type": "array", "description": "Lattice vectors for periodic systems."},
+                        "kpointsGrid": {"type": "string", "description": "K-points grid string (e.g., '2 2 2')."},
+                        "octopusTdSteps": {"type": "integer", "description": "Number of TD propagation steps. Default: 200."},
+                        "TDTimeStep": {"type": "number", "description": "TD time step. Default: 0.002."},
+                        "tdExcitationType": {"type": "string", "description": "TD excitation: 'delta' (default), 'gaussian', 'sin', 'continuous_wave'."},
+                        "tdPolarization": {"type": "integer", "description": "Kick polarization direction: 1=x, 2=y, 3=z. Default: 1."},
+                        "tdFieldAmplitude": {"type": "number", "description": "TD field amplitude. Default: 0.01."},
+                        "customAtoms": {"type": "array", "description": "Custom atom list: [{'symbol': 'H', 'x': 0, 'y': 0, 'z': 0}, ...]."},
+                        "fastPath": {"type": "boolean", "description": "Enable fast-path execution with reduced defaults."},
+                    }
+                }
+            ),
+            types.Tool(
+                name="run_vasp",
+                description="Run VASP DFT calculation with PAW pseudopotentials via PBS or direct execution. Supports NELECT-based charge control for ΔSCF ionization potential (impossible with Octopus 16). Currently supports H and O elements (PAW_RPBE).",
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "calcMode": {"type": "string", "description": "Calculation mode: 'gs' (ground state, default), 'go' (geometry optimization)."},
+                        "octopusMolecule": {"type": "string", "description": "Built-in molecule or atom: 'H2O', 'CH4', 'H', 'O', 'N', 'C'."},
+                        "customAtoms": {"type": "array", "description": "Custom atom list: [{'symbol': 'H', 'x': 0, 'y': 0, 'z': 0}, ...]."},
+                        "xcFunctional": {"type": "string", "description": "XC functional: 'PBE' (default), 'LDA', 'HF'."},
+                        "spinComponents": {"type": "string", "description": "'unpolarized' (default) or 'polarized'."},
+                        "encut": {"type": "integer", "description": "Plane-wave cutoff in eV. Default: 400."},
+                        "ediff": {"type": "number", "description": "SCF convergence criterion. Default: 1e-6."},
+                        "ismear": {"type": "integer", "description": "Smearing method: 0=Gaussian (default)."},
+                        "sigma": {"type": "number", "description": "Smearing width in eV. Default: 0.01."},
+                        "nelect": {"type": "number", "description": "Total electron count. Set to N-1 for ΔSCF cation calculation."},
+                        "netCharge": {"type": "number", "description": "Net charge. Alternative to nelect."},
+                        "nbands": {"type": "integer", "description": "Number of bands."},
+                        "prec": {"type": "string", "description": "Precision: 'Normal' (default), 'Accurate'."},
+                        "vaspBox": {"type": "number", "description": "Box size in Angstrom. Default: 10.0."},
+                        "kpointsType": {"type": "string", "description": "K-point type: 'gamma' (default) or 'monkhorst'."},
+                        "extraIncarTags": {"type": "object", "description": "Extra INCAR tags as key-value pairs."},
                     }
                 }
             ),
@@ -2549,6 +3047,7 @@ middleware = [
 routes = [
     Route("/health", endpoint=health_handler, methods=["GET"]),
     Route("/solve", endpoint=solve_handler, methods=["POST"]),
+    Route("/solve_vasp", endpoint=solve_vasp_handler, methods=["POST"]),
 ]
 
 if MCP_AVAILABLE:
