@@ -2547,6 +2547,13 @@ async def run_octopus_calculation(config: dict) -> dict:
                     f.write(inp_content_td)
                 print(f"[DEBUG] TD inp file written, size={len(inp_content_td)} bytes")
 
+                # Purge stale td.general/ from previous reusable-dir run
+                for _td_stale in ["td.general"]:
+                    _td_stale_path = os.path.join(work_dir, _td_stale)
+                    if os.path.exists(_td_stale_path):
+                        shutil.rmtree(_td_stale_path, ignore_errors=True)
+                        print(f"[DEBUG] Purged stale {_td_stale}/ from work_dir")
+
                 # Preserve GS logs before running TD stage (TD may overwrite octopus.stdout/err)
                 _gs_stdout = os.path.join(work_dir, "octopus.stdout")
                 _gs_stderr = os.path.join(work_dir, "octopus.stderr")
@@ -2601,7 +2608,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 
                 stdout_text += "\n--- TD Run ---\n" + stdout_td_str[-500:]
                 response_data["stdout_tail"] = stdout_text[-1500:]
-                response_data["molecular"]["td_executed"] = rc_td == 0
+                response_data["molecular"]["td_executed"] = os.path.exists(td_dir)
                 
                 # Now run oct-propagation_spectrum to get the cross section
                 if os.path.exists(td_dir):
@@ -2721,6 +2728,17 @@ async def run_octopus_calculation(config: dict) -> dict:
                     f.write(inp_content_casida)
                 print(f"[DEBUG] Casida inp file written, size={len(inp_content_casida)} bytes")
 
+                # Purge stale casida/ from previous reusable-dir run so parse doesn't find phantom data
+                for _casida_stale in ["casida"]:
+                    _casida_stale_path = os.path.join(work_dir, _casida_stale)
+                    if os.path.exists(_casida_stale_path):
+                        shutil.rmtree(_casida_stale_path, ignore_errors=True)
+                        print(f"[DEBUG] Purged stale {_casida_stale}/ from work_dir")
+                _static_casida = os.path.join(work_dir, "static", "casida")
+                if os.path.exists(_static_casida):
+                    os.remove(_static_casida)
+                    print(f"[DEBUG] Purged stale static/casida from work_dir")
+
                 print(f"[DEBUG] Starting Casida octopus stage in {work_dir} (strategy={exec_strategy})")
                 _casida_walltime = config.get("octopusPbsWalltime") or config.get("pbsWalltime")
                 _casida_timeout = int(_td_walltime_to_seconds(_casida_walltime)) if _casida_walltime else 3600
@@ -2750,11 +2768,11 @@ async def run_octopus_calculation(config: dict) -> dict:
 
                 stdout_text += "\n--- Casida Run ---\n" + stdout_casida_str[-500:]
                 response_data["stdout_tail"] = stdout_text[-1500:]
-                response_data["molecular"]["casida_executed"] = rc_casida == 0
-
                 casida_data = parse_octopus_casida(work_dir)
-                print(f"[DEBUG] parse_octopus_casida: {len(casida_data.get('energies_ev', []))} excitations")
+                n_exc = len(casida_data.get("energies_ev", []))
+                print(f"[DEBUG] parse_octopus_casida: {n_exc} excitations")
                 response_data["molecular"]["casida"] = casida_data
+                response_data["molecular"]["casida_executed"] = n_exc > 0
 
                 output_dir = resolve_output_dir()
                 os.makedirs(output_dir, exist_ok=True)

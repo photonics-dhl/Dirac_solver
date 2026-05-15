@@ -26,7 +26,7 @@
 - ~~PBE (pseudo) vs LDA (builtin_standard) XC mismatch~~ **RESOLVED**: PBE Casida run complete, apple-to-apple comparison done (8.95 ↔ 8.83 eV, −0.12 eV)
 - ~~qstat exit_code bug~~ **FIXED**: server-side purge + PBS script rm -f (belt-and-suspenders)
 - ~~Frontend TDDFT/Casida spectrum display~~ **VERIFIED**: already fully wired (CasidaSticks overlay in ResultsPanel.tsx)
-- Find published H2O TDDFT benchmarks from literature (equivalent to Matsuzawa et al. for CH4) — still open
+- Find published H2O TDDFT benchmarks from literature (equivalent to Matsuzawa et al. for CH4) — **DONE (2026-05-15b)**: Mota DOI confirmed, Chan/Chang references added, peak-by-peak tables
 - `casida_executed: false` in API response despite valid Casida data — minor bug, not yet fixed
 
 ### H2O Casida PBE Results (2026-05-15)
