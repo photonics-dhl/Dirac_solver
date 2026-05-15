@@ -88,6 +88,11 @@ interface PhysicsResult {
         };
         radiation_spectrum?: { frequency_ev: number[]; intensity: number[] };
         eels_spectrum?: { energy_ev: number[]; eels: number[] };
+        casida?: {
+            excitations?: Array<{ energy_ev: number; oscillator_strength: number }>;
+            energies_ev: number[];
+            oscillator_strengths: number[];
+        };
         band_structure_data?: {
             kpoints: number[];
             bands: number[][];
@@ -429,6 +434,41 @@ function LinePath({
     }).join(' ');
 
     return <polyline points={pts} fill="none" stroke={color} strokeWidth={strokeWidth} opacity={0.9} />;
+}
+
+// ─── Casida Excitation Stick Markers ──────────────────────────────
+function CasidaSticks({
+    energies_ev, oscillator_strengths,
+    xMin, xMax, yMin: _yMin, yMax: _yMax,
+    color = '#a78bfa',
+}: {
+    energies_ev: number[]; oscillator_strengths: number[];
+    xMin: number; xMax: number; yMin: number; yMax: number;
+    color?: string;
+}) {
+    if (!energies_ev || !oscillator_strengths || energies_ev.length === 0) return null;
+    const xRange = xMax - xMin || 1;
+    const maxOsc = Math.max(...oscillator_strengths, 0.001);
+    return (
+        <g>
+            {energies_ev.map((e, i) => {
+                const px = PAD.left + ((e - xMin) / xRange) * INNER_W;
+                if (px < PAD.left || px > PAD.left + INNER_W) return null;
+                const stickH = (oscillator_strengths[i] / maxOsc) * INNER_H * 0.85;
+                const y0 = PAD.top + INNER_H;
+                const y1 = y0 - stickH;
+                return (
+                    <g key={i}>
+                        <line x1={px} x2={px} y1={y0} y2={y1}
+                            stroke={color} strokeWidth={1.5} opacity={0.8} />
+                        <circle cx={px} cy={y1} r={2.5} fill={color} opacity={0.9} />
+                        <text x={px} y={y1 - 5} textAnchor="middle" fill={color} fontSize={7}
+                            opacity={0.85}>{e.toFixed(1)}</text>
+                    </g>
+                );
+            })}
+        </g>
+    );
 }
 
 function FillPath({
@@ -1300,6 +1340,11 @@ function MolecularView({ result, resultHistory = {} }: {
                     <Axes xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
                     <LinePath xData={energy_ev} yData={cross_section} color={specCurve.color} strokeWidth={specCurve.width}
                         xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} />
+                    {mol.casida && mol.casida.energies_ev.length > 0 && (
+                        <CasidaSticks energies_ev={mol.casida.energies_ev}
+                            oscillator_strengths={mol.casida.oscillator_strengths}
+                            xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} />
+                    )}
                 </ChartContainer>
                 {/* TD Dipole Chart */}
                 {mol.td_dipole && mol.td_dipole.time.length > 0 && (
@@ -1741,6 +1786,15 @@ function MolecularView({ result, resultHistory = {} }: {
                                         <Axes xMin={0} xMax={eMaxTd} yMin={0} yMax={csMaxTd} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
                                         <LinePath xData={energy_ev} yData={cross_section} color="#a78bfa" strokeWidth={2}
                                             xMin={0} xMax={eMaxTd} yMin={0} yMax={csMaxTd} />
+                                        {(tdMol.casida || mol.casida) && (() => {
+                                            const casidaSrc = tdMol.casida || mol.casida!;
+                                            return casidaSrc.energies_ev.length > 0 && (
+                                                <CasidaSticks
+                                                    energies_ev={casidaSrc.energies_ev}
+                                                    oscillator_strengths={casidaSrc.oscillator_strengths}
+                                                    xMin={0} xMax={eMaxTd} yMin={0} yMax={csMaxTd} color="#c084fc" />
+                                            );
+                                        })()}
                                     </ChartContainer>
                                 </>
                             );

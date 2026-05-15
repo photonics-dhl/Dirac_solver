@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Cpu, Settings2, PlayCircle, Loader2, Atom, Zap, Grid3x3, FlaskConical, ChevronDown, ChevronRight } from 'lucide-react';
+import { Activity, Cpu, Settings2, PlayCircle, Loader2, Atom, Zap, Grid3x3, FlaskConical } from 'lucide-react';
 import DevFlowDashboard from './DevFlowDashboard';
 import ResultsPanel from './ResultsPanel';
 import { Mol3DViewer, MOLECULE_ATOMS, Atom3D } from './Mol3DViewer';
 import GeometryEditor from './GeometryEditor';
+import { Section } from './components/Section';
+import { Field, inputClass, selectClass } from './components/Field';
+import { HARTREE_TO_EV, parseScanSpec } from './utils/scanSpec';
+import { adaptVaspResult } from './utils/vaspAdapter';
 type TabId = 'solver' | 'devflow';
 
 const ENV_API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
@@ -55,176 +59,6 @@ export default function App() {
             </div>
         </div>
     )
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// Collapsible Section Component
-// ═══════════════════════════════════════════════════════════════════
-function Section({ title, icon, defaultOpen = true, children }: {
-    title: string; icon: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode
-}) {
-    const [open, setOpen] = useState(defaultOpen);
-    return (
-        <div className="rounded-xl overflow-hidden mb-3" style={{ border: '1px solid #1a2035' }}>
-            <button onClick={() => setOpen(!open)}
-                className="w-full flex items-center gap-2 px-4 py-3 transition-colors text-left"
-                style={{ background: '#0d1525' }}>
-                {open ? <ChevronDown className="w-4 h-4" style={{ color: '#8892a4' }} /> : <ChevronRight className="w-4 h-4" style={{ color: '#8892a4' }} />}
-                {icon}
-                <span className="text-sm font-medium" style={{ color: '#cbd5e1' }}>{title}</span>
-            </button>
-            {open && <div className="p-4 space-y-3" style={{ background: '#060d1a' }}>{children}</div>}
-        </div>
-    );
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// Field Component — labeled input/select with consistent styling
-// ═══════════════════════════════════════════════════════════════════
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-    return (
-        <div className="space-y-1">
-            <label className="text-xs font-medium" style={{ color: '#8892a4' }}>{label}</label>
-            {children}
-            {hint && <p className="text-[10px] mt-0.5" style={{ color: '#455060' }}>{hint}</p>}
-        </div>
-    );
-}
-
-const inputClass = "w-full rounded-lg px-3 py-2 text-sm text-white outline-none transition-colors" +
-    " bg-[#0a1220] border border-[#1e2d45] focus:border-[#00d4ff] focus:ring-1 focus:ring-[#00d4ff] focus:ring-opacity-30";
-const selectClass = inputClass;
-
-const HARTREE_TO_EV = 27.211386245988;
-
-function parseScanSpec(spec: string): number[] {
-    const src = String(spec || '').trim();
-    if (!src) return [];
-
-    const parseNums = (content: string) => content.split(',').map((v) => Number(v.trim()));
-    const linspaceMatch = src.match(/^linspace\((.+)\)$/i);
-    if (linspaceMatch) {
-        const nums = parseNums(linspaceMatch[1]);
-        if (nums.length !== 3 || nums.some((n) => !Number.isFinite(n))) {
-            throw new Error('linspace(...) expects three numeric arguments');
-        }
-        const [a, b, c] = nums;
-        const isCountForm = Math.abs(c - Math.round(c)) < 1e-9 && c >= 2;
-        if (isCountForm) {
-            const count = Math.floor(c);
-            if (count < 2) throw new Error('linspace(start,end,count): count must be >= 2');
-            const step = (b - a) / (count - 1);
-            return Array.from({ length: count }, (_, i) => a + i * step);
-        }
-        // Compatibility form: linspace(start,step,end)
-        const start = a;
-        const step = b;
-        const end = c;
-        if (Math.abs(step) < 1e-12) throw new Error('linspace(start,step,end): step must be non-zero');
-        if ((end - start) * step < 0) throw new Error('linspace(start,step,end): step direction does not reach end');
-        const out: number[] = [];
-        let x = start;
-        if (step > 0) {
-            while (x <= end + 1e-12) {
-                out.push(x);
-                x += step;
-            }
-        } else {
-            while (x >= end - 1e-12) {
-                out.push(x);
-                x += step;
-            }
-        }
-        return out;
-    }
-
-    const rangeMatch = src.match(/^range\((.+)\)$/i);
-    if (rangeMatch) {
-        const nums = parseNums(rangeMatch[1]);
-        if (nums.length !== 3 || nums.some((n) => !Number.isFinite(n))) {
-            throw new Error('range(start,step,end) expects three numeric arguments');
-        }
-        const [start, step, end] = nums;
-        if (Math.abs(step) < 1e-12) throw new Error('range(start,step,end): step must be non-zero');
-        if ((end - start) * step < 0) throw new Error('range(start,step,end): step direction does not reach end');
-        const out: number[] = [];
-        let x = start;
-        if (step > 0) {
-            while (x <= end + 1e-12) {
-                out.push(x);
-                x += step;
-            }
-        } else {
-            while (x >= end - 1e-12) {
-                out.push(x);
-                x += step;
-            }
-        }
-        return out;
-    }
-
-    const direct = src
-        .split(',')
-        .map((v) => Number(v.trim()))
-        .filter((n) => Number.isFinite(n));
-    if (!direct.length) {
-        throw new Error('Scan spec is empty or invalid');
-    }
-    return direct;
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// VASP Result Adapter — maps /solve_vasp JSON to PhysicsResult
-// ═══════════════════════════════════════════════════════════════════
-function adaptVaspResult(vaspData: any, config: any) {
-    const eigenvalues = vaspData.eigenvalues_ev || [];
-    const occupations = vaspData.occupations || [];
-    // Determine HOMO/LUMO from occupations (VASP reports band energies + occupations)
-    let homoEV: number | undefined;
-    let lumoEV: number | undefined;
-    if (occupations.length > 0 && eigenvalues.length > 0) {
-        for (let i = eigenvalues.length - 1; i >= 0; i--) {
-            if (occupations[i] > 0.1) {
-                homoEV = eigenvalues[i];
-                if (i + 1 < eigenvalues.length) lumoEV = eigenvalues[i + 1];
-                break;
-            }
-        }
-    }
-    const totalEnergyHa = vaspData.total_energy_ev != null
-        ? vaspData.total_energy_ev / HARTREE_TO_EV
-        : undefined;
-    return {
-        config,
-        problemType: 'molecular',
-        equationType: 'VASP DFT (PAW-PBE)',
-        dimensionality: '3D',
-        hamiltonian: [],
-        eigenvalues,
-        wavefunctions: [],
-        probabilityDensity: [],
-        verified: vaspData.status === 'success',
-        computationTime: 0,
-        molecular: {
-            calcMode: 'gs' as const,
-            moleculeName: vaspData.molecule || config.octopusMolecule || 'unknown',
-            backend: 'vasp',
-            energy_levels: eigenvalues,
-            homo_energy: homoEV,
-            lumo_energy: lumoEV,
-            total_energy_hartree: totalEnergyHa,
-            fermi_energy_ev: vaspData.fermi_energy_ev,
-            magnetization: vaspData.magnetization,
-            occupations: vaspData.occupations,
-            nelect: vaspData.nelect,
-            nbands: vaspData.nbands,
-            scf_iterations: vaspData.scf_iterations || 0,
-            converged: vaspData.status === 'success',
-        },
-        scheduler: {
-            strategy: vaspData.execution_strategy,
-        },
-    };
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2016,6 +1850,51 @@ function DiracSolverView() {
                         VASP
                     </button>
                 </div>
+
+                {/* Quick Presets — validated cases (Octopus only) */}
+                {engineMode === 'octopus3D' && (
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                        {([
+                            { label: 'H (PP PBE)', mol: 'H_atom', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'gs' as const },
+                            { label: 'He (PP LDA)', mol: 'He', space: '0.15', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
+                            { label: 'N (PP LDA)', mol: 'N_atom', space: '0.18', rad: '10.0', spin: 'polarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
+                            { label: 'CH₄ (builtin)', mol: 'CH4', space: '0.18', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'standard', cmode: 'gs' as const },
+                            { label: 'H₂O GS', mol: 'H2O', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
+                            { label: 'H₂O TDDFT', mol: 'H2O', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'td' as const },
+                        ] as const).map(p => (
+                            <button
+                                key={p.label}
+                                onClick={() => {
+                                    setOctopusMolecule(p.mol);
+                                    setOctopusSpacing(p.space);
+                                    setOctopusRadius(p.rad);
+                                    setSpinComponents(p.spin);
+                                    setXcPreset(p.xc);
+                                    setXcOverride('');
+                                    setOctopusCalcMode(p.cmode);
+                                    setGeomMode('preset');
+                                    setConfirmedAtoms(null);
+                                    setConfirmedLabel('');
+                                    if (p.cmode === 'td') {
+                                        setOctopusTdSteps('2000');
+                                        setOctopusTdTimeStep('0.1');
+                                        setTdExcitationType('delta');
+                                        setTdFieldAmplitude('0.01');
+                                    }
+                                }}
+                                disabled={isComputing}
+                                className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors disabled:opacity-40"
+                                style={{
+                                    background: 'rgba(0,212,255,0.08)',
+                                    color: '#7dd3fc',
+                                    border: '1px solid rgba(0,212,255,0.2)',
+                                }}
+                            >
+                                {p.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
                 {engineMode === 'vasp' ? (
                     <>

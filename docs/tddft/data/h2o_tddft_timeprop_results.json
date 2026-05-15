@@ -1,0 +1,40 @@
+{
+  "molecule": "H2O",
+  "method": "TDDFT delta-kick (time propagation)",
+  "engine": "Octopus 16.0",
+  "pp": "standard (PBE pseudopotentials)",
+  "xc": "gga_x_pbe+gga_c_pbe",
+  "job_id": "151462.mu01",
+  "date": "2026-05-15",
+  "gs_energy_ha": -17.27061598,
+  "gs_job_id": "151461.mu01",
+  "td_parameters": {
+    "propagator": "aetrs",
+    "TDTimeStep": 0.01,
+    "TDMaxSteps": 50000,
+    "T_max_au": 500.0,
+    "deltaE_resolution_ev": 0.342,
+    "kick_strength": 0.01,
+    "polarization": "x"
+  },
+  "spectrum_parameters": {
+    "energy_range_ev": "0.0 - 20.0",
+    "energy_step_ev": 0.01,
+    "points": 2001
+  },
+  "peak_positions_ev": [
+    5.23, 6.36, 6.75, 7.17, 7.82, 8.14, 8.49, 8.83, 9.17, 9.53,
+    10.10, 10.67, 11.03, 11.40, 11.99, 12.65, 13.60, 14.17, 14.85,
+    15.42, 16.07, 16.72, 17.30, 17.65, 17.99, 18.50, 19.33
+  ],
+  "casida_comparison": {
+    "casida_1st_ev": 6.674,
+    "tddft_nearest_peak_ev": 6.36,
+    "casida_brightest_ev": 8.793,
+    "tddft_nearest_peak_ev": 8.83,
+    "casida_high_ev": [9.756, 9.902, 9.989],
+    "tddft_strong_signal_ev": [9.53, 9.99, 10.10],
+    "notes": "PBE XC (TDDFT) vs LDA XC (Casida) — systematic shift expected. Low-E features (6-9 eV) appear weak in TDDFT, possibly due to PBE pseudopotential treatment."
+  },
+  "status": "B-tier — cross-validation shows qualitative agreement at key excitations but PBE/LDA XC mismatch prevents quantitative comparison"
+}

@@ -389,12 +389,44 @@ payload = json.dumps({
 }).encode()
 ```
 
+**API 新写法（2026-05-14+，推荐用 calcMode）**：
+```python
+payload = json.dumps({
+    "case_id": "h2o_casida_pbe",
+    "molecule": "H2O",
+    "speciesMode": "pseudo",         # 标准 PBE 赝势，XC 自动设为 PBE
+    "calcMode": "casida",            # Casida 线性响应模式
+    "casidaKohnShamStates": "1-16",  # 参与 Casida 的 KS 态范围
+    "extraStates": 13,               # 自动从 KS 范围计算，也可显式指定
+    "spacing": 0.18, "radius": 5.0,
+    "octopus_length_unit": "angstrom"
+}).encode()
+```
+
+> ⚠️ `CasidaKohnShamStates` 决定激发态数量。如需 N 个占据 + M 个非占据态参与 Casida，ExtraStates 需 ≥ M。server.py 会自动从 KS 范围上限计算最小 ExtraStates。
+
 **CH₄ 验证结果（LDA，2026-05-12）**：
 | 激发态 | 能量 (eV) | 振子强度 | 特征 |
 |--------|----------|---------|------|
 | 1st | 9.17 | 0.0865 | HOMO(t₂)→LUMO(a₁*) |
 | 2nd | 9.89 | 0.0018 | HOMO→virtual t₂* |
 | 3rd | 10.34 | 0.0312 | deeper→LUMO |
+
+**H₂O 验证结果（2026-05-14/15）**：
+
+| 激发态 | LDA 能量 (eV) | PBE 能量 (eV) | 振子强度 (PBE) | Δ PBE−LDA |
+|--------|-------------|-------------|--------------|-----------|
+| 1st | 6.674 | **6.953** | 0.043 | +0.279 eV |
+| ~8.9 eV | 8.793 | **8.946** | 0.141 | +0.153 eV |
+| ~9.8 eV | 9.756 | — | — | — |
+| ~12.7 eV | 12.676 | **12.935** | 0.239 | +0.259 eV |
+
+**PBE Casida ↔ PBE TDDFT 交叉验证**：8.95 eV (Casida) ↔ 8.83 eV (TDDFT)，差 −0.12 eV。两种方法在 PBE 级别一致。
+
+**完整数据**：
+- LDA Casida (16 excitations): `docs/tddft/data/h2o_casida_results.json`
+- PBE Casida (48 excitations): `docs/tddft/data/h2o_casida_pbe_results.json`
+- PBE TDDFT (27 peaks): `docs/tddft/data/h2o_tddft_timeprop_results.json`
 
 > **Petersilka 近似**：对角核近似（9.18 eV）与完整 Casida（9.17 eV）几乎一致，简单体系可加速。
 

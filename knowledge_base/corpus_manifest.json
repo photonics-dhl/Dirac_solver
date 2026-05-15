@@ -114,7 +114,16 @@
       "reference_energy_hartree": null,
       "primary_source_url": "",
       "last_updated": "2026-04-15",
-      "notes": "First peak ~7.5 eV inferred from UI_User_Guide, NOT directly from Octopus tutorial. Specific tutorial URL not verified."
+      "notes": "SUPERSEDED by h2o_tddft_casida_reference.md (A-tier, Casida 1st=6.674 eV). Previous estimate ~7-8 eV was approximately correct."
+    },
+    {
+      "case_id": "H2O_CASIDA",
+      "file": "knowledge_base/corpus_new/h2o_tddft_casida_reference.md",
+      "confidence_tier": "A-ready",
+      "reference_energy_hartree": -17.171182,
+      "primary_source_url": "",
+      "last_updated": "2026-05-14",
+      "notes": "Casida linear response, Octopus 16.0, builtin_standard LDA. 16 excitations, 1st=6.674 eV (f=0.043). Validated against GS HOMO-LUMO gap (6.53 eV) and Mota et al. Band 1 (6.5-8.7 eV)."
     },
     {
       "case_id": "H_GS",

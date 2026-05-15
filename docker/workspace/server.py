@@ -175,6 +175,16 @@ def _summarize_dos_file(work_dir: str) -> dict:
     return out
 
 
+def _td_walltime_to_seconds(wt: str) -> int:
+    """Convert PBS walltime 'HH:MM:SS' or 'HH:MM:SS,HH:MM:SS' to seconds."""
+    parts = wt.split(",")[0].strip().split(":")
+    if len(parts) == 3:
+        return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+    if len(parts) == 2:
+        return int(parts[0]) * 3600 + int(parts[1]) * 60
+    return int(parts[0]) * 3600
+
+
 def _read_units_output_from_inp(work_dir: str) -> Optional[str]:
     for name in ["inp_td", "inp_gs", "inp"]:
         p = os.path.join(work_dir, name)
@@ -372,6 +382,12 @@ MOLECULES = {
     ],
     "N_atom": [
         " 'N' | 0.0 | 0.0 | 0.0 "
+    ],
+    "O": [
+        " 'O' | 0.0 | 0.0 | 0.0 "
+    ],
+    "C": [
+        " 'C' | 0.0 | 0.0 | 0.0 "
     ],
     "He": [
         " 'He' | 0.0 | 0.0 | 0.0 "
@@ -618,9 +634,32 @@ def _build_formula_species_block(elements_in_mol: set, alpha_overrides: dict = N
     return "\n".join(lines)
 
 
+# ─── Helper: resolve Octopus udocker container ────────────────────
+
+def _resolve_octopus_udocker_container(udocker_bin: str) -> str:
+    """Return an existing Octopus udocker container ID, or raise RuntimeError."""
+    container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "").strip()
+    if container_name:
+        return container_name
+    import subprocess as _sp
+    try:
+        _r = _sp.run([udocker_bin, "ps"], capture_output=True, text=True, timeout=30)
+        out = (_r.stdout or "") + "\n" + (_r.stderr or "")
+        for _line in out.splitlines():
+            if "octopus" in _line:
+                return _line.split()[0]
+    except Exception as _e:
+        print(f"[WARN] _resolve_octopus_udocker_container subprocess failed: {_e}", flush=True)
+    raise RuntimeError(
+        "No Octopus udocker container found. "
+        "Run 'udocker pull registry.gitlab.com/octopus-code/octopus:16.0' and "
+        "'udocker create --name=octopus registry.gitlab.com/octopus-code/octopus:16.0'"
+    )
+
+
 # ─── Helper: run Octopus and parse results ────────────────────────
 
-def generate_inp(config: dict, is_td: bool = False) -> str:
+def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> str:
     """Generate an Octopus inp file from physics config."""
     engine_mode = config.get("engineMode", "octopus3D")
     dim_str = config.get("octopusDimensions", "3D")
@@ -635,10 +674,17 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             molecule = mol_raw
             custom_atoms = None
 
-        # Map bare element symbols to MOLECULES keys for single atoms
-        # e.g., 'N' -> 'N_atom', 'He' -> 'He', 'Li' -> 'Li'
+        # Case-insensitive molecule lookup
         if custom_atoms is None and molecule not in MOLECULES:
-            _element_to_molecule = {"N": "N_atom", "He": "He", "Li": "Li", "Na": "Na"}
+            mol_lower = molecule.lower()
+            for key in MOLECULES:
+                if key.lower() == mol_lower:
+                    molecule = key
+                    break
+        # Map bare element symbols to MOLECULES keys for single atoms
+        # e.g., 'N' -> 'N_atom', 'O' -> 'O', 'C' -> 'C', 'He' -> 'He'
+        if custom_atoms is None and molecule not in MOLECULES:
+            _element_to_molecule = {"N": "N_atom", "He": "He", "Li": "Li", "Na": "Na", "O": "O", "C": "C"}
             if molecule in _element_to_molecule:
                 molecule = _element_to_molecule[molecule]
 
@@ -657,7 +703,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
 
         # Molecule Mode (2D or 3D)
         inp = f"Dimensions = {dimensions}\n"
-        calc_mode = 'td' if is_td else 'gs'
+        calc_mode = 'td' if is_td else ('casida' if is_casida else 'gs')
         inp += f"CalculationMode = {calc_mode}\n"
         # Geometry optimization (GO) support
         go_method = str(config.get("GOMethod", config.get("goMethod", "")) or "").strip()
@@ -683,9 +729,9 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         # Priority: octopusRadius (a real radius) > spatialRange/2 (spatialRange is a diameter) > radius > default
         # IMPORTANT: only halve when falling back to spatialRange — if octopusRadius is explicitly set it is already a radius.
         if "octopusRadius" in config:
-            radius = float(config["octopusRadius"])
+            radius = _parse_length(config["octopusRadius"])
         elif "spatialRange" in config:
-            radius = float(config["spatialRange"]) / 2.0  # spatialRange is diameter
+            radius = _parse_length(config["spatialRange"]) / 2.0  # spatialRange is diameter
         else:
             radius = _parse_length(config.get("radius", 10.0))
 
@@ -791,8 +837,14 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
         elif species_mode == "builtin_standard":
             inp += "FromScratch = yes\n\n"
             # Match direct_test3 output convention; MOLECULES dict coords are in Bohr
+            # NOTE: UnitsOutput=eV_Angstrom causes Octopus to interpret TDTimeStep
+            # in hbar/eV instead of hbar/Hartree. The TDTimeStep compensation is
+            # applied at the TDTimeStep write site below.
             inp += "UnitsOutput = eV_Angstrom\n\n"
             xc_functional = None
+            _user_xc = config.get("xcFunctional", config.get("xc_functional", ""))
+            if _user_xc and _user_xc not in ("lda_x+lda_c_pz", "lda_x", "LDA"):
+                print(f"[WARN] builtin_standard PP uses its own LDA XC — ignoring xcFunctional='{_user_xc}'", flush=True)
         elif species_mode == "pseudo":
             if dimensions != 3:
                 raise ValueError(
@@ -802,6 +854,13 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
             # Generate %Species block for PP mode — must precede %Coordinates
             inp += _build_pseudo_species_block(_collect_element_symbols(all_coords)) + "\n\n"
+            # Standard pseudopotentials are PBE-generated. LDA XC mismatches PBE PPs
+            # and prevents SCF convergence. Auto-select PBE unless user explicitly
+            # provided a different functional.
+            _user_xc = config.get("xcFunctional", config.get("xc_functional", ""))
+            if not _user_xc or _user_xc == "lda_x+lda_c_pz":
+                xc_functional = "gga_x_pbe+gga_c_pbe"
+                print("[INFO] speciesMode=pseudo: auto-selecting PBE XC to match standard pseudopotentials", flush=True)
         elif species_mode == "all_electron":
             all_electron_type = str(config.get("allElectronType", "full_gaussian") or "full_gaussian").strip()
             valid_ae_types = {"full_delta", "full_gaussian", "full_anc"}
@@ -950,6 +1009,7 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             net_charge = config.get("netCharge", config.get("NetCharge", 0))
             if net_charge != 0:
                 extra_elec = -int(net_charge)
+        inp += f"ExtraStates = {extra_states_3d}\n"
         if extra_elec is not None and int(extra_elec) != 0:
             inp += f"ExtraElectrons = {int(extra_elec)}\n"
 
@@ -996,15 +1056,19 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             # Octopus 16+: use TDDeltaStrength/TDDeltaKickTime instead of
             # the deprecated %TDFunctions/%TDExternalFields tdf_delta syntax
             steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 200)))
-            td_dt = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002))
+            td_dt_raw = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002))
             propagator = config.get("octopusPropagator", "aetrs")
             excitation_type = config.get("tdExcitationType", "delta")
             polarization = int(config.get("tdPolarization", 1))  # 1=x, 2=y, 3=z
             amplitude = float(config.get("tdFieldAmplitude", 0.01))
 
+            # 2026-05-15: Removed ×27.2114 compensation — confirmed wrong.
+            # Octopus with UnitsOutput=eV_Angstrom interprets TDTimeStep
+            # correctly in atomic units (ℏ/Hartree). The compensation
+            # produced dt ≈ 2.72 a.u./step which gave NaN energies.
             inp += f"TDPropagator = {propagator}\n"
             inp += f"TDMaxSteps = {steps}\n"
-            inp += f"TDTimeStep = {td_dt}\n"
+            inp += f"TDTimeStep = {float(td_dt_raw)}\n"
 
             if excitation_type == "delta":
                 # Broadband delta-kick (best for optical spectra)
@@ -1086,13 +1150,42 @@ def generate_inp(config: dict, is_td: bool = False) -> str:
             inp += "  multipoles\n"
             inp += "  energy\n"
             inp += "%\n"
+        elif is_casida:
+            # Casida linear response — reads restart GS, computes excitation energies.
+            # Primary method for finite-molecule optical spectra (Octopus Tutorial 16).
+            casida_states = str(config.get("casidaKohnShamStates", "1-8"))
+            inp += f"CasidaKohnShamStates = \"{casida_states}\"\n"
+            casida_trans_dens = int(config.get("casidaTransitionDensities", 0))
+            if casida_trans_dens > 0:
+                inp += f"CasidaTransitionDensities = {casida_trans_dens}\n"
+            # Need enough unoccupied states to cover CasidaKohnShamStates range
+            _user_set_extra = any(k in config for k in (
+                "octopusExtraStates", "extra_states", "extraStates"))
+            if not _user_set_extra:
+                # Parse max KS state from range (e.g. "1-16" → 16)
+                _casida_parts = casida_states.replace('"', '').strip().split("-")
+                _max_ks = int(_casida_parts[-1]) if _casida_parts else 8
+                # H2O has 5 occupied states; ExtraStates = max_ks - 5 (minimum)
+                _min_extra = max(8, _max_ks - 3)  # conservative: assume ~3-5 occupied
+                extra_states_3d = max(extra_states_3d, _min_extra)
+            inp += f"ExtraStates = {extra_states_3d}\n"
+            inp += "%Output\n"
+            inp += "  wfs\n"
+            inp += "  eigenvalues\n"
+            inp += "%\n"
+            inp += "OutputFormat = axis_x\n"
         else:
             # Ground State: output BOTH axis slices (*.y=0,z=0) AND full 3D cube files
             target_calc_mode = str(config.get("calcMode", "gs")).strip().lower()
             if target_calc_mode == "td":
-                # TD absorption relies on a sufficiently rich unoccupied manifold from GS.
-                # Keep user override, but enforce a practical floor for stability.
-                extra_states_3d = max(extra_states_3d, 12)
+                # TD absorption needs enough unoccupied states for a meaningful spectrum.
+                # Only apply the floor when the user hasn't explicitly set extraStates —
+                # small molecules (H2O, CH4) may not converge with 12 extra states
+                # when LCAO AOs < total states.
+                _user_set_extra = any(k in config for k in (
+                    "octopusExtraStates", "extra_states", "extraStates"))
+                if not _user_set_extra:
+                    extra_states_3d = max(extra_states_3d, 8)
             inp += f"ExtraStates = {extra_states_3d}\n"
             inp += "%Output\n"
             inp += "  wfs\n"
@@ -1237,7 +1330,7 @@ def parse_octopus_info(info_path: str) -> dict:
     if m:
         result["total_energy"] = float(m.group(1))
 
-    result["engine"] = "octopus-14.0"
+    result["engine"] = "octopus-16.0"
     return result
 
 def get_atom_positions(molecule: str, dimensions: int = 3, custom_atoms: list = None) -> list:
@@ -1380,6 +1473,68 @@ def parse_octopus_cross_section(work_dir: str) -> dict:
                 result["cross_section"].append(round(im_alpha, 10))
         except (ValueError, IndexError):
             pass
+    return result
+
+
+HARTREE_TO_EV = 27.211386245988
+
+
+def parse_octopus_casida(work_dir: str) -> dict:
+    """Parse Casida linear response excitation energies.
+
+    Octopus 16 writes casida/ directory in work_dir with either:
+      casida/casida — summary: idx, E[eV], <x>[A], <y>[A], <z>[A], <f>
+      casida/eps_diff — detailed: From, To, E[H], <x>[b], <y>[b], <z>[b], <f>
+    Returns a dict with 'excitations' (list of {energy_ev, oscillator_strength})
+    and flat arrays 'energies_ev' / 'oscillator_strengths'.
+    """
+    HToEV = HARTREE_TO_EV
+    candidates = [
+        os.path.join(work_dir, "casida", "casida"),
+        os.path.join(work_dir, "static", "casida"),
+        os.path.join(work_dir, "casida", "eps_diff"),
+        os.path.join(work_dir, "static", "eps_diff"),
+    ]
+    casida_path = ""
+    for p in candidates:
+        if os.path.exists(p):
+            casida_path = p
+            break
+
+    result: dict = {"excitations": [], "energies_ev": [], "oscillator_strengths": []}
+    if not casida_path:
+        return result
+
+    is_eps_diff = os.path.basename(casida_path) == "eps_diff"
+
+    with open(casida_path, "r") as f:
+        for line in f:
+            line_stripped = line.strip()
+            if not line_stripped or line_stripped.startswith("#"):
+                continue
+            # Skip header lines
+            if "E [eV]" in line or "<f>" in line or "E [H]" in line or "From  To" in line:
+                continue
+            parts = line_stripped.split()
+            if len(parts) >= 6:
+                try:
+                    if is_eps_diff:
+                        # Format: From To E[H] <x>[b] <y>[b] <z>[b] <f>
+                        energy_ha = float(parts[2])
+                        energy = energy_ha * HToEV
+                        osc = float(parts[6])
+                    else:
+                        # Format: idx E[eV] <x>[A] <y>[A] <z>[A] <f>
+                        energy = float(parts[1])
+                        osc = float(parts[5])
+                    result["excitations"].append({
+                        "energy_ev": round(energy, 6),
+                        "oscillator_strength": round(osc, 8),
+                    })
+                    result["energies_ev"].append(round(energy, 6))
+                    result["oscillator_strengths"].append(round(osc, 8))
+                except (ValueError, IndexError):
+                    pass
     return result
 
 
@@ -1699,6 +1854,7 @@ async def run_octopus_hpc(
     timeout_seconds: int = 1800,
     fast_path: bool = False,
     config: Optional[dict] = None,
+    pbs_walltime: Optional[str] = None,
 ):
     qsub_bin = shutil.which("qsub")
     qstat_bin = shutil.which("qstat")
@@ -1744,7 +1900,7 @@ async def run_octopus_hpc(
         f"[DEBUG] run_octopus_hpc fast_path={fast_path} timeout={timeout_seconds}s ncpus={ncpus} mpiprocs={mpiprocs}",
         flush=True,
     )
-    walltime = os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
+    walltime = pbs_walltime or os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
     job_name = os.environ.get("OCTOPUS_PBS_JOB_NAME", "dirac_octopus")
     env_script = os.environ.get("OCTOPUS_HPC_ENV_SCRIPT", "/data/apps/intel/2018u3/env.sh")
     poll_interval_env = "OCTOPUS_FAST_PBS_POLL_INTERVAL" if fast_path else "OCTOPUS_PBS_POLL_INTERVAL"
@@ -1876,6 +2032,7 @@ async def run_octopus_hpc(
             f.write(f"export PMIX_SERVER_TMPDIR={shlex.quote(mpi_tmpdir)}\n")
             f.write(f"export PMIX_MCA_gds={shlex.quote(pmix_gds)}\n")
             f.write(f"export PMIX_MCA_psec={shlex.quote(pmix_psec)}\n")
+            f.write("rm -f octopus.exitcode\n")  # purge stale artifact from previous shared-dir run
             f.write(f"{shell_cmd} > octopus.stdout 2> octopus.stderr\n")
             f.write("rc=$?\n")
             f.write("echo $rc > octopus.exitcode\n")
@@ -1939,6 +2096,15 @@ async def run_octopus_hpc(
     last_state = "Q"
     last_exec_vnode = ""
     exit_code_path = os.path.join(work_dir, "octopus.exitcode")
+    # Purge stale exit artifacts before polling to prevent false-positive
+    # completion detection. The PBS script also does rm -f, but that only
+    # executes after the job starts running on a compute node — timing gap.
+    for _stale in ["octopus.exitcode"]:
+        _sp = os.path.join(work_dir, _stale)
+        try:
+            os.remove(_sp)
+        except OSError:
+            pass
     while True:
         if time.time() - started > timeout_seconds:
             raise asyncio.TimeoutError(f"PBS job {job_id} timed out after {timeout_seconds}s")
@@ -2059,8 +2225,8 @@ async def run_octopus_calculation(config: dict) -> dict:
         fast_radius = float(os.environ.get("OCTOPUS_FAST_RADIUS_BOHR", "3.0"))
         fast_padding = float(os.environ.get("OCTOPUS_FAST_BOX_PADDING_BOHR", "2.5"))
         fast_scf_cap = int(os.environ.get("OCTOPUS_FAST_MAX_SCF_ITERATIONS", "80"))
-        cfg_spacing = float(config.get("octopusSpacing", config.get("gridSpacing", fast_spacing)))
-        cfg_radius = float(config.get("octopusRadius", config.get("radius", fast_radius)))
+        cfg_spacing = _parse_length(config.get("octopusSpacing", config.get("gridSpacing", fast_spacing)))
+        cfg_radius = _parse_length(config.get("octopusRadius", config.get("radius", fast_radius)))
         cfg_scf = int(config.get("octopusMaxScfIterations", fast_scf_cap))
         config = {
             **config,
@@ -2099,7 +2265,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 return ["octopus"]
 
             udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
-            container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "1485dd86-c067-3ad7-9020-232daaf4298a")
+            container_name = _resolve_octopus_udocker_container(udocker_bin)
             if os.path.exists(udocker_bin):
                 pp_path = os.environ.get("OCTOPUS_PP_PATH", "")
                 cmd = [
@@ -2184,7 +2350,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 msg = f"Octopus GS failed: {err_msg}"
                 if run_meta.get("strategy") == "hpc":
                     msg = f"{msg} (PBS job {run_meta.get('job_id', 'unknown')}, state={run_meta.get('job_state', 'unknown')})"
-                return {"status": "error", "message": msg, "engine": "octopus-14.0"}
+                return {"status": "error", "message": msg, "engine": "octopus-16.0"}
 
         stdout_text = stdout_gs.decode("utf-8", errors="replace")
         stderr_text = stderr_gs.decode("utf-8", errors="replace")
@@ -2219,7 +2385,7 @@ async def run_octopus_calculation(config: dict) -> dict:
             "total_energy": parsed_gs["total_energy"],
             "converged": parsed_gs["converged"],
             "scf_iterations": parsed_gs["scf_iterations"],
-            "engine": "octopus-14.0",
+            "engine": "octopus-16.0",
             "stdout_tail": stdout_text[-1000:] if stdout_text else "",
             "stderr_tail": stderr_text[-1000:] if stderr_text else "",
             "returncode": rc,
@@ -2331,9 +2497,9 @@ async def run_octopus_calculation(config: dict) -> dict:
             _dims = int(config.get("octopusDimensions", config.get("dimensionality", 3)) if config.get("octopusDimensions", config.get("dimensionality", "3D")) not in ("1D", "2D", "3D") else (1 if config.get("octopusDimensions","3D")=="1D" else (2 if config.get("octopusDimensions","3D")=="2D" else 3)))
             # Read box radius using the same priority logic as generate_inp (no halving when octopusRadius is explicit)
             if "octopusRadius" in config:
-                _box_radius = float(config["octopusRadius"])
+                _box_radius = _parse_length(config["octopusRadius"])
             elif "spatialRange" in config:
-                _box_radius = float(config["spatialRange"]) / 2.0
+                _box_radius = _parse_length(config["spatialRange"]) / 2.0
             else:
                 _box_radius = _parse_length(config.get("radius", 10.0))
 
@@ -2391,13 +2557,18 @@ async def run_octopus_calculation(config: dict) -> dict:
                 
                 # Run TD octopus with the same strategy as GS
                 print(f"[DEBUG] Starting TD octopus stage in {work_dir} (strategy={exec_strategy})")
+                _td_walltime = config.get("octopusPbsWalltime") or config.get("pbsWalltime")
+                _td_timeout = int(_td_walltime_to_seconds(_td_walltime)) if _td_walltime else 3600
+                # Ensure timeout is at least as long as walltime + 2 min buffer
+                _td_timeout = max(_td_timeout, 3600)
                 if exec_strategy == "hpc":
                     rc_td, stdout_td, stderr_td, td_meta = await run_octopus_hpc(
                         octo_cmd,
                         work_dir,
-                        timeout_seconds=3600,
+                        timeout_seconds=_td_timeout,
                         fast_path=bool(config.get("fastPath", False)),
                         config=config,
+                        pbs_walltime=_td_walltime,
                     )
                 else:
                     rc_td, stdout_td, stderr_td, td_meta = await run_octopus_direct(octo_cmd, work_dir, timeout_seconds=3600)
@@ -2444,7 +2615,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                             return ["oct-propagation_spectrum"]
 
                         udocker_bin = os.environ.get("UDOCKER_BIN", os.path.expanduser("~/.local/bin/udocker"))
-                        container_name = os.environ.get("OCTOPUS_UDOCKER_CONTAINER", "1485dd86-c067-3ad7-9020-232daaf4298a")
+                        container_name = _resolve_octopus_udocker_container(udocker_bin)
                         if os.path.exists(udocker_bin):
                             return [
                                 udocker_bin,
@@ -2538,6 +2709,61 @@ async def run_octopus_calculation(config: dict) -> dict:
                 else:
                     print(f"[DEBUG] Skipping oct-propagation_spectrum because td.general not found")
                     response_data["molecular"]["optical_spectrum"] = {"energy_ev": [], "cross_section": []}
+            elif calc_mode == "casida" and can_run_td:
+                print(f"[DEBUG] Casida mode requested: calcMode={calc_mode}, converged={parsed_gs['converged']}")
+                print(f"[DEBUG] Keeping restart directory for Casida initialization")
+
+                inp_content_casida = generate_inp(config, is_td=False, is_casida=True)
+                inp_path = os.path.join(work_dir, "inp")
+                with open(inp_path, "w") as f:
+                    f.write(inp_content_casida)
+                with open(os.path.join(work_dir, "inp_casida"), "w") as f:
+                    f.write(inp_content_casida)
+                print(f"[DEBUG] Casida inp file written, size={len(inp_content_casida)} bytes")
+
+                print(f"[DEBUG] Starting Casida octopus stage in {work_dir} (strategy={exec_strategy})")
+                _casida_walltime = config.get("octopusPbsWalltime") or config.get("pbsWalltime")
+                _casida_timeout = int(_td_walltime_to_seconds(_casida_walltime)) if _casida_walltime else 3600
+                _casida_timeout = max(_casida_timeout, 3600)
+                if exec_strategy == "hpc":
+                    rc_casida, stdout_casida, stderr_casida, casida_meta = await run_octopus_hpc(
+                        octo_cmd,
+                        work_dir,
+                        timeout_seconds=_casida_timeout,
+                        fast_path=bool(config.get("fastPath", False)),
+                        config=config,
+                        pbs_walltime=_casida_walltime,
+                    )
+                else:
+                    rc_casida, stdout_casida, stderr_casida, casida_meta = await run_octopus_direct(
+                        octo_cmd, work_dir, timeout_seconds=3600
+                    )
+                print(f"[DEBUG] Casida stage completed, returncode={rc_casida}, meta={casida_meta}")
+
+                stdout_casida_str = stdout_casida.decode("utf-8", errors="replace") if stdout_casida else ""
+                stderr_casida_str = stderr_casida.decode("utf-8", errors="replace") if stderr_casida else ""
+
+                if rc_casida != 0:
+                    print(f"[ERROR] Casida octopus failed with return code {rc_casida}")
+                    if stdout_casida_str:
+                        print(f"[ERROR] Casida stdout (last 800):\n{stdout_casida_str[-800:]}")
+
+                stdout_text += "\n--- Casida Run ---\n" + stdout_casida_str[-500:]
+                response_data["stdout_tail"] = stdout_text[-1500:]
+                response_data["molecular"]["casida_executed"] = rc_casida == 0
+
+                casida_data = parse_octopus_casida(work_dir)
+                print(f"[DEBUG] parse_octopus_casida: {len(casida_data.get('energies_ev', []))} excitations")
+                response_data["molecular"]["casida"] = casida_data
+
+                output_dir = resolve_output_dir()
+                os.makedirs(output_dir, exist_ok=True)
+                casida_src = os.path.join(work_dir, "casida", "casida")
+                if not os.path.exists(casida_src):
+                    casida_src = os.path.join(work_dir, "static", "casida")
+                if os.path.exists(casida_src):
+                    shutil.copy2(casida_src, os.path.join(output_dir, "casida"))
+                    print(f"[DEBUG] Copied casida to {output_dir}")
             elif calc_mode == "td":
                 skip_reason = (
                     f"TD skipped because GS is not ready (converged={parsed_gs.get('converged', False)}, "
@@ -2551,6 +2777,22 @@ async def run_octopus_calculation(config: dict) -> dict:
                 response_data["molecular"]["optical_spectrum"] = {
                     "energy_ev": [],
                     "cross_section": [],
+                    "warning": skip_reason,
+                }
+            elif calc_mode == "casida":
+                skip_reason = (
+                    f"Casida skipped because GS is not ready (converged={parsed_gs.get('converged', False)}, "
+                    f"scf_iterations={parsed_gs.get('scf_iterations', 0)}, returncode={rc}, "
+                    f"restart_exists={os.path.isdir(restart_dir)})."
+                )
+                print(f"[WARN] {skip_reason}")
+                response_data["status"] = "warning"
+                response_data["molecular"]["casida_executed"] = False
+                response_data["molecular"]["casida_skipped_reason"] = skip_reason
+                response_data["molecular"]["casida"] = {
+                    "excitations": [],
+                    "energies_ev": [],
+                    "oscillator_strengths": [],
                     "warning": skip_reason,
                 }
 
@@ -2675,7 +2917,7 @@ async def run_vasp_calculation(config: dict) -> dict:
         if exec_strategy == "hpc":
             ncpus = int(config.get("octopusNcpus", config.get("ncpus", 1)))
             queue = os.environ.get("OCTOPUS_PBS_QUEUE", "workq")
-            walltime = os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
+            walltime = pbs_walltime or os.environ.get("OCTOPUS_PBS_WALLTIME", "01:00:00")
             job_name = os.environ.get("OCTOPUS_PBS_JOB_NAME", "dirac_vasp")
 
             pbs_script = vasp_backend.build_vasp_pbs_script(
@@ -2807,7 +3049,7 @@ async def run_vasp_calculation(config: dict) -> dict:
 
 async def health_handler(request: Request):
     """Health check endpoint."""
-    return JSONResponse({"status": "ok", "engine": "octopus-14.0"})
+    return JSONResponse({"status": "ok", "engine": "octopus-16.0"})
 
 
 async def solve_handler(request: Request):
@@ -2848,7 +3090,7 @@ async def solve_handler(request: Request):
         "total_energy": result.get("total_energy"),
         "converged": result.get("converged", False),
         "scf_iterations": result.get("scf_iterations", 0),
-        "engine": result.get("engine", "octopus-14.0"),
+        "engine": result.get("engine", "octopus-16.0"),
         "scheduler": result.get("scheduler"),
         "problemType": "molecular" if result.get("molecular") else config.get("problemType", "boundstate"),
         "matrix_info": {
@@ -2943,7 +3185,7 @@ if MCP_AVAILABLE:
                 inputSchema={
                     "type": "object",
                     "properties": {
-                        "calcMode": {"type": "string", "description": "Calculation mode: 'gs' (ground state, default), 'td' (time-dependent after GS), 'go' (geometry optimization). Use with GOMethod for GO."},
+                        "calcMode": {"type": "string", "description": "Calculation mode: 'gs' (ground state, default), 'td' (time-dependent delta-kick after GS), 'casida' (linear response excitation energies after GS, best for finite molecules), 'go' (geometry optimization). Use with GOMethod for GO."},
                         "engineMode": {"type": "string", "description": "'octopus3D' (molecular DFT, default) or 'local1D' (model potentials)."},
                         "speciesMode": {"type": "string", "description": "Pseudopotential mode: 'builtin_standard' (default, no explicit Species block), 'standard' (PSF Troullier-Martins), 'pseudo' (UPF files), 'formula' (soft-core Coulomb), 'all_electron'."},
                         "octopusMolecule": {"type": "string", "description": "Built-in molecule name: H2, H2O, CH4, 'N_atom', NH3, CO, Si, etc."},
@@ -2967,6 +3209,8 @@ if MCP_AVAILABLE:
                         "tdPolarization": {"type": "integer", "description": "Kick polarization direction: 1=x, 2=y, 3=z. Default: 1."},
                         "tdFieldAmplitude": {"type": "number", "description": "TD field amplitude. Default: 0.01."},
                         "customAtoms": {"type": "array", "description": "Custom atom list: [{'symbol': 'H', 'x': 0, 'y': 0, 'z': 0}, ...]."},
+                        "casidaKohnShamStates": {"type": "string", "description": "KS state range for Casida linear response, e.g. '1-8'. Default: '1-8'."},
+                        "casidaTransitionDensities": {"type": "integer", "description": "Number of excitations to compute transition densities for. Default: 0."},
                         "fastPath": {"type": "boolean", "description": "Enable fast-path execution with reduced defaults."},
                     }
                 }

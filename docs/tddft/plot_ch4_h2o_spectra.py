@@ -199,6 +199,10 @@ for i, (ev, label) in enumerate(h2o_assign):
 print()
 print("CASIDA (LR) vs TDDFT (RT) COMPARISON:")
 print(f"  CH₄  Casida 1st: 9.184 eV  |  TDDFT 1st: {e_ch4[pk_ch4[0]]:.2f} eV")
-print(f"  H₂O  Casida 1st: 6.570 eV  |  TDDFT 1st: {e_h2o[pk_h2o[0]]:.2f} eV")
+# H₂O Casida from Octopus 16 builtin_standard LDA (job 151384, 2026-05-14)
+h2o_casida_1st = 6.674
+print(f"  H₂O  Casida 1st: {h2o_casida_1st:.3f} eV  |  TDDFT 1st: {e_h2o[pk_h2o[0]]:.2f} eV")
 print(f"  Δ(CH₄): {e_ch4[pk_ch4[0]] - 9.184:+.2f} eV")
-print(f"  Δ(H₂O): {e_h2o[pk_h2o[0]] - 6.57:+.2f} eV")
+# WARNING: H₂O TDDFT data from earlier run with insufficient propagation (98 eV resolution).
+# The 3 eV Casida-vs-TDDFT gap for H₂O reflects the failed TDDFT, not a real discrepancy.
+print(f"  Δ(H₂O): {e_h2o[pk_h2o[0]] - h2o_casida_1st:+.2f} eV (TDDFT data unreliable — 98 eV resolution)")

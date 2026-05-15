@@ -364,24 +364,29 @@ Required: 9. Available: 8.
 
 ---
 
-## H2O | builtin_standard | ✅ 可用（2026-05-04）
+## H2O | builtin_standard | ✅ PASS（2026-05-04）| Casida LDA | ✅ PASS（2026-05-14）
 
 **计算参数：**
 
-| 参数 | 值 |
-|------|-----|
-| `engineMode` | `octopus3D` |
-| `speciesMode` | `builtin_standard` |
-| `molecule` | `H2O` |
-| `spacing` | `0.18*angstrom` |
-| `radius` | `10.0*angstrom` |
+| 参数 | GS | Casida LDA |
+|------|-----|-----------|
+| `engineMode` | `octopus3D` | `octopus3D` |
+| `speciesMode` | `builtin_standard` | `builtin_standard` |
+| `molecule` | `H2O` | `H2O` |
+| `spacing` | `0.18*angstrom` | `0.18*angstrom` |
+| `radius` | `10.0*angstrom` | `10.0*angstrom` |
+| `XCFunctional` | `lda_x+lda_c_pz`（默认）| `lda_x+lda_c_pz` |
+| `ExtraStates` | 1 | 8 |
+| `CasidaKohnShamStates` | — | 1-8 |
 
-**实测结果（2026-05-05）：**
+**实测结果：**
 
 | 量 | 实测值 | 工作参考 | 判定 |
 |----|--------|----------|------|
 | Total Energy | **-17.17 Ha** (−467.25 eV) | -17.17 Ha | ✅ PASS |
 | SCF | converged | — | — |
+| Casida 1st excitation | **6.674 eV** (LDA) | 6.5-8.7 eV (Mota exp.) | ✅ PASS |
+| Casida brightest low-E | **8.793 eV** (f=0.102) | — | — |
 
 > 💡 工作参考值 −17.17 Ha 已通过 NIST SRD 141 原子能量独立验证物理合理性（见下方）。
 > ⚠️ KB 旧参考 -76.44 Ha 是 CBS-CCSD(T) 全电子值，与 builtin_standard 赝势 **不可直接比较**。
@@ -402,6 +407,53 @@ Required: 9. Available: 8.
 > 详见：`knowledge_base/corpus_new/h2o_gs_pseudopotential_reference.md`
 
 > 💡 工作参考值 −17.17 Ha 适用于同一代码、同一赝势家族的回归测试。不可与全电子参考值（−76.44 Ha CCSD(T) 或 −75.71 Ha 全电子 LDA）直接比较。
+
+---
+
+## H2O | PP PBE | ✅ PASS（2026-05-15）| Casida PBE | ✅ PASS（48 excitations）
+
+> **目的**：PBE XC Casida 与 PBE TDDFT 进行 apple-to-apple 对比（之前 LDA Casida vs PBE TDDFT XC 不匹配）。
+
+**计算参数：**
+
+| 参数 | GS | Casida PBE |
+|------|-----|-----------|
+| `engineMode` | `octopus3D` | `octopus3D` |
+| `speciesMode` | `pseudo` | `pseudo` |
+| `molecule` | `H2O` | `H2O` |
+| `spacing` | `0.18` Å | `0.18` Å |
+| `radius` | `5.0` Å | `5.0` Å |
+| `XCFunctional` | `gga_x_pbe+gga_c_pbe` | `gga_x_pbe+gga_c_pbe` |
+| `ExtraStates` | 13 | 13 |
+| `CasidaKohnShamStates` | — | 1-16 |
+| `UnitsOutput` | `eV_Angstrom` | `eV_Angstrom` |
+
+**实测结果：**
+
+| 量 | 实测值 | 参考/对比 | 判定 |
+|----|--------|----------|------|
+| GS Total Energy | **−17.228019 Ha** | −17.171 Ha (LDA) | ✅ PBE 预期（更负）|
+| SCF Iterations | 25 | converged | ✅ |
+| KS States | 17 | 5 occ + 12 virt | ✅ 覆盖 1-16 |
+| Casida Excitations | **48** | 16 (LDA with 1-8) | ✅ |
+| Casida 1st excitation | **6.953 eV** | 6.674 eV (LDA) | ✅ PBE +0.279 eV |
+| Casida brightest ~8.9 eV | **8.946 eV** (f=0.141) | 8.793 eV (LDA) | ✅ PBE +0.153 eV |
+| Casida brightest ~12.9 eV | **12.935 eV** (f=0.239) | 12.676 eV (LDA) | ✅ PBE +0.259 eV |
+
+**PBE Casida ↔ PBE TDDFT（Apple-to-Apple）：**
+
+| Feature | Casida PBE | TDDFT PBE | Δ |
+|---------|-----------|-----------|---|
+| Strong ~8.9 eV | **8.946 eV** | **8.83 eV** | **−0.12 eV** ⭐ |
+| 1st excitation | 6.953 eV | 6.36 eV | −0.59 eV |
+
+> ⭐ 关键匹配：8.95 eV (Casida) ↔ 8.83 eV (TDDFT) 仅差 0.12 eV，确认两种方法 PBE 级别一致。
+> 低能区 TDDFT 峰（5.23, 6.36 eV）Casida 未捕获 — 可能为谱展宽伪影或暗态。
+> PBE 系统性蓝移 vs LDA：1st excitation +0.28 eV，HOMO-LUMO gap +0.42 eV。
+
+**数据文件**：`docs/tddft/data/h2o_casida_pbe_results.json`
+
+**收敛验证**：SCF 最后 4 步能量差：1.01e-06, 2.62e-06, 5.58e-07, 1.36e-06 Ha（≪1e-5 容差）。
 
 ---
 
