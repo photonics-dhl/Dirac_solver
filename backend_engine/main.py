@@ -389,11 +389,12 @@ def _load_capability_matrix() -> Dict[str, object]:
 
 
 def _config_from_case(case: Dict[str, object], overrides: Optional[Dict[str, object]]) -> PhysicsConfig:
-    cfg_dict = dict(case.get("default_config") or {})
-    if not cfg_dict:
-        cfg_dict = _default_infinite_well_config().model_dump()
-
-    cfg_dict.setdefault("caseType", str(case.get("case_type") or "boundstate_1d").strip().lower())
+    case_type = str(case.get("case_type") or "boundstate_1d").strip().lower()
+    cfg_dict = _default_config_template(case_type)
+    case_overrides = case.get("default_config") or {}
+    if isinstance(case_overrides, dict):
+        cfg_dict.update(case_overrides)
+    cfg_dict.setdefault("caseType", case_type)
     allowed_fields = set(PhysicsConfig.model_fields.keys())
 
     if overrides:
@@ -812,14 +813,21 @@ def _controller_adjustment(config: PhysicsConfig, relative_error: float, thresho
     actions: List[str] = []
     overrides: Dict[str, object] = {}
 
+    case_type = str(config.caseType or "").strip().lower()
+    is_dft_scale = case_type in ("dft_gs_3d", "response_td", "periodic_bands", "hpc_scaling")
+    # DFT/Octopus scale (Angstrom): valid range 0.10–0.26 Å, below 0.08 Å grids are too dense
+    # Local solver scale (natural units): valid range 0.01–0.25
+    spacing_gate = 0.10 if is_dft_scale else 0.01
+    spacing_floor = spacing_gate  # never drop below gate
+
     if relative_error > threshold:
         current_points = max(int(config.gridPoints), 51)
         current_spacing = max(float(config.gridSpacing), 1e-6)
         if current_points < 401:
             overrides["gridPoints"] = min(801, int(current_points * 1.5))
             actions.append("increase_grid_points")
-        if current_spacing > 0.01:
-            overrides["gridSpacing"] = round(max(0.005, current_spacing * 0.7), 6)
+        if current_spacing > spacing_gate:
+            overrides["gridSpacing"] = round(max(spacing_floor, current_spacing * 0.7), 6)
             actions.append("decrease_grid_spacing")
 
     if not actions:

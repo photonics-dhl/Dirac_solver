@@ -2331,6 +2331,11 @@ async def run_octopus_calculation(config: dict) -> dict:
                 "H2": 60,
                 "He": 60,
                 "Li": 90,
+                "H2O": 600,
+                "CH4": 600,
+                "NH3": 600,
+                "CO": 600,
+                "N2": 600,
             }
             gs_timeout = small_molecule_timeout.get(molecule_name, 300)
             rc, stdout_gs, stderr_gs, run_meta = await run_octopus_direct(octo_cmd, work_dir, timeout_seconds=gs_timeout)
@@ -2873,8 +2878,17 @@ async def run_vasp_calculation(config: dict) -> dict:
                 elements.append(sym.capitalize())
     elif molecule_name in vasp_backend._ATOMIC_COORDS:
         elements.append(molecule_name.capitalize())
-    else:
-        elements.append(molecule_name.capitalize())
+    elif molecule_name:
+        # Try to parse as a chemical formula (e.g. "H2O" → H, O; "CH4" → C, H)
+        _formula_syms = re.findall(r'[A-Z][a-z]?', molecule_name)
+        if _formula_syms:
+            for sym in _formula_syms:
+                if sym.capitalize() not in elements:
+                    elements.append(sym.capitalize())
+        else:
+            # Single element name
+            elements.append(molecule_name.capitalize())
+    # else: molecule_name is empty → elements stays empty → handled by error check below
 
     print(f"[DEBUG] run_vasp_calculation: system={molecule_name} elements={elements}")
 

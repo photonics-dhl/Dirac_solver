@@ -53,7 +53,7 @@ interface PhysicsResult {
         }>;
     };
     molecular?: {
-        calcMode: 'gs' | 'td';
+        calcMode: 'gs' | 'td' | 'casida' | 'unocc' | 'opt' | 'em' | 'vib';
         moleculeName: string;
         backend?: string;
         energy_levels?: number[];
@@ -469,6 +469,12 @@ function CasidaSticks({
             })}
         </g>
     );
+}
+
+function excitationCountStr(n: number): string {
+    if (n <= 1) return `${n} excitation`;
+    if (n <= 20) return `${n} excitations`;
+    return `${n} excitations (${n} modes computed)`;
 }
 
 function FillPath({
@@ -1728,6 +1734,82 @@ function MolecularView({ result, resultHistory = {} }: {
                             })}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* ── Casida Excitation Table ──────────────────────────────── */}
+            {mol.casida && mol.casida.excitations && mol.casida.excitations.length > 0 && (() => {
+                const excitations = mol.casida.excitations;
+                const displayCount = Math.min(excitations.length, 48);
+                const displayed = excitations.slice(0, displayCount);
+                const maxOsc = Math.max(...displayed.map(e => e.oscillator_strength), 0.001);
+                return (
+                    <div style={{
+                        background: 'rgba(167,139,250,0.04)', border: '1px solid rgba(167,139,250,0.2)',
+                        borderRadius: 8, overflow: 'hidden',
+                    }}>
+                        <div style={{
+                            fontSize: 10, color: '#a78bfa', padding: '6px 12px',
+                            borderBottom: '1px solid rgba(167,139,250,0.1)', fontWeight: 600,
+                        }}>
+                            Casida Linear Response — Excitation Energies ({excitationCountStr(excitations.length)})
+                        </div>
+                        <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 10, fontFamily: 'monospace' }}>
+                                <thead>
+                                    <tr style={{ color: '#6b7280', position: 'sticky', top: 0, background: '#111318' }}>
+                                        <th style={{ padding: '4px 12px', textAlign: 'left', fontWeight: 400 }}>#</th>
+                                        <th style={{ padding: '4px 12px', textAlign: 'right', fontWeight: 400 }}>Energy (eV)</th>
+                                        <th style={{ padding: '4px 12px', textAlign: 'right', fontWeight: 400 }}>Osc. Strength (f)</th>
+                                        <th style={{ padding: '4px 12px', textAlign: 'left', fontWeight: 400 }}>Bar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {displayed.map((exc, i) => {
+                                        const barW = Math.max((exc.oscillator_strength / maxOsc) * 100, 0.5);
+                                        const isBright = exc.oscillator_strength > 0.01;
+                                        return (
+                                            <tr key={i} style={{
+                                                borderTop: '1px solid rgba(255,255,255,0.03)',
+                                                color: isBright ? '#c4b5fd' : '#6b7280',
+                                                background: i < 5 && isBright ? 'rgba(167,139,250,0.06)' : undefined,
+                                            }}>
+                                                <td style={{ padding: '2px 12px' }}>{i + 1}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{exc.energy_ev.toFixed(3)}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{exc.oscillator_strength.toFixed(4)}</td>
+                                                <td style={{ padding: '2px 12px' }}>
+                                                    <div style={{
+                                                        width: `${barW}%`, height: 6,
+                                                        background: isBright ? '#a78bfa' : '#374151',
+                                                        borderRadius: 3, minWidth: 2,
+                                                    }} />
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                        {excitations.length > 48 && (
+                            <div style={{ padding: '4px 12px', fontSize: 9, color: '#6b7280', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+                                Showing 48 of {excitations.length} excitations.
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
+
+            {/* Casida-only mode: summary card (when no TD spectrum to overlay on) */}
+            {mol.casida && mol.casida.energies_ev.length > 0 && mol.calcMode !== 'td' && (
+                <div style={{
+                    padding: '6px 12px', background: 'rgba(167,139,250,0.06)',
+                    border: '1px solid rgba(167,139,250,0.18)', borderRadius: 6,
+                    fontSize: 11, color: '#c4b5fd',
+                }}>
+                    Casida linear response — {mol.casida.energies_ev.length} excitation{mol.casida.energies_ev.length > 1 ? 's' : ''}.
+                    First excitation: {mol.casida.energies_ev[0]?.toFixed(2)} eV
+                    {mol.casida.energies_ev.length > 1 ? `, range: ${mol.casida.energies_ev[0]?.toFixed(2)}–${mol.casida.energies_ev[mol.casida.energies_ev.length - 1]?.toFixed(2)} eV` : ''}.
+                    {mol.calcMode === 'casida' ? ' See table above for full excitation list.' : ' Hover over sticks in spectrum chart for values.'}
                 </div>
             )}
 

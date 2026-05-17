@@ -513,7 +513,7 @@ payload = json.dumps({
 | HF 报 `hf_x undefined` | `hartree_fock` 不能作 XCFunctional | 用 `"hartree_fock"` 触发 `TheoryLevel` |
 | PBS 作业超时 | HPC walltime 到期 | 减小体系规模或重试 |
 | 特征值始终不变 | `xc_functional` 被忽略（camelCase bug）| 确认 server.py 已修 |
-| VASP 返回 "No POTCAR" | 元素不在 potpaw_PBE.54 库中 | 检查元素符号，仅支持 H/C/N/O 及其组合 |
+| VASP 返回 "No POTCAR" | 元素不在 potpaw_PBE.54 库中 | 检查元素符号；potpaw_PBE.54 覆盖全周期表 85+ 元素（H–Cf），稀有气体/镧系/锕系完整 |
 | VASP SCF 不收敛 | ENCUT 过低或初始电荷密度差 | 提高 ENCUT 到 520 eV，确保 ISTART=0/ICHARG=2 |
 | VASP 磁矩错误 | ISPIN 设置不对 | 原子用 `polarized`，闭壳层分子用 `unpolarized` |
 | VASP 前端 404 | Vite proxy 配置缺少 `/solve_vasp` | 确认 `vite.config.ts` 包含 `/solve_vasp` 代理到 port 8000 |

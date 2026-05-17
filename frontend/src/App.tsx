@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Activity, Cpu, Settings2, PlayCircle, Loader2, Atom, Zap, Grid3x3, FlaskConical } from 'lucide-react';
-import DevFlowDashboard from './DevFlowDashboard';
-import ResultsPanel from './ResultsPanel';
-import { Mol3DViewer, MOLECULE_ATOMS, Atom3D } from './Mol3DViewer';
-import GeometryEditor from './GeometryEditor';
+import { Mol3DViewer, MOLECULE_ATOMS } from './Mol3DViewer';
 import { Section } from './components/Section';
 import { Field, inputClass, selectClass } from './components/Field';
 import { HARTREE_TO_EV, parseScanSpec } from './utils/scanSpec';
-import { adaptVaspResult } from './utils/vaspAdapter';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { RuntimeLog } from './components/RuntimeLog';
+import { StatusBadge } from './components/StatusBadge';
+import type { RunStatus } from './hooks/useSolverRunner';
+import { useOctopusConfig } from './hooks/useOctopusConfig';
+import { useMCPHealth } from './hooks/useMCPHealth';
+import { useSolverRunner } from './hooks/useSolverRunner';
+
+const DevFlowDashboard = React.lazy(() => import('./DevFlowDashboard'));
+const ResultsPanel = React.lazy(() => import('./ResultsPanel'));
+const GeometryEditor = React.lazy(() => import('./GeometryEditor'));
 type TabId = 'solver' | 'devflow';
 
 const ENV_API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
@@ -53,7 +60,7 @@ export default function App() {
                 </div>
                 {ENABLE_DEVFLOW && (
                     <div style={{ display: activeTab === 'devflow' ? 'block' : 'none', flex: 1, height: '100%' }}>
-                        <DevFlowDashboard />
+                        <Suspense fallback={<div className="p-8 text-gray-500">Loading...</div>}><DevFlowDashboard /></Suspense>
                     </div>
                 )}
             </div>
@@ -256,164 +263,35 @@ function DiracSolverView() {
         };
     };
 
-    // ── Physical Constants ──
-    const [unitSystem, setUnitSystem] = useState('natural');
-    const [particleMass, setParticleMass] = useState('0.511');  // MeV/c²
-    const [particleCharge, setParticleCharge] = useState('-1');
-    const [electronEnergy, setElectronEnergy] = useState('1.0');  // MeV
+    // ── Hooks: config, health, solver ──
+    const { config, setters } = useOctopusConfig();
+    const { dockerStatus, markRunStarting } = useMCPHealth();
+    const {
+        isComputing, status, logs, result, resultHistory,
+        elapsedSeconds, lastRunSeconds,
+        workflowStage,
+        run, requestPause,
+        setLogs, setResult, setResultHistory,
+        setIsComputing, setStatus, setWorkflowStage,
+        setRunStartAt, setElapsedSeconds, setLastRunSeconds,
+        setActiveRunLabel,
+        runInProgressRef: localRunInProgressRef,
+    } = useSolverRunner();
 
-    // ── Geometry & Grid ──
-    const [dimensionality, setDimensionality] = useState('1D');
-    const [spatialRange, setSpatialRange] = useState('10.0');
-    const [gridPoints, setGridPoints] = useState('100');
-    const [boundaryCondition, setBoundaryCondition] = useState('dirichlet');
+    // Derived value (used in JSX; useSolverRunner.buildOctopusConfig computes its own)
+    const gridSpacing = parseFloat(config.spatialRange) / parseInt(config.gridPoints);
 
-    // ── Engine Mode ──
-    const [engineMode, setEngineMode] = useState<'local1D' | 'octopus3D' | 'vasp'>('octopus3D');
-    const [caseType, setCaseType] = useState<'boundstate_1d' | 'dft_gs_3d' | 'response_td' | 'periodic_bands' | 'hpc_scaling'>('dft_gs_3d');
-
-    // ── Octopus Parameters ──
-    const [octopusCalcMode, setOctopusCalcMode] = useState<'gs' | 'td' | 'unocc' | 'opt' | 'em' | 'vib'>('gs');
-    const [octopusDimensions, setOctopusDimensions] = useState('3D');
-    const [octopusSpacing, setOctopusSpacing] = useState('0.4');
-    const [octopusRadius, setOctopusRadius] = useState('4.0');
-    const [octopusBoxShape, setOctopusBoxShape] = useState('sphere');
-    const [octopusMolecule, setOctopusMolecule] = useState('H2O');
-    const [octopusTdSteps, setOctopusTdSteps] = useState('200');
-    const [octopusTdTimeStep, setOctopusTdTimeStep] = useState('0.05');
-    const [octopusPropagator, setOctopusPropagator] = useState('aetrs');
-    const [octopusEigenSolver, setOctopusEigenSolver] = useState('');
-    const [octopusNcpus, setOctopusNcpus] = useState('64');
-    const [octopusMpiprocs, setOctopusMpiprocs] = useState('64');
-    // ── VASP Parameters ──
-    const [vaspEncuit, setVaspEncuit] = useState('400');
-    const [vaspEdiff, setVaspEdiff] = useState('1e-6');
-    const [vaspNelmin, setVaspNelmin] = useState('5');
-    const [vaspIsmear, setVaspIsmear] = useState('0');
-    const [vaspSigma, setVaspSigma] = useState('0.01');
-    const [vaspNelect, setVaspNelect] = useState('');
-    const [vaspNbands, setVaspNbands] = useState('');
-    const [vaspKpointsType, setVaspKpointsType] = useState('gamma');
-    const [vaspBox, setVaspBox] = useState('10.0');
-    const [vaspPrec, setVaspPrec] = useState('Normal');
-    const [gsConvergenceProfile, setGsConvergenceProfile] = useState<'general' | 'n_atom_official' | 'ch4_tutorial'>('general');
-    const [gsEnableScan, setGsEnableScan] = useState(false);
-    const [gsScanSpec, setGsScanSpec] = useState('0.26,0.24,0.22,0.20,0.18,0.16,0.14');
-    const [gsReferenceSpacing, setGsReferenceSpacing] = useState('0.16');
-    const [gsReferenceUrl, setGsReferenceUrl] = useState('https://www.octopus-code.org/documentation/16/tutorial/basics/total_energy_convergence/');
-    // TD external field
-    const [tdExcitationType, setTdExcitationType] = useState<'delta'|'gaussian'|'sin'|'continuous_wave'>('delta');
-    const [tdPolarization, setTdPolarization] = useState<'1'|'2'|'3'>('1');
-    const [tdFieldAmplitude, setTdFieldAmplitude] = useState('0.01');
-    const [tdGaussianSigma, setTdGaussianSigma] = useState('5.0');
-    const [tdGaussianT0, setTdGaussianT0] = useState('10.0');
-    const [tdSinFrequency, setTdSinFrequency] = useState('0.057');  // ~1.55 eV in a.u.
-    // Free electron probe (waveguide + electron beam)
-    const [feProbeEnabled, setFeProbeEnabled] = useState<boolean>(false);
-    const [feProbeVelocity, setFeProbeVelocity] = useState('0.5');   // v/c
-    const [feProbeDirection, setFeProbeDirection] = useState<'x'|'y'|'z'>('x'); // beam propagation axis
-    const [feProbeCx, setFeProbeCx] = useState('0.0');   // beam center x (Angstrom)
-    const [feProbeCy, setFeProbeCy] = useState('2.0');   // beam center y (Angstrom)
-    const [feProbeCz, setFeProbeCz] = useState('0.0');   // beam center z (Angstrom)
-    const [feProbeBeamCount, setFeProbeBeamCount] = useState('1');  // number of electron beams
-    const [feProbeCharge, setFeProbeCharge] = useState('-1');        // charge in units of e
-    const [octopusExtraStates, setOctopusExtraStates] = useState('4');
-    const [mixingScheme, setMixingScheme] = useState('broyden');
-    const [spinComponents, setSpinComponents] = useState('unpolarized');
-    // XC — tiered: category → preset + optional override
-    const [xcCategory, setXcCategory] = useState<string>('lda');
-    const [xcPreset, setXcPreset] = useState<string>('lda_x+lda_c_pz');
-    const [xcOverride, setXcOverride] = useState<string>('');
-    // Periodic systems
-    const [periodicDimensions, setPeriodicDimensions] = useState<'0'|'1'|'2'|'3'>('0');
-    const [kpointsGrid, setKpointsGrid] = useState<string>('2 2 2');
-    const [latticeA, setLatticeA] = useState<string>('10.263');
-    const [latticeB, setLatticeB] = useState<string>('10.263');
-    const [latticeC, setLatticeC] = useState<string>('10.263');
-    // Non-uniform / advanced grid
-    const [derivativesOrder, setDerivativesOrder] = useState<'4'|'6'|'8'>('4');
-    const [curvMethod, setCurvMethod] = useState<'uniform'|'gygi'>('uniform');
-    const [curvGygiAlpha, setCurvGygiAlpha] = useState<string>('2.0');
-    const [doubleGrid, setDoubleGrid] = useState<boolean>(false);
-    const [showGeomPreview, setShowGeomPreview] = useState<boolean>(false);
-    const [geomMode, setGeomMode] = useState<'preset' | 'custom'>('preset');
-    const [customAtoms, setCustomAtoms] = useState<Atom3D[]>([]);
-    /** Atoms that have been explicitly confirmed for computation. null = user hasn't confirmed yet */
-    const [confirmedAtoms, setConfirmedAtoms] = useState<Atom3D[] | null>(null);
-    const [confirmedLabel, setConfirmedLabel] = useState<string>('');
-
-    // ── Potential Field (Local 1D) ──
-    const [potentialType, setPotentialType] = useState('InfiniteWell');
-    const [potentialStrength, setPotentialStrength] = useState('-1.0');
-    const [wellWidth, setWellWidth] = useState('1.0');
-    const [customExpression, setCustomExpression] = useState('');
-    const [potentialDataMode, setPotentialDataMode] = useState<'analytical' | 'data'>('analytical');
-
-    // ── Equation & Picture ──
-    const [equationType, setEquationType] = useState('Schrodinger');
-    const [problemType, setProblemType] = useState('boundstate');
-    const [picture, setPicture] = useState('auto');
-
-    // ── Time Evolution Config ──
-    const [numTimeSteps, setNumTimeSteps] = useState('50');
-    const [totalTime, setTotalTime] = useState('5.0');
-    const [gaussianCenter, setGaussianCenter] = useState('0.0');
-    const [gaussianWidth, setGaussianWidth] = useState('0.05');
-    const [gaussianMomentum, setGaussianMomentum] = useState('5.0');
-
-    // ── Scattering Config ──
-    const [scatteringEMin, setScatteringEMin] = useState('0.0');
-    const [scatteringEMax, setScatteringEMax] = useState('20.0');
-    const [scatteringESteps, setScatteringESteps] = useState('200');
-
-    // ── Execution ──
-    const [isComputing, setIsComputing] = useState(false);
-    const [status, setStatus] = useState('IDLE');
-    const [logs, setLogs] = useState<string[]>(['[System] Solver initialized. Configure parameters and run.']);
-    const [result, setResult] = useState<any>(null);
-    const [resultHistory, setResultHistory] = useState<Record<string, any>>({});
-    const [dockerStatus, setDockerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-    const mcpHealthFailCountRef = React.useRef(0);
-    const lastMcpOnlineAtRef = React.useRef<number | null>(null);
-    const [runStartAt, setRunStartAt] = useState<number | null>(null);
-    const [elapsedSeconds, setElapsedSeconds] = useState(0);
-    const [lastRunSeconds, setLastRunSeconds] = useState<number | null>(null);
     const harnessCaseId = 'infinite_well_v1';
     const harnessIterations = '3';
     const [suiteReview, setSuiteReview] = useState<AgentSuiteReview | null>(null);
     const [suiteReportMd, setSuiteReportMd] = useState<string>('');
     const [, setOfficialGsReport] = useState<any | null>(null);
     const [benchmarkReview, setBenchmarkReview] = useState<HarnessBenchmarkReview | null>(null);
-    const [workflowStage, setWorkflowStage] = useState<'setup' | 'execute' | 'review'>('setup');
-    const [activeRunLabel, setActiveRunLabel] = useState<string>('idle');
     const [dispatchSummary, setDispatchSummary] = useState<DispatchSummary | null>(null);
     const [capabilityMatrix, setCapabilityMatrix] = useState<CapabilityMatrixResponse | null>(null);
     const [caseTypeRegistry, setCaseTypeRegistry] = useState<CaseTypeRegistryResponse | null>(null);
     const [approvedUiMolecules, setApprovedUiMolecules] = useState<Set<string>>(new Set(['CH4', 'N_atom']));
-    const activeEventSourceRef = React.useRef<EventSource | null>(null);
     const activeAbortControllerRef = React.useRef<AbortController | null>(null);
-    const localRunInProgressRef = React.useRef(false);
-
-    useEffect(() => {
-        if (octopusCalcMode === 'td') {
-            setCaseType('response_td');
-        } else if (octopusCalcMode === 'em' || octopusCalcMode === 'vib') {
-            setCaseType('periodic_bands');
-        } else {
-            setCaseType('dft_gs_3d');
-        }
-    }, [octopusCalcMode]);
-
-    useEffect(() => {
-        const mol = (octopusMolecule || '').trim();
-        if (mol === 'N_atom') {
-            setGsConvergenceProfile('n_atom_official');
-        } else if (mol === 'CH4') {
-            setGsConvergenceProfile('ch4_tutorial');
-        } else {
-            setGsConvergenceProfile('general');
-        }
-    }, [octopusMolecule]);
 
     useEffect(() => {
         let cancelled = false;
@@ -571,512 +449,16 @@ function DiracSolverView() {
         return () => clearInterval(timer);
     }, [fetchLatestDispatch]);
 
-    const formatDuration = (seconds: number) => {
-        if (seconds < 60) return `${seconds.toFixed(1)}s`;
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds - mins * 60;
-        return `${mins}m ${secs.toFixed(1)}s`;
-    };
+    // MCP health + elapsed timer handled by useMCPHealth/useSolverRunner
+    // effectivePicture/gridSpacing computed inside buildOctopusConfig (useSolverRunner)
 
-    useEffect(() => {
-        let cancelled = false;
-
-        const check = async () => {
-            try {
-                const res = await fetch(`${API_BASE}/api/mcp/health`);
-                const data = await res.json();
-                if (cancelled) return;
-                if (data?.status === 'ok') {
-                    mcpHealthFailCountRef.current = 0;
-                    lastMcpOnlineAtRef.current = Date.now();
-                    setDockerStatus('online');
-                } else {
-                    throw new Error('mcp health not ok');
-                }
-            } catch {
-                if (cancelled) return;
-                mcpHealthFailCountRef.current += 1;
-
-                if (isComputing) {
-                    return;
-                }
-
-                if (mcpHealthFailCountRef.current >= 3) {
-                    setDockerStatus('offline');
-                }
-            }
-        };
-
-        check();
-        const timer = setInterval(check, 10000);
-        return () => {
-            cancelled = true;
-            clearInterval(timer);
-        };
-    }, [isComputing]);
-
-    useEffect(() => {
-        if (!isComputing || runStartAt == null) return;
-        const timer = window.setInterval(() => {
-            setElapsedSeconds((Date.now() - runStartAt) / 1000);
-        }, 200);
-        return () => window.clearInterval(timer);
-    }, [isComputing, runStartAt]);
-
-    // Harness registry bootstrap was removed from setup UI.
-
-    // Auto-determine picture
-    const effectivePicture = picture === 'auto'
-        ? (problemType === 'scattering' ? 'interaction' : 'schrodinger')
-        : picture;
-
-    const gridSpacing = parseFloat(spatialRange) / parseInt(gridPoints);
-
-    const handleRun = async () => {
-        // GS convergence now uses the same primary run entry/button as generic computation.
-        if (engineMode === 'octopus3D' && octopusCalcMode === 'gs' && gsEnableScan) {
-            void runDftTddftAgentSuite();
+    const handleRun = () => {
+        if (config.engineMode === 'octopus3D' && config.octopusCalcMode === 'gs' && config.gsEnableScan) {
+            runDftTddftAgentSuite();
             return;
         }
-
-        localRunInProgressRef.current = true;
-
-        const runStartTs = Date.now();
-        setWorkflowStage('execute');
-        setActiveRunLabel('physics_run');
-        setBenchmarkReview(null);
-        setIsComputing(true);
-        setStatus('RUNNING');
-        setResult(null);
-        setRunStartAt(runStartTs);
-        setElapsedSeconds(0);
-        setLastRunSeconds(null);
-        setDockerStatus('checking');
-        const currentLabel = engineMode === 'octopus3D' ? 'Octopus' : engineMode === 'vasp' ? 'VASP' : equationType;
-        const dimLabel = engineMode === 'octopus3D' ? '' : `(${dimensionality}, ${effectivePicture} picture)`;
-        setLogs([`[System] Starting ${currentLabel} solver${dimLabel}...`]);
-
-        // ── VASP compute path (REST POST, no streaming) ──
-        if (engineMode === 'vasp') {
-            const vaspConfig: any = {
-                octopusMolecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
-                    ? (confirmedLabel || 'Custom')
-                    : octopusMolecule,
-                molecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
-                    ? { name: confirmedLabel || 'Custom', atoms: confirmedAtoms }
-                    : octopusMolecule,
-                ...(geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0 ? { customAtoms: confirmedAtoms } : {}),
-                xcFunctional: xcOverride.trim() || xcPreset,
-                spinComponents,
-                encut: parseInt(vaspEncuit, 10) || 400,
-                ediff: parseFloat(vaspEdiff) || 1e-6,
-                nelmin: parseInt(vaspNelmin, 10) || 5,
-                ismear: parseInt(vaspIsmear, 10) || 0,
-                sigma: parseFloat(vaspSigma) || 0.01,
-                kpointsType: vaspKpointsType,
-                vaspBox: parseFloat(vaspBox) || 10.0,
-                prec: vaspPrec,
-            };
-            if (vaspNelect.trim()) vaspConfig.nelect = parseFloat(vaspNelect);
-            if (vaspNbands.trim()) vaspConfig.nbands = parseInt(vaspNbands, 10);
-
-            setLogs(prev => [...prev, `[VASP] POST /solve_vasp → molecule=${vaspConfig.octopusMolecule}, encut=${vaspConfig.encut}`]);
-            try {
-                const resp = await fetch(`${API_BASE}/solve_vasp`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(vaspConfig),
-                });
-                const vaspData = await resp.json();
-                if (vaspData.status === 'error') {
-                    throw new Error(vaspData.message || 'VASP calculation failed');
-                }
-                const adapted = adaptVaspResult(vaspData, vaspConfig);
-                setStatus('SUCCESS');
-                setResult(adapted);
-                setResultHistory(prev => ({ ...prev, vasp: adapted }));
-                setLogs(prev => [
-                    ...prev,
-                    `✓ VASP complete — E_tot = ${vaspData.total_energy_ev?.toFixed(4) ?? 'N/A'} eV`,
-                    `  SCF iterations: ${vaspData.scf_iterations ?? 'N/A'}, converged: ${vaspData.status === 'success'}`,
-                ]);
-            } catch (err: any) {
-                setStatus('ERROR');
-                setLogs(prev => [...prev, `✗ VASP Error: ${err.message || err}`]);
-            } finally {
-                setIsComputing(false);
-                setWorkflowStage('review');
-                setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                localRunInProgressRef.current = false;
-            }
-            return;
-        }
-
-        try {
-            const requestedNcpus = Math.max(1, parseInt(octopusNcpus, 10) || 64);
-            const requestedMpiprocs = Math.min(
-                requestedNcpus,
-                Math.max(1, parseInt(octopusMpiprocs, 10) || requestedNcpus),
-            );
-            const config = {
-                // Physical constants
-                unitSystem,
-                mass: parseFloat(particleMass),
-                charge: parseFloat(particleCharge),
-                energy: parseFloat(electronEnergy),
-                // Geometry
-                dimensionality,
-                spatialRange: parseFloat(spatialRange),
-                gridPoints: parseInt(gridPoints),
-                gridSpacing,
-                boundaryCondition,
-                // Potential
-                potentialType,
-                potentialStrength: parseFloat(potentialStrength),
-                wellWidth: parseFloat(wellWidth),
-                customExpression: potentialType === 'Custom' ? customExpression : undefined,
-                potentialDataMode,
-                // Equation
-                equationType,
-                problemType,
-                picture: effectivePicture,
-                // Time evolution
-                numTimeSteps: parseInt(numTimeSteps),
-                totalTime: parseFloat(totalTime),
-                gaussianCenter: parseFloat(gaussianCenter),
-                gaussianWidth: parseFloat(gaussianWidth),
-                gaussianMomentum: parseFloat(gaussianMomentum),
-                // Scattering
-                scatteringEnergyMin: parseFloat(scatteringEMin),
-                scatteringEnergyMax: parseFloat(scatteringEMax),
-                scatteringEnergySteps: parseInt(scatteringESteps),
-                // Octopus Parameters
-                engineMode,
-                octopusDimensions,
-                calcMode: octopusCalcMode,
-                caseType,
-                octopusSpacing: parseFloat(octopusSpacing),
-                octopusRadius: parseFloat(octopusRadius),
-                octopusBoxShape,
-                octopusLengthUnit: 'angstrom',
-                octopusUnitsOutput: 'eV_Angstrom',
-                octopusMolecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
-                    ? (confirmedLabel || 'Custom')
-                    : octopusMolecule,
-                molecule: geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0
-                    ? { name: confirmedLabel || 'Custom', atoms: confirmedAtoms }
-                    : octopusMolecule,
-                ...(geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0 ? { customAtoms: confirmedAtoms } : {}),
-                octopusTdSteps: parseInt(octopusTdSteps),
-                octopusTdTimeStep: parseFloat(octopusTdTimeStep),
-                octopusPropagator,
-                octopusEigenSolver: octopusEigenSolver.trim() || undefined,
-                octopusNcpus: requestedNcpus,
-                octopusMpiprocs: requestedMpiprocs,
-                tdExcitationType,
-                tdPolarization: parseInt(tdPolarization),
-                tdFieldAmplitude: parseFloat(tdFieldAmplitude),
-                tdGaussianSigma: parseFloat(tdGaussianSigma),
-                tdGaussianT0: parseFloat(tdGaussianT0),
-                tdSinFrequency: parseFloat(tdSinFrequency),
-                // Free electron probe
-                feProbeEnabled,
-                feProbeVelocity: parseFloat(feProbeVelocity),
-                feProbeDirection,
-                feProbeCenterX: parseFloat(feProbeCx),
-                feProbeCenterY: parseFloat(feProbeCy),
-                feProbeCenterZ: parseFloat(feProbeCz),
-                feProbeBeamCount: parseInt(feProbeBeamCount),
-                feProbeCharge: parseFloat(feProbeCharge),
-                octopusExtraStates: parseInt(octopusExtraStates),
-                xcFunctional: xcOverride.trim() || xcPreset,
-                mixingScheme,
-                spinComponents,
-                periodicDimensions,
-                kpointsGrid,
-                latticeA: parseFloat(latticeA),
-                latticeB: parseFloat(latticeB),
-                latticeC: parseFloat(latticeC),
-                // Advanced grid
-                derivativesOrder: parseInt(derivativesOrder),
-                curvMethod,
-                curvGygiAlpha: parseFloat(curvGygiAlpha),
-                doubleGrid,
-            };
-
-            const isDirectNAtomOfficialRun = engineMode === 'octopus3D'
-                && octopusCalcMode === 'gs'
-                && geomMode !== 'custom'
-                && String(octopusMolecule || '').trim() === 'N_atom';
-            if (isDirectNAtomOfficialRun) {
-                // Keep single-run path aligned with official N-atom tutorial contract.
-                (config as any).speciesMode = 'pseudo';
-                (config as any).pseudopotentialSet = 'standard';
-                (config as any).octopusLengthUnit = 'angstrom';
-                (config as any).octopusUnitsOutput = 'eV_Angstrom';
-                (config as any).spinComponents = 'spin_polarized';
-                (config as any).fastPath = false;
-                (config as any).molecule = {
-                    name: 'N_atom',
-                    atoms: [{ symbol: 'N', x: 0, y: 0, z: 0 }],
-                };
-                (config as any).octopusMolecule = 'N_atom';
-                setLogs((prev) => [
-                    ...prev,
-                    '[System] N_atom official profile: forcing pseudo species + angstrom + spin_polarized + fastPath=off + explicit N atom geometry for direct GS run.',
-                ]);
-            }
-
-            const isInteractiveOctopusRun = config.engineMode === 'octopus3D';
-            const fastPathEnabled = String((import.meta as any).env?.VITE_OCTOPUS_INTERACTIVE_FASTPATH ?? 'false').toLowerCase() !== 'false';
-            const autoReviewerEnabled = ENABLE_DEVFLOW
-                && String((import.meta as any).env?.VITE_OCTOPUS_AUTOREVIEWER ?? 'true').toLowerCase() !== 'false';
-            if (isInteractiveOctopusRun && fastPathEnabled) {
-                // Interactive runs should prioritize queue-friendly resources.
-                (config as any).fastPath = true;
-            }
-
-            const query = encodeURIComponent(JSON.stringify(config));
-            // Guard: tracks whether 'result' was received so onerror doesn't
-            // show a false error when the server closes the connection after delivery.
-            let resultReceived = false;
-            const eventSource = new EventSource(`${API_BASE}/api/physics/stream?config=${query}`);
-            activeEventSourceRef.current = eventSource;
-            const connectTimeoutMs = Math.max(5000, Number((import.meta as any).env?.VITE_SOLVE_CONNECT_TIMEOUT_MS || 20000));
-            const defaultStallTimeoutMs = isInteractiveOctopusRun ? 5 * 60 * 1000 : 120000;
-            const stallTimeoutMs = Math.max(10000, Number((import.meta as any).env?.VITE_SOLVE_STALL_TIMEOUT_MS || defaultStallTimeoutMs));
-            const defaultHardTimeoutMs = isInteractiveOctopusRun ? 12 * 60 * 1000 : 0;
-            const hardTimeoutMs = Math.max(0, Number((import.meta as any).env?.VITE_SOLVE_HARD_TIMEOUT_MS || defaultHardTimeoutMs));
-            let sawProgress = false;
-            let escalatedToSuite = false;
-            let connectTimeoutId: number | null = null;
-            let stallTimeoutId: number | null = null;
-            let hardTimeoutId: number | null = null;
-
-            const escalateToSuiteIfNeeded = () => {
-                if (!autoReviewerEnabled || escalatedToSuite || !isInteractiveOctopusRun) return;
-                // Keep GS scan optional: a normal GS run should not implicitly trigger scan workflow.
-                if (octopusCalcMode === 'gs') return;
-                escalatedToSuite = true;
-                setLogs(prev => [
-                    ...prev,
-                    '[System] Escalating to DFT/TDDFT suite reviewer for final acceptance.'
-                ]);
-                window.setTimeout(() => {
-                    runDftTddftAgentSuite();
-                }, 0);
-            };
-
-            const clearSolveTimeouts = () => {
-                if (connectTimeoutId !== null) {
-                    window.clearTimeout(connectTimeoutId);
-                    connectTimeoutId = null;
-                }
-                if (stallTimeoutId !== null) {
-                    window.clearTimeout(stallTimeoutId);
-                    stallTimeoutId = null;
-                }
-                if (hardTimeoutId !== null) {
-                    window.clearTimeout(hardTimeoutId);
-                    hardTimeoutId = null;
-                }
-            };
-
-            const armStallTimeout = () => {
-                if (stallTimeoutId !== null) {
-                    window.clearTimeout(stallTimeoutId);
-                }
-                stallTimeoutId = window.setTimeout(() => {
-                    if (resultReceived) return;
-                    setStatus('ERROR');
-                    setLogs(prev => [...prev, `✗ No progress update for ${Math.round(stallTimeoutMs / 1000)}s (stream stalled)`]);
-                    eventSource.close();
-                    setIsComputing(false);
-                    setWorkflowStage('review');
-                    setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                    localRunInProgressRef.current = false;
-                    escalateToSuiteIfNeeded();
-                }, stallTimeoutMs);
-            };
-
-            const markProgress = () => {
-                sawProgress = true;
-                if (connectTimeoutId !== null) {
-                    window.clearTimeout(connectTimeoutId);
-                    connectTimeoutId = null;
-                }
-                armStallTimeout();
-            };
-
-            connectTimeoutId = window.setTimeout(() => {
-                if (resultReceived || sawProgress) return;
-                setStatus('ERROR');
-                setLogs(prev => [...prev, `✗ Timeout: no stream activity within ${Math.round(connectTimeoutMs / 1000)}s`]);
-                eventSource.close();
-                setIsComputing(false);
-                setWorkflowStage('review');
-                setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                localRunInProgressRef.current = false;
-                escalateToSuiteIfNeeded();
-            }, connectTimeoutMs);
-
-            if (hardTimeoutMs > 0) {
-                hardTimeoutId = window.setTimeout(() => {
-                    if (resultReceived) return;
-                    setStatus('ERROR');
-                    setLogs(prev => [...prev, `✗ Timeout: exceeded hard limit ${Math.round(hardTimeoutMs / 1000)}s`]);
-                    eventSource.close();
-                    setIsComputing(false);
-                    setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                    localRunInProgressRef.current = false;
-                    escalateToSuiteIfNeeded();
-                }, hardTimeoutMs);
-            }
-
-            eventSource.onopen = () => {
-                markProgress();
-            };
-
-            eventSource.addEventListener('log', (e: any) => {
-                try {
-                    const logMsg = JSON.parse(e.data);
-                    markProgress();
-                    setLogs(prev => {
-                        // Avoid duplicates if the server accidentally sends the same string twice quickly
-                        if (prev[prev.length - 1] === logMsg) return prev;
-                        return [...prev, logMsg];
-                    });
-                } catch (err) {
-                    markProgress();
-                    console.error("Failed to parse log event", err);
-                }
-            });
-
-            eventSource.addEventListener('heartbeat', () => {
-                markProgress();
-            });
-
-            eventSource.addEventListener('result', (e: any) => {
-                resultReceived = true;
-                try {
-                    const resData = JSON.parse(e.data);
-                    setStatus('SUCCESS');
-                    setResult(resData);
-                    // Store in history by calc mode so post-processing can access previous runs
-                    const historyKey = resData.molecular?.calcMode || resData.problemType || 'gs';
-                    setResultHistory(prev => ({ ...prev, [historyKey]: resData }));
-                    setLogs(prev => [
-                        ...prev,
-                        `✓ Computation complete via ${resData.engine || (config.engineMode === 'octopus3D' ? 'Octopus-v16' : 'local-python')}.`,
-                        `  Results: ${resData.eigenvalues?.length || 0} eigenvalues found.`,
-                    ]);
-                } catch (err) {
-                    setStatus('ERROR');
-                    setLogs(prev => [...prev, `✗ Error processing final result`]);
-                } finally {
-                    clearSolveTimeouts();
-                    eventSource.close();
-                    if (activeEventSourceRef.current === eventSource) {
-                        activeEventSourceRef.current = null;
-                    }
-                    setIsComputing(false);
-                    setWorkflowStage('review');
-                    setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                    localRunInProgressRef.current = false;
-                    if (isInteractiveOctopusRun) {
-                        escalateToSuiteIfNeeded();
-                    }
-                }
-            });
-
-            // Server-sent pipeline error (named SSE event)
-            eventSource.addEventListener('pipeline_error', (e: any) => {
-                clearSolveTimeouts();
-                setStatus('ERROR');
-                try {
-                    const errData = JSON.parse(e.data);
-                    setLogs(prev => [...prev, `✗ Pipeline Error: ${errData.message || 'Unknown error'}`]);
-                } catch {
-                    setLogs(prev => [...prev, `✗ Pipeline Error: (unparseable)`]);
-                }
-                eventSource.close();
-                if (activeEventSourceRef.current === eventSource) {
-                    activeEventSourceRef.current = null;
-                }
-                setIsComputing(false);
-                setWorkflowStage('review');
-                setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                localRunInProgressRef.current = false;
-                if (isInteractiveOctopusRun) {
-                    escalateToSuiteIfNeeded();
-                }
-            });
-
-            // Native EventSource connection error (network drop / server crash)
-            eventSource.onerror = () => {
-                // If the result already arrived, this is just the server closing the
-                // connection after delivery — not a real error. Close silently.
-                if (resultReceived || eventSource.readyState === EventSource.CLOSED) {
-                    clearSolveTimeouts();
-                    eventSource.close();
-                    if (activeEventSourceRef.current === eventSource) {
-                        activeEventSourceRef.current = null;
-                    }
-                    return;
-                }
-                clearSolveTimeouts();
-                setStatus('ERROR');
-                setLogs(prev => [...prev, `✗ Streaming Error: Connection lost or server crashed`]);
-                eventSource.close();
-                if (activeEventSourceRef.current === eventSource) {
-                    activeEventSourceRef.current = null;
-                }
-                setIsComputing(false);
-                setWorkflowStage('review');
-                setLastRunSeconds((Date.now() - runStartTs) / 1000);
-                localRunInProgressRef.current = false;
-                if (isInteractiveOctopusRun) {
-                    escalateToSuiteIfNeeded();
-                }
-            };
-
-        } catch (e: any) {
-            setStatus('ERROR');
-            setLogs(prev => [...prev, `✗ Initialization Error: ${e.message}`]);
-            setIsComputing(false);
-            setWorkflowStage('review');
-            setLastRunSeconds((Date.now() - runStartTs) / 1000);
-            localRunInProgressRef.current = false;
-        }
-    };
-
-    const requestPause = () => {
-        if (!isComputing) return;
-
-        if (activeEventSourceRef.current) {
-            try {
-                activeEventSourceRef.current.close();
-            } catch {
-                // Ignore close errors for user-initiated pause.
-            }
-            activeEventSourceRef.current = null;
-        }
-
-        if (activeAbortControllerRef.current) {
-            try {
-                activeAbortControllerRef.current.abort();
-            } catch {
-                // Ignore abort errors for user-initiated pause.
-            }
-            activeAbortControllerRef.current = null;
-        }
-
-        setIsComputing(false);
-        setStatus('PAUSED');
-        setWorkflowStage('review');
-        setLastRunSeconds((Date.now() - (runStartAt ?? Date.now())) / 1000);
-        localRunInProgressRef.current = false;
-        setLogs(prev => [...prev, `[System] Pause requested by operator for ${activeRunLabel}`]);
+        markRunStarting();
+        run(config);
     };
 
     const adaptHarnessResult = (data: HarnessApiResponse, fallbackCaseId: string) => {
@@ -1286,7 +668,7 @@ function DiracSolverView() {
                 engineMode: 'octopus3D',
                 calcMode: 'gs',
                 octopusCalcMode: 'gs',
-                caseType,
+                caseType: config.caseType,
                 octopusDimensions: '3D',
                 octopusPeriodic: 'off',
                 octopusSpacing: 0.3,
@@ -1372,21 +754,21 @@ function DiracSolverView() {
     void runSkillsDrivenAutoWorkflow;
 
     const getSuiteTasksFromCalculationMode = (): SuiteTaskId[] => {
-        if (octopusCalcMode === 'gs') {
-            const selectedMol = String(octopusMolecule || '').trim();
+        if (config.octopusCalcMode === 'gs') {
+            const selectedMol = String(config.octopusMolecule || '').trim();
             if (selectedMol === 'CH4') {
                 return ['ch4_gs_reference'];
             }
             return ['h2o_gs_reference'];
         }
-        if (octopusCalcMode === 'td') {
-            if (feProbeEnabled) {
+        if (config.octopusCalcMode === 'td') {
+            if (config.feProbeEnabled) {
                 return ['h2o_tddft_eels_spectrum'];
             }
-            if (tdExcitationType === 'gaussian') {
+            if (config.tdExcitationType === 'gaussian') {
                 return ['h2o_tddft_dipole_response'];
             }
-            if (tdExcitationType === 'delta') {
+            if (config.tdExcitationType === 'delta') {
                 return ['h2o_tddft_absorption'];
             }
             return ['h2o_tddft_dipole_response'];
@@ -1396,8 +778,8 @@ function DiracSolverView() {
     };
 
     const runDftTddftAgentSuite = async () => {
-        if (octopusCalcMode === 'gs') {
-            const selectedMol = (octopusMolecule || '').trim();
+        if (config.octopusCalcMode === 'gs') {
+            const selectedMol = (config.octopusMolecule || '').trim();
             const isMethaneTutorial = selectedMol === 'CH4';
             const isNAtomOfficial = selectedMol === 'N_atom';
             const gsReportStyle = isNAtomOfficial ? 'n_atom_error' : 'total_energy_only';
@@ -1418,22 +800,22 @@ function DiracSolverView() {
             setOfficialGsReport(null);
 
             try {
-                const spacings = parseScanSpec(gsScanSpec);
+                const spacings = parseScanSpec(config.gsScanSpec);
                 if (!spacings.length) {
                     throw new Error('GS scan spec resolved to empty spacing list');
                 }
-                const refSpacing = parseFloat(gsReferenceSpacing);
+                const refSpacing = parseFloat(config.gsReferenceSpacing);
                 if (!Number.isFinite(refSpacing)) {
                     throw new Error('Reference spacing is invalid');
                 }
 
-                const requestedNcpus = Math.max(1, parseInt(octopusNcpus, 10) || 32);
-                const requestedMpiprocs = Math.max(1, parseInt(octopusMpiprocs, 10) || 32);
+                const requestedNcpus = Math.max(1, parseInt(config.octopusNcpus, 10) || 32);
+                const requestedMpiprocs = Math.max(1, parseInt(config.octopusMpiprocs, 10) || 32);
 
                 const points: any[] = [];
                 for (const spacing of spacings) {
-                    let moleculePayload: any = octopusMolecule;
-                    let octopusMoleculePayload: any = octopusMolecule;
+                    let moleculePayload: any = config.octopusMolecule;
+                    let octopusMoleculePayload: any = config.octopusMolecule;
                     if (isNAtomOfficial) {
                         moleculePayload = {
                             name: 'N_atom',
@@ -1443,9 +825,9 @@ function DiracSolverView() {
                     } else if (isMethaneTutorial) {
                         moleculePayload = 'CH4';
                         octopusMoleculePayload = 'CH4';
-                    } else if (geomMode === 'custom' && confirmedAtoms && confirmedAtoms.length > 0) {
-                        moleculePayload = { name: confirmedLabel || 'Custom', atoms: confirmedAtoms };
-                        octopusMoleculePayload = confirmedLabel || 'Custom';
+                    } else if (config.geomMode === 'custom' && config.confirmedAtoms && config.confirmedAtoms.length > 0) {
+                        moleculePayload = { name: config.confirmedLabel || 'Custom', atoms: config.confirmedAtoms };
+                        octopusMoleculePayload = config.confirmedLabel || 'Custom';
                     }
 
                     const payload: any = {
@@ -1453,25 +835,25 @@ function DiracSolverView() {
                         calcMode: 'gs',
                         octopusCalcMode: 'gs',
                         caseType: 'dft_gs_3d',
-                        octopusDimensions,
+                        octopusDimensions: config.octopusDimensions,
                         speciesMode: 'pseudo',
                         pseudopotentialSet: 'standard',
                         octopusLengthUnit: 'angstrom',
                         octopusUnitsOutput: 'eV_Angstrom',
                         octopusSpacing: spacing,
-                        octopusRadius: parseFloat(octopusRadius),
-                        octopusBoxShape,
-                        octopusExtraStates: Math.max(0, parseInt(octopusExtraStates, 10) || 0),
-                        xcFunctional: xcOverride.trim() || xcPreset,
-                        spinComponents: isNAtomOfficial ? 'spin_polarized' : spinComponents,
+                        octopusRadius: parseFloat(config.octopusRadius),
+                        octopusBoxShape: config.octopusBoxShape,
+                        octopusExtraStates: Math.max(0, parseInt(config.octopusExtraStates, 10) || 0),
+                        xcFunctional: config.xcOverride.trim() || config.xcPreset,
+                        spinComponents: isNAtomOfficial ? 'spin_polarized' : config.spinComponents,
                         fastPath: false,
                         octopusNcpus: requestedNcpus,
                         octopusMpiprocs: requestedMpiprocs,
                         molecule: moleculePayload,
                         octopusMolecule: octopusMoleculePayload,
                     };
-                    if (octopusEigenSolver.trim()) {
-                        payload.octopusEigenSolver = octopusEigenSolver.trim();
+                    if (config.octopusEigenSolver.trim()) {
+                        payload.octopusEigenSolver = config.octopusEigenSolver.trim();
                     }
 
                     const resp = await fetch(`${API_BASE}/api/physics/run`, {
@@ -1550,9 +932,9 @@ function DiracSolverView() {
 
                 const report = {
                     generated_at: new Date().toISOString(),
-                    molecule: isNAtomOfficial ? 'N_atom' : (isMethaneTutorial ? 'CH4' : octopusMolecule),
+                    molecule: isNAtomOfficial ? 'N_atom' : (isMethaneTutorial ? 'CH4' : config.octopusMolecule),
                     report_style: gsReportStyle,
-                    reference_url: gsReferenceUrl,
+                    reference_url: config.gsReferenceUrl,
                     reference_spacing_angstrom: refSpacing,
                     spacings,
                     convergence_band: convergenceBand,
@@ -1592,8 +974,8 @@ function DiracSolverView() {
                     ...prev,
                     `[System] GS convergence finished (molecule=${selectedMol || 'unknown'}, style=${reportStyle}).`,
                     `[Reviewer Skill] Verdict: ${allConverged ? 'PASS' : 'FAIL'} | points=${points.length}`,
-                    `[Scan] spec=${gsScanSpec}`,
-                    `[Reference] spacing=${gsReferenceSpacing} A | url=${gsReferenceUrl}`,
+                    `[Scan] spec=${config.gsScanSpec}`,
+                    `[Reference] spacing=${config.gsReferenceSpacing} A | url=${config.gsReferenceUrl}`,
                 ]);
             } catch (e: any) {
                 if (e?.name === 'AbortError') {
@@ -1615,9 +997,9 @@ function DiracSolverView() {
         }
 
         const runStartTs = Date.now();
-        const tdSteps = Math.max(120, Math.min(parseInt(octopusTdSteps || '260', 10) || 260, 1500));
-        const tdDt = Math.max(0.01, Math.min(parseFloat(octopusTdTimeStep || '0.04') || 0.04, 0.2));
-        const selectedMolecule = (octopusMolecule || '').trim();
+        const tdSteps = Math.max(120, Math.min(parseInt(config.octopusTdSteps || '260', 10) || 260, 1500));
+        const tdDt = Math.max(0.01, Math.min(parseFloat(config.octopusTdTimeStep || '0.04') || 0.04, 0.2));
+        const selectedMolecule = (config.octopusMolecule || '').trim();
         const molecule = selectedMolecule || 'H2O';
         const taskCatalog: Array<{ id: SuiteTaskId; title: string }> = [
             { id: 'ch4_gs_reference', title: 'Methane GS reference' },
@@ -1644,16 +1026,16 @@ function DiracSolverView() {
         setSuiteReportMd('');
         setLogs([
             `[System] Production DFT/TDDFT agent suite started`,
-            `[Planner Skill] Target molecule=${molecule}, calc_mode=${octopusCalcMode}, td_steps=${tdSteps}, dt=${tdDt}`,
+            `[Planner Skill] Target molecule=${molecule}, calc_mode=${config.octopusCalcMode}, td_steps=${tdSteps}, dt=${tdDt}`,
             `[Planner Skill] Selected tasks: ${taskCatalog.filter((t) => selectedTaskSet.has(t.id)).map((t) => t.title).join(' + ')}`,
             `[Planner Skill] Execution profile: fastPath=false (64-core HPC policy)`,
         ]);
 
         try {
             const maxLoops = 6;
-            const spacingBase = Math.max(0.12, Math.min(parseFloat(octopusSpacing || '0.3') || 0.3, 1.0));
-            const radiusBase = Math.max(2.0, Math.min(parseFloat(octopusRadius || '5.0') || 5.0, 20.0));
-            const statesBase = Math.max(1, Math.min(parseInt(octopusExtraStates || '4', 10) || 4, 64));
+            const spacingBase = Math.max(0.12, Math.min(parseFloat(config.octopusSpacing || '0.3') || 0.3, 1.0));
+            const radiusBase = Math.max(2.0, Math.min(parseFloat(config.octopusRadius || '5.0') || 5.0, 20.0));
+            const statesBase = Math.max(1, Math.min(parseInt(config.octopusExtraStates || '4', 10) || 4, 64));
             const tuningProfiles = [
                 { spacing: spacingBase, radius: radiusBase, extraStates: statesBase },
                 { spacing: Math.max(0.22, spacingBase - 0.05), radius: Math.min(8.0, radiusBase + 0.5), extraStates: Math.min(12, statesBase + 2) },
@@ -1680,12 +1062,14 @@ function DiracSolverView() {
                     strict: false,
                     fastPath: false,
                     taskIds: Array.from(selectedTaskSet),
-                    octopusPeriodic: periodicDimensions === '0' ? 'off' : 'on',
-                    octopusDimensions,
-                    octopusBoxShape,
-                    xcFunctional: (xcOverride.trim() || xcPreset || 'gga_x_pbe+gga_c_pbe').trim(),
-                    octopusNcpus: Math.max(1, parseInt(octopusNcpus, 10) || 64),
-                    octopusMpiprocs: Math.max(1, parseInt(octopusMpiprocs, 10) || 64),
+                    octopusPeriodic: config.periodicDimensions === '0' ? 'off' : 'on',
+                    octopusDimensions: config.octopusDimensions,
+                    octopusBoxShape: config.octopusBoxShape,
+                    xcFunctional: (config.xcOverride.trim() || config.xcPreset || 'gga_x_pbe+gga_c_pbe').trim(),
+                    speciesMode: config.speciesMode || 'pseudo',
+                    pseudopotentialSet: config.pseudopotentialSet || 'standard',
+                    octopusNcpus: Math.max(1, parseInt(config.octopusNcpus, 10) || 64),
+                    octopusMpiprocs: Math.max(1, parseInt(config.octopusMpiprocs, 10) || 64),
                 };
 
                 // Keep round-1 close to proven backend defaults; only tune discretization on retries.
@@ -1828,23 +1212,23 @@ function DiracSolverView() {
 
                 {/* Engine Mode Toggle */}
                 <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
-                    <button onClick={() => setEngineMode('local1D')}
+                    <button onClick={() => setters.setEngineMode('local1D')}
                         className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={engineMode === 'local1D'
+                        style={config.engineMode === 'local1D'
                             ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
                             : { color: '#4b5563' }}>
                         Local 1D
                     </button>
-                    <button onClick={() => setEngineMode('octopus3D')}
+                    <button onClick={() => setters.setEngineMode('octopus3D')}
                         className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={engineMode === 'octopus3D'
+                        style={config.engineMode === 'octopus3D'
                             ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.35)' }
                             : { color: '#8892a4' }}>
                         Octopus3D
                     </button>
-                    <button onClick={() => setEngineMode('vasp')}
+                    <button onClick={() => setters.setEngineMode('vasp')}
                         className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={engineMode === 'vasp'
+                        style={config.engineMode === 'vasp'
                             ? { background: 'rgba(168,85,247,0.12)', color: '#a855f7', outline: '1px solid rgba(168,85,247,0.35)' }
                             : { color: '#8892a4' }}>
                         VASP
@@ -1852,34 +1236,37 @@ function DiracSolverView() {
                 </div>
 
                 {/* Quick Presets — validated cases (Octopus only) */}
-                {engineMode === 'octopus3D' && (
+                {config.engineMode === 'octopus3D' && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                         {([
                             { label: 'H (PP PBE)', mol: 'H_atom', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'gs' as const },
                             { label: 'He (PP LDA)', mol: 'He', space: '0.15', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
                             { label: 'N (PP LDA)', mol: 'N_atom', space: '0.18', rad: '10.0', spin: 'polarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'CH₄ (builtin)', mol: 'CH4', space: '0.18', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'standard', cmode: 'gs' as const },
-                            { label: 'H₂O GS', mol: 'H2O', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'H₂O TDDFT', mol: 'H2O', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'td' as const },
+                            { label: 'CH₄ (builtin)', mol: 'CH4', space: '0.18', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', cmode: 'gs' as const },
+                            { label: 'H₂O GS', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'gs' as const },
+                            { label: 'H₂O TDDFT', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'td' as const },
                         ] as const).map(p => (
                             <button
                                 key={p.label}
                                 onClick={() => {
-                                    setOctopusMolecule(p.mol);
-                                    setOctopusSpacing(p.space);
-                                    setOctopusRadius(p.rad);
-                                    setSpinComponents(p.spin);
-                                    setXcPreset(p.xc);
-                                    setXcOverride('');
-                                    setOctopusCalcMode(p.cmode);
-                                    setGeomMode('preset');
-                                    setConfirmedAtoms(null);
-                                    setConfirmedLabel('');
+                                    setters.setOctopusMolecule(p.mol);
+                                    setters.setOctopusSpacing(p.space);
+                                    setters.setOctopusRadius(p.rad);
+                                    setters.setSpinComponents(p.spin);
+                                    setters.setXcPreset(p.xc);
+                                    setters.setXcCategory(p.xc.startsWith('gga') ? 'gga' : p.xc.startsWith('mgga') ? 'mgga' : p.xc.startsWith('hyb') ? 'hybrid' : 'lda');
+                                    setters.setXcOverride('');
+                                    setters.setSpeciesMode(p.species);
+                                    setters.setPseudopotentialSet(p.species === 'builtin_standard' ? 'standard' : 'standard');
+                                    setters.setOctopusCalcMode(p.cmode);
+                                    setters.setGeomMode('preset');
+                                    setters.setConfirmedAtoms(null);
+                                    setters.setConfirmedLabel('');
                                     if (p.cmode === 'td') {
-                                        setOctopusTdSteps('2000');
-                                        setOctopusTdTimeStep('0.1');
-                                        setTdExcitationType('delta');
-                                        setTdFieldAmplitude('0.01');
+                                        setters.setOctopusTdSteps('2000');
+                                        setters.setOctopusTdTimeStep('0.1');
+                                        setters.setTdExcitationType('delta');
+                                        setters.setTdFieldAmplitude('0.01');
                                     }
                                 }}
                                 disabled={isComputing}
@@ -1896,16 +1283,16 @@ function DiracSolverView() {
                     </div>
                 )}
 
-                {engineMode === 'vasp' ? (
+                {config.engineMode === 'vasp' ? (
                     <>
                         {/* ── VASP System Configuration ── */}
                         <Section title="VASP System Configuration" icon={<Grid3x3 className="w-4 h-4 text-purple-400" />}>
                             <Field label="Molecule / Atom">
-                                <select value={octopusMolecule} onChange={e => {
-                                    setOctopusMolecule(e.target.value);
-                                    setGeomMode('preset');
-                                    setConfirmedAtoms(null);
-                                    setConfirmedLabel('');
+                                <select value={config.octopusMolecule} onChange={e => {
+                                    setters.setOctopusMolecule(e.target.value);
+                                    setters.setGeomMode('preset');
+                                    setters.setConfirmedAtoms(null);
+                                    setters.setConfirmedLabel('');
                                 }} className={selectClass}>
                                     <optgroup label="Atoms">
                                         <option value="H">H — Hydrogen</option>
@@ -1918,49 +1305,49 @@ function DiracSolverView() {
                                 </select>
                             </Field>
                             <Field label="Box Size (Å)" hint="Simulation cell edge length">
-                                <input type="number" value={vaspBox} onChange={e => setVaspBox(e.target.value)} step="1.0" min="4.0" className={inputClass} />
+                                <input type="number" value={config.vaspBox} onChange={e => setters.setVaspBox(e.target.value)} step="1.0" min="4.0" className={inputClass} />
                             </Field>
                         </Section>
 
                         {/* ── VASP SCF Control ── */}
                         <Section title="VASP SCF Control" icon={<Settings2 className="w-4 h-4 text-purple-400" />}>
                             <Field label="ENCUT (eV)" hint="Plane-wave cutoff energy. Default 400 eV.">
-                                <input type="number" value={vaspEncuit} onChange={e => setVaspEncuit(e.target.value)} step="50" min="100" className={inputClass} />
+                                <input type="number" value={config.vaspEncuit} onChange={e => setters.setVaspEncuit(e.target.value)} step="50" min="100" className={inputClass} />
                             </Field>
                             <Field label="EDIFF" hint="SCF convergence criterion. Default 1e-6.">
-                                <input type="text" value={vaspEdiff} onChange={e => setVaspEdiff(e.target.value)} className={inputClass} />
+                                <input type="text" value={config.vaspEdiff} onChange={e => setters.setVaspEdiff(e.target.value)} className={inputClass} />
                             </Field>
                             <Field label="NELMIN" hint="Minimum SCF iterations. Default 5.">
-                                <input type="number" value={vaspNelmin} onChange={e => setVaspNelmin(e.target.value)} step="1" min="1" className={inputClass} />
+                                <input type="number" value={config.vaspNelmin} onChange={e => setters.setVaspNelmin(e.target.value)} step="1" min="1" className={inputClass} />
                             </Field>
                             <Field label="ISMEAR" hint="Smearing method: 0=Gaussian, 1=Methfessel-Paxton, -1=Fermi">
-                                <select value={vaspIsmear} onChange={e => setVaspIsmear(e.target.value)} className={selectClass}>
+                                <select value={config.vaspIsmear} onChange={e => setters.setVaspIsmear(e.target.value)} className={selectClass}>
                                     <option value="0">0 — Gaussian</option>
                                     <option value="1">1 — Methfessel-Paxton</option>
                                     <option value="-1">-1 — Fermi</option>
                                 </select>
                             </Field>
                             <Field label="SIGMA (eV)" hint="Smearing width. Default 0.01 eV.">
-                                <input type="text" value={vaspSigma} onChange={e => setVaspSigma(e.target.value)} className={inputClass} />
+                                <input type="text" value={config.vaspSigma} onChange={e => setters.setVaspSigma(e.target.value)} className={inputClass} />
                             </Field>
                         </Section>
 
                         {/* ── VASP Electronic Control ── */}
                         <Section title="VASP Electronic Control" icon={<Zap className="w-4 h-4 text-purple-400" />}>
                             <Field label="NELECT" hint="Total electron count. Leave empty for neutral. Set N-1 for ΔSCF cation.">
-                                <input type="text" value={vaspNelect} onChange={e => setVaspNelect(e.target.value)} placeholder="auto (neutral)" className={inputClass} />
+                                <input type="text" value={config.vaspNelect} onChange={e => setters.setVaspNelect(e.target.value)} placeholder="auto (neutral)" className={inputClass} />
                             </Field>
                             <Field label="NBANDS" hint="Number of bands. Leave empty for VASP default.">
-                                <input type="text" value={vaspNbands} onChange={e => setVaspNbands(e.target.value)} placeholder="auto" className={inputClass} />
+                                <input type="text" value={config.vaspNbands} onChange={e => setters.setVaspNbands(e.target.value)} placeholder="auto" className={inputClass} />
                             </Field>
                             <Field label="K-Points">
-                                <select value={vaspKpointsType} onChange={e => setVaspKpointsType(e.target.value)} className={selectClass}>
+                                <select value={config.vaspKpointsType} onChange={e => setters.setVaspKpointsType(e.target.value)} className={selectClass}>
                                     <option value="gamma">Gamma-only (molecules)</option>
                                     <option value="monkhorst">Monkhorst-Pack (periodic)</option>
                                 </select>
                             </Field>
                             <Field label="Precision">
-                                <select value={vaspPrec} onChange={e => setVaspPrec(e.target.value)} className={selectClass}>
+                                <select value={config.vaspPrec} onChange={e => setters.setVaspPrec(e.target.value)} className={selectClass}>
                                     <option value="Normal">Normal</option>
                                     <option value="Accurate">Accurate</option>
                                 </select>
@@ -1970,14 +1357,14 @@ function DiracSolverView() {
                         {/* ── Exchange-Correlation ── */}
                         <Section title="Exchange-Correlation" icon={<Atom className="w-4 h-4 text-purple-400" />}>
                             <Field label="XC Functional">
-                                <select value={xcOverride || xcPreset} onChange={e => { setXcOverride(e.target.value); setXcPreset(e.target.value); }} className={selectClass}>
+                                <select value={config.xcOverride || config.xcPreset} onChange={e => { setters.setXcOverride(e.target.value); setters.setXcPreset(e.target.value); }} className={selectClass}>
                                     <option value="gga_x_pbe+gga_c_pbe">PBE (GGA)</option>
                                     <option value="lda_x+lda_c_pz">LDA (Ceperley-Alder)</option>
                                     <option value="hartree_fock">Hartree-Fock (Exact Exchange)</option>
                                 </select>
                             </Field>
                             <Field label="Spin">
-                                <select value={spinComponents} onChange={e => setSpinComponents(e.target.value)} className={selectClass}>
+                                <select value={config.spinComponents} onChange={e => setters.setSpinComponents(e.target.value)} className={selectClass}>
                                     <option value="unpolarized">Unpolarized</option>
                                     <option value="polarized">Spin-Polarized</option>
                                 </select>
@@ -1985,51 +1372,51 @@ function DiracSolverView() {
                         </Section>
 
                         {/* ── Molecule Preview ── */}
-                        {octopusMolecule && MOLECULE_ATOMS[octopusMolecule] && (
+                        {config.octopusMolecule && MOLECULE_ATOMS[config.octopusMolecule] && (
                             <div className="rounded-lg p-3" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
                                 <div className="text-xs font-medium mb-2" style={{ color: '#8892a4' }}>Molecule Preview</div>
                                 <Mol3DViewer
-                                    boxRadius={parseFloat(vaspBox) || 10}
-                                    atoms={MOLECULE_ATOMS[octopusMolecule]}
-                                    title={octopusMolecule}
+                                    boxRadius={parseFloat(config.vaspBox) || 10}
+                                    atoms={MOLECULE_ATOMS[config.octopusMolecule]}
+                                    title={config.octopusMolecule}
                                 />
                             </div>
                         )}
                     </>
-                ) : engineMode === 'local1D' ? (
+                ) : config.engineMode === 'local1D' ? (
                     <>
                         {/* A. Physical Constants */}
                         <Section title="Physical Constants" icon={<Atom className="w-4 h-4 text-purple-400" />}>
                             <Field label="Unit System">
-                                <select value={unitSystem} onChange={e => setUnitSystem(e.target.value)} className={selectClass}>
+                                <select value={config.unitSystem} onChange={e => setters.setUnitSystem(e.target.value)} className={selectClass}>
                                     <option value="natural">Natural Units (ℏ=c=1)</option>
                                     <option value="SI">SI Units</option>
                                     <option value="gaussian">Gaussian Units</option>
                                 </select>
                             </Field>
                             <div className="grid grid-cols-2 gap-2">
-                                <Field label={`Particle Mass${unitSystem === 'natural' ? '' : ' (MeV/c²)'}`}>
-                                    <input type="number" value={particleMass} onChange={e => setParticleMass(e.target.value)}
+                                <Field label={`Particle Mass${config.unitSystem === 'natural' ? '' : ' (MeV/c²)'}`}>
+                                    <input type="number" value={config.particleMass} onChange={e => setters.setParticleMass(e.target.value)}
                                         step="0.001" className={inputClass} />
                                 </Field>
                                 <Field label="Charge (e)">
-                                    <input type="number" value={particleCharge} onChange={e => setParticleCharge(e.target.value)}
+                                    <input type="number" value={config.particleCharge} onChange={e => setters.setParticleCharge(e.target.value)}
                                         className={inputClass} />
                                 </Field>
                             </div>
-                            <Field label={`Electron Energy${unitSystem === 'natural' ? '' : ' (MeV)'}`} hint="Total energy of the incident particle">
-                                <input type="number" value={electronEnergy} onChange={e => setElectronEnergy(e.target.value)}
+                            <Field label={`Electron Energy${config.unitSystem === 'natural' ? '' : ' (MeV)'}`} hint="Total energy of the incident particle">
+                                <input type="number" value={config.electronEnergy} onChange={e => setters.setElectronEnergy(e.target.value)}
                                     step="0.1" className={inputClass} />
                             </Field>
                             <div className="text-[10px] text-gray-600 bg-[#18181b] rounded-lg p-2 mt-1">
-                                α = e²/(4πℏc) ≈ 1/137.036 &nbsp;|&nbsp; λ_C = ℏ/(mc) ≈ {(1 / parseFloat(particleMass || '0.511')).toFixed(4)}
+                                α = e²/(4πℏc) ≈ 1/137.036 &nbsp;|&nbsp; λ_C = ℏ/(mc) ≈ {(1 / parseFloat(config.particleMass || '0.511')).toFixed(4)}
                             </div>
                         </Section>
 
                         {/* B. Geometry & Grid */}
                         <Section title="Geometry & Grid" icon={<Grid3x3 className="w-4 h-4 text-green-400" />}>
                             <Field label="Dimensionality">
-                                <select value={dimensionality} onChange={e => setDimensionality(e.target.value)} className={selectClass}>
+                                <select value={config.dimensionality} onChange={e => setters.setDimensionality(e.target.value)} className={selectClass}>
                                     <option value="1D">1D — Linear</option>
                                     <option value="2D">2D — Planar</option>
                                     <option value="3D">3D — Volumetric</option>
@@ -2037,20 +1424,20 @@ function DiracSolverView() {
                             </Field>
                             <div className="grid grid-cols-2 gap-2">
                                 <Field label="Spatial Range L" hint="Domain: [-L/2, L/2]">
-                                    <input type="number" value={spatialRange} onChange={e => setSpatialRange(e.target.value)}
+                                    <input type="number" value={config.spatialRange} onChange={e => setters.setSpatialRange(e.target.value)}
                                         step="0.5" className={inputClass} />
                                 </Field>
                                 <Field label="Grid Points N">
-                                    <input type="number" value={gridPoints} onChange={e => setGridPoints(e.target.value)}
+                                    <input type="number" value={config.gridPoints} onChange={e => setters.setGridPoints(e.target.value)}
                                         min="10" step="10" className={inputClass} />
                                 </Field>
                             </div>
                             <div className="text-[10px] text-gray-500 bg-[#18181b] rounded-lg p-2">
                                 δx = L/N = {isFinite(gridSpacing) ? gridSpacing.toFixed(6) : '—'} &nbsp;|&nbsp;
-                                Total cells: {parseInt(gridPoints) || 0}{dimensionality !== '1D' && <span>^{dimensionality === '2D' ? '2' : '3'}</span>}
+                                Total cells: {parseInt(config.gridPoints) || 0}{config.dimensionality !== '1D' && <span>^{config.dimensionality === '2D' ? '2' : '3'}</span>}
                             </div>
                             <Field label="Boundary Condition">
-                                <select value={boundaryCondition} onChange={e => setBoundaryCondition(e.target.value)} className={selectClass}>
+                                <select value={config.boundaryCondition} onChange={e => setters.setBoundaryCondition(e.target.value)} className={selectClass}>
                                     <option value="dirichlet">Dirichlet (ψ=0 at boundary)</option>
                                     <option value="periodic">Periodic (ψ(0) = ψ(L))</option>
                                     <option value="absorbing">Absorbing (PML)</option>
@@ -2061,17 +1448,17 @@ function DiracSolverView() {
                         {/* C. Potential Field */}
                         <Section title="Potential Field V(r)" icon={<Zap className="w-4 h-4 text-yellow-400" />}>
                             <div className="flex gap-2 mb-2">
-                                <button onClick={() => setPotentialDataMode('analytical')}
-                                    className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${potentialDataMode === 'analytical' ? 'bg-yellow-600/20 text-yellow-300 border border-yellow-600' : 'bg-[#1a1a1e] text-gray-500 border border-gray-800'
+                                <button onClick={() => setters.setPotentialDataMode('analytical')}
+                                    className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${config.potentialDataMode === 'analytical' ? 'bg-yellow-600/20 text-yellow-300 border border-yellow-600' : 'bg-[#1a1a1e] text-gray-500 border border-gray-800'
                                         }`}>Analytical</button>
-                                <button onClick={() => setPotentialDataMode('data')}
-                                    className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${potentialDataMode === 'data' ? 'bg-yellow-600/20 text-yellow-300 border border-yellow-600' : 'bg-[#1a1a1e] text-gray-500 border border-gray-800'
+                                <button onClick={() => setters.setPotentialDataMode('data')}
+                                    className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${config.potentialDataMode === 'data' ? 'bg-yellow-600/20 text-yellow-300 border border-yellow-600' : 'bg-[#1a1a1e] text-gray-500 border border-gray-800'
                                         }`}>Data Import</button>
                             </div>
-                            {potentialDataMode === 'analytical' ? (
+                            {config.potentialDataMode === 'analytical' ? (
                                 <>
                                     <Field label="Potential Type">
-                                        <select value={potentialType} onChange={e => setPotentialType(e.target.value)} className={selectClass}>
+                                        <select value={config.potentialType} onChange={e => setters.setPotentialType(e.target.value)} className={selectClass}>
                                             <option value="FreeSpace">Free Space (V=0)</option>
                                             <option value="InfiniteWell">Infinite Square Well</option>
                                             <option value="FiniteWell">Finite Square Well</option>
@@ -2081,27 +1468,27 @@ function DiracSolverView() {
                                             <option value="Custom">Custom Expression</option>
                                         </select>
                                     </Field>
-                                    {(potentialType === 'FiniteWell' || potentialType === 'InfiniteWell') && (
+                                    {(config.potentialType === 'FiniteWell' || config.potentialType === 'InfiniteWell') && (
                                         <div className="grid grid-cols-2 gap-2">
                                             <Field label="Well Width">
-                                                <input type="number" value={wellWidth} onChange={e => setWellWidth(e.target.value)}
+                                                <input type="number" value={config.wellWidth} onChange={e => setters.setWellWidth(e.target.value)}
                                                     step="0.1" className={inputClass} />
                                             </Field>
                                             <Field label="Depth V₀">
-                                                <input type="number" value={potentialStrength} onChange={e => setPotentialStrength(e.target.value)}
+                                                <input type="number" value={config.potentialStrength} onChange={e => setters.setPotentialStrength(e.target.value)}
                                                     step="0.1" className={inputClass} />
                                             </Field>
                                         </div>
                                     )}
-                                    {potentialType === 'Coulomb' && (
+                                    {config.potentialType === 'Coulomb' && (
                                         <Field label="Nuclear Charge Z">
-                                            <input type="number" value={potentialStrength} onChange={e => setPotentialStrength(e.target.value)}
+                                            <input type="number" value={config.potentialStrength} onChange={e => setters.setPotentialStrength(e.target.value)}
                                                 step="1" className={inputClass} />
                                         </Field>
                                     )}
-                                    {potentialType === 'Custom' && (
+                                    {config.potentialType === 'Custom' && (
                                         <Field label="V(x) Expression" hint="Use x,y,z variables. e.g., -1/sqrt(x^2+1)">
-                                            <input type="text" value={customExpression} onChange={e => setCustomExpression(e.target.value)}
+                                            <input type="text" value={config.customExpression} onChange={e => setters.setCustomExpression(e.target.value)}
                                                 placeholder="-1/sqrt(x^2+1)" className={inputClass} />
                                         </Field>
                                     )}
@@ -2117,58 +1504,58 @@ function DiracSolverView() {
                         {/* D. Equation & Picture */}
                         <Section title="Equation & Formalism" icon={<FlaskConical className="w-4 h-4 text-cyan-400" />}>
                             <Field label="Governing Equation">
-                                <select value={equationType} onChange={e => setEquationType(e.target.value)} className={selectClass}>
+                                <select value={config.equationType} onChange={e => setters.setEquationType(e.target.value)} className={selectClass}>
                                     <option value="Schrodinger">Schrödinger Equation</option>
                                     <option value="Dirac">Dirac Equation</option>
                                     <option value="KleinGordon">Klein-Gordon Equation</option>
                                 </select>
                             </Field>
                             <Field label="Problem Type">
-                                <select value={problemType} onChange={e => setProblemType(e.target.value)} className={selectClass}>
+                                <select value={config.problemType} onChange={e => setters.setProblemType(e.target.value)} className={selectClass}>
                                     <option value="boundstate">Bound State (Eigenvalue)</option>
                                     <option value="timeevolution">Time Evolution</option>
                                     <option value="scattering">Scattering</option>
                                 </select>
                             </Field>
-                            <Field label="Quantum Picture" hint={`Auto: ${problemType === 'scattering' ? 'Interaction' : 'Schrödinger'} picture`}>
-                                <select value={picture} onChange={e => setPicture(e.target.value)} className={selectClass}>
+                            <Field label="Quantum Picture" hint={`Auto: ${config.problemType === 'scattering' ? 'Interaction' : 'Schrödinger'} config.picture`}>
+                                <select value={config.picture} onChange={e => setters.setPicture(e.target.value)} className={selectClass}>
                                     <option value="auto">Auto (recommended)</option>
                                     <option value="schrodinger">Schrödinger Picture</option>
                                     <option value="interaction">Interaction Picture</option>
                                 </select>
                             </Field>
                             <div className="text-[10px] text-cyan-800 bg-cyan-950/30 border border-cyan-900/50 rounded-lg p-2">
-                                {equationType === 'Dirac' && '(iγᵘ∂ᵘ - m)ψ = 0 — 4-component spinor, relativistic'}
-                                {equationType === 'Schrodinger' && 'iℏ∂ψ/∂t = Hψ — non-relativistic wave equation'}
-                                {equationType === 'KleinGordon' && '(∂ᵘ∂ᵘ + m²)φ = 0 — spin-0 relativistic'}
+                                {config.equationType === 'Dirac' && '(iγᵘ∂ᵘ - m)ψ = 0 — 4-component spinor, relativistic'}
+                                {config.equationType === 'Schrodinger' && 'iℏ∂ψ/∂t = Hψ — non-relativistic wave equation'}
+                                {config.equationType === 'KleinGordon' && '(∂ᵘ∂ᵘ + m²)φ = 0 — spin-0 relativistic'}
                             </div>
                         </Section>
 
                         {/* E. Time Evolution Config */}
-                        {problemType === 'timeevolution' && (
+                        {config.problemType === 'timeevolution' && (
                             <Section title="Time Evolution Config" icon={<FlaskConical className="w-4 h-4 text-pink-400" />}>
                                 <div className="grid grid-cols-2 gap-2">
                                     <Field label="Total Time">
-                                        <input type="number" value={totalTime} onChange={e => setTotalTime(e.target.value)}
+                                        <input type="number" value={config.totalTime} onChange={e => setters.setTotalTime(e.target.value)}
                                             step="1" className={inputClass} />
                                     </Field>
                                     <Field label="Time Steps">
-                                        <input type="number" value={numTimeSteps} onChange={e => setNumTimeSteps(e.target.value)}
+                                        <input type="number" value={config.numTimeSteps} onChange={e => setters.setNumTimeSteps(e.target.value)}
                                             step="10" className={inputClass} />
                                     </Field>
                                 </div>
                                 <div className="text-[10px] text-pink-900/70 mb-1 font-medium">Initial Gaussian Wavepacket ψ₀(x)</div>
                                 <div className="grid grid-cols-3 gap-2">
                                     <Field label="Center x₀" hint="Fraction of range">
-                                        <input type="number" value={gaussianCenter} onChange={e => setGaussianCenter(e.target.value)}
+                                        <input type="number" value={config.gaussianCenter} onChange={e => setters.setGaussianCenter(e.target.value)}
                                             step="0.1" className={inputClass} />
                                     </Field>
                                     <Field label="Width σ" hint="Fraction of range">
-                                        <input type="number" value={gaussianWidth} onChange={e => setGaussianWidth(e.target.value)}
+                                        <input type="number" value={config.gaussianWidth} onChange={e => setters.setGaussianWidth(e.target.value)}
                                             step="0.05" min="0.01" className={inputClass} />
                                     </Field>
                                     <Field label="Momentum k₀">
-                                        <input type="number" value={gaussianMomentum} onChange={e => setGaussianMomentum(e.target.value)}
+                                        <input type="number" value={config.gaussianMomentum} onChange={e => setters.setGaussianMomentum(e.target.value)}
                                             step="1" className={inputClass} />
                                     </Field>
                                 </div>
@@ -2176,19 +1563,19 @@ function DiracSolverView() {
                         )}
 
                         {/* F. Scattering Config */}
-                        {problemType === 'scattering' && (
+                        {config.problemType === 'scattering' && (
                             <Section title="Scattering Config" icon={<Zap className="w-4 h-4 text-orange-400" />}>
                                 <div className="grid grid-cols-3 gap-2">
                                     <Field label="E min">
-                                        <input type="number" value={scatteringEMin} onChange={e => setScatteringEMin(e.target.value)}
+                                        <input type="number" value={config.scatteringEMin} onChange={e => setters.setScatteringEMin(e.target.value)}
                                             step="0.5" className={inputClass} />
                                     </Field>
                                     <Field label="E max">
-                                        <input type="number" value={scatteringEMax} onChange={e => setScatteringEMax(e.target.value)}
+                                        <input type="number" value={config.scatteringEMax} onChange={e => setters.setScatteringEMax(e.target.value)}
                                             step="1" className={inputClass} />
                                     </Field>
                                     <Field label="Steps">
-                                        <input type="number" value={scatteringESteps} onChange={e => setScatteringESteps(e.target.value)}
+                                        <input type="number" value={config.scatteringESteps} onChange={e => setters.setScatteringESteps(e.target.value)}
                                             step="50" className={inputClass} />
                                     </Field>
                                 </div>
@@ -2203,14 +1590,14 @@ function DiracSolverView() {
                     <>
                         <Section title="Octopus System Configuration" icon={<Grid3x3 className="w-4 h-4 text-indigo-400" />}>
                             <Field label="Dimensionality">
-                                <select value={octopusDimensions} onChange={e => setOctopusDimensions(e.target.value)} className={selectClass}>
+                                <select value={config.octopusDimensions} onChange={e => setters.setOctopusDimensions(e.target.value)} className={selectClass}>
                                     <option value="1D">1D — Model System</option>
                                     <option value="2D">2D — Planar</option>
                                     <option value="3D">3D — Molecular / Crystal</option>
                                 </select>
                             </Field>
                             <Field label="Calculation Mode">
-                                <select value={octopusCalcMode} onChange={e => setOctopusCalcMode(e.target.value as any)} className={selectClass}>
+                                <select value={config.octopusCalcMode} onChange={e => setters.setOctopusCalcMode(e.target.value as any)} className={selectClass}>
                                     <optgroup label="Standard">
                                         <option value="gs">Ground State (GS)</option>
                                         <option value="td">Time-Dependent (TD)</option>
@@ -2218,39 +1605,40 @@ function DiracSolverView() {
                                     </optgroup>
                                     <optgroup label="Advanced">
                                         <option value="opt">Geometry Optimization</option>
-                                        <option value="em">EM / Linear Response</option>
+                                        <option value="casida">Casida (LR-TDDFT)</option>
+<option value="em">EM / Linear Response</option>
                                         <option value="vib">Vibrational Modes</option>
                                     </optgroup>
                                 </select>
                             </Field>
 
-                            {octopusDimensions !== '1D' ? (
+                            {config.octopusDimensions !== '1D' ? (
                                 <Field label="Molecule / Crystal">
                                     {/* Preset / Custom mode selector */}
                                     <div style={{ display: 'flex', border: '1px solid #1f2937', borderRadius: 6, overflow: 'hidden', marginBottom: 6 }}>
                                         {(['preset', 'custom'] as const).map(m => (
                                             <button key={m} onClick={() => {
-                                                setGeomMode(m);
-                                                if (m === 'preset') { setConfirmedAtoms(null); setConfirmedLabel(''); }
+                                                setters.setGeomMode(m);
+                                                if (m === 'preset') { setters.setConfirmedAtoms(null); setters.setConfirmedLabel(''); }
                                             }} style={{
                                                 flex: 1, padding: '4px 0', fontSize: 10, cursor: 'pointer', border: 'none',
-                                                background: geomMode === m ? 'rgba(0,212,255,0.12)' : 'transparent',
-                                                color: geomMode === m ? '#00d4ff' : '#4b5563',
+                                                background: config.geomMode === m ? 'rgba(0,212,255,0.12)' : 'transparent',
+                                                color: config.geomMode === m ? '#00d4ff' : '#4b5563',
                                             }}>
                                                 {m === 'preset' ? '预设分子' : '自定义几何'}
                                             </button>
                                         ))}
                                     </div>
 
-                                    {geomMode === 'preset' ? (<>
+                                    {config.geomMode === 'preset' ? (<>
                                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                                    <select value={octopusMolecule} onChange={e => {
-                                        setOctopusMolecule(e.target.value);
+                                    <select value={config.octopusMolecule} onChange={e => {
+                                        setters.setOctopusMolecule(e.target.value);
                                         // Auto-set periodic dims and lattice constants for crystals
                                         if (['Si', 'Al2O3'].includes(e.target.value)) {
-                                            setPeriodicDimensions('3');
+                                            setters.setPeriodicDimensions('3');
                                         } else {
-                                            setPeriodicDimensions('0');
+                                            setters.setPeriodicDimensions('0');
                                         }
                                         // Update lattice constant display to match crystal defaults
                                         const _latticeDefaults: Record<string, [string,string,string]> = {
@@ -2258,8 +1646,8 @@ function DiracSolverView() {
                                             Al2O3: ['5.128',  '4.440',  '13.900'], // primitive cell a₁, a₂, c
                                         };
                                         const _ld = _latticeDefaults[e.target.value];
-                                        if (_ld) { setLatticeA(_ld[0]); setLatticeB(_ld[1]); setLatticeC(_ld[2]); }
-                                        else { setLatticeA('10.263'); setLatticeB('10.263'); setLatticeC('10.263'); }
+                                        if (_ld) { setters.setLatticeA(_ld[0]); setters.setLatticeB(_ld[1]); setters.setLatticeC(_ld[2]); }
+                                        else { setters.setLatticeA('10.263'); setters.setLatticeB('10.263'); setters.setLatticeC('10.263'); }
                                     }} className={selectClass} style={{ flex: 1 }}>
                                         <optgroup label="Atoms">
                                             <option value="H">H — Hydrogen</option>
@@ -2288,23 +1676,23 @@ function DiracSolverView() {
                                     </select>
                                     {/* 3D preview toggle button */}
                                     <button
-                                        onClick={() => setShowGeomPreview(v => !v)}
+                                        onClick={() => setters.setShowGeomPreview(!config.showGeomPreview)}
                                         title="3D 几何构型预览"
                                         style={{
                                             padding: '6px 10px', fontSize: 11, cursor: 'pointer',
                                             border: 'none', borderRadius: 7, whiteSpace: 'nowrap',
-                                            background: showGeomPreview ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.05)',
-                                            outline: showGeomPreview ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
-                                            color: showGeomPreview ? '#00d4ff' : '#8892a4',
+                                            background: config.showGeomPreview ? 'rgba(0,212,255,0.12)' : 'rgba(255,255,255,0.05)',
+                                            outline: config.showGeomPreview ? '1px solid rgba(0,212,255,0.4)' : '1px solid #1f2937',
+                                            color: config.showGeomPreview ? '#00d4ff' : '#8892a4',
                                         }}
                                     >
                                         3D ◈
                                     </button>
                                     </div>
                                     {/* 3D preview panel */}
-                                    {showGeomPreview && (() => {
-                                        const previewAtoms = MOLECULE_ATOMS[octopusMolecule];
-                                        const boxR = parseFloat(octopusRadius) || 5;
+                                    {config.showGeomPreview && (() => {
+                                        const previewAtoms = MOLECULE_ATOMS[config.octopusMolecule];
+                                        const boxR = parseFloat(config.octopusRadius) || 5;
                                         return previewAtoms ? (
                                             <div style={{ marginTop: 8 }}>
                                                 <Mol3DViewer
@@ -2321,53 +1709,55 @@ function DiracSolverView() {
                                     </>) : (
                                         /* Custom geometry editor */
                                         <>
-                                        <GeometryEditor
-                                            onChange={setCustomAtoms}
-                                            boxRadius={parseFloat(octopusRadius) || 5}
-                                            initAtoms={MOLECULE_ATOMS[octopusMolecule]}
-                                            initLabel={octopusMolecule}
-                                        />
+                                        <Suspense fallback={<div className="p-4 text-gray-500 text-xs">Loading editor...</div>}>
+                                            <GeometryEditor
+                                                onChange={setters.setCustomAtoms}
+                                                boxRadius={parseFloat(config.octopusRadius) || 5}
+                                                initAtoms={MOLECULE_ATOMS[config.octopusMolecule]}
+                                                initLabel={config.octopusMolecule}
+                                            />
+                                        </Suspense>
                                         {/* ── Confirm button ── */}
                                         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
                                             <button
-                                                disabled={customAtoms.length === 0}
+                                                disabled={config.customAtoms.length === 0}
                                                 onClick={() => {
-                                                    setConfirmedAtoms([...customAtoms]);
+                                                    setters.setConfirmedAtoms([...config.customAtoms]);
                                                     const cnt: Record<string,number> = {};
-                                                    customAtoms.forEach(a => { cnt[a.symbol] = (cnt[a.symbol] || 0) + 1; });
+                                                    config.customAtoms.forEach(a => { cnt[a.symbol] = (cnt[a.symbol] || 0) + 1; });
                                                     const f = Object.entries(cnt).sort().map(([s,n]) => n===1?s:`${s}${n}`).join('');
-                                                    setConfirmedLabel(f || 'Custom');
+                                                    setters.setConfirmedLabel(f || 'Custom');
                                                 }}
                                                 style={{
                                                     width: '100%', padding: '7px 0', fontSize: 11,
-                                                    cursor: customAtoms.length === 0 ? 'not-allowed' : 'pointer',
+                                                    cursor: config.customAtoms.length === 0 ? 'not-allowed' : 'pointer',
                                                     border: 'none', borderRadius: 6,
-                                                    background: customAtoms.length === 0
+                                                    background: config.customAtoms.length === 0
                                                         ? 'rgba(255,255,255,0.04)'
                                                         : 'rgba(0,212,255,0.12)',
-                                                    outline: customAtoms.length === 0
+                                                    outline: config.customAtoms.length === 0
                                                         ? '1px solid #1f2937'
                                                         : '1px solid rgba(0,212,255,0.4)',
-                                                    color: customAtoms.length === 0 ? '#374151' : '#00d4ff',
+                                                    color: config.customAtoms.length === 0 ? '#374151' : '#00d4ff',
                                                     fontWeight: 600, letterSpacing: '0.04em',
                                                     transition: 'all 0.15s',
                                                 }}
                                             >
                                                 ✓ 确认坐标用于计算
-                                                {customAtoms.length > 0 && ` (${customAtoms.length} 原子)`}
+                                                {config.customAtoms.length > 0 && ` (${config.customAtoms.length} 原子)`}
                                             </button>
-                                            {confirmedAtoms && confirmedAtoms.length > 0
+                                            {config.confirmedAtoms && config.confirmedAtoms.length > 0
                                                 ? (
                                                     <>
                                                     <div style={{ fontSize: 9, color: '#22c55e', padding: '3px 8px',
                                                         background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
                                                         borderRadius: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                                                         <span>✓</span>
-                                                        <span>已确认：<b style={{ fontFamily: 'monospace' }}>{confirmedLabel}</b> · {confirmedAtoms.length} 原子 — 将用于 Octopus 输入文件</span>
+                                                        <span>已确认：<b style={{ fontFamily: 'monospace' }}>{config.confirmedLabel}</b> · {config.confirmedAtoms.length} 原子 — 将用于 Octopus 输入文件</span>
                                                     </div>
                                                     {(() => {
-                                                        const rSet = parseFloat(octopusRadius) || 5;
-                                                        const maxDist = Math.max(...confirmedAtoms.map(a =>
+                                                        const rSet = parseFloat(config.octopusRadius) || 5;
+                                                        const maxDist = Math.max(...config.confirmedAtoms.map(a =>
                                                             Math.sqrt(a.x**2 + a.y**2 + a.z**2)));
                                                         const minR = Math.round((maxDist + 5.0) * 10) / 10;
                                                         if (maxDist > rSet) {
@@ -2394,12 +1784,12 @@ function DiracSolverView() {
                                         </div>
                                         </>
                                     )}
-                                    {octopusDimensions === '2D' && geomMode === 'preset' && (
+                                    {config.octopusDimensions === '2D' && config.geomMode === 'preset' && (
                                         <div className="text-[10px] text-yellow-600 bg-yellow-950/30 border border-yellow-900/50 rounded-lg p-2 mt-1">
                                             2D mode: bond axes projected onto xy-plane.
                                         </div>
                                     )}
-                                    {['Si', 'Al2O3'].includes(octopusMolecule) && (
+                                    {['Si', 'Al2O3'].includes(config.octopusMolecule) && (
                                         <div className="text-[10px] mt-1 p-2 rounded-lg" style={{ color: '#00d4ff', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.2)' }}>
                                             Periodic crystal — PeriodicDimensions defaults to 3 (bulk). Override below for
                                             slab (2) or waveguide (1) simulations. LatticeVectors auto-loaded.
@@ -2408,7 +1798,7 @@ function DiracSolverView() {
                                 </Field>
                             ) : (
                                 <Section title="Model Potential" icon={<Zap className="w-4 h-4 text-yellow-400" />}>
-                                    <select value={potentialType} onChange={e => setPotentialType(e.target.value)} className={selectClass}>
+                                    <select value={config.potentialType} onChange={e => setters.setPotentialType(e.target.value)} className={selectClass}>
                                         <option value="Harmonic">Harmonic Oscillator</option>
                                         <option value="InfiniteWell">Infinite Square Well</option>
                                         <option value="Custom">Custom Formula</option>
@@ -2418,35 +1808,35 @@ function DiracSolverView() {
                         </Section>
 
                         {/* ── Periodic System Settings ── */}
-                        <Section title="Periodic System Settings" icon={<Grid3x3 className="w-4 h-4 text-purple-400" />} defaultOpen={periodicDimensions !== '0'}>
+                        <Section title="Periodic System Settings" icon={<Grid3x3 className="w-4 h-4 text-purple-400" />} defaultOpen={config.periodicDimensions !== '0'}>
                             <Field label="Periodic Dimensions" hint="0 = isolated; 1/2/3 = periodic along x/xy/xyz">
-                                <select value={periodicDimensions} onChange={e => setPeriodicDimensions(e.target.value as any)} className={selectClass}>
+                                <select value={config.periodicDimensions} onChange={e => setters.setPeriodicDimensions(e.target.value as any)} className={selectClass}>
                                     <option value="0">0 — Isolated (Dirichlet BC)</option>
                                     <option value="1">1 — Chain/wire (x periodic)</option>
                                     <option value="2">2 — Slab/surface (xy periodic)</option>
                                     <option value="3">3 — Bulk crystal (xyz periodic)</option>
                                 </select>
                             </Field>
-                            {periodicDimensions !== '0' && (
+                            {config.periodicDimensions !== '0' && (
                                 <>
                                     <div className="text-[10px] mb-1" style={{ color: '#8892a4' }}>Lattice constants (Angstrom)</div>
-                                    <div className="grid gap-2" style={{ gridTemplateColumns: periodicDimensions === '1' ? '1fr' : periodicDimensions === '2' ? '1fr 1fr' : '1fr 1fr 1fr' }}>
+                                    <div className="grid gap-2" style={{ gridTemplateColumns: config.periodicDimensions === '1' ? '1fr' : config.periodicDimensions === '2' ? '1fr 1fr' : '1fr 1fr 1fr' }}>
                                         <Field label="a">
-                                            <input type="number" value={latticeA} onChange={e => setLatticeA(e.target.value)} step="0.1" className={inputClass} />
+                                            <input type="number" value={config.latticeA} onChange={e => setters.setLatticeA(e.target.value)} step="0.1" className={inputClass} />
                                         </Field>
-                                        {periodicDimensions !== '1' && (
+                                        {config.periodicDimensions !== '1' && (
                                             <Field label="b">
-                                                <input type="number" value={latticeB} onChange={e => setLatticeB(e.target.value)} step="0.1" className={inputClass} />
+                                                <input type="number" value={config.latticeB} onChange={e => setters.setLatticeB(e.target.value)} step="0.1" className={inputClass} />
                                             </Field>
                                         )}
-                                        {periodicDimensions === '3' && (
+                                        {config.periodicDimensions === '3' && (
                                             <Field label="c">
-                                                <input type="number" value={latticeC} onChange={e => setLatticeC(e.target.value)} step="0.1" className={inputClass} />
+                                                <input type="number" value={config.latticeC} onChange={e => setters.setLatticeC(e.target.value)} step="0.1" className={inputClass} />
                                             </Field>
                                         )}
                                     </div>
                                     <Field label="K-Points Grid" hint="Monkhorst-Pack, e.g. 4 4 4">
-                                        <input type="text" value={kpointsGrid} onChange={e => setKpointsGrid(e.target.value)}
+                                        <input type="text" value={config.kpointsGrid} onChange={e => setters.setKpointsGrid(e.target.value)}
                                             placeholder="2 2 2" className={inputClass} />
                                     </Field>
                                 </>
@@ -2456,14 +1846,14 @@ function DiracSolverView() {
                         <Section title="Mesh & Box Settings" icon={<Grid3x3 className="w-4 h-4 text-green-400" />}>
                             <div className="grid grid-cols-2 gap-2">
                                 <Field label="Grid Spacing (Angstrom)" hint="Smaller = more accurate, more RAM">
-                                    <input type="number" value={octopusSpacing} onChange={e => setOctopusSpacing(e.target.value)} step="0.05" min="0.1" className={inputClass} />
+                                    <input type="number" value={config.octopusSpacing} onChange={e => setters.setOctopusSpacing(e.target.value)} step="0.05" min="0.1" className={inputClass} />
                                 </Field>
                                 <Field label="Box Radius (Angstrom)">
-                                    <input type="number" value={octopusRadius} onChange={e => setOctopusRadius(e.target.value)} step="0.5" className={inputClass} />
+                                    <input type="number" value={config.octopusRadius} onChange={e => setters.setOctopusRadius(e.target.value)} step="0.5" className={inputClass} />
                                 </Field>
                             </div>
                             <Field label="Box Shape">
-                                <select value={octopusBoxShape} onChange={e => setOctopusBoxShape(e.target.value)} className={selectClass}>
+                                <select value={config.octopusBoxShape} onChange={e => setters.setOctopusBoxShape(e.target.value)} className={selectClass}>
                                     <option value="sphere">Sphere (default)</option>
                                     <option value="cylinder">Cylinder</option>
                                     <option value="parallelepiped">Parallelepiped</option>
@@ -2471,26 +1861,26 @@ function DiracSolverView() {
                                 </select>
                             </Field>
                             <Field label="FD Derivatives Order" hint="4 = default; 6/8 for high-accuracy but slower">
-                                <select value={derivativesOrder} onChange={e => setDerivativesOrder(e.target.value as any)} className={selectClass}>
+                                <select value={config.derivativesOrder} onChange={e => setters.setDerivativesOrder(e.target.value as any)} className={selectClass}>
                                     <option value="4">4th order (default)</option>
                                     <option value="6">6th order (high accuracy)</option>
                                     <option value="8">8th order (very high accuracy)</option>
                                 </select>
                             </Field>
                             <Field label="Non-Uniform Mesh (Curvilinear)" hint="Concentrates grid points near nuclei">
-                                <select value={curvMethod} onChange={e => setCurvMethod(e.target.value as any)} className={selectClass}>
+                                <select value={config.curvMethod} onChange={e => setters.setCurvMethod(e.target.value as any)} className={selectClass}>
                                     <option value="uniform">Uniform (default)</option>
                                     <option value="gygi">Gygi — non-uniform near atoms</option>
                                 </select>
                             </Field>
-                            {curvMethod === 'gygi' && (
+                            {config.curvMethod === 'gygi' && (
                                 <Field label="Gygi α" hint="Point concentration (0.1–1.0, typical 0.5)">
-                                    <input type="number" value={curvGygiAlpha} onChange={e => setCurvGygiAlpha(e.target.value)}
+                                    <input type="number" value={config.curvGygiAlpha} onChange={e => setters.setCurvGygiAlpha(e.target.value)}
                                         step="0.1" min="0.1" max="1.0" className={inputClass} />
                                 </Field>
                             )}
                             <label className="flex items-center gap-2 cursor-pointer" style={{ color: '#8892a4', fontSize: '12px' }}>
-                                <input type="checkbox" checked={doubleGrid} onChange={e => setDoubleGrid(e.target.checked)}
+                                <input type="checkbox" checked={config.doubleGrid} onChange={e => setters.setDoubleGrid(e.target.checked)}
                                     style={{ accentColor: '#00d4ff' }} />
                                 Double Grid (better pseudopotential accuracy)
                             </label>
@@ -2501,8 +1891,8 @@ function DiracSolverView() {
                                 <Field label="Requested ncpus" hint="Default 64 for production benchmark runs">
                                     <input
                                         type="number"
-                                        value={octopusNcpus}
-                                        onChange={e => setOctopusNcpus(e.target.value)}
+                                        value={config.octopusNcpus}
+                                        onChange={e => setters.setOctopusNcpus(e.target.value)}
                                         min="1"
                                         step="1"
                                         className={inputClass}
@@ -2511,8 +1901,8 @@ function DiracSolverView() {
                                 <Field label="Requested mpiprocs" hint="Will be clamped to ncpus in backend guardrails">
                                     <input
                                         type="number"
-                                        value={octopusMpiprocs}
-                                        onChange={e => setOctopusMpiprocs(e.target.value)}
+                                        value={config.octopusMpiprocs}
+                                        onChange={e => setters.setOctopusMpiprocs(e.target.value)}
                                         min="1"
                                         step="1"
                                         className={inputClass}
@@ -2521,25 +1911,25 @@ function DiracSolverView() {
                             </div>
                         </Section>
 
-                        {octopusCalcMode === 'td' && (
+                        {config.octopusCalcMode === 'td' && (
                             <Section title="TD Propagation" icon={<Zap className="w-4 h-4 text-yellow-400" />}>
                                 <div className="grid grid-cols-2 gap-2">
                                     <Field label="Max Steps">
-                                        <input type="number" value={octopusTdSteps} onChange={e => setOctopusTdSteps(e.target.value)} className={inputClass} />
+                                        <input type="number" value={config.octopusTdSteps} onChange={e => setters.setOctopusTdSteps(e.target.value)} className={inputClass} />
                                     </Field>
                                     <Field label="Time Step (a.u.)">
-                                        <input type="number" value={octopusTdTimeStep} onChange={e => setOctopusTdTimeStep(e.target.value)} step="0.01" className={inputClass} />
+                                        <input type="number" value={config.octopusTdTimeStep} onChange={e => setters.setOctopusTdTimeStep(e.target.value)} step="0.01" className={inputClass} />
                                     </Field>
                                 </div>
                                 <Field label="Propagator">
-                                    <select value={octopusPropagator} onChange={e => setOctopusPropagator(e.target.value)} className={selectClass}>
+                                    <select value={config.octopusPropagator} onChange={e => setters.setOctopusPropagator(e.target.value)} className={selectClass}>
                                         <option value="aetrs">AETRS (Recommended)</option>
                                         <option value="exp0">Exponential (Order 0)</option>
                                         <option value="etrs">ETRS</option>
                                     </select>
                                 </Field>
                                 <Field label="Excitation Type" hint="类型: delta冲击/高斯脉冲/正弦/连续波">
-                                    <select value={tdExcitationType} onChange={e => setTdExcitationType(e.target.value as any)} className={selectClass}>
+                                    <select value={config.tdExcitationType} onChange={e => setters.setTdExcitationType(e.target.value as any)} className={selectClass}>
                                         <option value="delta">Delta kick (broadband)</option>
                                         <option value="gaussian">Gaussian pulse</option>
                                         <option value="sin">Sine wave (monochromatic)</option>
@@ -2548,39 +1938,39 @@ function DiracSolverView() {
                                 </Field>
                                 <div className="grid grid-cols-2 gap-2">
                                     <Field label="Polarization" hint="1=x  2=y  3=z">
-                                        <select value={tdPolarization} onChange={e => setTdPolarization(e.target.value as any)} className={selectClass}>
+                                        <select value={config.tdPolarization} onChange={e => setters.setTdPolarization(e.target.value as any)} className={selectClass}>
                                             <option value="1">x-axis</option>
                                             <option value="2">y-axis</option>
                                             <option value="3">z-axis</option>
                                         </select>
                                     </Field>
                                     <Field label="Amplitude (a.u.)">
-                                        <input type="number" value={tdFieldAmplitude} onChange={e => setTdFieldAmplitude(e.target.value)} step="0.001" className={inputClass} />
+                                        <input type="number" value={config.tdFieldAmplitude} onChange={e => setters.setTdFieldAmplitude(e.target.value)} step="0.001" className={inputClass} />
                                     </Field>
                                 </div>
-                                {tdExcitationType === 'gaussian' && (
+                                {config.tdExcitationType === 'gaussian' && (
                                     <div className="grid grid-cols-2 gap-2">
                                         <Field label="Pulse center t₀ (a.u.)" hint="Peak time of Gaussian envelope">
-                                            <input type="number" value={tdGaussianT0} onChange={e => setTdGaussianT0(e.target.value)} step="1" className={inputClass} />
+                                            <input type="number" value={config.tdGaussianT0} onChange={e => setters.setTdGaussianT0(e.target.value)} step="1" className={inputClass} />
                                         </Field>
                                         <Field label="Pulse width σ (a.u.)" hint="Standard deviation of Gaussian">
-                                            <input type="number" value={tdGaussianSigma} onChange={e => setTdGaussianSigma(e.target.value)} step="0.5" className={inputClass} />
+                                            <input type="number" value={config.tdGaussianSigma} onChange={e => setters.setTdGaussianSigma(e.target.value)} step="0.5" className={inputClass} />
                                         </Field>
                                     </div>
                                 )}
-                                {(tdExcitationType === 'sin' || tdExcitationType === 'continuous_wave') && (
+                                {(config.tdExcitationType === 'sin' || config.tdExcitationType === 'continuous_wave') && (
                                     <Field label="Frequency ω (a.u.)" hint="0.057 a.u. ≈ 1.55 eV (visible)">
-                                        <input type="number" value={tdSinFrequency} onChange={e => setTdSinFrequency(e.target.value)} step="0.001" className={inputClass} />
+                                        <input type="number" value={config.tdSinFrequency} onChange={e => setters.setTdSinFrequency(e.target.value)} step="0.001" className={inputClass} />
                                     </Field>
                                 )}
                                 {/* ── Free Electron Probe (Self-Consistent) ── */}
                                 <div className="mt-3 pt-3" style={{ borderTop: '1px solid #1a2035' }}>
                                     <label className="flex items-center gap-2 cursor-pointer mb-2" style={{ color: '#8892a4', fontSize: '12px' }}>
-                                        <input type="checkbox" checked={feProbeEnabled} onChange={e => setFeProbeEnabled(e.target.checked)}
+                                        <input type="checkbox" checked={config.feProbeEnabled} onChange={e => setters.setFeProbeEnabled(e.target.checked)}
                                             style={{ accentColor: '#00d4ff' }} />
-                                        <span style={{ color: feProbeEnabled ? '#00d4ff' : '#8892a4', fontWeight: 500 }}>启用自由电子探针 (Free Electron Probe)</span>
+                                        <span style={{ color: config.feProbeEnabled ? '#00d4ff' : '#8892a4', fontWeight: 500 }}>启用自由电子探针 (Free Electron Probe)</span>
                                     </label>
-                                    {feProbeEnabled && (
+                                    {config.feProbeEnabled && (
                                         <div className="rounded-lg p-3 space-y-2" style={{ background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)' }}>
                                             <div className="text-[10px] mb-2" style={{ color: '#5a8fa8' }}>
                                                 经典点电荷沿指定轴平直传播，库仑势作为 TD 外场叠加。<br />
@@ -2589,11 +1979,11 @@ function DiracSolverView() {
                                             {/* Row 1: velocity + propagation direction */}
                                             <div className="grid grid-cols-2 gap-2">
                                                 <Field label="速度 v/c" hint="0.01–0.99 (光速分数)">
-                                                    <input type="number" value={feProbeVelocity} onChange={e => setFeProbeVelocity(e.target.value)}
+                                                    <input type="number" value={config.feProbeVelocity} onChange={e => setters.setFeProbeVelocity(e.target.value)}
                                                         step="0.05" min="0.01" max="0.99" className={inputClass} />
                                                 </Field>
                                                 <Field label="传播方向轴" hint="电子束平移方向">
-                                                    <select value={feProbeDirection} onChange={e => setFeProbeDirection(e.target.value as 'x'|'y'|'z')} className={selectClass}>
+                                                    <select value={config.feProbeDirection} onChange={e => setters.setFeProbeDirection(e.target.value as 'x'|'y'|'z')} className={selectClass}>
                                                         <option value="x">X — 沿波导方向</option>
                                                         <option value="y">Y — 横向</option>
                                                         <option value="z">Z — 纵向</option>
@@ -2604,26 +1994,26 @@ function DiracSolverView() {
                                             <div style={{ fontSize: 9, color: '#374151', marginBottom: 2 }}>几何中心 (Angstrom) — 电子束起始截面位置</div>
                                             <div className="grid grid-cols-3 gap-2">
                                                 <Field label="中心 X" hint="Angstrom">
-                                                    <input type="number" value={feProbeCx} onChange={e => setFeProbeCx(e.target.value)}
+                                                    <input type="number" value={config.feProbeCx} onChange={e => setters.setFeProbeCx(e.target.value)}
                                                         step="0.5" className={inputClass} />
                                                 </Field>
                                                 <Field label="中心 Y" hint="Angstrom">
-                                                    <input type="number" value={feProbeCy} onChange={e => setFeProbeCy(e.target.value)}
+                                                    <input type="number" value={config.feProbeCy} onChange={e => setters.setFeProbeCy(e.target.value)}
                                                         step="0.5" className={inputClass} />
                                                 </Field>
                                                 <Field label="中心 Z" hint="Angstrom">
-                                                    <input type="number" value={feProbeCz} onChange={e => setFeProbeCz(e.target.value)}
+                                                    <input type="number" value={config.feProbeCz} onChange={e => setters.setFeProbeCz(e.target.value)}
                                                         step="0.5" className={inputClass} />
                                                 </Field>
                                             </div>
                                             {/* Row 3: beam count + charge */}
                                             <div className="grid grid-cols-2 gap-2">
                                                 <Field label="电子束数目" hint="并行探针数量">
-                                                    <input type="number" value={feProbeBeamCount} onChange={e => setFeProbeBeamCount(e.target.value)}
+                                                    <input type="number" value={config.feProbeBeamCount} onChange={e => setters.setFeProbeBeamCount(e.target.value)}
                                                         step="1" min="1" max="16" className={inputClass} />
                                                 </Field>
                                                 <Field label="探针电荷 (e)" hint="-1 = 电子, +1 = 正电子">
-                                                    <input type="number" value={feProbeCharge} onChange={e => setFeProbeCharge(e.target.value)}
+                                                    <input type="number" value={config.feProbeCharge} onChange={e => setters.setFeProbeCharge(e.target.value)}
                                                         step="1" className={inputClass} />
                                                 </Field>
                                             </div>
@@ -2636,15 +2026,15 @@ function DiracSolverView() {
                             </Section>
                         )}
 
-                        {(octopusCalcMode === 'gs' || octopusCalcMode === 'opt' || octopusCalcMode === 'em') && (
+                        {(config.octopusCalcMode === 'gs' || config.octopusCalcMode === 'opt' || config.octopusCalcMode === 'em') && (
                             <Section title="DFT Settings" icon={<Atom className="w-4 h-4" style={{ color: '#00d4ff' }} />}>
-                                {octopusCalcMode === 'gs' && (
+                                {config.octopusCalcMode === 'gs' && (
                                     <>
                                         <Field label="Detected GS Postprocess Style" hint="Derived from Molecule/Crystal selection; no second source of truth.">
                                             <div className="rounded-lg px-3 py-2 text-sm" style={{ background: '#0a1220', border: '1px solid #1e2d45', color: '#cbd5e1' }}>
-                                                {gsConvergenceProfile === 'n_atom_official'
+                                                {config.gsConvergenceProfile === 'n_atom_official'
                                                     ? 'N_atom error-style (total/s/p error)'
-                                                    : (gsConvergenceProfile === 'ch4_tutorial'
+                                                    : (config.gsConvergenceProfile === 'ch4_tutorial'
                                                         ? 'CH4 total-energy style (tail-band check)'
                                                         : 'General total-energy style')}
                                             </div>
@@ -2652,23 +2042,23 @@ function DiracSolverView() {
                                         <label className="flex items-center gap-2 cursor-pointer" style={{ color: '#94a3b8', fontSize: '12px' }}>
                                             <input
                                                 type="checkbox"
-                                                checked={gsEnableScan}
-                                                onChange={(e) => setGsEnableScan(e.target.checked)}
+                                                checked={config.gsEnableScan}
+                                                onChange={(e) => setters.setGsEnableScan(e.target.checked)}
                                                 style={{ accentColor: '#00d4ff' }}
                                             />
                                             Enable GS parameter scan (optional)
                                         </label>
-                                        {gsEnableScan && (
+                                        {config.gsEnableScan && (
                                             <>
                                                 <Field label="Spacing Scan Spec" hint="Examples: 0.26,0.24,0.22 | range(0.14,0.02,0.26) | linspace(0.14,0.26,7) | linspace(0.14,0.02,0.26)">
-                                                    <input type="text" value={gsScanSpec} onChange={e => setGsScanSpec(e.target.value)} className={inputClass} />
+                                                    <input type="text" value={config.gsScanSpec} onChange={e => setters.setGsScanSpec(e.target.value)} className={inputClass} />
                                                 </Field>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <Field label="Reference Spacing (A)">
-                                                        <input type="number" value={gsReferenceSpacing} onChange={e => setGsReferenceSpacing(e.target.value)} step="0.01" className={inputClass} />
+                                                        <input type="number" value={config.gsReferenceSpacing} onChange={e => setters.setGsReferenceSpacing(e.target.value)} step="0.01" className={inputClass} />
                                                     </Field>
                                                     <Field label="Reference URL">
-                                                        <input type="text" value={gsReferenceUrl} onChange={e => setGsReferenceUrl(e.target.value)} className={inputClass} />
+                                                        <input type="text" value={config.gsReferenceUrl} onChange={e => setters.setGsReferenceUrl(e.target.value)} className={inputClass} />
                                                     </Field>
                                                 </div>
                                             </>
@@ -2676,13 +2066,13 @@ function DiracSolverView() {
                                     </>
                                 )}
                                 <Field label="Extra States" hint="Unoccupied KS states to include">
-                                    <input type="number" value={octopusExtraStates} onChange={e => setOctopusExtraStates(e.target.value)} className={inputClass} />
+                                    <input type="number" value={config.octopusExtraStates} onChange={e => setters.setOctopusExtraStates(e.target.value)} className={inputClass} />
                                 </Field>
                                 <Field label="Eigen Solver" hint="Optional, e.g. chebyshev_filter">
-                                    <input type="text" value={octopusEigenSolver} onChange={e => setOctopusEigenSolver(e.target.value)} placeholder="auto" className={inputClass} />
+                                    <input type="text" value={config.octopusEigenSolver} onChange={e => setters.setOctopusEigenSolver(e.target.value)} placeholder="auto" className={inputClass} />
                                 </Field>
                                 <Field label="Propagator" hint="Exposed in GS/DFT setup to avoid hidden defaults">
-                                    <select value={octopusPropagator} onChange={e => setOctopusPropagator(e.target.value)} className={selectClass}>
+                                    <select value={config.octopusPropagator} onChange={e => setters.setOctopusPropagator(e.target.value)} className={selectClass}>
                                         <option value="aetrs">AETRS (Recommended)</option>
                                         <option value="exp0">Exponential (Order 0)</option>
                                         <option value="etrs">ETRS</option>
@@ -2690,8 +2080,8 @@ function DiracSolverView() {
                                 </Field>
                                 {/* Tiered XC Functional Selector */}
                                 <Field label="XC Category">
-                                    <select value={xcCategory} onChange={e => {
-                                        setXcCategory(e.target.value);
+                                    <select value={config.xcCategory} onChange={e => {
+                                        setters.setXcCategory(e.target.value);
                                         // Reset preset to first option in new category
                                         const defaults: Record<string,string> = {
                                             lda: 'lda_x+lda_c_pz',
@@ -2700,8 +2090,8 @@ function DiracSolverView() {
                                             hybrid: 'hyb_gga_xc_b3lyp',
                                             exact: 'hartree_fock',
                                         };
-                                        setXcPreset(defaults[e.target.value] || 'lda_x+lda_c_pz');
-                                        setXcOverride('');
+                                        setters.setXcPreset(defaults[e.target.value] || 'lda_x+lda_c_pz');
+                                        setters.setXcOverride('');
                                     }} className={selectClass}>
                                         <option value="lda">LDA — Local Density</option>
                                         <option value="gga">GGA — Generalized Gradient</option>
@@ -2711,30 +2101,30 @@ function DiracSolverView() {
                                     </select>
                                 </Field>
                                 <Field label="XC Preset">
-                                    <select value={xcPreset} onChange={e => { setXcPreset(e.target.value); setXcOverride(''); }} className={selectClass}>
-                                        {xcCategory === 'lda' && (<>
+                                    <select value={config.xcPreset} onChange={e => { setters.setXcPreset(e.target.value); setters.setXcOverride(''); }} className={selectClass}>
+                                        {config.xcCategory === 'lda' && (<>
                                             <option value="lda_x+lda_c_pz">PZ81 (Perdew-Zunger) — default</option>
                                             <option value="lda_x+lda_c_pw">PW92 (Perdew-Wang)</option>
                                             <option value="lda_x+lda_c_vwn">VWN5 (Vosko-Wilk-Nusair)</option>
                                             <option value="lda_x">X-only LDA</option>
                                         </>)}
-                                        {xcCategory === 'gga' && (<>
+                                        {config.xcCategory === 'gga' && (<>
                                             <option value="gga_x_pbe+gga_c_pbe">PBE (Perdew-Burke-Ernzerhof)</option>
                                             <option value="gga_x_b88+gga_c_lyp">BLYP (Becke-Lee-Yang-Parr)</option>
                                             <option value="gga_x_pbe_sol+gga_c_pbe_sol">PBEsol (solids/surfaces)</option>
                                             <option value="gga_x_rpbe+gga_c_pbe">RPBE (chemisorption)</option>
                                         </>)}
-                                        {xcCategory === 'mgga' && (<>
+                                        {config.xcCategory === 'mgga' && (<>
                                             <option value="mgga_x_scan+mgga_c_scan">SCAN (state-of-art meta-GGA)</option>
                                             <option value="mgga_x_tpss+mgga_c_tpss">TPSS (transition metals)</option>
                                             <option value="mgga_x_m06l+mgga_c_m06l">M06-L (main-group)</option>
                                         </>)}
-                                        {xcCategory === 'hybrid' && (<>
+                                        {config.xcCategory === 'hybrid' && (<>
                                             <option value="hyb_gga_xc_b3lyp">B3LYP (most used in chem)</option>
                                             <option value="hyb_gga_xc_pbeh">PBE0/PBEH (25% HF)</option>
                                             <option value="hyb_gga_xc_hse06">HSE06 (range-sep, solids)</option>
                                         </>)}
-                                        {xcCategory === 'exact' && (<>
+                                        {config.xcCategory === 'exact' && (<>
                                             <option value="hartree_fock">Hartree-Fock (HF)</option>
                                             <option value="oep_kli">KLI approximation</option>
                                             <option value="oep_slater">Slater approximation</option>
@@ -2742,23 +2132,23 @@ function DiracSolverView() {
                                     </select>
                                 </Field>
                                 <Field label="Override (libxc string)" hint="Leave blank to use preset above">
-                                    <input type="text" value={xcOverride} onChange={e => setXcOverride(e.target.value)}
+                                    <input type="text" value={config.xcOverride} onChange={e => setters.setXcOverride(e.target.value)}
                                         placeholder="e.g. gga_x_pbe+gga_c_pbe" className={inputClass} />
                                 </Field>
-                                {(xcOverride.trim() || xcPreset) && (
+                                {(config.xcOverride.trim() || config.xcPreset) && (
                                     <div className="text-[10px] px-2 py-1 rounded font-mono" style={{ color: '#00d4ff', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)' }}>
-                                        Active: {xcOverride.trim() || xcPreset}
+                                        Active: {config.xcOverride.trim() || config.xcPreset}
                                     </div>
                                 )}
                                 <Field label="SCF Mixing Scheme">
-                                    <select value={mixingScheme} onChange={e => setMixingScheme(e.target.value)} className={selectClass}>
+                                    <select value={config.mixingScheme} onChange={e => setters.setMixingScheme(e.target.value)} className={selectClass}>
                                         <option value="broyden">Broyden (recommended)</option>
                                         <option value="linear">Linear Mixing</option>
                                         <option value="diis">DIIS</option>
                                     </select>
                                 </Field>
                                 <Field label="Spin Components">
-                                    <select value={spinComponents} onChange={e => setSpinComponents(e.target.value)} className={selectClass}>
+                                    <select value={config.spinComponents} onChange={e => setters.setSpinComponents(e.target.value)} className={selectClass}>
                                         <option value="unpolarized">Unpolarized</option>
                                         <option value="spin_polarized">Spin Polarized</option>
                                         <option value="non_collinear">Non-Collinear (SOC)</option>
@@ -2769,7 +2159,7 @@ function DiracSolverView() {
                     </>
                 )}
 
-                {workflowStage === 'setup' && octopusCalcMode !== 'gs' && (
+                {workflowStage === 'setup' && config.octopusCalcMode !== 'gs' && (
                     <div className="mt-4 rounded-lg p-2" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
                         <div className="text-[11px] mb-2" style={{ color: '#94a3b8' }}>
                             Setup Actions (Octopus Reviewer)
@@ -2788,7 +2178,7 @@ function DiracSolverView() {
                                     }
                                 </div>
                                 {(() => {
-                                    const selected = (caseTypeRegistry?.case_types || []).find((ct) => ct.case_type === caseType);
+                                    const selected = (caseTypeRegistry?.case_types || []).find((ct) => ct.case_type === config.caseType);
                                     if (!selected) return null;
                                     const tutorials = (selected.canonical_tutorials || []).slice(0, 3);
                                     return (
@@ -2810,7 +2200,7 @@ function DiracSolverView() {
                                 Reviewer tasks now follow Calculation Mode automatically.
                             </div>
                             <div className="text-[11px]" style={{ color: '#cbd5e1' }}>
-                                Current mode: <span style={{ color: '#fed7aa' }}>{octopusCalcMode.toUpperCase()}</span>
+                                Current mode: <span style={{ color: '#fed7aa' }}>{config.octopusCalcMode.toUpperCase()}</span>
                             </div>
                             <div className="text-[11px] mt-1" style={{ color: '#cbd5e1' }}>
                                 Auto suite: {
@@ -2852,7 +2242,7 @@ function DiracSolverView() {
                 {/* Main Controls */}
                 <div className="mt-4 pt-3 flex flex-col gap-2" style={{ borderTop: '1px solid #1a2035' }}>
                     <div className="flex justify-between items-center px-1">
-                        <span className="text-xs font-mono" style={{ color: '#8892a4' }}>{engineMode === 'octopus3D' ? 'Octopus-v16 MCP' : engineMode === 'vasp' ? 'VASP PAW-PBE' : 'Local Python Engine'}</span>
+                        <span className="text-xs font-mono" style={{ color: '#8892a4' }}>{config.engineMode === 'octopus3D' ? 'Octopus-v16 MCP' : config.engineMode === 'vasp' ? 'VASP PAW-PBE' : 'Local Python Engine'}</span>
                         <div className="flex items-center gap-1.5">
                             {dockerStatus === 'checking' && <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#8892a4' }} />}
                             <div className="w-2 h-2 rounded-full" style={{ background: dockerStatus === 'online' ? '#22c55e' : dockerStatus === 'offline' ? '#ef4444' : '#6b7280' }} />
@@ -2864,13 +2254,13 @@ function DiracSolverView() {
                     <button onClick={handleRun} disabled={isComputing}
                         className="w-full disabled:opacity-40 disabled:cursor-not-allowed font-semibold rounded-xl px-4 py-3 flex items-center justify-center gap-2 transition-all"
                         style={{
-                            background: engineMode === 'octopus3D'
+                            background: config.engineMode === 'octopus3D'
                                 ? (isComputing ? 'rgba(0,212,255,0.08)' : 'rgba(0,212,255,0.12)')
-                                : engineMode === 'vasp'
+                                : config.engineMode === 'vasp'
                                 ? (isComputing ? 'rgba(168,85,247,0.08)' : 'rgba(168,85,247,0.12)')
                                 : 'rgba(255,255,255,0.05)',
-                            color: engineMode === 'octopus3D' ? '#00d4ff' : engineMode === 'vasp' ? '#a855f7' : '#8892a4',
-                            border: engineMode === 'octopus3D' ? '1px solid rgba(0,212,255,0.35)' : engineMode === 'vasp' ? '1px solid rgba(168,85,247,0.35)' : '1px solid #1e2d45',
+                            color: config.engineMode === 'octopus3D' ? '#00d4ff' : config.engineMode === 'vasp' ? '#a855f7' : '#8892a4',
+                            border: config.engineMode === 'octopus3D' ? '1px solid rgba(0,212,255,0.35)' : config.engineMode === 'vasp' ? '1px solid rgba(168,85,247,0.35)' : '1px solid #1e2d45',
                         }}>
                         {isComputing ? <Loader2 className="w-5 h-5 animate-spin" /> : <PlayCircle className="w-5 h-5" />}
                         {isComputing ? 'Computing...' : 'Initiate Computation'}
@@ -2958,13 +2348,7 @@ function DiracSolverView() {
                     </div>
                 )}
 
-                <div className="text-xs py-1 px-3 mt-3 rounded font-mono tracking-widest" style={{
-                    background: status === 'SUCCESS' ? 'rgba(34,197,94,0.08)' : status === 'ERROR' ? 'rgba(239,68,68,0.08)' : status === 'RUNNING' ? 'rgba(0,212,255,0.08)' : status === 'PAUSED' ? 'rgba(245,158,11,0.08)' : 'rgba(255,255,255,0.04)',
-                    color: status === 'SUCCESS' ? '#22c55e' : status === 'ERROR' ? '#ef4444' : status === 'RUNNING' ? '#00d4ff' : status === 'PAUSED' ? '#f59e0b' : '#4b5563',
-                    border: `1px solid ${status === 'SUCCESS' ? 'rgba(34,197,94,0.2)' : status === 'ERROR' ? 'rgba(239,68,68,0.2)' : status === 'RUNNING' ? 'rgba(0,212,255,0.2)' : status === 'PAUSED' ? 'rgba(245,158,11,0.2)' : '#1a2035'}`,
-                }}>
-                    {status}{isComputing ? ` | ${formatDuration(elapsedSeconds)}` : ''}
-                </div>
+                <StatusBadge status={status as RunStatus} elapsedSeconds={elapsedSeconds} isComputing={isComputing} />
 
                 {dispatchSummary && Array.isArray(dispatchSummary.phaseStream) && dispatchSummary.phaseStream.length > 0 && (
                     <div className="mt-3 rounded-lg p-3" style={{ border: '1px solid #1a2035', background: '#0a1220' }}>
@@ -3030,26 +2414,7 @@ function DiracSolverView() {
                     </div>
                 )}
 
-                <div className="mt-3 rounded-lg overflow-hidden" style={{ border: '1px solid #1a2035', background: '#060d1a' }}>
-                    <div className="px-3 py-2 text-[11px] uppercase tracking-widest" style={{ color: '#64748b', borderBottom: '1px solid #1a2035' }}>
-                        Runtime Log
-                    </div>
-                    <div className="max-h-[320px] overflow-auto p-3 font-mono text-[12px] leading-relaxed">
-                        {logs.map((log, i) => (
-                            <div key={i} className={`${log.includes('✗') || log.includes('Error') ? 'text-red-400'
-                                : log.includes('✓') || log.includes('SUCCESS') ? 'text-green-400'
-                                    : log.includes('[System]') ? 'text-blue-400'
-                                        : 'text-gray-400'
-                                } mb-0.5`}>{log}</div>
-                        ))}
-                        {isComputing && (
-                            <div className="text-gray-500 animate-pulse flex items-center gap-2 mt-2">
-                                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block" />
-                                Processing quantum computation...
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <RuntimeLog logs={logs} isComputing={isComputing} />
 
                 {result && !isComputing && (
                     <div className="mt-3 rounded-lg overflow-hidden" style={{ border: '1px solid #1a2035', background: '#0a0e1a' }}>
@@ -3081,7 +2446,11 @@ function DiracSolverView() {
                                     </div>
                                 </div>
                             </div>
-                            <ResultsPanel result={result} resultHistory={resultHistory} runDurationSeconds={displayResultSeconds} />
+                            <ErrorBoundary>
+                                <Suspense fallback={<div className="p-4 text-gray-500 text-xs">Loading results...</div>}>
+                                    <ResultsPanel result={result} resultHistory={resultHistory} runDurationSeconds={displayResultSeconds} />
+                                </Suspense>
+                            </ErrorBoundary>
                         </div>
                     </div>
                 )}

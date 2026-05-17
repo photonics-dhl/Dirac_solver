@@ -140,7 +140,7 @@ export interface PhysicsResult {
     };
     // Molecular results (Phase 4)
     molecular?: {
-        calcMode: 'gs' | 'td';
+        calcMode: 'gs' | 'td' | 'casida';
         moleculeName: string;
         energy_levels?: number[];
         homo_energy?: number;
@@ -151,6 +151,12 @@ export interface PhysicsResult {
         optical_spectrum?: {
             energy_ev: number[];
             cross_section: number[];
+            warning?: string;
+        };
+        casida?: {
+            excitations?: Array<{ energy_ev: number; oscillator_strength: number }>;
+            energies_ev: number[];
+            oscillator_strengths: number[];
         };
         td_dipole?: {
             time: number[];
@@ -845,7 +851,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
             scheduler,
             molecular: molData ? {
                 moleculeName: molData.moleculeName,
-                calcMode: (config.calcMode as 'gs' | 'td') || 'gs',
+                calcMode: (config.calcMode as 'gs' | 'td' | 'casida') || 'gs',
                 energy_levels: molData.energy_levels,
                 homo_energy: molData.homo_energy,
                 lumo_energy: molData.lumo_energy,
@@ -853,6 +859,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 scf_iterations: molData.scf_iterations,
                 converged: molData.converged,
                 optical_spectrum: molData.optical_spectrum,
+                casida: molData.casida,
                 td_dipole: molData.td_dipole,
                 run_explanation: molData.run_explanation,
                 radiation_spectrum: molData.radiation_spectrum,
