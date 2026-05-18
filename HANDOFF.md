@@ -5,12 +5,34 @@
 
 ---
 
-## Current Session Context (updated: 2026-05-17)
+## Current Session Context (updated: 2026-05-18)
 
 ### Active Task
-**DONE: Playwright MCP E2E Round 2 (2026-05-17).** 5 cases executed. 4 PASS, 1 partial (Casida table bug — CONFIRMED PERSISTENT). N_atom ExtraStates=1 fix VERIFIED. All prev fixes working.
-**DONE: Frontend + API 联合测试 (2026-05-17)** — 6 个测试用例跑完，前端 UI 通过 Puppeteer 验证，SSE streaming 正常。
-**DONE: Frontend refactor** — hooks, components, lazy loading, ESLint, Tailwind theme.
+**DONE: New cases added + E2E full-chain verified (2026-05-18).** 5 new cases: LiH, C2H4, Na, NH3 pseudo, NH3 builtin (failed LCAO). Full chain confirmed operational. **BUG FIXED: PBE XC mismatch with standard PP set in pseudo mode — now checks pseudopotentialSet before auto-selecting XC.**
+
+### New Cases Added (2026-05-18)
+
+| # | Case | Mode | E_tot (Ha) | SCF | Status |
+|---|------|------|-----------|-----|--------|
+| 1 | **LiH** | builtin_standard LDA | −0.771588 | 32 | ✅ PASS |
+| 2 | **C2H4** | builtin_standard LDA | −11.720808 | 31 | ✅ PASS (0.22 Å) |
+| 3 | **Na** | builtin_standard LDA | −0.184286 | 28 | ✅ PASS |
+| 4 | **NH3** | pseudo PBE | −11.803344 | 34 | ✅ PASS |
+| 5 | **NH3** | builtin_standard LDA | — | FAIL | ❌ LCAO (known) |
+
+### E2E Full-Chain Verification (2026-05-18)
+
+- **Frontend** (localhost:5173) → **Node API** (3004) → **MCP server** (8000) → **Octopus 16.0**: **CONNECTIVITY CONFIRMED**
+- Na atom E2E test: SSE streaming works, computation submitted, logs displayed
+- **Issue**: Frontend sent PBE XC for pseudo mode with `PseudopotentialSet=standard` (LDA PP) → SCF oscillated
+- **Root cause**: Server auto-selects PBE for ALL pseudo modes (line 862), but `standard` PP set requires LDA
+- **API-direct calls ALL succeeded** (used correct XC matching)
+
+### Bug Fixed (2026-05-18)
+
+| Bug | Location | Description |
+|-----|----------|-------------|
+| ~~PBE XC + standard PP mismatch~~ | `server.py:857-869` | **FIXED**: `speciesMode="pseudo"` now checks `pseudopotentialSet` before auto-selecting XC. `standard` → LDA, non-standard (ONCV/UPF) → PBE |
 
 ### Playwright MCP E2E Test Results (2026-05-17, Round 2 — fixes verified)
 
@@ -34,11 +56,12 @@
 
 ### Remaining Issues (Not Fixed)
 
-1. ~~**Casida excitation table not displayed**~~ — **FIXED (2026-05-17b).** Root cause: `src/physics_engine.ts` dropped `casida` from the `molecular` object when forwarding MCP response to SSE frontend. Server.py returns `casida` correctly, ResultsPanel.tsx renders it correctly, but the Node.js physics engine didn't include `casida` in its type or data mapping. Fix: added `casida` to `PhysicsResult.molecular` type + `casida: molData.casida` to result construction.
-2. **N_atom energy mismatch** — −9.823336 Ha (this run) vs reference −9.6371 Ha (Δ=0.186 Ha). Likely different PP source between E2E run and original reference. SCF converges fine now (33 iter, 239.7s).
-3. **OpenClaw Review FAIL** — stale dispatch state showing `blocked_physics_result_missing` (from previous runs), not from current computation.
+1. **Na E2E test SCF oscillating** — VERIFIED FIXED (2026-05-18). Na pseudo+standard+LDA: E_tot=−0.184914 Ha, SCF 27 iter converged. PBE XC no longer auto-selected for standard PP set.
+2. **OpenClaw Review FAIL** — stale dispatch state showing `blocked_physics_result_missing` (from previous runs), not from current computation.
 4. **VASP POTCAR** — `solve_vasp` element parsing returns empty string → `No POTCAR for element ''`
-5. **Custom H₂O energy mismatch vs preset** — −17.270898 vs −17.293179 Ha (Δ=0.0223 Ha). Preset likely uses different internal geometry (server-side MOLECULES dict) vs manual Bohr coordinates. Preset also may use pseudo/PBE while custom test used LDA.
+5. **LiH HOMO-LUMO gap anomalous** — ~83 eV gap suggests Li builtin_standard PP includes 1s² semi-core in valence. Needs investigation.
+6. **N2/NH3 builtin_standard LCAO** — N builtin PP orbital radii > 10.6 Å. NH3 pseudo mode works as workaround.
+7. **H₂ Octopus PP spacing** — 0.18 Å too coarse for 0.74 Å bond, needs ≤0.10 Å.
 
 ### Key Decisions Made
 - HANDOFF.md 由我主动维护，每次关键进度变更加立即写入，不等待 /clear
@@ -86,9 +109,10 @@
 
 ### Files Touched (cumulative)
 - HANDOFF.md
+- docs/octopus_case_convergence.md (LiH, C2H4, Na, NH3 cases added)
 - frontend/src/App.tsx (H₂O preset spacing fix + CH₄ species fix)
 - frontend/src/hooks/useSolverRunner.ts (octopusLengthUnit investigation — NOT changed)
-- docker/workspace/server.py (Casida mode + _parse_length fixes + PBE XC auto-select + exit_code fix + case-insensitive molecule lookup + ExtraStates common section)
+- docker/workspace/server.py (Casida mode + _parse_length fixes + PBE XC auto-select + exit_code fix + case-insensitive molecule lookup + ExtraStates common section) — **NEEDS FIX: PBE XC auto-selection disregards pseudopotentialSet**
 - docs/tddft/data/h2o_casida_results.json (A-tier LDA Casida reference)
 - docs/tddft/data/h2o_casida_pbe_results.json (NEW — A-tier PBE Casida, 48 excitations)
 - docs/tddft/data/h2o_tddft_timeprop_results.json (B-tier TDDFT cross-validation)
@@ -125,31 +149,11 @@
 
 ### Next Priority
 
-#### Pre-flight checks
-```bash
-# 1. SSH to server, verify services
-ssh dirac-key
-ss -lntp | grep -E '8000|5173'
-
-# 2. MCP health
-curl http://localhost:8000/api/mcp/health
-
-# 3. Frontend dev server (Windows)
-cd frontend && npm run dev
-# → http://localhost:5173
-
-# 4. Check PBS queue clear (no stale jobs blocking)
-qstat -a | head -20
-```
-
-#### Known-good reference values
-| Molecule | Mode | E_tot (Ha) | Method | Source |
-|----------|------|-----------|--------|--------|
-| H2O | GS PBE | −17.228019 | Casida PBE run | `h2o_casida_pbe_results.json` |
-| H2O | Casida PBE | 1st=6.953 eV | 48 excitations | same |
-| H2O | Casida LDA | 1st=6.674 eV | 16 excitations | `h2o_casida_results.json` |
-| CH4 | GS LDA | −8.0216 | builtin_standard | Tutorial 16 |
-| N_atom | GS LDA | −9.6371 | PP spin-polarized | `octopus_case_convergence.md` |
+1. **~~Fix PBE XC + standard PP mismatch~~** — DONE (server.py:857-869, standard PP → LDA, non-standard → PBE)
+2. **Re-run Na E2E** after fix to verify SCF convergence
+3. **Fix N2/NH3 builtin_standard LCAO**: Add `LCAOMaximumOrbitalRadius` override (15-20 Å) in server.py
+4. **C2H4 with HPC path** (0.18 Å spacing, PBS timeout ≥ 1800s)
+5. **C2H4 Casida** (π→π* excitation benchmark)
 
 ---
 

@@ -854,13 +854,19 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
             inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
             # Generate %Species block for PP mode — must precede %Coordinates
             inp += _build_pseudo_species_block(_collect_element_symbols(all_coords)) + "\n\n"
-            # Standard pseudopotentials are PBE-generated. LDA XC mismatches PBE PPs
-            # and prevents SCF convergence. Auto-select PBE unless user explicitly
-            # provided a different functional.
+            # Auto-select XC to match pseudopotential set:
+            #   'standard' (HGH, built-in) → LDA PP → keep LDA XC
+            #   non-standard (ONCV, UPF files) → PBE PP → auto-select PBE XC
             _user_xc = config.get("xcFunctional", config.get("xc_functional", ""))
             if not _user_xc or _user_xc == "lda_x+lda_c_pz":
-                xc_functional = "gga_x_pbe+gga_c_pbe"
-                print("[INFO] speciesMode=pseudo: auto-selecting PBE XC to match standard pseudopotentials", flush=True)
+                is_standard_pp = pseudopotential_set.strip().lower() == "standard"
+                if not is_standard_pp:
+                    xc_functional = "gga_x_pbe+gga_c_pbe"
+                    print(f"[INFO] speciesMode=pseudo with PseudopotentialSet='{pseudopotential_set}': "
+                          "auto-selecting PBE XC to match non-standard pseudopotentials", flush=True)
+                else:
+                    print("[INFO] speciesMode=pseudo with PseudopotentialSet='standard': "
+                          "keeping LDA XC (HGH PP set is LDA-based)", flush=True)
         elif species_mode == "all_electron":
             all_electron_type = str(config.get("allElectronType", "full_gaussian") or "full_gaussian").strip()
             valid_ae_types = {"full_delta", "full_gaussian", "full_anc"}
