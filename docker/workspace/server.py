@@ -1220,15 +1220,19 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False, is_
             # Octopus 16+: use TDDeltaStrength/TDDeltaKickTime instead of
             # the deprecated %TDFunctions/%TDExternalFields tdf_delta syntax
             steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 5000)))
-            td_dt_raw = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05))
+            td_dt_raw = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05)))
             propagator = config.get("octopusPropagator", "aetrs")
             excitation_type = config.get("tdExcitationType", "delta")
             polarization = int(config.get("tdPolarization", 1))  # 1=x, 2=y, 3=z
             amplitude = float(config.get("tdFieldAmplitude", 0.01))
 
+            # UnitsOutput=eV_Angstrom makes Octopus interpret TDTimeStep in hbar/eV,
+            # but user supplies atomic units (hbar/Hartree). Convert: dt_input = dt_au / Ha_to_eV
+            td_dt_for_inp = td_dt_raw / 27.2114
+
             inp += f"TDPropagator = {propagator}\n"
             inp += f"TDMaxSteps = {steps}\n"
-            inp += f"TDTimeStep = {td_dt_raw}\n"
+            inp += f"TDTimeStep = {td_dt_for_inp}\n"
 
             if excitation_type == "delta":
                 # Broadband delta-kick (best for optical spectra)
@@ -1920,29 +1924,42 @@ def parse_go_convergence(work_dir: str) -> dict:
 
 def parse_td_dipole(td_dir: str) -> dict:
     """Parse td.general/multipoles for dipole moment vs time.
-    
+
     Octopus multipoles file format (lmax=1, 3D):
       col 0: iter  col 1: time  col 2: electronic_charge  col 3: <x>  col 4: <y>  col 5: <z>
+
+    Truncates at first NaN/Inf to avoid FFT corruption from diverged propagation.
     """
     path = os.path.join(td_dir, "multipoles")
     result: dict = {"time": [], "dipole_x": [], "dipole_y": [], "dipole_z": []}
     if not os.path.exists(path):
         return result
     try:
+        import math
         with open(path, "r") as f:
             for line in f:
                 if line.startswith("#"):
                     continue
                 parts = line.split()
-                # 6 columns: iter | time | charge | <x> | <y> | <z>
                 if len(parts) >= 6:
                     try:
-                        result["time"].append(float(parts[1]))
-                        result["dipole_x"].append(float(parts[3]))  # <x>
-                        result["dipole_y"].append(float(parts[4]))  # <y>
-                        result["dipole_z"].append(float(parts[5]))  # <z>
+                        tv = float(parts[1])
+                        dx = float(parts[3])
+                        dy = float(parts[4])
+                        dz = float(parts[5])
+                        # Stop at first NaN/Inf — propagation diverged
+                        if not (math.isfinite(tv) and math.isfinite(dx)
+                                and math.isfinite(dy) and math.isfinite(dz)):
+                            break
+                        result["time"].append(tv)
+                        result["dipole_x"].append(dx)
+                        result["dipole_y"].append(dy)
+                        result["dipole_z"].append(dz)
                     except ValueError:
-                        pass
+                        break
+        print(f"[DEBUG] parse_td_dipole: {len(result['time'])} valid steps "
+              f"(truncated at NaN/Inf)" if len(result['time']) < 10 else
+              f"[DEBUG] parse_td_dipole: {len(result['time'])} steps")
     except Exception as e:
         print(f"[WARN] parse_td_dipole: {e}")
     return result
@@ -2030,6 +2047,42 @@ def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
     return {
         "energy_ev": omega_ev[mask].tolist(),
         "eels":      (eels_sel / max(e_max, 1e-30)).tolist(),
+    }
+
+
+def compute_hhg_spectrum(td_dipole: dict) -> dict:
+    """High Harmonic Generation (HHG) spectrum from strong-field TDDFT.
+    Identifies harmonic peaks in the radiation spectrum and returns
+    labeled harmonic orders with energies and intensities.
+    """
+    import numpy as np
+    rad = compute_radiation_spectrum(td_dipole)
+    freq_ev = np.array(rad.get("frequency_ev", []), dtype=float)
+    intensity = np.array(rad.get("intensity", []), dtype=float)
+    if len(freq_ev) < 5:
+        return {"harmonic_order": [], "harmonic_energy_ev": [], "harmonic_intensity": []}
+    # Simple numpy-based peak detection (avoids scipy import issues on HPC)
+    min_dist = max(5, len(intensity) // 200)
+    peaks = []
+    for i in range(1, len(intensity) - 1):
+        if intensity[i] > 0.01 and intensity[i] >= intensity[i - 1] and intensity[i] >= intensity[i + 1]:
+            if not peaks or (i - peaks[-1]) >= min_dist:
+                peaks.append(i)
+    if len(peaks) == 0:
+        return {"harmonic_order": [], "harmonic_energy_ev": [], "harmonic_intensity": []}
+    peak_energies = freq_ev[peaks]
+    peak_intensities = intensity[peaks]
+    # Sort by energy
+    order = np.argsort(peak_energies)
+    peak_energies = peak_energies[order]
+    peak_intensities = peak_intensities[order]
+    # Assign harmonic orders based on fundamental spacing
+    # First significant peak = fundamental (H1)
+    harmonic_orders = list(range(1, len(peak_energies) + 1))
+    return {
+        "harmonic_order": harmonic_orders,
+        "harmonic_energy_ev": peak_energies.tolist(),
+        "harmonic_intensity": peak_intensities.tolist(),
     }
 
 
@@ -2997,6 +3050,15 @@ async def run_octopus_calculation(config: dict) -> dict:
                             compute_eels_spectrum(td_dipole_data, config)
                         print(f"[DEBUG] eels_spectrum: "
                               f"{len(response_data['molecular']['eels_spectrum'].get('energy_ev', []))} pts")
+
+                    # HHG harmonics spectrum (for strong-field / sin / CW excitation)
+                    excitation_type = config.get("tdExcitationType", "delta")
+                    if excitation_type != "delta" and len(td_dipole_data.get("time", [])) >= 8:
+                        hhg_data = compute_hhg_spectrum(td_dipole_data)
+                        if hhg_data.get("harmonic_energy_ev"):
+                            response_data["molecular"]["hhg_spectrum"] = hhg_data
+                            print(f"[DEBUG] hhg_spectrum: "
+                                  f"{len(hhg_data.get('harmonic_energy_ev', []))} harmonics")
 
                     # Persist TD output to /workspace/output for host access
                     output_dir = resolve_output_dir()

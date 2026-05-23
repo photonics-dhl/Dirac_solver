@@ -87,6 +87,7 @@ interface PhysicsResult {
             dipole_z: number[];
         };
         radiation_spectrum?: { frequency_ev: number[]; intensity: number[] };
+        hhg_spectrum?: { harmonic_order: number[]; harmonic_energy_ev: number[]; harmonic_intensity: number[] };
         eels_spectrum?: { energy_ev: number[]; eels: number[] };
         casida?: {
             excitations?: Array<{ energy_ev: number; oscillator_strength: number }>;
@@ -1399,6 +1400,9 @@ function MolecularView({ result, resultHistory = {} }: {
                 {mol.radiation_spectrum && mol.radiation_spectrum.frequency_ev.length > 0 && (
                     <RadiationPanel spec={mol.radiation_spectrum} />
                 )}
+                {mol.hhg_spectrum && mol.hhg_spectrum.harmonic_order.length > 0 && (
+                    <HHGPanel spec={mol.hhg_spectrum} />
+                )}
                 {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
                     <EELSPanel spec={mol.eels_spectrum} />
                 )}
@@ -1467,6 +1471,9 @@ function MolecularView({ result, resultHistory = {} }: {
                 )}
                 {mol.radiation_spectrum && mol.radiation_spectrum.frequency_ev.length > 0 && (
                     <RadiationPanel spec={mol.radiation_spectrum} />
+                )}
+                {mol.hhg_spectrum && mol.hhg_spectrum.harmonic_order.length > 0 && (
+                    <HHGPanel spec={mol.hhg_spectrum} />
                 )}
                 {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
                     <EELSPanel spec={mol.eels_spectrum} />
@@ -2415,6 +2422,43 @@ function RadiationPanel({ spec }: { spec: { frequency_ev: number[]; intensity: n
                 <LinePath xData={frequency_ev} yData={intensity} color="#f59e0b" strokeWidth={1.5}
                     xMin={xMin} xMax={xMax} yMin={0} yMax={yMax} />
             </ChartContainer>
+        </div>
+    );
+}
+
+// ─── HHG Harmonics Panel ───────────────────────────────────────────
+
+function HHGPanel({ spec }: { spec: { harmonic_order: number[]; harmonic_energy_ev: number[]; harmonic_intensity: number[] } }) {
+    const { harmonic_order, harmonic_energy_ev, harmonic_intensity } = spec;
+    if (!harmonic_order.length) return null;
+    return (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(251,146,60,0.15)', borderRadius: 8, padding: 8 }}>
+            <div style={{ fontSize: 10, color: '#fb923c', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                高次谐波谱 (HHG) &nbsp;
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#6b7280' }}>
+                    {harmonic_order.length} harmonics detected
+                </span>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+                <table style={{ fontSize: 10, color: '#c4b5fd', borderCollapse: 'collapse', width: '100%' }}>
+                    <thead>
+                        <tr style={{ color: '#8892a4', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                            <th style={{ padding: '3px 8px', textAlign: 'left' }}>H#</th>
+                            <th style={{ padding: '3px 8px', textAlign: 'right' }}>Energy (eV)</th>
+                            <th style={{ padding: '3px 8px', textAlign: 'right' }}>Intensity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {harmonic_order.map((h, i) => (
+                            <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                <td style={{ padding: '2px 8px', color: '#fb923c' }}>H{h}</td>
+                                <td style={{ padding: '2px 8px', textAlign: 'right', fontFamily: 'monospace' }}>{harmonic_energy_ev[i].toFixed(2)}</td>
+                                <td style={{ padding: '2px 8px', textAlign: 'right', fontFamily: 'monospace' }}>{harmonic_intensity[i].toFixed(4)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

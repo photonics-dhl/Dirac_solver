@@ -1220,6 +1220,11 @@ function DiracSolverView() {
                             { label: 'H₂O GS', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
                             { label: 'H₂O TDDFT', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'td' as const },
                             { label: 'H₂O Casida', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'casida' as const },
+                            // ── H₂O Advanced TDDFT ──
+                            { label: 'H₂O HHG', mol: 'H2O', space: '0.21', rad: '6.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'td' as const },
+                            { label: 'H₂O CW', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'td' as const },
+                            { label: 'H₂O Pump', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'td' as const },
+                            // ── Other molecules ──
                             { label: 'C₂H₄ (builtin)', mol: 'C2H4', space: '0.22', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'gs' as const },
                         ] as const).map(p => (
                             <button
@@ -1241,10 +1246,41 @@ function DiracSolverView() {
                                     setters.setConfirmedAtoms(null);
                                     setters.setConfirmedLabel('');
                                     if (p.cmode === 'td') {
-                                        setters.setOctopusTdSteps('25000');
-                                        setters.setOctopusTdTimeStep('0.02');
-                                        setters.setTdExcitationType('delta');
-                                        setters.setTdFieldAmplitude('0.01');
+                                        if (p.label === 'H₂O HHG') {
+                                            // Strong-field sin pulse for HHG / nonlinear response
+                                            setters.setOctopusSpacing('0.35');
+                                            setters.setOctopusRadius('5.0');
+                                            setters.setOctopusTdSteps('50000');
+                                            setters.setOctopusTdTimeStep('0.3');
+                                            setters.setTdExcitationType('sin');
+                                            setters.setTdFieldAmplitude('0.005');
+                                            setters.setTdSinFrequency('0.057');   // 800nm Ti:Sapphire laser (~1.55 eV)
+                                        } else if (p.label === 'H₂O CW') {
+                                            // Continuous wave: Floquet-like periodic driving
+                                            setters.setOctopusSpacing('0.35');
+                                            setters.setOctopusRadius('5.0');
+                                            setters.setOctopusTdSteps('50000');
+                                            setters.setOctopusTdTimeStep('0.3');
+                                            setters.setTdExcitationType('continuous_wave');
+                                            setters.setTdFieldAmplitude('0.005');
+                                            setters.setTdSinFrequency('0.057');  // 800nm
+                                        } else if (p.label === 'H₂O Pump') {
+                                            // Gaussian pump pulse: ultrafast excitation
+                                            setters.setOctopusSpacing('0.35');
+                                            setters.setOctopusRadius('5.0');
+                                            setters.setOctopusTdSteps('50000');
+                                            setters.setOctopusTdTimeStep('0.3');
+                                            setters.setTdExcitationType('gaussian');
+                                            setters.setTdFieldAmplitude('0.01');
+                                            setters.setTdGaussianT0('500');
+                                            setters.setTdGaussianSigma('100');
+                                        } else {
+                                            // Default TDDFT: delta-kick for linear absorption
+                                            setters.setOctopusTdSteps('25000');
+                                            setters.setOctopusTdTimeStep('0.02');
+                                            setters.setTdExcitationType('delta');
+                                            setters.setTdFieldAmplitude('0.01');
+                                        }
                                     }
                                     if (p.cmode === 'casida') {
                                         setters.setOctopusExtraStates('13');
@@ -1255,12 +1291,21 @@ function DiracSolverView() {
                                 className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors disabled:opacity-40"
                                 style={{
                                     background: p.cmode === 'casida' ? 'rgba(167,139,250,0.10)' :
+                                                (p.cmode === 'td' && (p.label as string).includes('HHG')) ? 'rgba(251,146,60,0.12)' :
+                                                (p.cmode === 'td' && (p.label as string).includes('CW')) ? 'rgba(96,165,250,0.12)' :
+                                                (p.cmode === 'td' && (p.label as string).includes('Pump')) ? 'rgba(244,114,182,0.12)' :
                                                 p.cmode === 'td' ? 'rgba(52,211,153,0.10)' :
                                                 'rgba(0,212,255,0.08)',
                                     color: p.cmode === 'casida' ? '#c4b5fd' :
+                                           (p.cmode === 'td' && (p.label as string).includes('HHG')) ? '#fb923c' :
+                                           (p.cmode === 'td' && (p.label as string).includes('CW')) ? '#60a5fa' :
+                                           (p.cmode === 'td' && (p.label as string).includes('Pump')) ? '#f472b6' :
                                            p.cmode === 'td' ? '#6ee7b7' :
                                            '#7dd3fc',
                                     border: `1px solid ${p.cmode === 'casida' ? 'rgba(167,139,250,0.25)' :
+                                                      (p.cmode === 'td' && (p.label as string).includes('HHG')) ? 'rgba(251,146,60,0.3)' :
+                                                      (p.cmode === 'td' && (p.label as string).includes('CW')) ? 'rgba(96,165,250,0.3)' :
+                                                      (p.cmode === 'td' && (p.label as string).includes('Pump')) ? 'rgba(244,114,182,0.3)' :
                                                       p.cmode === 'td' ? 'rgba(52,211,153,0.25)' :
                                                       'rgba(0,212,255,0.2)'}`,
                                 }}
