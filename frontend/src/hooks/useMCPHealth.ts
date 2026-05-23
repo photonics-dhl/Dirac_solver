@@ -13,7 +13,7 @@ export function useMCPHealth() {
         let cancelled = false;
         const check = async () => {
             try {
-                const res = await fetch(`${API_BASE}/api/mcp/health`);
+                const res = await fetch(`${API_BASE}/api/health`);
                 const data = await res.json();
                 if (cancelled) return;
                 if (data?.status === 'ok') {

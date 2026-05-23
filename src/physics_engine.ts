@@ -88,7 +88,7 @@ export interface PhysicsConfig {
     pseudopotentialSet?: string;
     tdSteps?: number;
     molecule?: string;
-    calcMode?: 'gs' | 'td' | 'unocc';
+    calcMode?: 'gs' | 'td' | 'casida' | 'unocc';
     caseType?: 'dft_gs_3d' | 'response_td' | 'periodic_bands' | 'hpc_scaling' | 'maxwell_em';
     skipRunExplanation?: boolean;
     fastPath?: boolean;
@@ -117,6 +117,13 @@ export interface PhysicsResult {
         psi_2d?: number[][];
     }>;
     probabilityDensity: number[];
+    density_1d?: number[];
+    potential_components?: {
+        v0?: number[];  // external potential
+        vh?: number[];  // Hartree
+        vxc?: number[]; // XC
+        vks?: number[]; // total KS
+    };
     verified: boolean;
     // Time evolution results
     timeEvolution?: {
@@ -468,7 +475,7 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 ? config.molecule
                 : (config.octopusMolecule || config.moleculeName || '')
             ).toString().trim().toLowerCase();
-            const calcModeKey = (config.calcMode || 'gs').toLowerCase();
+            let calcModeKey = (config.calcMode || 'gs').toLowerCase();
             const isSimpleH2Gs = moleculeKey === 'h2' && calcModeKey === 'gs';
             const useFastPath = isSimpleH2Gs || config.fastPath === true;
 
@@ -519,10 +526,13 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
             const lengthUnit = String(config.octopusLengthUnit || 'angstrom').toLowerCase() === 'angstrom' ? 'Angstrom' : 'Bohr';
             const outputUnit = String(config.octopusUnitsOutput || 'eV_Angstrom');
             emit('log', `[Octopus][Config] mode=${config.calcMode || 'gs'} | molecule=${moleculeLabel} | spacing=${config.octopusSpacing ?? config.gridSpacing ?? '-'} ${lengthUnit} | radius=${config.octopusRadius ?? config.spatialRange ?? '-'} ${lengthUnit} | output=${outputUnit}`);
-            if ((config.calcMode || 'gs') === 'td') {
+            calcModeKey = (config.calcMode || 'gs').toLowerCase();
+            if (calcModeKey === 'td') {
                 emit('log', `[Octopus][TD] excitation=${(config as any).tdExcitationType || 'delta'} | steps=${config.octopusTdSteps ?? (config as any).tdSteps ?? 200} | dt=${config.octopusTdTimeStep ?? (config as any).TDTimeStep ?? 0.05}`);
-            } else {
-                emit('log', `[Octopus][Note] 当前为 GS 模式，不会输出吸收谱；吸收谱请切换 Calculation Mode=TD 且 excitation=delta`);
+            } else if (calcModeKey === 'casida') {
+                emit('log', `[Octopus][Casida] Linear-response TDDFT — GS first, then Casida excitation calculation`);
+            } else if (calcModeKey === 'gs') {
+                emit('log', `[Octopus][Note] 当前为 GS 模式，不会输出吸收谱；吸收谱请切换 Calculation Mode=TD 或 Casida`);
             }
             const healthUrls = [`${OCTOPUS_MCP_URL}/health`];
             let healthResp = null;
@@ -597,7 +607,11 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                         throw new Error(`Octopus Engine Error: ${await octoResp.text()}`);
                     }
                     solveResult = await octoResp.json();
-                    console.log("[DEBUG] Octopus solveResult payload received");
+                    console.log("[DEBUG] Octopus solveResult payload received, molecular keys:",
+                        solveResult?.molecular ? Object.keys(solveResult.molecular) : 'NO MOLECULAR',
+                        "casida_executed:", solveResult?.casida_executed,
+                        "has molecular.casida:", !!solveResult?.molecular?.casida,
+                        "casida_excitations:", solveResult?.casida_excitations?.length ?? 0);
 
                     // Surface Python-level errors as proper exceptions
                     if (solveResult.status === 'error') {
@@ -842,6 +856,8 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
             eigenvectors: [],
             wavefunctions,
             probabilityDensity: [],
+            density_1d: solveResult?.density_1d || [],
+            potential_components: solveResult?.potential_components,
             verified: converged,
             equationType: 'Octopus DFT',
             engine: 'octopus-mcp',
@@ -864,6 +880,9 @@ export async function runPhysicsPipeline(config: PhysicsConfig, onEvent?: (type:
                 run_explanation: molData.run_explanation,
                 radiation_spectrum: molData.radiation_spectrum,
                 eels_spectrum: molData.eels_spectrum,
+                render_snapshots: molData.render_snapshots,
+                convergence_data: molData.convergence_data,
+                dos_data: molData.dos_data,
             } : undefined,
         };
     }

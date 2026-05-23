@@ -1,40 +1,243 @@
 # Dirac Solver 用户指南
 
-> 如何通过 MCP Server（port 8000）提交 Octopus / VASP 计算任务
+> 如何通过 Web 前端 / API 提交 Octopus / VASP 计算任务
 >
-> **更新日期**：2026-05-12 | **计算引擎**：Octopus 16 + VASP 6.x (PAW-PBE)
+> **更新日期**：2026-05-19 | **计算引擎**：Octopus 16 + VASP 6.x (PAW-PBE)
 
 ---
 
-## 一、选择计算模式
+## 〇、全链路操作指南（Web 前端）
 
-### 四种模式对比
+> 从打开浏览器到看到计算结果的完整步骤。建议按顺序测试每个 preset，验证计算和渲染均正常。
 
-| 模式 | 何时用 | 关键参数 |
+### 前置条件
+
+| 项 | 检查方法 |
+|----|---------|
+| MCP server 运行中 | `curl -s http://localhost:8000/health` → `"ok"` |
+| 前端 dev server 运行中 | 浏览器访问 `http://localhost:5173` → 看到 Dirac Solver 页面 |
+| SSH tunnel 已建 | `ssh -fNL 8000:localhost:8000 -L 8001:localhost:8001 dirac-key` |
+
+```bash
+# 一键启动全套服务
+powershell -ExecutionPolicy Bypass -File scripts/dc.ps1 -NoShell
+```
+
+### Step 1：打开前端
+
+1. 浏览器访问 `http://localhost:5173`
+2. 确认左侧参数面板底部 **MCP 状态指示灯** 为绿色圆点 + `online` 字样
+3. 若显示 `offline` 或一直 `checking`：检查 MCP server（port 8000）是否运行、SSH tunnel 是否建立
+
+### Step 2：选择引擎
+
+页面左侧面板顶部有引擎按钮：
+
+| 按钮 | 引擎 | 用途 |
+|------|------|------|
+| **Octopus 3D** | `octopus3D` | Octopus DFT/TDDFT/Casida（主要使用）|
+| **VASP** | `vasp` | VASP PAW-PBE 高精度 |
+
+点击 **Octopus 3D**（默认已选中）。Quick Presets 按钮面板出现在参数面板中。
+
+### Step 3：使用 Quick Presets（推荐）
+
+Quick Presets 是预配置的一键计算按钮，覆盖所有已验证 case。
+
+#### GS（基态）预设 — 青色按钮
+
+| 按钮 | 分子 | 模式 | 参考能量 (Ha) | 预期耗时 | 预期结果 |
+|------|------|------|-------------|---------|---------|
+| **H (PP PBE)** | H | pseudo PBE | −0.4584 | ~90s | 总能量 + 1s 本征值 |
+| **He (PP LDA)** | He | pseudo LDA | −2.8324 | ~150s | 总能量 + 1s 本征值 |
+| **N (PP LDA)** | N_atom | pseudo LDA, spin-polarized | −9.6370 | ~270s | 总能量 + 5 本征值（HOMO×3/LUMO×3 简并）|
+| **Na (builtin)** | Na | builtin LDA | −0.1843 | ~70s | 总能量 + 本征值 |
+| **H₂ (PP PBE)** | H₂ | pseudo PBE, spacing=0.10 | — | ~120s | 总能量 + 本征值 |
+| **LiH (builtin)** | LiH | builtin LDA | −0.7716 | ~70s | 总能量 + 本征值 |
+| **CH₄ (builtin)** | CH₄ | builtin LDA | −8.0216 | ~130s | 总能量 + HOMO×3 简并 |
+| **NH₃ (PP PBE)** | NH₃ | pseudo PBE | −11.8030 | ~70s | 总能量 + 本征值 |
+| **H₂O GS** | H₂O | pseudo PBE | −17.2900 | ~30s | 总能量 + 本征值 |
+| **C₂H₄ (builtin)** | C₂H₄ | builtin LDA | −13.7660 | ~170s | 总能量 + 本征值 |
+
+#### TD（时变）预设 — 绿色按钮
+
+| 按钮 | 分子 | 模式 | 预期耗时 | 预期结果 |
+|------|------|------|---------|---------|
+| **H₂O TDDFT** | H₂O | pseudo PBE, delta-kick | ~140s | 光学吸收谱（0–20 eV）+ Casida sticks 叠加 |
+
+#### Casida（线性响应）预设 — 紫色按钮
+
+| 按钮 | 分子 | 模式 | 预期耗时 | 预期结果 |
+|------|------|------|---------|---------|
+| **H₂O Casida** | H₂O | pseudo PBE, Casida | ~130s | 激发态表（#、能量 eV、振子强度）+ 激发态 stick 图 |
+
+### Step 4：点击 Preset 并运行
+
+1. 点击目标 preset 按钮（如 **H₂O GS**）
+2. 左侧参数面板自动填充对应参数
+3. 右侧分子 3D 预览更新
+4. 点击 **Initiate Computation** 按钮（蓝色，带 ▶ 图标）
+5. 下方 **Runtime Log** 面板开始显示计算日志
+6. 等待状态变为 **SUCCESS**（绿色）
+
+### Step 5：查看结果
+
+计算成功后，下方 **Results Panel** 展示结果。
+
+#### GS 结果渲染检查清单
+
+| 元素 | 位置 | 检查内容 |
+|------|------|---------|
+| **Energy Summary Cards** | 结果区顶部 | 显示分子名、SCF 收敛状态、SCF 迭代数、总能量（Ha + eV）|
+| **HOMO / LUMO** | Summary Cards | HOMO 能量（绿色）、LUMO 能量（红色）、Gap 值 |
+| **KS Eigenvalue Table** | 表格区域 | 显示所有本征值（编号、eV、Ha），HOMO/LUMO 行高亮 |
+| **3D Viewer** | 左侧 | 分子结构正确显示 |
+| **SCF Converged** | Summary Card | 应为 `true` |
+
+#### TD 结果渲染检查清单
+
+| 元素 | 位置 | 检查内容 |
+|------|------|---------|
+| **光学吸收谱** | 图表区域 | X 轴 Energy (eV)，Y 轴 σ (Å²/eV)，显示吸收峰 |
+| **Casida Sticks** | 谱图上方叠加 | 紫色竖线标记 Casida 激发能位置 |
+| **GS 能量** | Summary Cards | 基态总能量（TD 先跑 GS 再跑传播）|
+
+#### Casida 结果渲染检查清单
+
+| 元素 | 位置 | 检查内容 |
+|------|------|---------|
+| **Excitation Table** | 专用表格 | 每行：编号、能量 (eV)、振子强度 (f)、振子强度条形图 |
+| **Bright excitations** | 表格中 | f > 0.01 的行紫色高亮 |
+| **Casida Summary** | Summary Card | 激发态总数、第一激发能、能量范围 |
+| **Stick Overlay** | 若有 TD 历史 | 在 TD 谱图上叠加 Casida sticks |
+
+#### VASP 结果渲染检查清单
+
+| 元素 | 位置 | 检查内容 |
+|------|------|---------|
+| **Fermi Energy** | Summary Cards | VASP 专属字段，显示费米能级 (eV) |
+| **Magnetization** | Summary Cards | 磁矩 (μB)，闭壳层为 0 |
+| **Octopus vs VASP 对比** | 对比面板 | 若同一分子用两种引擎都跑过，自动显示对比 |
+
+### Step 6：多模式对比（可选）
+
+前端自动保存计算历史（`resultHistory`）。可：
+1. 先跑 **H₂O GS** → 结果存入 history
+2. 再跑 **H₂O TDDFT** → 自动叠加 Casida sticks
+3. 再跑 **H₂O Casida** → 自动在 Casida 表中显示结果
+
+三种结果在 Results Panel 的不同 tab 下查看，互不覆盖。
+
+### API 直接测试（不经过前端）
+
+```bash
+# GS 测试 — H₂O PBE
+curl -s -X POST http://localhost:8000/solve \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "case_id": "h2o_gs_test",
+    "engineMode": "octopus3D",
+    "speciesMode": "pseudo",
+    "pseudopotentialSet": "standard",
+    "molecule": "H2O",
+    "xcFunctional": "gga_x_pbe+gga_c_pbe",
+    "spacing": 0.21,
+    "radius": 3.0,
+    "octopusLengthUnit": "angstrom",
+    "calcMode": "gs",
+    "spinComponents": "unpolarized"
+  }' | python -m json.tool
+
+# Casida 测试 — H₂O
+curl -s -X POST http://localhost:8000/solve \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "case_id": "h2o_casida_test",
+    "engineMode": "octopus3D",
+    "speciesMode": "pseudo",
+    "pseudopotentialSet": "standard",
+    "molecule": "H2O",
+    "xcFunctional": "lda_x+lda_c_pz",
+    "spacing": 0.21,
+    "radius": 5.0,
+    "octopusLengthUnit": "angstrom",
+    "calcMode": "casida",
+    "casidaKohnShamStates": "1-16",
+    "extraStates": 13,
+    "spinComponents": "unpolarized"
+  }' | python -m json.tool
+```
+
+**响应关键字段**：
+
+```json
+{
+  "status": "success",
+  "total_energy": -17.2932,
+  "converged": true,
+  "scf_iterations": 21,
+  "eigenvalues": [...],
+  "molecular": {
+    "calcMode": "gs",
+    "energy_levels": [...],
+    "homo_energy": -7.89,
+    "lumo_energy": -0.56,
+    "casida_executed": false,
+    "td_executed": false
+  },
+  "casida_data": {
+    "excitations": [{"energy_ev": 6.67, "oscillator_strength": 0.04}],
+    "energies_ev": [6.67, ...],
+    "oscillator_strengths": [0.04, ...]
+  },
+  "casida_executed": true,
+  "td_spectrum": {
+    "energy_ev": [0.1, 0.2, ...],
+    "cross_section": [0.001, 0.002, ...]
+  },
+  "td_executed": true
+}
+```
+
+### E2E 回归测试（批量验证）
+
+```bash
+# 在 HPC 上运行全部 15 个 preset
+python scripts/run_e2e_regression.py
+
+# 运行单个 preset
+python scripts/run_e2e_regression.py --preset h2o_gs
+
+# 查看可用 preset
+python scripts/run_e2e_regression.py --list
+```
+
+> **注意**：E2E 测试必须串行执行。并发会碰撞共享 `octopus_latest` 工作目录。
+
+---
+
+## 一、选择计算引擎
+
+### 两种引擎对比
+
+| 引擎 | 何时用 | 关键参数 |
 |------|--------|---------|
-| **Formula** | 快速预览、参数扫描、TDDFT 预览 | `softCoreAlpha` |
-| **PP** | 需与实验值对比的高精度计算 | `%Species` 块 + UPF 文件 |
-| **All-Electron** | 轻元素（H, He, Li）高精度基准 | `allElectronType` |
-| **VASP** | 高精度 DFT 计算（PAW-PBE），可与实验对比 | `engineMode: "vasp"`（前端切换） |
+| **Octopus 3D** | DFT/TDDFT/Casida，支持 Formula/PP/builtin_standard | `speciesMode`, `calcMode`, `xcFunctional` |
+| **VASP** | 高精度 DFT 计算（PAW-PBE），可与实验对比 | `encut`, `ediff`, `kpointsType` |
 
-**决策（直接 API 调用，Octopus）：**
+**Octopus 物种模式：**
 
 ```
 需要和实验值对比吗？
-  ├─ 否 → Formula Mode
+  ├─ 否 → Formula Mode（软核势，快速）
   └─ 是 → 有 UPF 赝势文件吗？
             ├─ 是 → PP Mode
-            └─ 否 → All-Electron Mode
+            └─ 否 → builtin_standard Mode（内置 HGH/PSF）
 ```
-
-**前端引擎切换：**
-
-Web 界面顶部三个引擎按钮：
-- **Local 1D** — 1D 简化模型（仅教学，无物理意义）
-- **Octopus 3D** — Octopus DFT（Formula / PP / builtin_standard）
-- **VASP** — VASP PAW-PBE（高精度，紫色按钮）
-
-> ⚠️ 默认 `engineMode="local1D"` 是 **1D 简化模型**，结果完全错误！任何 3D 计算必须切换引擎。
+  └─ 是 → 有 UPF 赝势文件吗？
+            ├─ 是 → PP Mode
+            └─ 否 → builtin_standard Mode（内置 HGH/PSF）
+```
 
 ---
 
@@ -347,7 +550,55 @@ print(d.get("converged"))   # True / False
 
 > **引擎**：Octopus（Casida + 实时 TDDFT）
 > **验证基准**：CH₄ Casida 第一激发态 9.17 eV vs Tutorial 16 参考 9.278 eV（误差 1.1%）
+> **E2E 验证**：15 个 preset 全通过（2026-05-19），详见 HANDOFF.md
 > **并行策略**：ParDomains 分解实空间网格，详见 benchmark 结果
+
+### 全链路数据流（前端 → 结果渲染）
+
+```
+用户点击 Preset → App.tsx 填充 state
+    ↓
+点击 Initiate Computation → useSolverRunner.ts 构建 payload
+    ↓
+┌─ octopus3D: EventSource SSE → /api/physics/stream?config={...}
+│                                → Node API (3004) → MCP server (8000)
+│                                → PBS qsub → Octopus 16.0 udocker
+│                                → parse_results → SSE 'result' event
+└─ vasp:       fetch POST → /solve_vasp → MCP server (8000)
+                                 → vasp_std → parse OUTCAR → JSON
+    ↓
+SSE 'result' event → useSolverRunner 解析 resData
+    ↓
+setResult(resData) → setResultHistory({[calcMode]: resData})
+    ↓
+ResultsPanel.tsx 根据 resData.molecular 渲染：
+
+┌─ calcMode='gs' ──────────────────────────────────────┐
+│ Energy Summary Cards (总能量、HOMO/LUMO、Gap)          │
+│ KS Eigenvalue Table (编号、eV、Ha，HOMO/LUMO 高亮)    │
+│ 若有 TD 历史 → 叠加 TD 谱 + Casida sticks             │
+└──────────────────────────────────────────────────────┘
+
+┌─ calcMode='td' ──────────────────────────────────────┐
+│ 光学吸收谱图 (energy_ev vs cross_section)              │
+│ Casida sticks 叠加 (若 casida 数据存在)                │
+│ TDDFT dipole panel (若 td_dipole 数据存在)             │
+│ 若无谱数据 → 显示 warning + 可用子面板                  │
+└──────────────────────────────────────────────────────┘
+
+┌─ calcMode='casida' ─────────────────────────────────┐
+│ GS 能量卡片 (Casida 先跑 GS 再跑 Casida)              │
+│ Excitation Table (#、能量 eV、振子强度 f、bar chart)    │
+│ Casida Summary Card (总数、第一激发能、能量范围)        │
+│ 若有 TD 历史 → 在 TD 谱图上叠加 Casida sticks          │
+└──────────────────────────────────────────────────────┘
+
+┌─ backend='vasp' ────────────────────────────────────┐
+│ 同 GS 渲染 + Fermi Energy、Magnetization 专属字段     │
+│ 若同分子有 Octopus 结果 → 自动对比面板                  │
+│ PAW 绝对能量警告 banner                                │
+└──────────────────────────────────────────────────────┘
+```
 
 ### 7.1 两种 TDDFT 方法对比
 
@@ -506,7 +757,7 @@ payload = json.dumps({
 
 | 错误 | 原因 | 解决方案 |
 |------|------|---------|
-| 计算结果始终是 1D 量级 | 默认 `engineMode="local1D"` | 显式指定 `"octopus3D"` |
+| 计算结果始终是 1D 量级 | `engineMode` 不是 `octopus3D` 或 `vasp` | 确认引擎选择正确 |
 | 能量数量级完全不对 | 忘记设 `octopus_length_unit="angstrom"` | 始终加这个参数 |
 | `softCoreAlpha` 无效 | 用了 float 而非 dict | 改 `{"_default": 0.1}` |
 | N 原子算不出来 | `molecule="N"` 未映射 | 用 `"N_atom"` 或确认映射已加 |

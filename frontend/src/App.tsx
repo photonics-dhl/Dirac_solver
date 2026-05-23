@@ -12,57 +12,35 @@ import { useOctopusConfig } from './hooks/useOctopusConfig';
 import { useMCPHealth } from './hooks/useMCPHealth';
 import { useSolverRunner } from './hooks/useSolverRunner';
 
-const DevFlowDashboard = React.lazy(() => import('./DevFlowDashboard'));
 const ResultsPanel = React.lazy(() => import('./ResultsPanel'));
 const GeometryEditor = React.lazy(() => import('./GeometryEditor'));
-type TabId = 'solver' | 'devflow';
 
 const ENV_API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
 const API_BASE = ENV_API_BASE || '';
-const ENABLE_DEVFLOW = (import.meta.env.VITE_ENABLE_DEVFLOW ?? 'false').toLowerCase() === 'true';
 
 export default function App() {
-    const [activeTab, setActiveTab] = useState<TabId>('solver')
+    const { dockerStatus: mcpStatus } = useMCPHealth();
 
     return (
         <div className="h-screen flex flex-col text-white font-sans" style={{ background: '#0a0e1a' }}>
             {/* ── Top Nav Bar ── */}
             <div className="flex items-center gap-3 px-8 py-3 shrink-0" style={{ borderBottom: '1px solid #1a2035' }}>
                 <Activity className="w-6 h-6" style={{ color: '#00d4ff' }} />
-                <h1 className="text-xl font-light tracking-tight mr-8" style={{ color: '#e2e8f0', letterSpacing: '-0.02em' }}>Dirac Solver</h1>
+                <h1 className="text-xl font-light tracking-tight" style={{ color: '#e2e8f0', letterSpacing: '-0.02em' }}>Dirac Solver</h1>
 
-                <div className="flex gap-1 rounded-lg p-1" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
-                    <button
-                        onClick={() => setActiveTab('solver')}
-                        className="flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
-                        style={activeTab === 'solver' ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.3)' } : { color: '#8892a4' }}
-                    >
-                        <Cpu className="w-4 h-4" />
-                        Dirac Solver
-                    </button>
-                    {ENABLE_DEVFLOW && (
-                        <button
-                            onClick={() => setActiveTab('devflow')}
-                            className="flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
-                            style={activeTab === 'devflow' ? { background: 'rgba(0,212,255,0.12)', color: '#00d4ff', outline: '1px solid rgba(0,212,255,0.3)' } : { color: '#8892a4' }}
-                        >
-                            <Activity className="w-4 h-4" />
-                            Dev Flow
-                        </button>
-                    )}
+                {/* MCP Status — right side of nav bar */}
+                <div className="ml-auto flex items-center gap-1.5">
+                    {mcpStatus === 'checking' && <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#8892a4' }} />}
+                    <div className="w-2 h-2 rounded-full" style={{ background: mcpStatus === 'online' ? '#22c55e' : mcpStatus === 'offline' ? '#ef4444' : '#6b7280' }} />
+                    <span className="text-xs font-mono uppercase tracking-wider" style={{ color: mcpStatus === 'online' ? '#22c55e' : mcpStatus === 'offline' ? '#ef4444' : '#6b7280' }}>
+                        {mcpStatus === 'online' ? 'MCP Online' : mcpStatus === 'offline' ? 'MCP Offline' : 'Connecting...'}
+                    </span>
                 </div>
             </div>
 
-            {/* ── Tab Content ── */}
-            <div className="flex-1 overflow-hidden relative" style={{ display: 'flex' }}>
-                <div style={{ display: activeTab === 'solver' ? 'block' : 'none', flex: 1, height: '100%', overflow: 'auto' }}>
-                    <DiracSolverView />
-                </div>
-                {ENABLE_DEVFLOW && (
-                    <div style={{ display: activeTab === 'devflow' ? 'block' : 'none', flex: 1, height: '100%' }}>
-                        <Suspense fallback={<div className="p-8 text-gray-500">Loading...</div>}><DevFlowDashboard /></Suspense>
-                    </div>
-                )}
+            {/* ── Main Content ── */}
+            <div className="flex-1 overflow-hidden" style={{ height: '100%', overflow: 'auto' }}>
+                <DiracSolverView />
             </div>
         </div>
     )
@@ -374,6 +352,7 @@ function DiracSolverView() {
             ? benchmarkDelta.within_tolerance
             : (relativeError != null && threshold != null ? relativeError <= threshold : false);
 
+        const lumoRaw = typeof physics.lumo_energy === 'number' ? physics.lumo_energy : null;
         const dispatchResult = {
             config: {
                 source: 'dispatch_latest',
@@ -392,7 +371,8 @@ function DiracSolverView() {
                 moleculeName: physics.molecule_name || 'H2',
                 total_energy_hartree: totalEnergyHa ?? undefined,
                 homo_energy: typeof physics.homo_energy === 'number' ? physics.homo_energy : undefined,
-                lumo_energy: typeof physics.lumo_energy === 'number' ? physics.lumo_energy : undefined,
+                lumo_energy: (lumoRaw !== null && lumoRaw !== 0) ? lumoRaw : undefined,
+                converged: passed || Boolean((physics as any).converged),
                 optical_spectrum: {
                     energy_ev: Array.isArray(absorption.energy_ev) ? absorption.energy_ev : [],
                     cross_section: Array.isArray(absorption.cross_section) ? absorption.cross_section : [],
@@ -411,12 +391,6 @@ function DiracSolverView() {
         setResult(dispatchResult);
         const historyKey = `${summary.taskId || 'dispatch'}:${physics.calc_mode || 'gs'}`;
         setResultHistory(prev => ({ ...prev, [historyKey]: dispatchResult }));
-        if (totalEnergyHa != null && Math.abs(totalEnergyHa) > 5 && Math.abs(totalEnergyHa) < 30) {
-            setLogs(prev => [
-                ...prev,
-                '[System] Unit warning: dispatch total_energy_hartree is in an eV-like range; expected Hartree (Ha).',
-            ]);
-        }
     }, [harnessCaseId]);
 
     const fetchLatestDispatch = React.useCallback(async () => {
@@ -997,7 +971,7 @@ function DiracSolverView() {
         }
 
         const runStartTs = Date.now();
-        const tdSteps = Math.max(120, Math.min(parseInt(config.octopusTdSteps || '260', 10) || 260, 1500));
+        const tdSteps = Math.max(120, Math.min(parseInt(config.octopusTdSteps || '260', 10) || 260, 100000));
         const tdDt = Math.max(0.01, Math.min(parseFloat(config.octopusTdTimeStep || '0.04') || 0.04, 0.2));
         const selectedMolecule = (config.octopusMolecule || '').trim();
         const molecule = selectedMolecule || 'H2O';
@@ -1212,13 +1186,6 @@ function DiracSolverView() {
 
                 {/* Engine Mode Toggle */}
                 <div className="flex rounded-lg p-1 mb-4" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
-                    <button onClick={() => setters.setEngineMode('local1D')}
-                        className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
-                        style={config.engineMode === 'local1D'
-                            ? { background: 'rgba(255,255,255,0.06)', color: '#8892a4', outline: '1px solid #1e2d45' }
-                            : { color: '#4b5563' }}>
-                        Local 1D
-                    </button>
                     <button onClick={() => setters.setEngineMode('octopus3D')}
                         className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
                         style={config.engineMode === 'octopus3D'
@@ -1239,16 +1206,27 @@ function DiracSolverView() {
                 {config.engineMode === 'octopus3D' && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                         {([
-                            { label: 'H (PP PBE)', mol: 'H_atom', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'He (PP LDA)', mol: 'He', space: '0.15', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'N (PP LDA)', mol: 'N_atom', space: '0.18', rad: '10.0', spin: 'polarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'CH₄ (builtin)', mol: 'CH4', space: '0.18', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', cmode: 'gs' as const },
-                            { label: 'H₂O GS', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'gs' as const },
-                            { label: 'H₂O TDDFT', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', cmode: 'td' as const },
+                            // ── Atoms ──
+                            { label: 'H (PP PBE)', mol: 'H', space: '0.18', rad: '10.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'He (PP LDA)', mol: 'He', space: '0.15', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'N (PP LDA)', mol: 'N_atom', space: '0.18', rad: '10.0', spin: 'polarized', xc: 'lda_x+lda_c_pz', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'Na (builtin)', mol: 'Na', space: '0.22', rad: '10.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'gs' as const },
+                            // ── Diatomics ──
+                            { label: 'H₂ (PP PBE)', mol: 'H2', space: '0.10', rad: '8.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'LiH (builtin)', mol: 'LiH', space: '0.22', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'gs' as const },
+                            // ── Polyatomics ──
+                            { label: 'CH₄ (builtin)', mol: 'CH4', space: '0.18', rad: '7.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'NH₃ (PP PBE)', mol: 'NH3', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'H₂O GS', mol: 'H2O', space: '0.21', rad: '3.0', spin: 'unpolarized', xc: 'gga_x_pbe+gga_c_pbe', species: 'pseudo', ppSet: 'standard', cmode: 'gs' as const },
+                            { label: 'H₂O TDDFT', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'td' as const },
+                            { label: 'H₂O Casida', mol: 'H2O', space: '0.21', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'casida' as const },
+                            { label: 'C₂H₄ (builtin)', mol: 'C2H4', space: '0.22', rad: '5.0', spin: 'unpolarized', xc: 'lda_x+lda_c_pz', species: 'builtin_standard', ppSet: 'standard', cmode: 'gs' as const },
                         ] as const).map(p => (
                             <button
                                 key={p.label}
                                 onClick={() => {
+                                    setResult(null);
+                                    setLogs([`[System] Preset "${p.label}" selected. Click "Initiate Computation" to run.`]);
                                     setters.setOctopusMolecule(p.mol);
                                     setters.setOctopusSpacing(p.space);
                                     setters.setOctopusRadius(p.rad);
@@ -1257,24 +1235,34 @@ function DiracSolverView() {
                                     setters.setXcCategory(p.xc.startsWith('gga') ? 'gga' : p.xc.startsWith('mgga') ? 'mgga' : p.xc.startsWith('hyb') ? 'hybrid' : 'lda');
                                     setters.setXcOverride('');
                                     setters.setSpeciesMode(p.species);
-                                    setters.setPseudopotentialSet(p.species === 'builtin_standard' ? 'standard' : 'standard');
+                                    setters.setPseudopotentialSet(p.ppSet);
                                     setters.setOctopusCalcMode(p.cmode);
                                     setters.setGeomMode('preset');
                                     setters.setConfirmedAtoms(null);
                                     setters.setConfirmedLabel('');
                                     if (p.cmode === 'td') {
-                                        setters.setOctopusTdSteps('2000');
-                                        setters.setOctopusTdTimeStep('0.1');
+                                        setters.setOctopusTdSteps('25000');
+                                        setters.setOctopusTdTimeStep('0.02');
                                         setters.setTdExcitationType('delta');
                                         setters.setTdFieldAmplitude('0.01');
+                                    }
+                                    if (p.cmode === 'casida') {
+                                        setters.setOctopusExtraStates('13');
+                                        setters.setCasidaKohnShamStates('1-16');
                                     }
                                 }}
                                 disabled={isComputing}
                                 className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors disabled:opacity-40"
                                 style={{
-                                    background: 'rgba(0,212,255,0.08)',
-                                    color: '#7dd3fc',
-                                    border: '1px solid rgba(0,212,255,0.2)',
+                                    background: p.cmode === 'casida' ? 'rgba(167,139,250,0.10)' :
+                                                p.cmode === 'td' ? 'rgba(52,211,153,0.10)' :
+                                                'rgba(0,212,255,0.08)',
+                                    color: p.cmode === 'casida' ? '#c4b5fd' :
+                                           p.cmode === 'td' ? '#6ee7b7' :
+                                           '#7dd3fc',
+                                    border: `1px solid ${p.cmode === 'casida' ? 'rgba(167,139,250,0.25)' :
+                                                      p.cmode === 'td' ? 'rgba(52,211,153,0.25)' :
+                                                      'rgba(0,212,255,0.2)'}`,
                                 }}
                             >
                                 {p.label}
@@ -2026,7 +2014,7 @@ function DiracSolverView() {
                             </Section>
                         )}
 
-                        {(config.octopusCalcMode === 'gs' || config.octopusCalcMode === 'opt' || config.octopusCalcMode === 'em') && (
+                        {(config.octopusCalcMode === 'gs' || config.octopusCalcMode === 'opt' || config.octopusCalcMode === 'em' || config.octopusCalcMode === 'casida') && (
                             <Section title="DFT Settings" icon={<Atom className="w-4 h-4" style={{ color: '#00d4ff' }} />}>
                                 {config.octopusCalcMode === 'gs' && (
                                     <>
@@ -2156,10 +2144,21 @@ function DiracSolverView() {
                                 </Field>
                             </Section>
                         )}
+
+                        {config.octopusCalcMode === 'casida' && (
+                            <Section title="Casida LR-TDDFT" icon={<Zap className="w-4 h-4" style={{ color: '#a78bfa' }} />}>
+                                <Field label="KS State Range" hint="CasidaKohnShamStates range, e.g. 1-16">
+                                    <input type="text" value={config.casidaKohnShamStates} onChange={e => setters.setCasidaKohnShamStates(e.target.value)} placeholder="1-8" className={inputClass} />
+                                </Field>
+                                <Field label="Extra States" hint="Unoccupied KS states for Casida">
+                                    <input type="number" value={config.octopusExtraStates} onChange={e => setters.setOctopusExtraStates(e.target.value)} className={inputClass} />
+                                </Field>
+                            </Section>
+                        )}
                     </>
                 )}
 
-                {workflowStage === 'setup' && config.octopusCalcMode !== 'gs' && (
+                {workflowStage === 'setup' && config.octopusCalcMode === 'td' && (
                     <div className="mt-4 rounded-lg p-2" style={{ background: '#0d1525', border: '1px solid #1a2035' }}>
                         <div className="text-[11px] mb-2" style={{ color: '#94a3b8' }}>
                             Setup Actions (Octopus Reviewer)

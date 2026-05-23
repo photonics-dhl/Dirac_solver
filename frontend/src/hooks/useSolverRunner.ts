@@ -121,6 +121,7 @@ export function useSolverRunner() {
             feProbeBeamCount: parseInt(config.feProbeBeamCount),
             feProbeCharge: parseFloat(config.feProbeCharge),
             octopusExtraStates: parseInt(config.octopusExtraStates),
+            casidaKohnShamStates: config.casidaKohnShamStates,
             xcFunctional: config.xcOverride.trim() || config.xcPreset,
             speciesMode: config.speciesMode,
             pseudopotentialSet: config.pseudopotentialSet,
@@ -248,7 +249,7 @@ export function useSolverRunner() {
         let resultReceived = false;
         const connectTimeoutMs = Math.max(5000, Number(import.meta.env.VITE_SOLVE_CONNECT_TIMEOUT_MS || 20000));
         const stallTimeoutMs = Math.max(10000, Number(import.meta.env.VITE_SOLVE_STALL_TIMEOUT_MS || 5 * 60 * 1000));
-        const hardTimeoutMs = Math.max(0, Number(import.meta.env.VITE_SOLVE_HARD_TIMEOUT_MS || 12 * 60 * 1000));
+        const hardTimeoutMs = Math.max(0, Number(import.meta.env.VITE_SOLVE_HARD_TIMEOUT_MS || 25 * 60 * 1000));
 
         let sawProgress = false;
         let connectTimeoutId: number | null = null;

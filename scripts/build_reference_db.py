@@ -427,6 +427,228 @@ def build_h2o_response(conn: sqlite3.Connection):
     conn.commit()
 
 
+def build_na_atom(conn: sqlite3.Connection):
+    """Na atom builtin_standard LDA case."""
+    case_id = "na_atom_gs_official"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "Na", "dft_gs_3d", "gs", "builtin_standard",
+            "lda_x+lda_c_pz", "A-ready",
+            "Na atom builtin_standard LDA ground state. 3s1 valence, spin-polarized. Verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 9
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -0.1843, -5.014, None, 0.05, "Octopus builtin_standard self-consistent", 1),
+    )
+
+    for param in [
+        ("Spacing", "0.22", "angstrom", 1),
+        ("Radius", "10.0", "angstrom", 1),
+        ("ExtraStates", "2", None, 0),
+        ("SpinComponents", "spin_polarized", None, 1),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
+def build_lih(conn: sqlite3.Connection):
+    """LiH builtin_standard LDA case."""
+    case_id = "lih_gs_official"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "LiH", "dft_gs_3d", "gs", "builtin_standard",
+            "lda_x+lda_c_pz", "A-ready",
+            "LiH ionic heteronuclear diatomic. Li PSF PP with non-linear core correction (nc) produces anomalously deep eigenvalues (-119 eV HOMO). Total energy valid, eigenvalue spectrum unreliable. Verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 10
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -0.7716, -20.998, None, 0.03, "Octopus builtin_standard self-consistent", 1),
+    )
+
+    for param in [
+        ("Spacing", "0.22", "angstrom", 1),
+        ("Radius", "7.0", "angstrom", 1),
+        ("ExtraStates", "4", None, 0),
+        ("BondLength", "3.022", "bohr", 1),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
+def build_nh3_pseudo(conn: sqlite3.Connection):
+    """NH3 pseudo PBE case."""
+    case_id = "nh3_gs_pseudo"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "NH3", "dft_gs_3d", "gs", "pseudo",
+            "gga_x_pbe+gga_c_pbe", "A-ready",
+            "NH3 pseudo mode PBE ground state. Workaround for builtin_standard LCAO convergence failure. Verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 11
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -11.803, -321.319, None, 0.03, "Octopus pseudo PBE self-consistent", 1),
+    )
+
+    for param in [
+        ("Spacing", "0.21", "angstrom", 1),
+        ("Radius", "3.0", "angstrom", 1),
+        ("ExtraStates", "8", None, 0),
+        ("PseudopotentialSet", "standard", None, 1),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
+def build_n2_builtin(conn: sqlite3.Connection):
+    """N2 builtin_standard GS case."""
+    case_id = "n2_gs_builtin"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "N2", "dft_gs_3d", "gs", "builtin_standard",
+            "lda_x+lda_c_pz", "A-ready",
+            "N2 diatomic builtin_standard LDA. Requires LCAO cap 20 Bohr for N atoms. E2E verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 12
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -19.897, -541.415, None, 0.03, "Octopus builtin_standard self-consistent", 1),
+    )
+
+    for param in [
+        ("Spacing", "0.18", "angstrom", 1),
+        ("Radius", "10.0", "angstrom", 1),
+        ("ExtraStates", "4", None, 0),
+        ("LCAOMaximumOrbitalRadius", "20", "bohr", 0),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
+def build_c2h4(conn: sqlite3.Connection):
+    """C2H4 builtin_standard + Casida LDA case."""
+    case_id = "c2h4_casida_lda"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "C2H4", "response_casida", "casida", "builtin_standard",
+            "lda_x+lda_c_pz", "A-ready",
+            "C2H4 ethylene pi-system Casida. 48 excitations, 1st at 7.272 eV, strongest at 8.749 eV (pi->pi*). E2E verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 13
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -13.701, -372.836, None, 0.03, "Octopus builtin_standard self-consistent", 1),
+    )
+
+    cur.execute(
+        "INSERT OR REPLACE INTO properties (case_id, property_name, property_value, unit, methodology) VALUES (?,?,?,?,?)",
+        (case_pk, "casida_1st_excitation", "7.272", "eV", "Casida linear response LDA"),
+    )
+    cur.execute(
+        "INSERT OR REPLACE INTO properties (case_id, property_name, property_value, unit, methodology) VALUES (?,?,?,?,?)",
+        (case_pk, "casida_brightest_peak", "8.749", "eV", "Casida linear response LDA, f=0.720"),
+    )
+
+    for param in [
+        ("Spacing", "0.18", "angstrom", 1),
+        ("Radius", "8.0", "angstrom", 1),
+        ("ExtraStates", "8", None, 0),
+        ("CasidaKohnShamStates", "1-16", None, 1),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
+def build_h2o_casida_lda(conn: sqlite3.Connection):
+    """H2O Casida LDA case."""
+    case_id = "h2o_casida_lda"
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT OR REPLACE INTO cases (case_id, formula, category, calculation_mode, species_mode, xc_functional, confidence_tier, description, source_url) VALUES (?,?,?,?,?,?,?,?,?)",
+        (
+            case_id, "H2O", "response_casida", "casida", "builtin_standard",
+            "lda_x+lda_c_pz", "A-ready",
+            "H2O Casida linear response LDA. 48 excitations, 1st at 6.741 eV. E2E verified 2026-05-18.",
+            None,
+        ),
+    )
+    case_pk = cur.lastrowid or 14
+
+    cur.execute(
+        "INSERT OR REPLACE INTO energies (case_id, quantity, value_hartree, value_ev, orbital_label, tolerance_relative, source, verified) VALUES (?,?,?,?,?,?,?,?)",
+        (case_pk, "total_energy", -17.17, -467.253, None, 0.05, "Octopus builtin_standard working reference", 1),
+    )
+
+    cur.execute(
+        "INSERT OR REPLACE INTO properties (case_id, property_name, property_value, unit, methodology) VALUES (?,?,?,?,?)",
+        (case_pk, "casida_1st_excitation", "6.741", "eV", "Casida linear response LDA"),
+    )
+    cur.execute(
+        "INSERT OR REPLACE INTO properties (case_id, property_name, property_value, unit, methodology) VALUES (?,?,?,?,?)",
+        (case_pk, "casida_brightest_low_e", "8.793", "eV", "Casida LDA, f=0.102"),
+    )
+
+    for param in [
+        ("Spacing", "0.18", "angstrom", 1),
+        ("Radius", "10.0", "angstrom", 1),
+        ("ExtraStates", "8", None, 0),
+        ("CasidaKohnShamStates", "1-8", None, 1),
+    ]:
+        cur.execute(
+            "INSERT OR REPLACE INTO parameters (case_id, param_name, param_value, unit, is_critical) VALUES (?,?,?,?,?)",
+            (case_pk, *param),
+        )
+
+    conn.commit()
+
+
 BUILDERS = [
     ("n_atom_gs_official", build_n_atom),
     ("h_atom_gs_official", build_h_atom),
@@ -436,6 +658,12 @@ BUILDERS = [
     ("h2o_gs_official", build_h2o),
     ("ch4_tddft_absorption", build_ch4_tddft),
     ("h2o_response_sternheimer", build_h2o_response),
+    ("na_atom_gs_official", build_na_atom),
+    ("lih_gs_official", build_lih),
+    ("nh3_gs_pseudo", build_nh3_pseudo),
+    ("n2_gs_builtin", build_n2_builtin),
+    ("c2h4_casida_lda", build_c2h4),
+    ("h2o_casida_lda", build_h2o_casida_lda),
 ]
 
 

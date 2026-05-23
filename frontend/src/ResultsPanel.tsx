@@ -93,6 +93,11 @@ interface PhysicsResult {
             energies_ev: number[];
             oscillator_strengths: number[];
         };
+        vib_modes?: {
+            modes: number[];
+            frequencies_cm: number[];
+            ir_intensities: number[];
+        };
         band_structure_data?: {
             kpoints: number[];
             bands: number[][];
@@ -104,6 +109,10 @@ interface PhysicsResult {
         };
         atom_positions?: Array<{ symbol: string; x: number; y: number; z: number }>;
         box_radius?: number;
+        render_snapshots?: {
+            density_2d_png?: string;
+            density_3d_png?: string;
+        };
     };
     density_1d?: number[];
     potential_components?: {
@@ -259,11 +268,38 @@ function HarnessAuditPanel({
 
 // ─── SVG Chart Primitives ─────────────────────────────────────────
 
-const CHART_W = 400;
-const CHART_H = 220;
-const PAD = { top: 24, right: 16, bottom: 30, left: 44 };
+const CHART_W = 480;
+const CHART_H = 240;
+const PAD = { top: 24, right: 48, bottom: 32, left: 48 };
 const INNER_W = CHART_W - PAD.left - PAD.right;
 const INNER_H = CHART_H - PAD.top - PAD.bottom;
+
+// ─── Smart Axis Formatting ────────────────────────────────────────
+
+function smartFormat(val: number): string {
+    if (val === 0) return '0';
+    const a = Math.abs(val);
+    if (a >= 1e4 || (a < 1e-3 && a > 0)) return val.toExponential(1);
+    if (a >= 100) return val.toFixed(0);
+    if (a >= 10) return val.toFixed(1);
+    if (a >= 1) return val.toFixed(2);
+    if (a >= 0.1) return val.toFixed(3);
+    if (a >= 0.01) return val.toFixed(4);
+    return val.toExponential(2);
+}
+
+function niceNum(range: number, round: boolean): number {
+    if (range <= 0) return 1;
+    const exp = Math.floor(Math.log10(range));
+    const frac = range / Math.pow(10, exp);
+    let nice: number;
+    if (round) {
+        nice = frac < 1.5 ? 1 : frac < 3 ? 2 : frac < 7 ? 5 : 10;
+    } else {
+        nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
+    }
+    return nice * Math.pow(10, exp);
+}
 
 // ─── Curve Style Controls ─────────────────────────────────────────
 const CURVE_COLORS = ['#00d4ff','#22c55e','#f59e0b','#a78bfa','#ef4444','#38bdf8','#fb923c'];
@@ -381,10 +417,12 @@ type Tick = { pos: number; label: string };
 function Axes({
     xLabel = '', yLabel = '',
     xTicks = [], yTicks = [],
+    yRightTicks, yRightLabel,
     xMin, xMax, yMin, yMax,
 }: {
     xLabel?: string; yLabel?: string;
     xTicks?: Tick[]; yTicks?: Tick[];
+    yRightTicks?: Tick[]; yRightLabel?: string;
     xMin?: number; xMax?: number; yMin?: number; yMax?: number;
 }) {
     const xt = xTicks.length ? xTicks : makeXTicks(xMin ?? 0, xMax ?? 1, 5);
@@ -396,7 +434,7 @@ function Axes({
             {xt.map((t, i) => (
                 <g key={i}>
                     <line x1={t.pos} x2={t.pos} y1={PAD.top} y2={PAD.top + INNER_H + 4} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
-                    <text x={t.pos} y={PAD.top + INNER_H + 14} textAnchor="middle" fill="#6b7280" fontSize={8}>{t.label}</text>
+                    <text x={t.pos} y={PAD.top + INNER_H + 16} textAnchor="middle" fill="#6b7280" fontSize={8}>{t.label}</text>
                 </g>
             ))}
             {yt.map((t, i) => (
@@ -405,9 +443,17 @@ function Axes({
                     <text x={PAD.left - 6} y={t.pos + 3} textAnchor="end" fill="#6b7280" fontSize={8}>{t.label}</text>
                 </g>
             ))}
+            {/* Right Y-axis ticks */}
+            {yRightTicks && yRightTicks.map((t, i) => (
+                <g key={`r${i}`}>
+                    <text x={PAD.left + INNER_W + 6} y={t.pos + 3} textAnchor="start" fill="#8892a4" fontSize={7}>{t.label}</text>
+                </g>
+            ))}
             {xLabel && <text x={PAD.left + INNER_W / 2} y={CHART_H - 2} textAnchor="middle" fill="#4b5563" fontSize={8}>{xLabel}</text>}
-            {yLabel && <text x={10} y={PAD.top + INNER_H / 2} textAnchor="middle" fill="#4b5563" fontSize={8}
-                transform={`rotate(-90,10,${PAD.top + INNER_H / 2})`}>{yLabel}</text>}
+            {yLabel && <text x={12} y={PAD.top + INNER_H / 2} textAnchor="middle" fill="#4b5563" fontSize={8}
+                transform={`rotate(-90,12,${PAD.top + INNER_H / 2})`}>{yLabel}</text>}
+            {yRightLabel && <text x={CHART_W - 4} y={PAD.top + INNER_H / 2} textAnchor="middle" fill="#8892a4" fontSize={7}
+                transform={`rotate(90,${CHART_W - 4},${PAD.top + INNER_H / 2})`}>{yRightLabel}</text>}
         </>
     );
 }
@@ -441,34 +487,60 @@ function CasidaSticks({
     energies_ev, oscillator_strengths,
     xMin, xMax, yMin: _yMin, yMax: _yMax,
     color = '#a78bfa',
+    maxLabels = 8,
 }: {
     energies_ev: number[]; oscillator_strengths: number[];
     xMin: number; xMax: number; yMin: number; yMax: number;
-    color?: string;
+    color?: string; maxLabels?: number;
 }) {
     if (!energies_ev || !oscillator_strengths || energies_ev.length === 0) return null;
     const xRange = xMax - xMin || 1;
     const maxOsc = Math.max(...oscillator_strengths, 0.001);
+
+    // Find top-N brightest excitations to label
+    const threshold = (() => {
+        const sorted = [...oscillator_strengths].sort((a, b) => b - a);
+        return sorted[Math.min(maxLabels - 1, sorted.length - 1)] ?? 0;
+    })();
+
     return (
         <g>
             {energies_ev.map((e, i) => {
                 const px = PAD.left + ((e - xMin) / xRange) * INNER_W;
                 if (px < PAD.left || px > PAD.left + INNER_W) return null;
-                const stickH = (oscillator_strengths[i] / maxOsc) * INNER_H * 0.85;
+                const osc = oscillator_strengths[i];
+                const isBright = osc >= threshold;
+                const stickH = (osc / maxOsc) * INNER_H * 0.85;
                 const y0 = PAD.top + INNER_H;
                 const y1 = y0 - stickH;
                 return (
                     <g key={i}>
                         <line x1={px} x2={px} y1={y0} y2={y1}
-                            stroke={color} strokeWidth={1.5} opacity={0.8} />
-                        <circle cx={px} cy={y1} r={2.5} fill={color} opacity={0.9} />
-                        <text x={px} y={y1 - 5} textAnchor="middle" fill={color} fontSize={7}
-                            opacity={0.85}>{e.toFixed(1)}</text>
+                            stroke={color} strokeWidth={isBright ? 1.8 : 0.8} opacity={isBright ? 0.85 : 0.35} />
+                        {isBright && <circle cx={px} cy={y1} r={2.5} fill={color} opacity={0.9} />}
+                        {isBright && <text x={px} y={y1 - 5} textAnchor="middle" fill={color} fontSize={7}
+                            opacity={0.85}>{e.toFixed(2)}</text>}
                     </g>
                 );
             })}
         </g>
     );
+}
+
+// ─── Lorentzian-broadened Casida spectrum ─────────────────────────
+function casidaLorentzian(
+    energies: number[], osc: number[],
+    eGrid: number[], sigma: number,
+): number[] {
+    const sigma2 = 2 * sigma * sigma;
+    return eGrid.map(E => {
+        let sum = 0;
+        for (let i = 0; i < energies.length; i++) {
+            const dE = E - energies[i];
+            sum += osc[i] * (sigma / Math.PI) / (dE * dE + sigma2);
+        }
+        return sum;
+    });
 }
 
 function excitationCountStr(n: number): string {
@@ -502,24 +574,32 @@ function FillPath({
     return <polygon points={filled} fill={color} fillOpacity={0.18} stroke={color} strokeWidth={1} />;
 }
 
+function makeNiceTicks(vMin: number, vMax: number, maxTicks: number, horizontal: boolean): Tick[] {
+    const dataRange = vMax - vMin;
+    if (dataRange <= 0) {
+        const py = horizontal ? PAD.left + INNER_W / 2 : PAD.top + INNER_H / 2;
+        return [{ pos: py, label: smartFormat(vMin) }];
+    }
+    const range = niceNum(dataRange, false);
+    const step = niceNum(range / (maxTicks - 1), true);
+    const start = Math.ceil(vMin / step) * step;
+    const end = Math.floor(vMax / step) * step;
+    const ticks: Tick[] = [];
+    for (let v = start; v <= end + step * 0.5; v += step) {
+        const pos = horizontal
+            ? PAD.left + ((v - vMin) / dataRange) * INNER_W
+            : PAD.top + INNER_H - ((v - vMin) / dataRange) * INNER_H;
+        ticks.push({ pos, label: smartFormat(v) });
+    }
+    return ticks;
+}
+
 function makeYTicks(yMin: number, yMax: number, count: number = 4): Tick[] {
-    const range = yMax - yMin || 1;
-    const step = range / count;
-    return Array.from({ length: count + 1 }, (_, i) => {
-        const val = yMin + i * step;
-        const py = PAD.top + INNER_H - ((val - yMin) / range) * INNER_H;
-        return { pos: py, label: val.toFixed(Math.abs(val) < 10 && val !== 0 ? 2 : 0) };
-    });
+    return makeNiceTicks(yMin, yMax, count + 1, false);
 }
 
 function makeXTicks(xMin: number, xMax: number, count: number = 5): Tick[] {
-    const range = xMax - xMin || 1;
-    const step = range / count;
-    return Array.from({ length: count + 1 }, (_, i) => {
-        const val = xMin + i * step;
-        const px = PAD.left + ((val - xMin) / range) * INNER_W;
-        return { pos: px, label: val.toFixed(1) };
-    });
+    return makeNiceTicks(xMin, xMax, count + 1, true);
 }
 
 // ─── Data Extractors ─────────────────────────────────────────────
@@ -1322,7 +1402,7 @@ function MolecularView({ result, resultHistory = {} }: {
                 {mol.eels_spectrum && mol.eels_spectrum.energy_ev.length > 0 && (
                     <EELSPanel spec={mol.eels_spectrum} />
                 )}
-                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
+                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} casidaData={mol.casida} renderSnapshots={mol.render_snapshots} />
             </div>
         );
     }
@@ -1342,8 +1422,8 @@ function MolecularView({ result, resultHistory = {} }: {
                 <CurveStyleBar style={specCurve} onChange={setSpecCurve} />
                 <AxisRangeBar range={specRange} onChange={setSpecRange} />
                 <ChartContainer title={`光学吸收谱 — ${mol.moleculeName}`}
-                    exportData={{ x: energy_ev, y: cross_section, xLabel: 'E(eV)', yLabel: 'sigma(A2/eV)', filename: `optical_spectrum_${mol.moleculeName}` }}>
-                    <Axes xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} xLabel="Energy (eV)" yLabel="σ (Å²/eV)" />
+                    exportData={{ x: energy_ev, y: cross_section, xLabel: 'E(eV)', yLabel: 'sigma(Angstrom^2)', filename: `optical_spectrum_${mol.moleculeName}` }}>
+                    <Axes xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} xLabel="Energy (eV)" yLabel="σ (Å²)" />
                     <LinePath xData={energy_ev} yData={cross_section} color={specCurve.color} strokeWidth={specCurve.width}
                         xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} />
                     {mol.casida && mol.casida.energies_ev.length > 0 && (
@@ -1351,6 +1431,35 @@ function MolecularView({ result, resultHistory = {} }: {
                             oscillator_strengths={mol.casida.oscillator_strengths}
                             xMin={eMin} xMax={eMax} yMin={csMin} yMax={csMax} />
                     )}
+                    {/* Peak annotations for TDDFT spectrum — find local maxima */}
+                    {(() => {
+                        const topN = 5;
+                        const minProminence = csMax * 0.05;
+                        const peaks: { idx: number; e: number; cs: number }[] = [];
+                        for (let i = 2; i < cross_section.length - 2; i++) {
+                            const y0 = cross_section[i];
+                            if (y0 > cross_section[i - 1] && y0 > cross_section[i + 1]
+                                && y0 > cross_section[i - 2] && y0 > cross_section[i + 2]
+                                && y0 > minProminence) {
+                                peaks.push({ idx: i, e: energy_ev[i], cs: y0 });
+                            }
+                        }
+                        const sorted = peaks.sort((a, b) => b.cs - a.cs).slice(0, topN);
+                        const xRange = (eMax - eMin) || 1;
+                        const yRange = (csMax - csMin) || 1;
+                        return sorted.map((p, rank) => {
+                            const px = PAD.left + ((p.e - eMin) / xRange) * INNER_W;
+                            const py = PAD.top + INNER_H - ((p.cs - csMin) / yRange) * INNER_H;
+                            const yOff = rank % 2 === 0 ? -10 : -20;
+                            return (
+                                <g key={p.idx}>
+                                    <circle cx={px} cy={py} r={3} fill="#22d3ee" stroke="#06b6d4" strokeWidth={1} />
+                                    <text x={px} y={py + yOff} textAnchor="middle" fill="#22d3ee" fontSize={8}
+                                        fontWeight={600}>{p.e.toFixed(2)} eV</text>
+                                </g>
+                            );
+                        });
+                    })()}
                 </ChartContainer>
                 {/* TD Dipole Chart */}
                 {mol.td_dipole && mol.td_dipole.time.length > 0 && (
@@ -1394,7 +1503,7 @@ function MolecularView({ result, resultHistory = {} }: {
                         </>
                     );
                 })()}
-                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
+                <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} casidaData={mol.casida} calcMode="td" renderSnapshots={mol.render_snapshots} />
             </div>
         );
     }
@@ -1421,9 +1530,7 @@ function MolecularView({ result, resultHistory = {} }: {
     const hydrogenRefHa = -0.5;
     const hydrogenRefEV = hydrogenRefHa * HARTREE_TO_EV;
     const hydrogenEnergyDeltaEV = totalEnergyEV != null ? totalEnergyEV - hydrogenRefEV : null;
-    const unitContractWarning = totalEnergyHa != null && Math.abs(totalEnergyHa) > 5 && Math.abs(totalEnergyHa) < 30
-        ? 'Unit warning: total_energy_hartree appears to be in an eV-like range. Verify backend payload contract (Ha expected).'
-        : null;
+    const unitContractWarning = null;
 
     // Wavefunction visualization (populated if axis_x output was enabled)
     const wf = result.wavefunctions?.[selectedState];
@@ -1434,11 +1541,6 @@ function MolecularView({ result, resultHistory = {} }: {
     const xMin = x.length ? Math.min(...x) : 0;
     const xMax = x.length ? Math.max(...x) : 1;
     const psiMax = psiSq.length ? Math.max(...psiSq.filter(isFinite), 0.01) : 0.01;
-    const potMin = potArr.length ? Math.min(...potArr.filter(isFinite)) : 0;
-    const potMax = potArr.length ? Math.max(...potArr.filter(isFinite), potMin + 0.01) : 1;
-    // Scale potential to overlay on wavefunction chart
-    const potRange = potMax - potMin || 1;
-    const scaledPot = potArr.map(v => ((v - potMin) / potRange) * psiMax * 0.4);
     const levelsMin = levels.length ? Math.min(...levels, homoEV ?? 0) - 2 : -20;
     const levelsMax = levels.length ? Math.max(...levels, lumoEV ?? 0) + 2 : 2;
 
@@ -1669,7 +1771,7 @@ function MolecularView({ result, resultHistory = {} }: {
                     x={x}
                     psi={psi}
                     psiSq={psiSq}
-                    scaledPot={scaledPot}
+                    potArr={potArr}
                     xMin={xMin}
                     xMax={xMax}
                     psiMax={psiMax}
@@ -1799,19 +1901,163 @@ function MolecularView({ result, resultHistory = {} }: {
                 );
             })()}
 
-            {/* Casida-only mode: summary card (when no TD spectrum to overlay on) */}
-            {mol.casida && mol.casida.energies_ev.length > 0 && mol.calcMode !== 'td' && (
-                <div style={{
-                    padding: '6px 12px', background: 'rgba(167,139,250,0.06)',
-                    border: '1px solid rgba(167,139,250,0.18)', borderRadius: 6,
-                    fontSize: 11, color: '#c4b5fd',
-                }}>
-                    Casida linear response — {mol.casida.energies_ev.length} excitation{mol.casida.energies_ev.length > 1 ? 's' : ''}.
-                    First excitation: {mol.casida.energies_ev[0]?.toFixed(2)} eV
-                    {mol.casida.energies_ev.length > 1 ? `, range: ${mol.casida.energies_ev[0]?.toFixed(2)}–${mol.casida.energies_ev[mol.casida.energies_ev.length - 1]?.toFixed(2)} eV` : ''}.
-                    {mol.calcMode === 'casida' ? ' See table above for full excitation list.' : ' Hover over sticks in spectrum chart for values.'}
-                </div>
-            )}
+            {/* Casida-only mode: broadened absorption spectrum with peak labels */}
+            {mol.casida && mol.casida.energies_ev.length > 0 && mol.calcMode !== 'td' && (() => {
+                const cEnergies = mol.casida!.energies_ev;
+                const cOsc = mol.casida!.oscillator_strengths;
+                const eMax = Math.max(...cEnergies) * 1.15;
+                const sigma = 0.15;
+                const nPts = 500;
+                const eGrid = Array.from({ length: nPts }, (_, i) => (i / (nPts - 1)) * eMax);
+                const broadened = casidaLorentzian(cEnergies, cOsc, eGrid, sigma);
+                const bMax = Math.max(...broadened, 0.001);
+                const yTop = bMax * 1.2;
+                // Top-5 peak labels
+                const topN = 5;
+                const sorted = cOsc.map((f, i) => ({ i, f })).sort((a, b) => b.f - a.f).slice(0, topN);
+                return (
+                    <>
+                        <div style={{
+                            padding: '6px 12px', background: 'rgba(167,139,250,0.06)',
+                            border: '1px solid rgba(167,139,250,0.18)', borderRadius: 6,
+                            fontSize: 11, color: '#c4b5fd',
+                        }}>
+                            Casida — {cEnergies.length} excitations.
+                            First: {cEnergies[0]?.toFixed(2)} eV.
+                            σ = {sigma} eV Lorentzian.
+                        </div>
+                        <ChartContainer title={`Absorption Spectrum — ${mol.moleculeName}`}
+                            exportData={{ x: eGrid, y: broadened, xLabel: 'E(eV)', yLabel: 'Intensity', filename: `casida_spectrum_${mol.moleculeName}` }}>
+                            <Axes xMin={0} xMax={eMax} yMin={0} yMax={yTop} xLabel="Energy (eV)" yLabel="Intensity (arb. u.)" />
+                            <LinePath xData={eGrid} yData={broadened} color="#a78bfa" strokeWidth={2}
+                                xMin={0} xMax={eMax} yMin={0} yMax={yTop} />
+                            {/* Peak annotations: dot + energy label for top-N */}
+                            {sorted.map((s, rank) => {
+                                const eVal = cEnergies[s.i];
+                                const xRange = eMax || 1;
+                                const px = PAD.left + (eVal / xRange) * INNER_W;
+                                // Find broadened curve value at this energy
+                                const gridIdx = Math.round((eVal / eMax) * (nPts - 1));
+                                const curveY = gridIdx >= 0 && gridIdx < nPts ? broadened[gridIdx] : 0;
+                                const py = PAD.top + INNER_H - (curveY / yTop) * INNER_H;
+                                // Stagger labels to avoid overlap
+                                const yOff = rank % 2 === 0 ? -10 : -20;
+                                return (
+                                    <g key={s.i}>
+                                        <circle cx={px} cy={py} r={3} fill="#c4b5fd" stroke="#a78bfa" strokeWidth={1} />
+                                        <text x={px} y={py + yOff} textAnchor="middle" fill="#c4b5fd" fontSize={8}
+                                            fontWeight={600}>{eVal.toFixed(2)} eV</text>
+                                    </g>
+                                );
+                            })}
+                        </ChartContainer>
+                    </>
+                );
+            })()}
+
+            {/* ── IR Spectrum (Vibrational Modes) ── */}
+            {mol.vib_modes && mol.vib_modes.frequencies_cm.length > 0 && (() => {
+                const vm = mol.vib_modes;
+                // Filter out imaginary/negative frequencies and translations/rotations (< 50 cm-1)
+                const real = vm.frequencies_cm
+                    .map((f, i) => ({ f, ir: vm.ir_intensities[i] ?? 0, i }))
+                    .filter(v => v.f > 50);
+                if (real.length === 0) return null;
+                const fMax = Math.max(...real.map(v => v.f)) * 1.1;
+                const irMax = Math.max(...real.map(v => v.ir), 0.001);
+                // Lorentzian broadening σ=15 cm⁻¹ (typical IR resolution)
+                const sigma = 15;
+                const nPts = 500;
+                const fGrid = Array.from({ length: nPts }, (_, i) => (i / (nPts - 1)) * fMax);
+                const broadened = fGrid.map(F => {
+                    let sum = 0;
+                    for (const v of real) {
+                        const df = F - v.f;
+                        sum += v.ir * (sigma / Math.PI) / (df * df + 2 * sigma * sigma);
+                    }
+                    return sum;
+                });
+                const bMax = Math.max(...broadened, 0.001);
+                const topN = 5;
+                const sorted = [...real].sort((a, b) => b.ir - a.ir).slice(0, topN);
+                return (
+                    <>
+                        <div style={{
+                            padding: '6px 12px', background: 'rgba(251,191,36,0.06)',
+                            border: '1px solid rgba(251,191,36,0.18)', borderRadius: 6,
+                            fontSize: 11, color: '#fbbf24',
+                        }}>
+                            IR Spectrum — {real.length} vibrational modes ({vm.frequencies_cm.length} total computed).
+                            σ = {sigma} cm⁻¹ Lorentzian broadening.
+                        </div>
+                        <ChartContainer title={`IR Absorption Spectrum — ${mol.moleculeName}`}
+                            exportData={{ x: fGrid, y: broadened, xLabel: 'wavenumber(cm-1)', yLabel: 'Intensity', filename: `ir_spectrum_${mol.moleculeName}` }}>
+                            <Axes xMin={0} xMax={fMax} yMin={0} yMax={bMax * 1.2} xLabel="Wavenumber (cm⁻¹)" yLabel="IR Intensity (arb. u.)" />
+                            <LinePath xData={fGrid} yData={broadened} color="#fbbf24" strokeWidth={2}
+                                xMin={0} xMax={fMax} yMin={0} yMax={bMax * 1.2} />
+                            {/* Peak labels for top-N modes */}
+                            {sorted.map((v, rank) => {
+                                const xRange = fMax || 1;
+                                const px = PAD.left + (v.f / xRange) * INNER_W;
+                                // Find broadened value at this frequency
+                                const gIdx = Math.round((v.f / fMax) * (nPts - 1));
+                                const curveY = gIdx >= 0 && gIdx < nPts ? broadened[gIdx] : 0;
+                                const py = PAD.top + INNER_H - (curveY / (bMax * 1.2)) * INNER_H;
+                                const yOff = rank % 2 === 0 ? -10 : -22;
+                                return (
+                                    <g key={v.i}>
+                                        <circle cx={px} cy={py} r={3} fill="#fbbf24" stroke="#f59e0b" strokeWidth={1} />
+                                        <text x={px} y={py + yOff} textAnchor="middle" fill="#fbbf24" fontSize={8}
+                                            fontWeight={600}>{v.f.toFixed(0)} cm⁻¹</text>
+                                    </g>
+                                );
+                            })}
+                        </ChartContainer>
+                        {/* Mode table */}
+                        <div style={{
+                            background: 'rgba(251,191,36,0.03)', border: '1px solid rgba(251,191,36,0.12)',
+                            borderRadius: 8, overflow: 'hidden',
+                        }}>
+                            <div style={{ fontSize: 10, color: '#fbbf24', padding: '6px 12px', borderBottom: '1px solid rgba(251,191,36,0.08)', fontWeight: 600 }}>
+                                Vibrational Frequencies ({real.length} modes, translations/rotations filtered)
+                            </div>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+                                <thead>
+                                    <tr style={{ color: '#6b7280', fontSize: 10, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <th style={{ padding: '3px 12px', textAlign: 'left' }}>#</th>
+                                        <th style={{ padding: '3px 12px', textAlign: 'right' }}>ν (cm⁻¹)</th>
+                                        <th style={{ padding: '3px 12px', textAlign: 'right' }}>E (eV)</th>
+                                        <th style={{ padding: '3px 12px', textAlign: 'right' }}>λ (μm)</th>
+                                        <th style={{ padding: '3px 12px', textAlign: 'right' }}>IR Intensity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {real.map((v, i) => {
+                                        const eV = v.f / 8065.54;
+                                        const um = 10000 / v.f;
+                                        const barW = irMax > 0 ? (v.ir / irMax) * 100 : 0;
+                                        const isBright = v.ir / irMax > 0.3;
+                                        return (
+                                            <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)',
+                                                color: isBright ? '#fbbf24' : '#6b7280',
+                                                background: i < 3 && isBright ? 'rgba(251,191,36,0.04)' : undefined }}>
+                                                <td style={{ padding: '2px 12px' }}>{i + 1}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{v.f.toFixed(1)}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{eV.toFixed(4)}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{um.toFixed(2)}</td>
+                                                <td style={{ padding: '2px 12px', textAlign: 'right' }}>{v.ir.toFixed(4)}</td>
+                                                <td style={{ padding: '2px 12px', width: 80 }}>
+                                                    <div style={{ width: `${barW}%`, height: 6, background: isBright ? '#f59e0b' : '#374151', borderRadius: 3, minWidth: 2 }} />
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                );
+            })()}
 
             {/* Density of States */}
             {mol.dos_data && mol.dos_data.energy_ev.length > 0 && (
@@ -1901,7 +2147,7 @@ function MolecularView({ result, resultHistory = {} }: {
             )}
 
             {/* VisIt 3D Rendering Panel */}
-            <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} />
+            <VisItRenderPanel moleculeName={mol.moleculeName} renderSignature={renderSignature} casidaData={mol.casida} renderSnapshots={mol.render_snapshots} />
         </div>
     );
 }
@@ -1913,7 +2159,7 @@ function WavefunctionSection({
     x,
     psi,
     psiSq,
-    scaledPot,
+    potArr,
     xMin,
     xMax,
     psiMax,
@@ -1924,7 +2170,7 @@ function WavefunctionSection({
     x: number[];
     psi: number[];
     psiSq: number[];
-    scaledPot: number[];
+    potArr: number[];
     xMin: number;
     xMax: number;
     psiMax: number;
@@ -1942,6 +2188,10 @@ function WavefunctionSection({
     const psiYMax = applyRange(Math.max(...psi.filter(isFinite), 0.01), wfRange.yMax);
     const psiSqYMax = applyRange(psiMax * 1.1, wfRange.yMax);
     const xLabelU = wfUnit === 'ang' ? 'x (Å)' : 'x (Bohr)';
+
+    const potMin = potArr.length ? Math.min(...potArr.filter(isFinite)) : 0;
+    const potMax = potArr.length ? Math.max(...potArr.filter(isFinite), potMin + 0.01) : 1;
+    const hasPot = potArr.length > 0;
 
     return (
         <>
@@ -1982,8 +2232,10 @@ function WavefunctionSection({
                     title={`|ψₙ(x)|² — 概率密度`}
                     exportData={{ x: xScaled, y: psiSq, xLabel: xLabelU, yLabel: '|psi|^2', filename: `prob_density_state${selectedState}` }}
                 >
-                    <Axes xLabel={xLabelU} yLabel="|ψ|²" xTicks={makeXTicks(xMinS, xMaxS, 5)} yTicks={makeYTicks(0, psiSqYMax, 4)} />
-                    <LinePath xData={x} yData={scaledPot} color="#3f3f46" strokeWidth={1.5} xMin={xMin} xMax={xMax} yMin={0} yMax={psiSqYMax} />
+                    <Axes xLabel={xLabelU} yLabel="|ψ|²" xTicks={makeXTicks(xMinS, xMaxS, 5)} yTicks={makeYTicks(0, psiSqYMax, 4)}
+                        yRightTicks={hasPot ? makeYTicks(potMin, potMax, 3) : undefined}
+                        yRightLabel={hasPot ? 'V(x)' : undefined} />
+                    {hasPot && <LinePath xData={x} yData={potArr} color="#3f3f46" strokeWidth={1.5} xMin={xMin} xMax={xMax} yMin={potMin} yMax={potMax} />}
                     <FillPath xData={xScaled} yData={psiSq} color={wfCurve.color} xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
                     <LinePath xData={xScaled} yData={psiSq} color={wfCurve.color} strokeWidth={wfCurve.width} xMin={xMinS} xMax={xMaxS} yMin={0} yMax={psiSqYMax} />
                 </ChartContainer>
@@ -2282,46 +2534,80 @@ function DensityDifferencePanel({ data }: {
 
 // ─── VisIt Render Panel (enhanced with slice/state/colormap controls) ─────────
 
-type VisItPlotType = 'wavefunction_1d' | 'density_2d' | 'density_3d';
+type VisItPlotType = 'wavefunction_1d' | 'density_2d' | 'density_3d' | 'absorption_spectrum';
 
 const COLORMAPS = ['hot', 'Blues', 'Purples', 'RdBu', 'viridis', 'jet'];
 
-function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: string; renderSignature?: string }) {
-    const [plotType, setPlotType] = React.useState<VisItPlotType>('wavefunction_1d');
+function VisItRenderPanel({ moleculeName, casidaData, calcMode, renderSnapshots }: {
+    moleculeName: string; renderSignature?: string;
+    casidaData?: { energies_ev: number[]; oscillator_strengths: number[] };
+    calcMode?: string;
+    renderSnapshots?: { density_2d_png?: string; density_3d_png?: string };
+}) {
+    const [plotType, setPlotType] = React.useState<VisItPlotType>(calcMode === 'td' ? 'density_2d' : 'wavefunction_1d');
+    // Manual render PNG (from handleRender → /api/physics/visualize)
+    const [manualPng, setManualPng] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
-    const [pngBase64, setPngBase64] = React.useState<string | null>(null);
     const [status, setStatus] = React.useState<'idle' | 'not_available' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
-    const [renderSource, setRenderSource] = React.useState<string | null>(null);
+    const [durationMs, setDurationMs] = React.useState<number|null>(null);
     const [showControls, setShowControls] = React.useState(false);
     // Slice + advanced controls
-    const [wfState, setWfState] = React.useState(1);   // wavefunction state index (1-based)
+    const [wfState, setWfState] = React.useState(1);
     const [sliceAxis, setSliceAxis] = React.useState<'x'|'y'|'z'>('z');
     const [slicePos, setSlicePos] = React.useState('0.0');
     const [colormap, setColormap] = React.useState('hot');
     const [isoValue, setIsoValue] = React.useState('0.05');
-    const [durationMs, setDurationMs] = React.useState<number|null>(null);
 
+    // Auto-display: derive PNG directly from renderSnapshots + plotType (no stale closure)
+    const autoPng = React.useMemo(() => {
+        if (!renderSnapshots) return null;
+        if (plotType === 'density_3d' && renderSnapshots.density_3d_png) return renderSnapshots.density_3d_png;
+        if (renderSnapshots.density_2d_png) return renderSnapshots.density_2d_png;
+        return null;
+    }, [renderSnapshots, plotType]);
+
+    // When renderSnapshots arrives and plotType isn't density, auto-switch
+    const prevSnapshotsRef = React.useRef(renderSnapshots);
     React.useEffect(() => {
-        // New computation result arrived (same molecule name possible): clear prior render snapshot.
-        setPngBase64(null);
-        setRenderSource(null);
-        setStatus('idle');
-        setErrorMsg(null);
-        setDurationMs(null);
-    }, [renderSignature]);
+        if (renderSnapshots && renderSnapshots !== prevSnapshotsRef.current) {
+            prevSnapshotsRef.current = renderSnapshots;
+            setManualPng(null); // clear manual render so auto-display takes over
+            if (plotType !== 'density_2d' && plotType !== 'density_3d') {
+                setPlotType('density_2d');
+            }
+            setStatus('idle');
+            setErrorMsg(null);
+            setDurationMs(null);
+        } else if (!renderSnapshots) {
+            setManualPng(null);
+            setStatus('idle');
+            setErrorMsg(null);
+            setDurationMs(null);
+        }
+    }, [renderSnapshots, plotType]);
 
-    const PLOT_LABELS: Record<VisItPlotType, string> = {
+    // Effective displayed PNG: manual render overrides auto, auto overrides nothing
+    const pngBase64 = manualPng ?? autoPng;
+    const renderSource = manualPng ? 'manual_render' : (autoPng ? 'server_snapshot' : null);
+
+    const ALL_PLOT_LABELS: Record<VisItPlotType, string> = {
         wavefunction_1d: '波函数 1D',
         density_2d:      '密度 2D切片',
         density_3d:      '电子云 3D',
+        absorption_spectrum: '吸收谱',
     };
+    // TD mode: only show density_2d and density_3d (spectrum already rendered, wavefunction irrelevant)
+    const tdAllowed: VisItPlotType[] = ['density_2d', 'density_3d'];
+    const allowedTypes = calcMode === 'td' ? tdAllowed : (Object.keys(ALL_PLOT_LABELS) as VisItPlotType[]);
+    const PLOT_LABELS = Object.fromEntries(
+        allowedTypes.map(k => [k, ALL_PLOT_LABELS[k]])
+    ) as Record<VisItPlotType, string>;
 
     const handleRender = async () => {
         setLoading(true);
-        setPngBase64(null);
+        setManualPng(null);
         setErrorMsg(null);
-        setRenderSource(null);
         setStatus('idle');
         let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
         try {
@@ -2338,6 +2624,9 @@ function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: str
                 if (!isNaN(sp)) body.slicePos = sp;
                 body.sliceAxis = sliceAxis;
             }
+            if (plotType === 'absorption_spectrum' && casidaData) {
+                body.casidaData = casidaData;
+            }
             const ctrl = new AbortController();
             timeoutHandle = setTimeout(() => ctrl.abort(), 35_000);
             const resp = await fetch(`${API_BASE}/api/physics/visualize`, {
@@ -2349,9 +2638,8 @@ function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: str
             if (timeoutHandle) clearTimeout(timeoutHandle);
             const data = await resp.json();
             if (data.status === 'ok' && data.pngBase64) {
-                setPngBase64(data.pngBase64);
+                setManualPng(data.pngBase64);
                 setDurationMs(data.durationMs ?? null);
-                setRenderSource(data.source ?? null);
             } else if (data.status === 'not_available') {
                 setStatus('not_available');
                 setErrorMsg(data.reason);
@@ -2391,11 +2679,16 @@ function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: str
 
             {/* Plot type buttons */}
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
-                {(Object.keys(PLOT_LABELS) as VisItPlotType[]).map(pt => (
-                    <button key={pt} onClick={() => setPlotType(pt)} style={btnStyle(plotType === pt)}>
-                        {PLOT_LABELS[pt]}
-                    </button>
-                ))}
+                {(Object.keys(PLOT_LABELS) as VisItPlotType[]).map(pt => {
+                    const noData = pt === 'absorption_spectrum' && (!casidaData || !casidaData.energies_ev || casidaData.energies_ev.length === 0);
+                    return (
+                        <button key={pt} onClick={() => !noData && setPlotType(pt)} disabled={noData}
+                            style={{ ...btnStyle(plotType === pt), opacity: noData ? 0.3 : 1, cursor: noData ? 'not-allowed' : 'pointer' }}
+                            title={noData ? '无 Casida 数据，请先运行 Casida 计算' : undefined}>
+                            {PLOT_LABELS[pt]}
+                        </button>
+                    );
+                })}
                 <button onClick={handleRender} disabled={loading}
                     style={{
                         marginLeft: 4, padding: '3px 10px', fontSize: 10, borderRadius: 4,
@@ -2446,6 +2739,13 @@ function VisItRenderPanel({ moleculeName, renderSignature }: { moleculeName: str
                         <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
                             云密度阈值 (0–1)
                             <input type="number" value={isoValue} onChange={e => setIsoValue(e.target.value)} step="0.01" min="0.01" max="0.5"
+                                style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 80 }} />
+                        </label>
+                    )}
+                    {plotType === 'absorption_spectrum' && (
+                        <label style={{ display: 'flex', flexDirection: 'column', gap: 3, color: '#8892a4' }}>
+                            Lorentzian σ/E 宽化系数
+                            <input type="number" value={isoValue} onChange={e => setIsoValue(e.target.value)} step="0.01" min="0.01" max="1.0"
                                 style={{ padding: '3px 6px', fontSize: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid #1f2937', borderRadius: 3, color: '#c4cdd6', width: 80 }} />
                         </label>
                     )}

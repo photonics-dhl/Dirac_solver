@@ -33,6 +33,7 @@ export interface OctopusConfig {
     octopusNcpus: string;
     octopusMpiprocs: string;
     octopusExtraStates: string;
+    casidaKohnShamStates: string;
     // VASP
     vaspEncuit: string;
     vaspEdiff: string;
@@ -137,6 +138,7 @@ export interface OctopusConfigSetters {
     setOctopusNcpus: (v: string) => void;
     setOctopusMpiprocs: (v: string) => void;
     setOctopusExtraStates: (v: string) => void;
+    setCasidaKohnShamStates: (v: string) => void;
     setVaspEncuit: (v: string) => void;
     setVaspEdiff: (v: string) => void;
     setVaspNelmin: (v: string) => void;
@@ -222,7 +224,7 @@ export function useOctopusConfig(): { config: OctopusConfig; setters: OctopusCon
     const [octopusRadius, setOctopusRadius] = useState('4.0');
     const [octopusBoxShape, setOctopusBoxShape] = useState('sphere');
     const [octopusMolecule, setOctopusMolecule] = useState('H2O');
-    const [octopusTdSteps, setOctopusTdSteps] = useState('200');
+    const [octopusTdSteps, setOctopusTdSteps] = useState('5000');
     const [octopusTdTimeStep, setOctopusTdTimeStep] = useState('0.05');
     const [octopusPropagator, setOctopusPropagator] = useState('aetrs');
     const [octopusEigenSolver, setOctopusEigenSolver] = useState('');
@@ -258,6 +260,7 @@ export function useOctopusConfig(): { config: OctopusConfig; setters: OctopusCon
     const [feProbeBeamCount, setFeProbeBeamCount] = useState('1');
     const [feProbeCharge, setFeProbeCharge] = useState('-1');
     const [octopusExtraStates, setOctopusExtraStates] = useState('4');
+    const [casidaKohnShamStates, setCasidaKohnShamStates] = useState('1-8');
     const [mixingScheme, setMixingScheme] = useState('broyden');
     const [spinComponents, setSpinComponents] = useState('unpolarized');
     const [xcCategory, setXcCategory] = useState('lda');
@@ -325,6 +328,7 @@ export function useOctopusConfig(): { config: OctopusConfig; setters: OctopusCon
         octopusBoxShape, octopusMolecule, octopusTdSteps, octopusTdTimeStep,
         octopusPropagator, octopusEigenSolver, octopusNcpus, octopusMpiprocs,
         octopusExtraStates,
+        casidaKohnShamStates,
         vaspEncuit, vaspEdiff, vaspNelmin, vaspIsmear, vaspSigma,
         vaspNelect, vaspNbands, vaspKpointsType, vaspBox, vaspPrec,
         gsConvergenceProfile, gsEnableScan, gsScanSpec, gsReferenceSpacing, gsReferenceUrl,
@@ -352,6 +356,7 @@ export function useOctopusConfig(): { config: OctopusConfig; setters: OctopusCon
         setOctopusBoxShape, setOctopusMolecule, setOctopusTdSteps, setOctopusTdTimeStep,
         setOctopusPropagator, setOctopusEigenSolver, setOctopusNcpus, setOctopusMpiprocs,
         setOctopusExtraStates,
+        setCasidaKohnShamStates,
         setVaspEncuit, setVaspEdiff, setVaspNelmin, setVaspIsmear, setVaspSigma,
         setVaspNelect, setVaspNbands, setVaspKpointsType, setVaspBox, setVaspPrec,
         setGsConvergenceProfile, setGsEnableScan, setGsScanSpec, setGsReferenceSpacing, setGsReferenceUrl,

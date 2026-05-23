@@ -14,7 +14,7 @@ const DiracConfigSchema = z.object({
     potentialType: z.enum(["FreeSpace", "InfiniteWell", "Coulomb", "Custom", "Harmonic", "FiniteWell"]).optional(),
     engineMode: z.enum(["local1D", "octopus3D"]).optional(),
     moleculeName: z.string().optional(),
-    calcMode: z.enum(["gs", "td"]).optional(),
+    calcMode: z.enum(["gs", "td", "casida"]).optional(),
     tdSteps: z.number().positive().optional(),
 }).passthrough(); // Allow other fields like spatialRange to pass through to the Python engine
 

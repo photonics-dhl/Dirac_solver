@@ -108,32 +108,74 @@ Dirac/
 
 ---
 
+## 开发命令
+
+### 前端
+
+```bash
+cd frontend
+npm run dev        # Vite dev server (port 5173, proxies /api→8000)
+npm run build      # tsc + vite build
+npm run preview    # 生产构建预览
+```
+
+无测试套件。`tests/` 为空。lint 使用 ESLint flat config (`eslint.config.js`)。
+
+### E2E 回归测试
+
+```bash
+# 在 HPC 上（需 MCP server 8000 运行中）
+python scripts/run_e2e_regression.py                       # 全部 preset
+python scripts/run_e2e_regression.py --preset h_gs         # 单个
+python scripts/run_e2e_regression.py --preset h_gs,ch4_gs  # 多个
+python scripts/run_e2e_regression.py --list                 # 列出可用 preset
+```
+
+**必须串行执行**——并发会碰撞共享 `octopus_latest` 工作目录。
+
+### 服务器部署
+
+```bash
+# SCP 新版 server.py 到 HPC
+scp docker/workspace/server.py dirac-key:~/.openclaw/workspace/projects/Dirac/docker/workspace/
+# SSH 登录重启
+ssh dirac-key "pkill -f 'python.*server.py' ; nohup python3 ~/.openclaw/workspace/projects/Dirac/docker/workspace/server.py &"
+```
+
+---
+
 ## 已知问题
 
 | 问题 | 状态 | 说明 |
 |------|------|------|
-| **Harness iterate 给出过小 spacing** | 待修复 | gridSpacing=0.05 natural units 导致 Octopus 不收敛 |
+| **PBS exec_vnode 抖动** | 活跃 | ~30% PBS 作业 state F 但未执行脚本，重试通常成功 |
+| **Casida 仅支持 LDA** | 限制 | Octopus 16.0 Casida XC kernel 只接受 LDA；PBE 触发 FATAL |
+| **E2E 必须串行** | 约束 | 并发碰撞 `octopus_latest` 目录，读错特征值 |
 | **Knowledge Base corpus_mp** | 待重建 | 需添加 Materials Project 参考数据 |
 | **node-v16.20.2-linux-x64** | 保留 | 服务器 HPC 工具链，勿删 |
-| **VASP 仅支持 H/C/N/O** | 需扩展 | 添加更多 POTCAR 文件即可 |
 
 ---
 
+## 前端架构要点
+
+- **三引擎模式**：`local1D` | `octopus3D` | `vasp`，在 `useSolverRunner.ts` 路由
+- **核心 hooks**：`useOctopusConfig`（80+ 状态）、`useSolverRunner`（SSE 流）、`useMCPHealth`（健康轮询）
+- **懒加载**：ResultsPanel、DevFlowDashboard、GeometryEditor 按需加载
+- **Vite 代理**：`/api/*` → port 8000，`/solve_vasp` → port 8000
+- **主组件**：`App.tsx` 包含 preset 按钮、参数面板；`ResultsPanel.tsx` 包含 Casida 表 + TD 谱图
+
+## 关键物理约束
+
+- **Casida → LDA only**：Octopus 16.0 Casida XC kernel 只接受 LDA。`CalculationMode=casida` + PBE → FATAL
+- **TD/Casida 需先跑 GS**：`FromScratch` + `td/casida` 不会自动跑 GS。Server 内部两步执行
+- **PP set 与 XC 必须匹配**：`builtin_standard`（PSF/HGH）→ LDA；外部 UPF/ONCV → PBE。Server 自动选择
+- **单位**：Octopus 输入用 atomic units (Bohr, Hartree)。前端发送 Å，server 转换
+
 ## 防卡死规则（Anti-Stuck Protocol）
 
-### 循环中断
-1. 同一命令失败 2 次 → 立即停止重试，分析根因
-2. 30 秒无响应 → 输出状态，不要持续静默思考
+1. 同一命令失败 2 次 → 停止重试，分析根因
+2. 30 秒无响应 → 输出状态，不要静默思考
 3. MCP 工具调用失败 → 回退到 Bash/Read/Write
 4. WebSearch/WebFetch 失败 → 告知用户，最多重试 1 次
-
-### MCP 使用限制
-- 优先用内置工具（Read/Write/Edit/Glob/Grep/Bash），MCP 仅作补充
-- MCP diagram/mermaid → 仅在用户明确需要图表时使用
-
-### Session 管理
-- 每完成一个任务后自我评估是否需要 `/compact`
-- 上下文使用超过 70% → 主动提示压缩
-
-### 防卡死深入诊断
-- 2026-05-14 诊断：Puppeteer MCP Chrome 进程泄漏（15 孤儿进程/1.2GB）→ 主因；npx 冷启动链阻塞 → 次因。详见记忆文件中 session-stall 相关记录。
+5. 优先用内置工具（Read/Write/Edit/Glob/Grep/Bash），MCP 仅补充
+6. 完成任务后自评是否需要 `/compact`

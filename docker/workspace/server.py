@@ -52,6 +52,139 @@ except Exception:
     MCP_AVAILABLE = False
 
 
+def render_density_snapshots(static_dir: str) -> dict:
+    """Render density_2d + density_3d PNGs from density.cube, return base64 snapshots."""
+    import base64
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    cube_path = os.path.join(static_dir, "density.cube")
+    if not os.path.exists(cube_path):
+        # Try work_dir parent
+        parent_static = os.path.join(os.path.dirname(static_dir), "static")
+        cube_path_alt = os.path.join(parent_static, "density.cube")
+        if os.path.exists(cube_path_alt):
+            cube_path = cube_path_alt
+        else:
+            print(f"[render] No density.cube found, skipping render snapshots")
+            return {}
+
+    snapshots = {}
+    try:
+        # Parse Gaussian cube file
+        with open(cube_path, 'r') as f:
+            _ = f.readline()  # comment 1
+            _ = f.readline()  # comment 2
+            # Line 3: n_atoms  x_origin  y_origin  z_origin
+            parts = f.readline().split()
+            n_atoms = int(parts[0])
+            # Lines 4-6: n_axis  vx  vy  vz  (one per axis)
+            nx = int(f.readline().split()[0])
+            ny = int(f.readline().split()[0])
+            nz = int(f.readline().split()[0])
+            # Skip atom position records
+            for _ in range(n_atoms):
+                f.readline()
+            data = np.zeros((nx, ny, nz), dtype=np.float64)
+            idx = 0
+            for line in f:
+                for val in line.split():
+                    ix, iy, iz = np.unravel_index(idx, (nx, ny, nz))
+                    data[ix, iy, iz] = float(val)
+                    idx += 1
+                    if idx >= nx * ny * nz:
+                        break
+                if idx >= nx * ny * nz:
+                    break
+
+        BG = '#0d1117'
+
+        # --- Density 2D: 3 orthogonal slices ---
+        iz_mid, iy_mid, ix_mid = nz // 2, ny // 2, nx // 2
+        sl_xy = np.abs(data[:, :, iz_mid]).T
+        sl_xz = np.abs(data[:, iy_mid, :]).T
+        sl_yz = np.abs(data[ix_mid, :, :]).T
+        vmax = max(sl_xy.max(), sl_xz.max(), sl_yz.max(), 1e-10)
+
+        fig, axes = plt.subplots(1, 3, figsize=(12, 4), dpi=100)
+        fig.patch.set_facecolor(BG)
+        for ax in axes:
+            ax.set_facecolor(BG)
+            ax.tick_params(colors='#8b949e', labelsize=7)
+            for spine in ax.spines.values():
+                spine.set_color('#30363d')
+
+        panels = [
+            (sl_xy, "XY (z=mid)"),
+            (sl_xz, "XZ (y=mid)"),
+            (sl_yz, "YZ (x=mid)"),
+        ]
+        for ax, (sl, title) in zip(axes, panels):
+            ax.imshow(sl, origin="lower", aspect="auto", cmap="plasma",
+                      vmin=0, vmax=vmax, interpolation="bilinear")
+            ax.set_title(title, fontsize=9, color='#c9d1d9', pad=3)
+        fig.suptitle("Electron Density — Orthogonal Slices",
+                     color='#c9d1d9', fontsize=11, fontweight="light", y=1.01)
+        plt.tight_layout(pad=1.2)
+
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            fig.savefig(tmp.name, dpi=100, bbox_inches="tight", facecolor=BG, edgecolor="none")
+            plt.close(fig)
+            with open(tmp.name, 'rb') as img_f:
+                snapshots['density_2d_png'] = base64.b64encode(img_f.read()).decode('ascii')
+            os.unlink(tmp.name)
+
+        # --- Density 3D: isosurface via render_mpl.py (marching cubes) ---
+        render_mpl_path = os.path.normpath(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "..", "src", "render_mpl.py"))
+        if os.path.isfile(render_mpl_path):
+            import subprocess
+            tmp_png_3d = tempfile.mktemp(suffix='.png')
+            try:
+                proc = subprocess.run(
+                    [sys.executable, render_mpl_path, cube_path, "density_3d_iso", tmp_png_3d, "0.05", "hot"],
+                    capture_output=True, text=True, timeout=90)
+                if proc.returncode == 0 and os.path.isfile(tmp_png_3d):
+                    with open(tmp_png_3d, 'rb') as img_f:
+                        snapshots['density_3d_png'] = base64.b64encode(img_f.read()).decode('ascii')
+                    print(f"[render] 3D snapshot via marching_cubes: {len(snapshots['density_3d_png'])//1024}KB")
+                else:
+                    print(f"[render] render_mpl.py 3D failed: {proc.stderr[:200]}")
+            except subprocess.TimeoutExpired:
+                print("[render] render_mpl.py 3D timed out (90s)")
+            finally:
+                if os.path.isfile(tmp_png_3d):
+                    os.unlink(tmp_png_3d)
+        if 'density_3d_png' not in snapshots:
+            # Fallback: simple MIP if render_mpl.py unavailable
+            mip_xy = np.max(data, axis=2).T
+            mip_max = max(mip_xy.max(), 1e-10)
+            fig2, ax2 = plt.subplots(1, 1, figsize=(5, 4), dpi=100)
+            fig2.patch.set_facecolor(BG); ax2.set_facecolor(BG)
+            ax2.tick_params(colors='#8b949e', labelsize=7)
+            ax2.imshow(mip_xy, origin="lower", aspect="auto", cmap="hot",
+                       vmin=0, vmax=mip_max, interpolation="bilinear")
+            ax2.set_title("MIP (fallback)", fontsize=9, color='#c9d1d9')
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+                fig2.savefig(tmp.name, dpi=100, bbox_inches="tight", facecolor=BG, edgecolor="none")
+                plt.close(fig2)
+                with open(tmp.name, 'rb') as img_f:
+                    snapshots['density_3d_png'] = base64.b64encode(img_f.read()).decode('ascii')
+                os.unlink(tmp.name)
+
+        del data
+        import gc; gc.collect()
+        print(f"[render] Generated density snapshots: 2d={len(snapshots.get('density_2d_png',''))//1024}KB, 3d={len(snapshots.get('density_3d_png',''))//1024}KB")
+    except Exception as e:
+        print(f"[render] Density snapshot failed: {e}")
+        import traceback; traceback.print_exc()
+
+    return snapshots
+
+
 def sanitize_floats(obj):
     """Recursively replace NaN/Inf with 0.0 so JSON serialization never crashes."""
     if isinstance(obj, float):
@@ -562,24 +695,30 @@ def _collect_element_symbols(coords: list) -> set:
     return elements_in_mol
 
 
-def _build_pseudo_species_block(elements_in_mol: set) -> str:
+def _build_pseudo_species_block(elements_in_mol: set, pseudopotential_set: str = "standard") -> str:
     """Build PP-mode %Species lines for all elements in the molecule.
 
-    Uses explicit UPF file paths when OCTOPUS_PP_PATH is set; falls back to
-    built-in standard pseudopotentials otherwise.
+    For pseudopotential_set="standard", uses HGH explicit file paths for elements
+    that are NOT in the PSF standard set (e.g. He is only in HGH, not PSF).
+    Elements in the PSF set use the "set | standard" syntax.
+    For non-standard sets, uses explicit UPF file paths from OCTOPUS_PP_PATH.
 
     Args:
         elements_in_mol: set of element symbols (e.g. {'H', 'N'})
+        pseudopotential_set: PP set name ("standard" for HGH built-in, else UPF)
     """
     pp_path = os.environ.get("OCTOPUS_PP_PATH", "").strip()
+    use_built_in = pseudopotential_set.strip().lower() == "standard" or not pp_path
+    # Elements NOT in Octopus PSF standard set but available as HGH files
+    _hgh_only = {"He"}
+    _hgh_path = "/app/share/octopus/pseudopotentials/HGH/lda"
     lines = []
     for sym in sorted(elements_in_mol):
-        if pp_path:
-            # Explicit UPF file: element | species_pseudo | file | {filename}
-            # Path is relative to OCTOPUS_PP_PATH (which is set to /work in container)
+        if not use_built_in:
             lines.append(f'  "{sym}" | species_pseudo | file | "{sym}.upf"')
+        elif sym in _hgh_only:
+            lines.append(f'  "{sym}" | species_pseudo | file | "{_hgh_path}/{sym}.hgh"')
         else:
-            # Built-in standard PP
             lines.append(f'  "{sym}" | species_pseudo | set | standard | lmax | 1 | lloc | 0')
     return "%Species\n" + "\n".join(lines) + "\n%"
 
@@ -659,13 +798,13 @@ def _resolve_octopus_udocker_container(udocker_bin: str) -> str:
 
 # ─── Helper: run Octopus and parse results ────────────────────────
 
-def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> str:
+def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False, is_vib: bool = False) -> str:
     """Generate an Octopus inp file from physics config."""
     engine_mode = config.get("engineMode", "octopus3D")
     dim_str = config.get("octopusDimensions", "3D")
 
     if engine_mode == "octopus3D" and dim_str != "1D":
-        mol_raw = config.get("molecule", config.get("moleculeName", config.get("octopusMolecule", "H2")))
+        mol_raw = config.get("molecule", config.get("moleculeName", config.get("molecule_name", config.get("octopusMolecule", "H2"))))
         # mol_raw can be a string name ("H2") or a dict {"name": "H2", "atoms": [...]}
         if isinstance(mol_raw, dict):
             molecule = mol_raw.get("name", "H2")
@@ -703,7 +842,7 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
 
         # Molecule Mode (2D or 3D)
         inp = f"Dimensions = {dimensions}\n"
-        calc_mode = 'td' if is_td else ('casida' if is_casida else 'gs')
+        calc_mode = 'td' if is_td else ('casida' if is_casida else ('vib_modes' if is_vib else 'gs'))
         inp += f"CalculationMode = {calc_mode}\n"
         # Geometry optimization (GO) support
         go_method = str(config.get("GOMethod", config.get("goMethod", "")) or "").strip()
@@ -813,6 +952,13 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
         species_mode = str(config.get("speciesMode", "builtin_standard") or "builtin_standard").strip().lower().replace("-", "_")
         xc_functional = config.get("xcFunctional", config.get("xc_functional", "lda_x+lda_c_pz"))
 
+        # Octopus 16.0 Casida kernel only accepts LDA — force it regardless of user config
+        if is_casida:
+            if xc_functional != "lda_x+lda_c_pz":
+                print(f"[INFO] Casida mode: overriding XC '{xc_functional}' → 'lda_x+lda_c_pz' "
+                      "(Octopus 16.0 Casida kernel only supports LDA)", flush=True)
+            xc_functional = "lda_x+lda_c_pz"
+
         # all_coords is used by all species_mode branches
         all_coords = custom_atoms if custom_atoms else (
             MOLECULES_2D.get(molecule, []) if dimensions == 2 else MOLECULES.get(molecule, [])
@@ -835,7 +981,9 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
                 inp += _build_formula_species_block(_collect_element_symbols(all_coords), alpha_overrides=None) + "\n"
             inp += "%\n\n"
         elif species_mode == "builtin_standard":
-            inp += "FromScratch = yes\n\n"
+            # FromScratch only for GS — TD/Casida need restart/ from converged GS
+            if not (is_td or is_casida or is_vib):
+                inp += "FromScratch = yes\n\n"
             # Match direct_test3 output convention; MOLECULES dict coords are in Bohr
             # NOTE: UnitsOutput=eV_Angstrom causes Octopus to interpret TDTimeStep
             # in hbar/eV instead of hbar/Hartree. The TDTimeStep compensation is
@@ -845,15 +993,25 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
             _user_xc = config.get("xcFunctional", config.get("xc_functional", ""))
             if _user_xc and _user_xc not in ("lda_x+lda_c_pz", "lda_x", "LDA"):
                 print(f"[WARN] builtin_standard PP uses its own LDA XC — ignoring xcFunctional='{_user_xc}'", flush=True)
+            # N builtin_standard PP has LCAO orbital radii > 10.6 Å — cap them
+            _lcao_cap_elements = {"N", "N_atom"}
+            elem_symbols = _collect_element_symbols(all_coords)
+            if any(e in _lcao_cap_elements for e in elem_symbols):
+                lcao_max = float(config.get("lcaoMaximumOrbitalRadius", 20.0))
+                inp += f"LCAOMaximumOrbitalRadius = {lcao_max}\n\n"
+                print(f"[INFO] builtin_standard with N: capping LCAOMaximumOrbitalRadius={lcao_max}", flush=True)
         elif species_mode == "pseudo":
             if dimensions != 3:
                 raise ValueError(
                     f"speciesMode='pseudo' requires Dimensions=3 (got {dimensions})."
                 )
             pseudopotential_set = str(config.get("pseudopotentialSet", "standard") or "standard").strip()
-            inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
+            # PseudopotentialSet is only valid for built-in sets (e.g. "standard").
+            # Non-standard sets (upf, oncv, etc.) use explicit %Species file paths.
+            if pseudopotential_set.lower() == "standard":
+                inp += f"PseudopotentialSet = {pseudopotential_set}\n\n"
             # Generate %Species block for PP mode — must precede %Coordinates
-            inp += _build_pseudo_species_block(_collect_element_symbols(all_coords)) + "\n\n"
+            inp += _build_pseudo_species_block(_collect_element_symbols(all_coords), pseudopotential_set) + "\n\n"
             # Auto-select XC to match pseudopotential set:
             #   'standard' (HGH, built-in) → LDA PP → keep LDA XC
             #   non-standard (ONCV, UPF files) → PBE PP → auto-select PBE XC
@@ -1061,20 +1219,16 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
             # TDDFT Delta-kick + output
             # Octopus 16+: use TDDeltaStrength/TDDeltaKickTime instead of
             # the deprecated %TDFunctions/%TDExternalFields tdf_delta syntax
-            steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 200)))
-            td_dt_raw = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002))
+            steps = config.get("octopusTdSteps", config.get("tdSteps", config.get("TDMaxSteps", 5000)))
+            td_dt_raw = config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05))
             propagator = config.get("octopusPropagator", "aetrs")
             excitation_type = config.get("tdExcitationType", "delta")
             polarization = int(config.get("tdPolarization", 1))  # 1=x, 2=y, 3=z
             amplitude = float(config.get("tdFieldAmplitude", 0.01))
 
-            # 2026-05-15: Removed ×27.2114 compensation — confirmed wrong.
-            # Octopus with UnitsOutput=eV_Angstrom interprets TDTimeStep
-            # correctly in atomic units (ℏ/Hartree). The compensation
-            # produced dt ≈ 2.72 a.u./step which gave NaN energies.
             inp += f"TDPropagator = {propagator}\n"
             inp += f"TDMaxSteps = {steps}\n"
-            inp += f"TDTimeStep = {float(td_dt_raw)}\n"
+            inp += f"TDTimeStep = {td_dt_raw}\n"
 
             if excitation_type == "delta":
                 # Broadband delta-kick (best for optical spectra)
@@ -1085,14 +1239,14 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
                 # Free electron probe alongside delta kick
                 # Octopus 16.3 electric_field format:
                 #   type | pol_x | pol_y | pol_z | amplitude | "func_name"  (name LAST)
-                if config.get("feProbeEnabled", False):
+                if str(config.get("feProbeEnabled", False)).lower() not in ("false", "0", "", "none"):
                     fe_v     = float(config.get("feProbeVelocity", 0.5))
                     fe_y0    = float(config.get("feProbeY0", 2.0))
                     fe_z0    = float(config.get("feProbeZ0", 0.0))
                     fe_q     = float(config.get("feProbeCharge", -1.0))
                     c_au     = 137.036
                     v_au     = fe_v * c_au
-                    t_center = float(steps) * float(td_dt) / 2.0
+                    t_center = float(steps) * float(td_dt_raw) / 2.0
                     neg_q    = -fe_q  # = +1 for electron (q=-1)
                     r3 = (f"(({v_au:.4f}*(t-{t_center:.3f}))^2"
                           f"+{fe_y0:.4f}^2+{fe_z0:.4f}^2+0.01)^1.5")
@@ -1127,14 +1281,14 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
                     td_funcs.append(f'  "td_pulse" | tdf_from_expr | "cos({freq}*t)"')
 
                 # Append probe if enabled — same %TDExternalFields block
-                if config.get("feProbeEnabled", False):
+                if str(config.get("feProbeEnabled", False)).lower() not in ("false", "0", "", "none"):
                     fe_v     = float(config.get("feProbeVelocity", 0.5))
                     fe_y0    = float(config.get("feProbeY0", 2.0))
                     fe_z0    = float(config.get("feProbeZ0", 0.0))
                     fe_q     = float(config.get("feProbeCharge", -1.0))
                     c_au     = 137.036
                     v_au     = fe_v * c_au
-                    t_center = float(steps) * float(td_dt) / 2.0
+                    t_center = float(steps) * float(td_dt_raw) / 2.0
                     neg_q    = -fe_q
                     r3 = (f"(({v_au:.4f}*(t-{t_center:.3f}))^2"
                           f"+{fe_y0:.4f}^2+{fe_z0:.4f}^2+0.01)^1.5")
@@ -1156,6 +1310,12 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
             inp += "  multipoles\n"
             inp += "  energy\n"
             inp += "%\n"
+
+            # Spectrum post-processing parameters (used by oct-propagation_spectrum)
+            if excitation_type == "delta":
+                inp += "PropagationSpectrumMaxEnergy = 0.735\n"   # 20 eV in Ha
+                inp += "PropagationSpectrumEnergyStep = 0.001\n" # ~0.027 eV
+                inp += "PropagationSpectrumBroadening = 0.005\n"  # ~0.14 eV Lorentzian
         elif is_casida:
             # Casida linear response — reads restart GS, computes excitation energies.
             # Primary method for finite-molecule optical spectra (Octopus Tutorial 16).
@@ -1180,6 +1340,13 @@ def generate_inp(config: dict, is_td: bool = False, is_casida: bool = False) -> 
             inp += "  eigenvalues\n"
             inp += "%\n"
             inp += "OutputFormat = axis_x\n"
+        elif is_vib:
+            # Vibrational modes — finite differences of forces
+            inp += "ResponseMethod = finite_differences\n"
+            inp += "CalcInfrared = yes\n"
+            _vib_disp = float(config.get("vibDisplacement", 0.01))
+            inp += f"Displacement = {_vib_disp}\n"
+            inp += f"ExtraStates = {extra_states_3d}\n"
         else:
             # Ground State: output BOTH axis slices (*.y=0,z=0) AND full 3D cube files
             target_calc_mode = str(config.get("calcMode", "gs")).strip().lower()
@@ -1440,45 +1607,56 @@ def parse_octopus_wfs_1d(static_dir: str) -> dict:
     return result
 
 def parse_octopus_cross_section(work_dir: str) -> dict:
-    """Parse the cross_section_vector file (in work_dir root) for optical spectrum.
-    
-    oct-propagation_spectrum writes cross_section_vector to the working directory
-    root (not inside td.general/). Format: 5 columns per row (may wrap over two
-    physical lines):
-      col 0: energy (Hartree)  col 1: Im(alpha_xx)  col 2: Re(alpha_xx)
-      col 3: Im(alpha_xy)      col 4: Re(alpha_xy)
-    Absorption cross section sigma ~ Im(alpha), col 1.
+    """Parse cross_section_vector from oct-propagation_spectrum.
+
+    Octopus 16 format (5 columns). Units depend on UnitsOutput:
+      a.u. (default): Energy[Hartree], sigma(1-3)[Bohr²], S(ω)[1/Hartree]
+      eV_Angstrom:    Energy[eV],      sigma(1-3)[Å²],    S(ω)[1/eV]
+
+    When eV output, sigma columns are already cross-section in Å² — read directly.
+    When a.u. output, convert via σ_abs = (2π²/c) × S(ω) [Bohr²] then × 0.280032.
     """
     HARTREE_TO_EV = 27.2114
-    # File is written to root work_dir, NOT inside td.general/
+    C_AU = 137.035999084
+    CONV_FACTOR = 2 * math.pi**2 / C_AU
+    BOHR2_TO_ANG2 = 0.280032
+
     cs_path = os.path.join(work_dir, "cross_section_vector")
     result = {"energy_ev": [], "cross_section": []}
-    
+
     if not os.path.exists(cs_path):
         return result
-    
-    import re
+
+    units_are_ev = False
     with open(cs_path, "r") as f:
-        content = f.read()
-    # Extract all floating point numbers (both uppercase E and lowercase e), ignoring comment lines
-    nums = re.findall(r'[-+]?\d+\.\d+[eE][+-]\d+', content)
-    # 5 numbers per data row: omega | Im(alpha_xx) | Im(alpha_yy) | Im(alpha_zz) | sigma_iso
-    # For a z-axis kick, Im(alpha_xx)=Im(alpha_yy)≈0; the physical signal is in Im(alpha_zz).
-    # Use the sum of all diagonal components so any kick direction is captured.
-    for i in range(0, len(nums) - 4, 5):
-        try:
-            energy_ha = float(nums[i])
-            # Sum the three diagonal Im(alpha) components → total absorption for any kick direction
-            im_alpha_xx = float(nums[i + 1])
-            im_alpha_yy = float(nums[i + 2])
-            im_alpha_zz = float(nums[i + 3])
-            im_alpha = im_alpha_xx + im_alpha_yy + im_alpha_zz
-            energy_ev = energy_ha * HARTREE_TO_EV
-            if energy_ev > 0.01:  # skip E~0 artefact
-                result["energy_ev"].append(round(energy_ev, 6))
-                result["cross_section"].append(round(im_alpha, 10))
-        except (ValueError, IndexError):
-            pass
+        for line in f:
+            if '[eV]' in line and '[A^2]' in line:
+                units_are_ev = True
+                continue
+            if '[Hartree]' in line:
+                units_are_ev = False
+                continue
+            if line.startswith('#') or not line.strip():
+                continue
+            parts = line.split()
+            if len(parts) < 5 or any(v.lower() == 'nan' for v in parts):
+                continue
+            try:
+                if units_are_ev:
+                    energy_ev = float(parts[0])
+                    sigma_ang2 = float(parts[1])
+                else:
+                    energy_ha = float(parts[0])
+                    strength = float(parts[4])
+                    if strength <= 0:
+                        continue
+                    sigma_ang2 = CONV_FACTOR * strength * BOHR2_TO_ANG2
+                    energy_ev = energy_ha * HARTREE_TO_EV
+                if sigma_ang2 > 0 and energy_ev > 0.01:
+                    result["energy_ev"].append(round(energy_ev, 6))
+                    result["cross_section"].append(round(sigma_ang2, 10))
+            except (ValueError, IndexError):
+                pass
     return result
 
 
@@ -1513,6 +1691,17 @@ def parse_octopus_casida(work_dir: str) -> dict:
 
     is_eps_diff = os.path.basename(casida_path) == "eps_diff"
 
+    # Detect energy unit from header line
+    _energy_unit_is_hartree = True  # default: assume Hartree
+    with open(casida_path, "r") as _hf:
+        for _hl in _hf:
+            if "E [eV]" in _hl:
+                _energy_unit_is_hartree = False
+                break
+            elif "E [H]" in _hl:
+                _energy_unit_is_hartree = True
+                break
+
     with open(casida_path, "r") as f:
         for line in f:
             line_stripped = line.strip()
@@ -1530,8 +1719,9 @@ def parse_octopus_casida(work_dir: str) -> dict:
                         energy = energy_ha * HToEV
                         osc = float(parts[6])
                     else:
-                        # Format: idx E[eV] <x>[A] <y>[A] <z>[A] <f>
-                        energy = float(parts[1])
+                        # Format: idx E[unit] <x>[b] <y>[b] <z>[b] <f>
+                        _raw_e = float(parts[1])
+                        energy = _raw_e * HToEV if _energy_unit_is_hartree else _raw_e
                         osc = float(parts[5])
                     result["excitations"].append({
                         "energy_ev": round(energy, 6),
@@ -1541,6 +1731,78 @@ def parse_octopus_casida(work_dir: str) -> dict:
                     result["oscillator_strengths"].append(round(osc, 8))
                 except (ValueError, IndexError):
                     pass
+    return result
+
+
+def parse_octopus_vib_modes(work_dir: str) -> dict:
+    """Parse vibrational frequencies and IR intensities from Octopus vib_modes output.
+
+    Octopus writes:
+      vib_modes/normal_frequencies_lr — # Mode  Frequency [cm-1]
+      vib_modes/infrared — IR intensities per mode (if CalcInfrared=yes)
+    Returns dict with modes[], frequencies_cm[], ir_intensities[].
+    """
+    import re
+    result: dict = {"modes": [], "frequencies_cm": [], "ir_intensities": []}
+
+    # Parse frequencies
+    freq_path = os.path.join(work_dir, "vib_modes", "normal_frequencies_lr")
+    if not os.path.exists(freq_path):
+        # Try alternate locations
+        for alt in [
+            os.path.join(work_dir, "vib_modes", "normal_frequencies_fd"),
+            os.path.join(work_dir, "vib_modes", "normal_frequencies"),
+            os.path.join(work_dir, "static", "normal_frequencies_lr"),
+        ]:
+            if os.path.exists(alt):
+                freq_path = alt
+                break
+
+    if not os.path.exists(freq_path):
+        print(f"[WARN] vibrational frequencies file not found in {work_dir}")
+        return result
+
+    with open(freq_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) >= 2:
+                try:
+                    mode_idx = int(parts[0])
+                    freq_cm = float(parts[1])
+                    result["modes"].append(mode_idx)
+                    result["frequencies_cm"].append(freq_cm)
+                except (ValueError, IndexError):
+                    pass
+
+    # Parse IR intensities
+    ir_path = os.path.join(work_dir, "vib_modes", "infrared")
+    if os.path.exists(ir_path):
+        ir_values = []
+        with open(ir_path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                parts = line.split()
+                if len(parts) >= 2:
+                    try:
+                        # Format varies: mode intensity or mode dx dy dz intensity
+                        ir_values.append(abs(float(parts[-1])))
+                    except (ValueError, IndexError):
+                        pass
+        # Match IR values to modes (may be fewer if some modes are translations/rotations)
+        for i in range(min(len(ir_values), len(result["frequencies_cm"]))):
+            result["ir_intensities"].append(round(ir_values[i], 6))
+        # Pad missing IR intensities with zeros
+        while len(result["ir_intensities"]) < len(result["frequencies_cm"]):
+            result["ir_intensities"].append(0.0)
+
+    n_modes = len(result["frequencies_cm"])
+    n_ir = len(result["ir_intensities"])
+    print(f"[DEBUG] parse_octopus_vib_modes: {n_modes} frequencies, {n_ir} IR intensities")
     return result
 
 
@@ -1735,8 +1997,8 @@ def compute_eels_spectrum(td_dipole: dict, config: dict) -> dict:
         return {"energy_ev": [], "eels": []}
     dt       = float(t[1] - t[0])
     n        = len(t)
-    steps    = int(config.get("octopusTdSteps", config.get("TDMaxSteps", 200)))
-    td_dt_c  = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.002)))
+    steps    = int(config.get("octopusTdSteps", config.get("TDMaxSteps", 5000)))
+    td_dt_c  = float(config.get("octopusTdTimeStep", config.get("TDTimeStep", 0.05)))
     fe_v     = float(config.get("feProbeVelocity", 0.5))
     fe_y0    = float(config.get("feProbeY0", 2.0))
     fe_z0    = float(config.get("feProbeZ0", 0.0))
@@ -1869,7 +2131,7 @@ async def run_octopus_hpc(
         raise RuntimeError("HPC strategy requested but qsub/qstat not available")
 
     primary_queue = os.environ.get("OCTOPUS_PBS_QUEUE", "workq")
-    queue_candidates = os.environ.get("OCTOPUS_PBS_QUEUE_CANDIDATES", "workq,com")
+    queue_candidates = os.environ.get("OCTOPUS_PBS_QUEUE_CANDIDATES", "workq")
     queues = [q.strip() for q in queue_candidates.split(",") if q.strip()]
     if primary_queue and primary_queue not in queues:
         queues.insert(0, primary_queue)
@@ -2144,7 +2406,7 @@ async def run_octopus_hpc(
             last_state = m_state.group(1)
             if last_state in {"C", "E", "F"}:
                 break
-        elif stat_proc.returncode != 0 and ("Unknown Job Id" in stat_text or "Unknown Job" in stat_text):
+        elif stat_proc.returncode != 0 and ("Unknown Job Id" in stat_text or "Unknown Job" in stat_text or "Job has finished" in stat_text):
             last_state = "C"
             break
 
@@ -2156,6 +2418,20 @@ async def run_octopus_hpc(
             rc = int(open(exit_code_path, "r", encoding="utf-8").read().strip())
         except Exception:
             rc = 1
+    else:
+        # udocker may not propagate exit codes through PBS. If PBS says job
+        # finished and stdout contains "Calculation ended", treat as success.
+        if last_state in {"C", "E", "F"}:
+            _stdout_preview = b""
+            _sp = os.path.join(work_dir, "octopus.stdout")
+            if os.path.exists(_sp):
+                try:
+                    _stdout_preview = open(_sp, "rb").read(50000)
+                except Exception:
+                    pass
+            if b"Calculation ended" in _stdout_preview:
+                print(f"[INFO] PBS job {job_id} finished without exitcode but stdout shows success → rc=0")
+                rc = 0
 
     stdout_path = os.path.join(work_dir, "octopus.stdout")
     stderr_path = os.path.join(work_dir, "octopus.stderr")
@@ -2223,7 +2499,7 @@ async def run_octopus_calculation(config: dict) -> dict:
     engine_mode = config.get("engineMode", "octopus3D")
     print(f"[DEBUG] engineMode from config = {repr(engine_mode)} | expected: 'octopus3D'")
     calc_mode = str(config.get("calcMode", "gs")).strip().lower()
-    molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "")))
+    molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", config.get("molecule_name", ""))))
     molecule_name = molecule_raw.get("name", "") if isinstance(molecule_raw, dict) else str(molecule_raw or "")
     auto_fast_path = engine_mode == "octopus3D" and calc_mode == "gs" and molecule_name.strip().lower() == "h2"
     if auto_fast_path and not bool(config.get("fastPath", False)):
@@ -2330,13 +2606,13 @@ async def run_octopus_calculation(config: dict) -> dict:
                 run_meta["strategy"] = "direct_fallback"
                 run_meta["hpc_error"] = str(hpc_exc)
         else:
-            molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
+            molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", config.get("molecule_name", "H2"))))
             molecule_name = molecule_raw.get("name", "H2") if isinstance(molecule_raw, dict) else str(molecule_raw or "H2")
             small_molecule_timeout = {
-                "H": 60,
-                "H2": 60,
-                "He": 60,
-                "Li": 90,
+                "H": 120,
+                "H2": 120,
+                "He": 300,
+                "Li": 180,
                 "H2O": 600,
                 "CH4": 600,
                 "NH3": 600,
@@ -2385,9 +2661,16 @@ async def run_octopus_calculation(config: dict) -> dict:
                     if m:
                         units_output = m.group(1).strip()
                         break
-        if units_output and "eV" in units_output and parsed_gs.get("total_energy") is not None:
+        if units_output and "eV" in units_output:
             HARTREE_TO_EV = 27.2114
-            parsed_gs["total_energy"] = parsed_gs["total_energy"] / HARTREE_TO_EV
+            # Octopus wrote energies in eV — convert back to Hartree for internal consistency
+            if parsed_gs.get("total_energy") is not None:
+                parsed_gs["total_energy"] = parsed_gs["total_energy"] / HARTREE_TO_EV
+            if parsed_gs.get("eigenvalues"):
+                parsed_gs["eigenvalues"] = [e / HARTREE_TO_EV for e in parsed_gs["eigenvalues"]]
+            for entry in parsed_gs.get("eigenvalue_entries", []):
+                if "eigenvalue_hartree" in entry:
+                    entry["eigenvalue_hartree"] = entry["eigenvalue_hartree"] / HARTREE_TO_EV
 
         # Base JSON Response structure
         response_data = {
@@ -2415,7 +2698,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 positive_evals = [e for e in evals_eV if e >= 0]
                 homo_eV = max(negative_evals) if negative_evals else None
                 lumo_eV = min(positive_evals) if positive_evals else None
-                _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
+                _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", config.get("molecule_name", "H2"))))
                 _mol_name = _mol_raw.get("name", "H2") if isinstance(_mol_raw, dict) else _mol_raw
 
                 response_data["molecular"] = {
@@ -2500,7 +2783,7 @@ async def run_octopus_calculation(config: dict) -> dict:
                 lumo_eV = min(unoccupied_eig)
 
             # Resolve molecule name (can be string or dict with name key)
-            _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", "H2")))
+            _mol_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", config.get("molecule_name", "H2"))))
             _mol_name = _mol_raw.get("name", "H2") if isinstance(_mol_raw, dict) else _mol_raw
 
             # Atom positions for frontend geometry visualization
@@ -2529,6 +2812,11 @@ async def run_octopus_calculation(config: dict) -> dict:
             print(f"[DEBUG] response_data['molecular'] set: {response_data.get('molecular')}")
             response_data["molecular"]["convergence_data"] = parse_octopus_convergence(static_dir)
             response_data["molecular"]["dos_data"] = parse_octopus_dos(static_dir)
+
+            # Render density snapshots from the actual calculation's density.cube
+            render_snaps = render_density_snapshots(static_dir)
+            if render_snaps:
+                response_data["molecular"]["render_snapshots"] = render_snaps
 
             # GO (geometry optimization) output
             go_data = parse_go_min_xyz(work_dir)
@@ -2793,6 +3081,60 @@ async def run_octopus_calculation(config: dict) -> dict:
                 if os.path.exists(casida_src):
                     shutil.copy2(casida_src, os.path.join(output_dir, "casida"))
                     print(f"[DEBUG] Copied casida to {output_dir}")
+            # ── Vibrational Modes ──
+            elif calc_mode == "vib" and can_run_td:
+                print(f"[DEBUG] Vibrational modes requested, converged={parsed_gs['converged']}")
+
+                inp_content_vib = generate_inp(config, is_vib=True)
+                with open(os.path.join(work_dir, "inp"), "w") as f:
+                    f.write(inp_content_vib)
+                with open(os.path.join(work_dir, "inp_vib"), "w") as f:
+                    f.write(inp_content_vib)
+                print(f"[DEBUG] Vib inp written, size={len(inp_content_vib)} bytes")
+
+                # Purge stale vib_modes/
+                _vib_stale = os.path.join(work_dir, "vib_modes")
+                if os.path.exists(_vib_stale):
+                    shutil.rmtree(_vib_stale, ignore_errors=True)
+
+                _vib_walltime = config.get("octopusPbsWalltime") or config.get("pbsWalltime")
+                _vib_timeout = int(_td_walltime_to_seconds(_vib_walltime)) if _vib_walltime else 7200
+                _vib_timeout = max(_vib_timeout, 7200)
+                print(f"[DEBUG] Starting vib_modes stage in {work_dir} (timeout={_vib_timeout}s)")
+                if exec_strategy == "hpc":
+                    rc_vib, stdout_vib, stderr_vib, vib_meta = await run_octopus_hpc(
+                        octo_cmd, work_dir, timeout_seconds=_vib_timeout,
+                        fast_path=False, config=config, pbs_walltime=_vib_walltime,
+                    )
+                else:
+                    rc_vib, stdout_vib, stderr_vib, vib_meta = await run_octopus_direct(
+                        octo_cmd, work_dir, timeout_seconds=_vib_timeout
+                    )
+                print(f"[DEBUG] Vib stage completed, rc={rc_vib}")
+
+                stdout_vib_str = stdout_vib.decode("utf-8", errors="replace") if stdout_vib else ""
+                if rc_vib != 0:
+                    print(f"[ERROR] Vib octopus failed rc={rc_vib}")
+                    if stdout_vib_str:
+                        print(f"[ERROR] Vib stdout (last 800):\n{stdout_vib_str[-800:]}")
+
+                stdout_text += "\n--- Vib Run ---\n" + stdout_vib_str[-500:]
+                response_data["stdout_tail"] = stdout_text[-1500:]
+                vib_data = parse_octopus_vib_modes(work_dir)
+                n_vib = len(vib_data.get("frequencies_cm", []))
+                print(f"[DEBUG] parse_octopus_vib_modes: {n_vib} modes")
+                response_data["molecular"]["vib_modes"] = vib_data
+                response_data["molecular"]["vib_executed"] = n_vib > 0
+
+                # Copy vib output to results
+                output_dir = resolve_output_dir()
+                os.makedirs(output_dir, exist_ok=True)
+                for _vib_file in ["normal_frequencies_lr", "infrared"]:
+                    _src = os.path.join(work_dir, "vib_modes", _vib_file)
+                    if os.path.exists(_src):
+                        shutil.copy2(_src, os.path.join(output_dir, _vib_file))
+                        print(f"[DEBUG] Copied {_vib_file} to {output_dir}")
+
             elif calc_mode == "td":
                 skip_reason = (
                     f"TD skipped because GS is not ready (converged={parsed_gs.get('converged', False)}, "
@@ -2823,6 +3165,19 @@ async def run_octopus_calculation(config: dict) -> dict:
                     "energies_ev": [],
                     "oscillator_strengths": [],
                     "warning": skip_reason,
+                }
+            elif calc_mode == "vib":
+                skip_reason = (
+                    f"Vib skipped because GS is not ready (converged={parsed_gs.get('converged', False)}, "
+                    f"scf_iterations={parsed_gs.get('scf_iterations', 0)}, returncode={rc}, "
+                    f"restart_exists={os.path.isdir(restart_dir)})."
+                )
+                print(f"[WARN] {skip_reason}")
+                response_data["status"] = "warning"
+                response_data["molecular"]["vib_executed"] = False
+                response_data["molecular"]["vib_skipped_reason"] = skip_reason
+                response_data["molecular"]["vib_modes"] = {
+                    "modes": [], "frequencies_cm": [], "ir_intensities": [], "warning": skip_reason,
                 }
 
         else:
@@ -2864,7 +3219,7 @@ async def run_vasp_calculation(config: dict) -> dict:
     VASP binaries and libraries must be accessible on the HPC server.
     Requires PBS job scheduler."""
     calc_mode = str(config.get("calcMode", "gs")).strip().lower()
-    molecule_raw = config.get("octopusMolecule", config.get("moleculeName", ""))
+    molecule_raw = config.get("octopusMolecule", config.get("molecule", config.get("moleculeName", config.get("molecule_name", ""))))
     molecule_name = (
         molecule_raw.get("name", "") if isinstance(molecule_raw, dict)
         else str(molecule_raw or "")
@@ -3125,7 +3480,7 @@ async def solve_handler(request: Request):
     response = {
         "status": result.get("status", "error"),
         "eigenvalues": eigenvalues,
-        "total_energy": result.get("total_energy"),
+        "total_energy": result.get("total_energy") or (result.get("molecular", {}) or {}).get("total_energy_hartree"),
         "converged": result.get("converged", False),
         "scf_iterations": result.get("scf_iterations", 0),
         "engine": result.get("engine", "octopus-16.0"),
@@ -3146,6 +3501,11 @@ async def solve_handler(request: Request):
         "stdout_tail": result.get("stdout_tail", ""),
         "stderr_tail": result.get("stderr_tail", ""),
         "returncode": result.get("returncode"),
+        "casida_excitations": result.get("casida_excitations") or (result.get("molecular", {}).get("casida", {}).get("excitations", [])),
+        "casida_executed": result.get("casida_executed") or result.get("molecular", {}).get("casida_executed", False),
+        "casida_data": result.get("molecular", {}).get("casida"),
+        "td_executed": result.get("td_executed") or result.get("molecular", {}).get("td_executed", False),
+        "td_spectrum": result.get("td_spectrum") or result.get("molecular", {}).get("optical_spectrum"),
         "message": (
             result.get("stderr_tail")
             or result.get("message")
@@ -3248,6 +3608,7 @@ if MCP_AVAILABLE:
                         "tdFieldAmplitude": {"type": "number", "description": "TD field amplitude. Default: 0.01."},
                         "customAtoms": {"type": "array", "description": "Custom atom list: [{'symbol': 'H', 'x': 0, 'y': 0, 'z': 0}, ...]."},
                         "casidaKohnShamStates": {"type": "string", "description": "KS state range for Casida linear response, e.g. '1-8'. Default: '1-8'."},
+                        "lcaoMaximumOrbitalRadius": {"type": "number", "description": "Cap LCAO orbital radius (Bohr) for builtin_standard species with large orbitals (e.g. N). Default: 20."},
                         "casidaTransitionDensities": {"type": "integer", "description": "Number of excitations to compute transition densities for. Default: 0."},
                         "fastPath": {"type": "boolean", "description": "Enable fast-path execution with reduced defaults."},
                     }
